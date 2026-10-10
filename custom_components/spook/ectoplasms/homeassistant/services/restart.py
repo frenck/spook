@@ -12,7 +12,7 @@ from homeassistant.const import RESTART_EXIT_CODE
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
-from ....const import LOGGER
+from ....const import DOMAIN as SPOOK_DOMAIN, LOGGER
 from ....services import AbstractSpookAdminService, ReplaceExistingService
 
 if TYPE_CHECKING:
@@ -42,9 +42,16 @@ class SpookService(AbstractSpookAdminService, ReplaceExistingService):
             return
 
         if not self.overriden_service:
-            msg = "Spook encountered an error while restarting Home Assistant."
             raise HomeAssistantError(
-                msg,
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="restart_failed",
             )
 
-        self.hass.async_run_hass_job(self.overriden_service.job, call)
+        # Waited on, the way calling Home Assistant's own restart is. It
+        # checks the configuration first and refuses when that is broken, and
+        # without waiting that refusal went nowhere: the automation carried
+        # on as if Home Assistant was on its way back up.
+        if (
+            running := self.hass.async_run_hass_job(self.overriden_service.job, call)
+        ) is not None:
+            await running

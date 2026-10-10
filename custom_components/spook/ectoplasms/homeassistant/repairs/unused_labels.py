@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from homeassistant.components.automation import automations_with_label
-from homeassistant.components.script import scripts_with_label
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.helpers import (
     area_registry as ar,
@@ -16,6 +14,8 @@ from homeassistant.helpers import (
 from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
+from ....reference_extraction import async_collect_mentioned_strings
+from ....registry_usage import async_label_in_use
 from ....repairs import AbstractSpookRepair
 
 # Give a freshly created label time to be applied before nagging about it.
@@ -46,10 +46,9 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
+        mentioned = async_collect_mentioned_strings(self.hass)
+
         label_registry = lr.async_get(self.hass)
-        area_registry = ar.async_get(self.hass)
-        device_registry = dr.async_get(self.hass)
-        entity_registry = er.async_get(self.hass)
 
         cutoff = dt_util.utcnow() - _MINIMUM_AGE
         for label in label_registry.async_list_labels():
@@ -58,15 +57,7 @@ class SpookRepair(AbstractSpookRepair):
             if label.created_at > cutoff:
                 # Just created; leave time to apply it to something.
                 continue
-            if er.async_entries_for_label(entity_registry, label.label_id):
-                continue
-            if dr.async_entries_for_label(device_registry, label.label_id):
-                continue
-            if ar.async_entries_for_label(area_registry, label.label_id):
-                continue
-            if automations_with_label(self.hass, label.label_id):
-                continue
-            if scripts_with_label(self.hass, label.label_id):
+            if async_label_in_use(self.hass, label.label_id, mentioned):
                 continue
 
             self.async_create_issue(

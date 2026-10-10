@@ -1,0 +1,33 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Quell-Entität",
+                    "name": "Name",
+                    "states": "Nur den Wechsel in diese Zustände zählen"
+                },
+                "data_description": {
+                    "states": "Leer lassen, um zu sehen, seit wann die Quelle in ihrem aktuellen Zustand ist. Trage zum Beispiel `on` ein, um zu sehen, wann sie zuletzt in diesen Zustand gewechselt ist. Dieser Zeitpunkt bleibt bestehen, auch wenn sie danach wieder wechselt."
+                },
+                "description": "Dieser Helfer zeigt, seit wann eine Entität in ihrem Zustand ist, und behält das auch über einen Neustart hinweg. Ist die Entität kurz nicht verfügbar, zählt das nicht als Änderung.",
+                "title": "Zeit im Zustand 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Quell-Entität",
+                    "states": "Nur den Wechsel in diese Zustände zählen"
+                },
+                "data_description": {
+                    "states": "Leer lassen, um zu sehen, seit wann die Quelle in ihrem aktuellen Zustand ist. Trage zum Beispiel `on` ein, um zu sehen, wann sie zuletzt in diesen Zustand gewechselt ist. Dieser Zeitpunkt bleibt bestehen, auch wenn sie danach wieder wechselt."
+                },
+                "title": "Zeit im Zustand 👻"
+            }
+        }
+    },
+    "title": "Zeit im Zustand 👻"
+}

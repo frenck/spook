@@ -8,7 +8,10 @@ from homeassistant.components import script
 from homeassistant.helpers import floor_registry as fr
 
 from ....entity_filtering import async_filter_known_floor_ids, async_get_all_floor_ids
-from ....reference_extraction import extract_targets_from_config
+from ....reference_extraction import (
+    extract_targets_from_config,
+    only_in_disabled_steps,
+)
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 
 if TYPE_CHECKING:
@@ -42,6 +45,10 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         # references nested in some step types, like repeat sequences.
         if raw_config := getattr(entity, "raw_config", None):
             floor_ids.update(extract_targets_from_config(raw_config).floor_ids)
+            # A disabled step does nothing, so what only it names is left out.
+            floor_ids -= only_in_disabled_steps(
+                raw_config, lambda found: extract_targets_from_config(found).floor_ids
+            )
 
         return async_filter_known_floor_ids(
             self.hass,

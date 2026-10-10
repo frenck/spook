@@ -28,6 +28,12 @@
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchDepTypes": ["dependency-groups"],
+      "addLabels": ["python:uv"],
+      "rangeStrategy": "pin"
     }
   ]
 }

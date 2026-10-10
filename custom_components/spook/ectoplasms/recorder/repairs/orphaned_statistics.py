@@ -2,19 +2,19 @@
 
 from __future__ import annotations
 
-from homeassistant.components.recorder.statistics import validate_statistics
+from datetime import timedelta
+
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
+from homeassistant.helpers.recorder import DATA_INSTANCE
 
-from ....const import LOGGER
+from ....const import DOMAIN, LOGGER
+from ....dismissals import async_get_dismissals
 from ....repairs import AbstractSpookRepair
-
-# The recorder validation issue type for a statistic ID that has recorded
-# statistics but no matching sensor state at all: a genuine orphan. Other
-# issue types (unit or state-class changes, intentionally excluded
-# entities) are either handled by Home Assistant itself or expected.
-_ORPHAN_ISSUE_TYPE = "no_state"
+from ....statistics_sources import (
+    async_settled_orphaned_statistic_ids,
+    async_statistics_still_settling,
+)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -22,8 +22,11 @@ class SpookRepair(AbstractSpookRepair):
 
     Removing a sensor leaves its recorded statistics behind; Home
     Assistant keeps them but never points them out. This surfaces them so
-    they can be cleaned up (Developer Tools > Statistics, or the
-    ``recorder.clear_statistics`` action).
+    they can be cleaned up on the Settings > Tools > Statistics page, which
+    is the only place Home Assistant offers to do it: `clear_statistics` is
+    a websocket command that page calls, and not an action anybody can reach
+    from the Actions tool. That page was called Developer Tools and sat in
+    the sidebar until Home Assistant moved it in 2026.
     """
 
     domain = "recorder"
@@ -32,6 +35,14 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
+
+    # A statistic has to keep looking abandoned to be reported, so something
+    # has to come back and look again. Nothing fires an event when a sensor
+    # finally turns up, and on a quiet system the next registry change can be
+    # days away, which would leave a first sighting waiting that long for its
+    # second.
+    inspect_interval = timedelta(minutes=5)
+
     automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
@@ -43,22 +54,44 @@ class SpookRepair(AbstractSpookRepair):
 
         self.possible_issue_ids.add(self.repair)
 
-        validation = await get_instance(self.hass).async_add_executor_job(
-            validate_statistics,
-            self.hass,
-        )
-        orphaned = sorted(
-            statistic_id
-            for statistic_id, issues in validation.items()
-            if any(issue.type == _ORPHAN_ISSUE_TYPE for issue in issues)
-        )
+        settled = await async_settled_orphaned_statistic_ids(self.hass)
 
-        if orphaned:
-            self.async_create_issue(
-                issue_id=self.repair,
-                translation_placeholders={
-                    "statistics": "\n".join(
-                        f"- `{statistic_id}`" for statistic_id in orphaned
-                    ),
-                },
+        if not settled and async_statistics_still_settling(self.hass):
+            # Right after a start everything is still being waited on, so
+            # nothing is settled yet. That is not the same as everything
+            # being fine, and clearing what is up now would only put it back
+            # a quarter of an hour later. Leave it until it is known.
+            prefix = f"{self.repair}_"
+            self.issue_ids.update(
+                issue_id.removeprefix(prefix)
+                for domain, issue_id in self.issue_registry.issues
+                if domain == DOMAIN and issue_id.startswith(prefix)
             )
+            return
+
+        # Reported apart: what is new on an issue of its own, and what
+        # somebody already said to keep on another that is ignored from the
+        # start. One statistic turning up should not bring back the couple of
+        # hundred somebody already decided about. #1699, #1702.
+        kept = async_get_dismissals(self.hass).async_dismissed(self.repair, self.repair)
+        for orphaned in (settled - kept, settled & kept):
+            if orphaned:
+                self._async_report(sorted(orphaned))
+
+    def _async_report(self, orphaned: list[str]) -> None:
+        """Raise an issue listing these statistics."""
+        self.async_create_issue(
+            issue_id=self.repair,
+            references=orphaned,
+            is_fixable=True,
+            # Handed to the fix so it knows what was offered. It looks again
+            # before clearing anything and keeps the two answers in common,
+            # so nothing goes that somebody was not shown and nothing goes
+            # that has since come back.
+            data={"orphaned_statistic_ids": ",".join(orphaned)},
+            translation_placeholders={
+                "statistics": "\n".join(
+                    f"- `{statistic_id}`" for statistic_id in orphaned
+                ),
+            },
+        )

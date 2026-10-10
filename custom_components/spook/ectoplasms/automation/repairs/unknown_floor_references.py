@@ -8,14 +8,17 @@ from homeassistant.components import automation
 from homeassistant.helpers import floor_registry as fr
 
 from ....entity_filtering import async_filter_known_floor_ids, async_get_all_floor_ids
-from ....reference_extraction import extract_targets_from_config
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from ....reference_extraction import (
+    extract_targets_from_config,
+    only_in_disabled_steps,
+)
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced floors in automations."""
 
     domain = automation.DOMAIN
@@ -44,6 +47,10 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         # references nested in some step types, like repeat sequences.
         if raw_config := getattr(entity, "raw_config", None):
             floor_ids.update(extract_targets_from_config(raw_config).floor_ids)
+            # A disabled step does nothing, so what only it names is left out.
+            floor_ids -= only_in_disabled_steps(
+                raw_config, lambda found: extract_targets_from_config(found).floor_ids
+            )
 
         return async_filter_known_floor_ids(
             self.hass,

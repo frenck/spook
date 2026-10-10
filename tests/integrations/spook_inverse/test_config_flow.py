@@ -14,7 +14,10 @@ from homeassistant.helpers import entity_registry as er
 
 from custom_components.spook.integrations.spook_inverse.const import (
     CONF_HIDE_SOURCE,
+    CONF_INVERSE_POSITION,
+    CONF_INVERSE_TILT,
     DOMAIN,
+    SOURCE_DOMAINS,
 )
 
 if TYPE_CHECKING:
@@ -33,7 +36,9 @@ def _create_source_entity(hass: HomeAssistant, domain: str) -> str:
     return entity_entry.entity_id
 
 
-@pytest.mark.parametrize("platform", [Platform.BINARY_SENSOR, Platform.SWITCH])
+@pytest.mark.parametrize(
+    "platform", [Platform.BINARY_SENSOR, Platform.SWITCH, Platform.VALVE]
+)
 async def test_config_flow_creates_inverse_entry(
     hass: HomeAssistant,
     platform: Platform,
@@ -47,7 +52,12 @@ async def test_config_flow_creates_inverse_entry(
     )
 
     assert result["type"] is FlowResultType.MENU
-    assert result["menu_options"] == [Platform.BINARY_SENSOR, Platform.SWITCH]
+    assert result["menu_options"] == [
+        Platform.BINARY_SENSOR,
+        Platform.COVER,
+        Platform.SWITCH,
+        Platform.VALVE,
+    ]
 
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
@@ -81,10 +91,40 @@ async def test_config_flow_creates_inverse_entry(
     )
 
 
+async def test_config_flow_creates_inverse_cover_with_its_options(
+    hass: HomeAssistant,
+) -> None:
+    """Test a cover asks which way to turn around, position by default."""
+    source_entity_id = _create_source_entity(hass, Platform.COVER)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_USER},
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={"next_step_id": Platform.COVER},
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={CONF_NAME: "Inverse blinds", CONF_ENTITY_ID: source_entity_id},
+    )
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert result["options"] == {
+        "inverse_type": Platform.COVER,
+        CONF_NAME: "Inverse blinds",
+        CONF_ENTITY_ID: source_entity_id,
+        CONF_HIDE_SOURCE: False,
+        CONF_INVERSE_POSITION: True,
+        CONF_INVERSE_TILT: False,
+    }
+
+
 async def test_options_flow_updates_hide_source_state(
     hass: HomeAssistant,
 ) -> None:
-    """Test options flow hides and unhides the source entity."""
+    """Test the options flow offers the right sources and hides the chosen one."""
     source_entity_id = _create_source_entity(hass, Platform.SWITCH)
     entry = MockConfigEntry(
         domain=DOMAIN,
@@ -114,7 +154,7 @@ async def test_options_flow_updates_hide_source_state(
     assert result["step_id"] == Platform.SWITCH
     schema = result["data_schema"].schema
     entity_selector = schema[next(iter(schema))]
-    assert entity_selector.config["domain"] == [Platform.SWITCH]
+    assert entity_selector.config["domain"] == SOURCE_DOMAINS[Platform.SWITCH]
     assert entity_selector.config["exclude_entities"] == [own_entity_id]
 
     result = await hass.config_entries.options.async_configure(
@@ -153,4 +193,5 @@ async def test_options_flow_updates_hide_source_state(
         CONF_ENTITY_ID: source_entity_id,
         CONF_HIDE_SOURCE: False,
     }
-    assert er.async_get(hass).async_get(source_entity_id).hidden_by is None
+    # Showing it again is the update listener's to do, once it knows this
+    # inverse was the one hiding it. That is covered in test_following.py.

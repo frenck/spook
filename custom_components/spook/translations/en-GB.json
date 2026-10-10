@@ -1,335 +1,3003 @@
 {
-  "config": {
-    "abort": {
-      "already_spooked": "Spook is already configured."
-    },
-    "step": {
-      "user": {
-        "description": "Have you read the readme? Have you read the licence? Are you quite certain?"
-      },
-      "choice_restart": {
-        "description": "For Spook to finish setting up, Home Assistant needs to be restarted.\n\nWould you like to restart Home Assistant now?",
-        "menu_options": {
-          "restart_now": "Restart now",
-          "restart_later": "Restart later"
-        }
-      }
-    }
-  },
-  "entity": {
-    "button": {
-      "homeassistant_reload": {
-        "name": "Reload"
-      },
-      "homeassistant_restart": {
-        "name": "Restart"
-      },
-      "repairs_ignore_all": {
-        "name": "Ignore all"
-      },
-      "repairs_unignore_all": {
-        "name": "Unignore all"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "create": "Issue created",
-              "remove": "Issue removed",
-              "update": "Issue updated"
+    "config": {
+        "abort": {
+            "already_spooked": "Spook is already haunting this place 👻\n\nOne ghost per house is plenty. You can find Spook under [Devices & services](/config/integrations/integration/spook).",
+            "enable_failed": "Spook would not wake up 👻\n\nTry switching it back on yourself under [Devices & services](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook is awake again 👻\n\nGive it a moment to look around. Anything it finds shows up under [Repairs](/config/repairs).",
+            "kept_sleeping": "Spook stays asleep 👻\n\nMiss it? You can wake it up any time under [Devices & services](/config/integrations/integration/spook)."
+        },
+        "step": {
+            "user": {
+                "description": "Spook floats around your Home Assistant looking for ghosts: references to things that no longer exist, and leftovers nobody cleaned up. Whatever it finds, it reports under Repairs.\n\nIt also extends what your automations and scripts can do, with extra actions, triggers, conditions and helpers, for even more powerful automations.\n\nFair warning: Spook is not part of Home Assistant. It is a custom integration that reaches into places it was never invited. If something odd happens, suspect Spook first, and [let us know]({issue_tracker_url}).\n\nReady to get spooked?",
+                "title": "Boo! Meet Spook, your homie 👻"
+            },
+            "already_configured": {
+                "description": "Spook is already set up, but someone switched it off. Wake it up?",
+                "menu_options": {
+                    "enable_existing": "Wake Spook up",
+                    "keep_sleeping": "Let it sleep"
+                },
+                "title": "Spook is sleeping 👻"
             }
-          },
-          "domain": {
-            "name": "Issue issuer"
-          },
-          "issue_id": {
-            "name": "Issue ID"
-          }
+        },
+        "create_entry": {
+            "spooked": "Spook is floating around 👻\n\nGive it a moment to look around. Anything it finds shows up under [Repairs](/config/repairs).\n\nThe extra actions, triggers and conditions are waiting for you in the automation and script editors. Curious what else Spook can do? The [documentation]({documentation_url}) has it all.\n\nEnjoying Spook? 👻 A ⭐ on [GitHub]({repository_url}) lets others know Spook is actually pretty great. [Sponsoring Frenck]({sponsor_url}) keeps this ghost well fed. And his free bi-weekly [newsletter]({newsletter_url}) keeps your inner ghost well fed."
         }
-      }
     },
-    "sensor": {
-      "homeassistant_air_quality": {
-        "name": "Air quality"
-      },
-      "homeassistant_alarm_control_panel": {
-        "name": "Alarm control panels"
-      },
-      "homeassistant_area": {
-        "name": "Areas"
-      },
-      "homeassistant_automation": {
-        "name": "Automations"
-      },
-      "homeassistant_binary_sensor": {
-        "name": "Binary sensors"
-      },
-      "homeassistant_button": {
-        "name": "Buttons"
-      },
-      "homeassistant_calendar": {
-        "name": "Calendars"
-      },
-      "homeassistant_camera": {
-        "name": "Cameras"
-      },
-      "homeassistant_climate": {
-        "name": "Climate"
-      },
-      "homeassistant_cover": {
-        "name": "Covers"
-      },
-      "homeassistant_custom_component": {
-        "name": "Custom integrations"
-      },
-      "homeassistant_date": {
-        "name": "Dates"
-      },
-      "homeassistant_datetime": {
-        "name": "Date/times"
-      },
-      "homeassistant_device": {
-        "name": "Devices"
-      },
-      "homeassistant_device_tracker": {
-        "name": "Device trackers"
-      },
-      "homeassistant_entities": {
-        "name": "Entities"
-      },
-      "homeassistant_fan": {
-        "name": "Fans"
-      },
-      "homeassistant_humidifier": {
-        "name": "Humidifiers"
-      },
-      "homeassistant_image": {
-        "name": "Images"
-      },
-      "homeassistant_input_boolean": {
-        "name": "Input booleans"
-      },
-      "homeassistant_input_button": {
-        "name": "Input buttons"
-      },
-      "homeassistant_input_datetime": {
-        "name": "Input date/times"
-      },
-      "homeassistant_input_number": {
-        "name": "Input numbers"
-      },
-      "homeassistant_input_select": {
-        "name": "Input selects"
-      },
-      "homeassistant_input_text": {
-        "name": "Input texts"
-      },
-      "homeassistant_integration": {
-        "name": "Integrations"
-      },
-      "homeassistant_light": {
-        "name": "Lights"
-      },
-      "homeassistant_lock": {
-        "name": "Locks"
-      },
-      "homeassistant_media_player": {
-        "name": "Media players"
-      },
-      "homeassistant_number": {
-        "name": "Numbers"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "Persistent notifications"
-      },
-      "homeassistant_person": {
-        "name": "Persons"
-      },
-      "homeassistant_remote": {
-        "name": "Remotes"
-      },
-      "homeassistant_scene": {
-        "name": "Scenes"
-      },
-      "homeassistant_script": {
-        "name": "Scripts"
-      },
-      "homeassistant_select": {
-        "name": "Selects"
-      },
-      "homeassistant_sensor": {
-        "name": "Sensors"
-      },
-      "homeassistant_siren": {
-        "name": "Sirens"
-      },
-      "homeassistant_stt": {
-        "name": "Speech-to-text"
-      },
-      "homeassistant_sun": {
-        "name": "Suns"
-      },
-      "homeassistant_switch": {
-        "name": "Switches"
-      },
-      "homeassistant_text": {
-        "name": "Texts"
-      },
-      "homeassistant_time": {
-        "name": "Times"
-      },
-      "homeassistant_tts": {
-        "name": "Text-to-speech"
-      },
-      "homeassistant_update": {
-        "name": "Update"
-      },
-      "homeassistant_vacuum": {
-        "name": "Vacuums"
-      },
-      "homeassistant_water_heater": {
-        "name": "Water heaters"
-      },
-      "homeassistant_weather": {
-        "name": "Weather"
-      },
-      "homeassistant_zone": {
-        "name": "Zones"
-      },
-      "repairs_total_issues": {
-        "name": "Total"
-      },
-      "repairs_ignored_issues": {
-        "name": "Ignored"
-      },
-      "repairs_active_issues": {
-        "name": "Active"
-      }
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "Reload"
+            },
+            "homeassistant_restart": {
+                "name": "Restart"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignore all"
+            },
+            "repairs_unignore_all": {
+                "name": "Unignore all"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Issue created",
+                            "remove": "Issue removed",
+                            "update": "Issue updated"
+                        }
+                    },
+                    "domain": {
+                        "name": "Issue issuer"
+                    },
+                    "issue_id": {
+                        "name": "Issue ID"
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "Air quality"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Alarm control panels"
+            },
+            "homeassistant_area": {
+                "name": "Areas"
+            },
+            "homeassistant_automation": {
+                "name": "Automations"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Binary sensors"
+            },
+            "homeassistant_button": {
+                "name": "Buttons"
+            },
+            "homeassistant_calendar": {
+                "name": "Calendars"
+            },
+            "homeassistant_camera": {
+                "name": "Cameras"
+            },
+            "homeassistant_climate": {
+                "name": "Climate"
+            },
+            "homeassistant_cover": {
+                "name": "Covers"
+            },
+            "homeassistant_custom_component": {
+                "name": "Custom integrations"
+            },
+            "homeassistant_date": {
+                "name": "Dates"
+            },
+            "homeassistant_datetime": {
+                "name": "Date/times"
+            },
+            "homeassistant_device": {
+                "name": "Devices"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Device trackers"
+            },
+            "homeassistant_entities": {
+                "name": "Entities"
+            },
+            "homeassistant_fan": {
+                "name": "Fans"
+            },
+            "homeassistant_humidifier": {
+                "name": "Humidifiers"
+            },
+            "homeassistant_image": {
+                "name": "Images"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Input booleans"
+            },
+            "homeassistant_input_button": {
+                "name": "Input buttons"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Input date/times"
+            },
+            "homeassistant_input_number": {
+                "name": "Input numbers"
+            },
+            "homeassistant_input_select": {
+                "name": "Input selects"
+            },
+            "homeassistant_input_text": {
+                "name": "Input texts"
+            },
+            "homeassistant_integration": {
+                "name": "Integrations"
+            },
+            "homeassistant_light": {
+                "name": "Lights"
+            },
+            "homeassistant_lock": {
+                "name": "Locks"
+            },
+            "homeassistant_media_player": {
+                "name": "Media players"
+            },
+            "homeassistant_number": {
+                "name": "Numbers"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Persistent notifications"
+            },
+            "homeassistant_person": {
+                "name": "Persons"
+            },
+            "homeassistant_remote": {
+                "name": "Remotes"
+            },
+            "homeassistant_scene": {
+                "name": "Scenes"
+            },
+            "homeassistant_script": {
+                "name": "Scripts"
+            },
+            "homeassistant_select": {
+                "name": "Selects"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensors"
+            },
+            "homeassistant_siren": {
+                "name": "Sirens"
+            },
+            "homeassistant_stt": {
+                "name": "Speech-to-text"
+            },
+            "homeassistant_sun": {
+                "name": "Suns"
+            },
+            "homeassistant_switch": {
+                "name": "Switches"
+            },
+            "homeassistant_text": {
+                "name": "Texts"
+            },
+            "homeassistant_time": {
+                "name": "Times"
+            },
+            "homeassistant_tts": {
+                "name": "Text-to-speech"
+            },
+            "homeassistant_update": {
+                "name": "Update"
+            },
+            "homeassistant_vacuum": {
+                "name": "Vacuums"
+            },
+            "homeassistant_water_heater": {
+                "name": "Water heaters"
+            },
+            "homeassistant_weather": {
+                "name": "Weather"
+            },
+            "homeassistant_zone": {
+                "name": "Zones"
+            },
+            "repairs_total_issues": {
+                "name": "Total"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ignored"
+            },
+            "repairs_active_issues": {
+                "name": "Active"
+            },
+            "homeassistant_counter": {
+                "name": "Counters"
+            },
+            "homeassistant_group": {
+                "name": "Groups"
+            },
+            "homeassistant_timer": {
+                "name": "Timers"
+            },
+            "homeassistant_todo": {
+                "name": "To-do lists"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa state reporting"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistant state reporting"
+            },
+            "cloud_remote": {
+                "name": "Remote"
+            }
+        }
     },
-    "switch": {
-      "cloud_alexa_report_state": {
-        "name": "Alexa state reporting"
-      },
-      "cloud_google_report_state": {
-        "name": "Google Assistant state reporting"
-      },
-      "cloud_remote": {
-        "name": "Remote"
-      }
-    }
-  },
-  "issues": {
-    "automation_unknown_area_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {automation}"
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Could not attach every trigger of an all-of trigger."
+        },
+        "area_not_found": {
+            "message": "Area {area_id} not found."
+        },
+        "blueprint_backup_failed": {
+            "message": "Could not put a copy of {path} aside: {error}. Nothing has been written."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} cannot run here: {errors}. Nothing has been written."
+        },
+        "blueprint_could_not_write": {
+            "message": "Could not write {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Unsupported domain: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Error fetching blueprint from URL."
+        },
+        "blueprint_file_exists": {
+            "message": "File already exists."
+        },
+        "blueprint_gone": {
+            "message": "{name} is no longer here, so there is nothing to update. Nothing has been written."
+        },
+        "blueprint_url_not_supported": {
+            "message": "This URL is not supported."
+        },
+        "blueprint_write_failed": {
+            "message": "Error writing file."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain} blueprints are not loaded right now."
+        },
+        "calendar_events_which": {
+            "message": "Say which events: give a summary, a uid, or both."
+        },
+        "calendar_range_backwards": {
+            "message": "The end of where to look has to come after its start."
+        },
+        "calendar_range_required": {
+            "message": "Say how far to look: give an end date and time, or a duration."
+        },
+        "cannot_disable_system_user": {
+            "message": "Cannot disable a system-generated user: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Cannot enable a system-generated user: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Category {category} not found for {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Nothing to update on category {category}: give at least one of {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "A template in this condition has no Jinja left in it, so it is a constant and can never turn. Usually that means a script rendered it before this action ran, which happens to every template in action data. Use a condition without templates, or wait on the template itself with 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Integration entry {config_entry_id} not found."
+        },
+        "debounce_attach_failed": {
+            "message": "Could not attach every trigger of a debounce trigger."
+        },
+        "device_not_found": {
+            "message": "Device {device_id} not found."
+        },
+        "entity_id_taken": {
+            "message": "Entity ID {entity_id} is already taken."
+        },
+        "entity_not_found": {
+            "message": "Entity {entity_id} not found."
+        },
+        "entity_without_unique_id": {
+            "message": "Entity {entity_id} has no unique ID, so Home Assistant cannot keep an icon or aliases for it."
+        },
+        "event_cannot_change": {
+            "message": "{summary} cannot be changed like that: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Say what to change: a new summary, a place, or new times."
+        },
+        "event_shift_or_times": {
+            "message": "Move an event by a shift, or give it new times, not both."
+        },
+        "event_whole_days": {
+            "message": "{summary} lasts whole days, so it can only be moved by whole days."
+        },
+        "floor_not_found": {
+            "message": "Floor {floor_id} not found."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} cannot join this group: it holds {domains} entities."
+        },
+        "group_not_found_behind": {
+            "message": "Could not find the group behind {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "Could not reach the {domain} helpers Home Assistant keeps."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Cannot hold {entity_id} until a time that does not exist."
+        },
+        "home_zone_radius": {
+            "message": "The home zone takes its radius in whole metres, zero or more."
+        },
+        "home_zone_unsupported": {
+            "message": "The home zone only takes a latitude, longitude and radius, not: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "This input number is not editable: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Name the integration entries to change, or their integration."
+        },
+        "integration_without_entries": {
+            "message": "The {domain} integration has no entries."
+        },
+        "label_not_found": {
+            "message": "Label {label_id} not found."
+        },
+        "label_nothing_to_update": {
+            "message": "Nothing to update on label {label_id}: give at least one of {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "The maximum ({maximum}) has to be above the minimum ({minimum})."
+        },
+        "no_max_value": {
+            "message": "Entity {entity_id} has no max value."
+        },
+        "no_min_value": {
+            "message": "Entity {entity_id} has no min value."
+        },
+        "not_a_group": {
+            "message": "{entity_id} is not a group."
+        },
+        "person_not_editable": {
+            "message": "This person is not editable: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook encountered an error while restarting Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "Could not attach the first step of a sequence trigger."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Give a minimum, a maximum or a step to change."
+        },
+        "spooked": {
+            "message": "Spooked! 👻"
+        },
+        "timer_not_editable": {
+            "message": "This timer is not editable: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "An item cannot be moved after itself."
+        },
+        "todo_item_not_found": {
+            "message": "There is no item {item} in {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Nothing can be moved after the last item in {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Say where to: after another item, or the top or bottom."
+        },
+        "user_not_found": {
+            "message": "Could not find user: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Value {value} for {entity_id} is not a number."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Could not attach the arming triggers of a watchdog trigger."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Could not attach the expected triggers of a watchdog trigger."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} is a group from your YAML configuration, which Spook cannot change. Edit it in your configuration, or use group.set, which still works on that kind of group."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} is set up in YAML and cannot be deleted."
+        },
+        "zone_not_editable": {
+            "message": "This zone is not editable: {entity_id}."
+        }
     },
-    "automation_unknown_device_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {automation}"
-    },
-    "automation_unknown_entity_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {automation}"
-    },
-    "automation_unknown_floor_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {automation}"
-    },
-    "automation_unknown_label_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {automation}"
-    },
-    "automation_unknown_service_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {automation}"
-    },
-    "group_unknown_members": {
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown group members in: {group}"
-    },
-    "integration_unknown_source": {
-      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "lovelace_unknown_entity_references": {
-      "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {dashboard}"
-    },
-    "proximity_unknown_ignored_zones": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-      "title": "Unknown ignored zones: {name}"
-    },
-    "proximity_unknown_tracked_entities": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown tracked entities: {name}"
-    },
-    "proximity_unknown_zone": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-      "title": "Unknown zone: {zone}"
-    },
-    "scene_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {scene}"
-    },
-    "script_unknown_area_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {script}"
-    },
-    "script_unknown_device_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {script}"
-    },
-    "script_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {script}"
-    },
-    "script_unknown_floor_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {script}"
-    },
-    "script_unknown_label_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {script}"
-    },
-    "script_unknown_service_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {script}"
-    },
-    "switch_as_x_unknown_source": {
-      "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "utility_meter_unknown_source": {
-      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "trend_unknown_source": {
-      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "description": "{description}",
+    "issues": {
+        "automation_unknown_area_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+            "title": "Unknown areas used in: {automation}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
+            "title": "Unknown devices used in: {automation}"
+        },
+        "automation_unknown_entity_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities used in: {automation}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+            "title": "Unknown floors used in: {automation}"
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+            "title": "Unknown labels used in: {automation}"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in: {automation}"
+        },
+        "group_unknown_members": {
+            "title": "Unknown group members in: {group}",
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this group from now on.",
+                    "manage": "You can manage this group yourself on the [Helpers page](/config/helpers).",
+                    "changed": "The members this repair listed are back, or have changed, since Spook looked, so nothing has been removed from the group. Spook looks again on its own and updates this repair.",
+                    "not_editable": "This group is set up in YAML, so Spook cannot edit it. Update the group in your configuration instead."
+                },
+                "step": {
+                    "init": {
+                        "description": "Spook has found a ghost in your groups 👻\n\nThe group {group} (`{entity_id}`) has members that are unknown to Home Assistant:\n\n{entities}\n\nRemove them from the group, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep them, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove these members"
+                        },
+                        "title": "Unknown group members in: {group}"
+                    }
+                }
+            }
+        },
+        "lovelace_unknown_entity_references": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities used in: {dashboard}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
+            "title": "Unknown ignored zones: {name}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown tracked entities: {name}"
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
+            "title": "Unknown zone: {zone}"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities used in: {scene}"
+        },
+        "script_unknown_area_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+            "title": "Unknown areas used in: {script}"
+        },
+        "script_unknown_device_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
+            "title": "Unknown devices used in: {script}"
+        },
+        "script_unknown_entity_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities used in: {script}"
+        },
+        "script_unknown_floor_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+            "title": "Unknown floors used in: {script}"
+        },
+        "script_unknown_label_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+            "title": "Unknown labels used in: {script}"
+        },
+        "script_unknown_service_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in: {script}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{title}"
+                    }
+                }
+            },
             "title": "{title}"
-          }
-        }
-      },
-      "title": "{title}"
-    },
-    "restart_required": {
-      "title": "Restart required",
-      "fix_flow": {
-        "step": {
-          "confirm_restart": {
+        },
+        "restart_required": {
             "title": "Restart required",
-            "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
-          }
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Restart required",
+                        "description": "For Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now.\n\nSpook 👻 Your homie."
+                    }
+                }
+            }
+        },
+        "alert_unknown_entity_references": {
+            "description": "Spook has found a ghost in your alerts 👻\n\nThe alert {alert} (`{entity_id}`) watches an entity that is unknown to Home Assistant:\n\n{entities}\n\nAn alert can only fire on the entity it watches, so this one can never fire again. It looks the same as an alert with nothing to report.\n\nTo fix this error, edit the `alert:` section in your configuration and point this alert at an entity that exists.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entity watched by alert: {alert}"
+        },
+        "alert_unknown_notifiers": {
+            "description": "Spook has found a ghost in your alerts 👻\n\nThe alert {alert} (`{entity_id}`) notifies through the following actions, which are unknown to Home Assistant:\n\n{notifiers}\n\nThe alert still fires and still does its rounds, but these notifications go nowhere. Home Assistant logs that only at the moment the alert fires, which is a poor moment to find out nobody is listening.\n\nTo fix this error, edit the `notifiers:` list of this alert in your configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
+            "title": "Unknown notifiers used by alert: {alert}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following conditions, which cannot be provided by any integration available to Home Assistant:\n\n{conditions}\n\n\n\nThis often happens when the integration providing a condition was removed. To fix this error, [edit the automation]({edit}) and remove the use of these unavailable conditions, or restore the integration providing them.\n\nSpook 👻 Your homie.",
+            "title": "Unknown conditions used in: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the automation]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",
+            "title": "Unknown triggers used in: {automation}"
+        },
+        "empty_areas": {
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this area from now on.",
+                    "manage": "You can manage this area yourself on the [Areas page](/config/areas/dashboard).",
+                    "changed": "This area is in use again since Spook looked: something is in it, or an automation or script uses it. So it has been left alone. Spook looks again on its own and updates this repair."
+                },
+                "step": {
+                    "init": {
+                        "description": "The area {area} has no devices, no entities, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep it, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove this empty area"
+                        },
+                        "title": "Empty area: {area}"
+                    }
+                }
+            },
+            "title": "Empty area: {area}"
+        },
+        "empty_floors": {
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this floor from now on.",
+                    "manage": "You can manage this floor yourself on the [Areas page](/config/areas/dashboard).",
+                    "changed": "This floor is in use again since Spook looked: an area is on it, or an automation or script uses it. So it has been left alone. Spook looks again on its own and updates this repair."
+                },
+                "step": {
+                    "init": {
+                        "description": "The floor {floor} has no areas, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep it, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove this empty floor"
+                        },
+                        "title": "Empty floor: {floor}"
+                    }
+                }
+            },
+            "title": "Empty floor: {floor}"
+        },
+        "energy_unknown_references": {
+            "title": "Unknown entities used in the energy dashboard",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unknown entities used in the energy dashboard",
+                        "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. Renamed? Then open [Settings > Dashboards > Energy](/config/energy) and pick the new one, so its history stays on the dashboard.\n\nRemoved for good? Spook can take these out of the energy configuration for you. A missing meter takes its source or device along, a missing price or cost is only cleared. The dashboard then stops showing the history of what is taken out; the statistics themselves stay.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "remove": "Take these out of the energy configuration",
+                            "manage": "Let me do it myself",
+                            "ignore": "Keep them, stop telling me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about these entities from now on.",
+                    "manage": "You can update or remove these yourself in the [energy configuration](/config/energy).",
+                    "nothing_to_remove": "None of these is still unknown, so nothing has been taken out. They may be back, or somebody already changed the energy configuration."
+                }
+            }
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind. To fix this error, open the [Resources page](/config/lovelace/resources) and remove or correct these resources. It has no tab of its own: on the Dashboards page it is behind the three dots, top right.\n\nSpook 👻 Your homie.",
+            "title": "Dashboard resources point at missing files"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind.\n\nThese resources are listed in your YAML configuration, so the Resources page cannot change them. Edit the `resources:` section of your Lovelace configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
+            "title": "Dashboard resources point at missing files"
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n{dashboard}\n\nThis dashboard references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nThis often happens when an area was renamed or removed. To fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+            "title": "Unknown areas used in dashboard: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this helper from now on.",
+                    "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers).",
+                    "changed": "The members this repair listed are back, or have changed, since Spook looked, so nothing has been removed from the helper. Spook looks again on its own and updates this repair.",
+                    "too_few_members": "A min/max helper needs at least two members, so removing the missing ones would leave too few. Reconfigure or remove the helper yourself on the [Helpers page](/config/helpers)."
+                },
+                "step": {
+                    "init": {
+                        "description": "Spook has found a ghost in your helpers 👻\n\nThe min/max helper {helper} (`{entity_id}`) combines the following members, which are unknown to Home Assistant:\n\n{sources}\n\nRemove them so the helper carries on with the members that remain, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep them, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove these members"
+                        },
+                        "title": "Unknown members used in min/max helper: {helper}"
+                    }
+                }
+            },
+            "title": "Unknown members used in min/max helper: {helper}"
+        },
+        "orphaned_statistics": {
+            "title": "Orphaned long-term statistics found",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Orphaned long-term statistics found",
+                        "description": "Spook has found a ghost in your recorder 👻\n\nHome Assistant is keeping long-term statistics for the following, but there is no matching entity for them anymore:\n\n{statistics}\n\nThis usually happens when a sensor was removed while its statistics were kept. Clearing them throws that history away for good, so Spook looks again before it does, and leaves alone anything that has come back in the meantime.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "remove": "Clear these statistics",
+                            "manage": "Let me do it myself",
+                            "ignore": "Keep them, stop telling me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about these statistics from now on.",
+                    "manage": "You can clear these yourself on the [Statistics page](/config/tools/statistics).",
+                    "nothing_to_clear": "Nothing on that list still needs clearing, so nothing has been thrown away. Either the statistics have an entity behind them again, or they are already gone.",
+                    "clearing_took_too_long": "Spook asked for the statistics to be cleared and the recorder has not said it is done. The work is queued and will most likely land, so this repair stays up until Spook has looked again."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this person from now on.",
+                    "manage": "You can manage this person yourself on the [People page](/config/person).",
+                    "not_editable": "This person is set up in YAML, so Spook cannot edit it. Update the person in your configuration instead."
+                },
+                "step": {
+                    "init": {
+                        "description": "Spook has found a ghost in your people 👻\n\n{person} tracks the following device trackers, which are unknown to Home Assistant:\n\n{device_trackers}\n\nThis often happens when a device tracker was renamed or its integration was removed.\n\nRemove them from {person}, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep them, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove these device trackers"
+                        },
+                        "title": "Unknown device trackers tracked by: {person}"
+                    }
+                }
+            },
+            "title": "Unknown device trackers tracked by: {person}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following conditions, which cannot be provided by any integration available to Home Assistant:\n\n{conditions}\n\n\n\nThis often happens when the integration providing a condition was removed. To fix this error, [edit the script]({edit}) and remove the use of these unavailable conditions, or restore the integration providing them.\n\nSpook 👻 Your homie.",
+            "title": "Unknown conditions used in: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the script]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",
+            "title": "Unknown triggers used in: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nIts configuration references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed. To fix this error, reconfigure the template helper to reference existing entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities used in template helper: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nIt references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nThis often happens when an action provider was removed, or a script was renamed or deleted. To fix this error, reconfigure the template helper to use existing actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in template helper: {helper}"
+        },
+        "unknown_customized_entities": {
+            "description": "Spook has found a ghost in your customisations 👻\n\nThe `customize:` section pins attributes on the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed while its customisation stayed behind. To fix this error, edit the `customize:` section in your configuration and remove these entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities in your customisations"
+        },
+        "unknown_engines": {
+            "title": "Assist pipeline uses engines that are gone: {pipeline}",
+            "description": "Spook has found a ghost in your voice assistants 👻\n\nThe Assist pipeline {pipeline} uses the following, which are unknown to Home Assistant:\n\n{engines}\n\nThis usually means the integration behind it was removed. The pipeline was not told, so the next time it is used it fails with an error about a missing provider or agent, and nothing before that points here.\n\nTo fix this, open the settings of this assistant under [Voice assistants](/config/voice-assistants/assistants) and pick an engine that is still around for each of these.\n\nSpook 👻 Your homie."
+        },
+        "unknown_helper_source_references": {
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this helper from now on.",
+                    "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers).",
+                    "changed": "The sources of this helper have changed since Spook looked, so the helper has been left alone. Spook looks again on its own and updates this repair."
+                },
+                "step": {
+                    "init": {
+                        "description": "Spook has found a ghost in your helpers 👻\n\nThe helper {helper} (`{domain}`, `{entity_id}`) references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\nWithout its sources this helper cannot work. {usage}\n\nRemove the helper, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep it, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove this helper"
+                        },
+                        "title": "Unknown source entities used in helper: {helper}"
+                    }
+                }
+            },
+            "title": "Unknown source entities used in helper: {helper}"
+        },
+        "unused_blueprints": {
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this blueprint from now on.",
+                    "manage": "You can manage this blueprint yourself on the [Blueprints page](/config/blueprint/dashboard)."
+                },
+                "step": {
+                    "init": {
+                        "description": "The blueprint {blueprint} is not used by any {domain}.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep it, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove this unused blueprint"
+                        },
+                        "title": "Unused blueprint: {blueprint}"
+                    }
+                }
+            },
+            "title": "Unused blueprint: {blueprint}"
+        },
+        "unused_labels": {
+            "fix_flow": {
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this label from now on.",
+                    "manage": "You can manage this label yourself on the [Labels page](/config/labels).",
+                    "changed": "This label is in use again since Spook looked: something carries it, or an automation or script uses it. So it has been left alone. Spook looks again on its own and updates this repair."
+                },
+                "step": {
+                    "init": {
+                        "description": "The label {label} is not applied to any entity, device, or area, and no automation or script targets it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "ignore": "Keep it, stop telling me",
+                            "manage": "Let me fix it myself",
+                            "remove": "Remove this unused label"
+                        },
+                        "title": "Unused label: {label}"
+                    }
+                }
+            },
+            "title": "Unused label: {label}"
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook has found a ghost in your notify groups 👻\n\nThe notify group `{group}` forwards to the following actions, which are unknown to Home Assistant:\n\n{members}\n\nThe group still delivers to the rest of its members, and it still reports success to whatever called it, so nothing upstream notices. The failure surfaces only as a stray \"Task exception was never retrieved\" in the log, which names no group and reads like a bug. Whoever was behind that member simply stops being notified.\n\nTo fix this error, edit the `services:` list of this group in your configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
+            "title": "Unknown members in notify group: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Dashboard resource listed more than once: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Dashboard resource listed more than once: {resource}",
+                        "description": "Spook has found a ghost in your dashboards 👻\n\nThis dashboard resource is listed {count} times:\n\n{resources}\n\nThis usually happens when a custom card was updated by adding a resource for the new version instead of editing the one already there. The browser loads both, the card tries to register itself twice, and the second attempt fails, which looks like a broken card rather than a duplicated resource.\n\nSpook can clear the extra copies and keep the most recently added one.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "remove": "Clear the extra copies, keep the most recent",
+                            "ignore": "Leave them, stop telling me",
+                            "manage": "Let me fix it myself"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this resource from now on.",
+                    "manage": "You can manage your dashboard resources yourself on the [Resources page](/config/lovelace/resources).",
+                    "yaml": "These resources are listed in your YAML configuration, so Spook cannot change them for you. Edit the `resources:` section of your Lovelace configuration and remove the copies of `{resource}` you no longer need."
+                }
+            }
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Unknown actions used in dashboard: {dashboard}",
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard performs the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nA button or card using one of these does nothing when tapped. This often happens when a script was renamed or removed, or an integration was removed. To fix this error, [edit the dashboard]({edit}) and remove or replace these non-existing actions.\n\nSpook 👻 Your homie."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Unknown entities used in HomeKit bridge: {bridge}",
+            "description": "Spook has found a ghost in your HomeKit bridge 👻\n\nWhile floating around, Spook crossed path with the following HomeKit bridge:\n\n{bridge}\n\nThis bridge names the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nHomeKit does not follow an entity that is renamed. An included entity that was renamed or removed is gone from the Home app; an excluded entity that was renamed shows up in it again.\n\nTo fix this error, go to [the HomeKit Bridge integration](/config/integrations/integration/homekit), select **Configure** on this bridge, and pick the entities again.\n\nSpook 👻 Your homie."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Unknown entities used in HomeKit bridge: {bridge}",
+            "description": "Spook has found a ghost in your HomeKit bridge 👻\n\nWhile floating around, Spook crossed path with the following HomeKit bridge:\n\n{bridge}\n\nThis bridge names the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nHomeKit does not follow an entity that is renamed. An included entity that was renamed or removed is gone from the Home app; an excluded entity that was renamed shows up in it again.\n\nThis bridge is set up in your YAML configuration. To fix this error, edit the `filter` of this bridge under `homekit:` and remove or correct these entities.\n\nSpook 👻 Your homie."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Unknown temperature sensor for area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unknown temperature sensor for area: {area}",
+                        "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a temperature sensor that is unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks this sensor when it is picked, so when it was removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a temperature reading from it.\n\nClear the setting so you can pick a sensor again, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "remove": "Clear the setting",
+                            "manage": "Let me fix it myself",
+                            "ignore": "Keep it, stop telling me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this area from now on.",
+                    "manage": "You can pick a different sensor in the settings of this area on the [Areas page](/config/areas/dashboard).",
+                    "changed": "This sensor is back, or the setting now points somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Unknown humidity sensor for area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unknown humidity sensor for area: {area}",
+                        "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a humidity sensor that is unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks this sensor when it is picked, so when it was removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a humidity reading from it.\n\nClear the setting so you can pick a sensor again, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "remove": "Clear the setting",
+                            "manage": "Let me fix it myself",
+                            "ignore": "Keep it, stop telling me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this area from now on.",
+                    "manage": "You can pick a different sensor in the settings of this area on the [Areas page](/config/areas/dashboard).",
+                    "changed": "This sensor is back, or the setting now points somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Unknown temperature and humidity sensors for area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unknown temperature and humidity sensors for area: {area}",
+                        "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a temperature and a humidity sensor that are unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks these sensors when they are picked, so when they were removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a reading from them.\n\nClear the settings so you can pick sensors again, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "remove": "Clear the settings",
+                            "manage": "Let me fix it myself",
+                            "ignore": "Keep them, stop telling me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this area from now on.",
+                    "manage": "You can pick different sensors in the settings of this area on the [Areas page](/config/areas/dashboard).",
+                    "changed": "These sensors are back, or the settings now point somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
+                }
+            }
         }
-      }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperature at its target",
+            "description": "Passes when the temperature of a thermostat or water heater is at its target. A device that is off is not at its target, and one that is unavailable is left out.",
+            "fields": {
+                "behavior": {
+                    "name": "Behaviour",
+                    "description": "Whether any of the devices being there is enough, or all of them have to be."
+                },
+                "tolerance": {
+                    "name": "Tolerance",
+                    "description": "How close to the target still counts as there, in the device's unit. For a thermostat that settles just short of its setpoint. Zero means the target itself."
+                }
+            }
+        },
+        "chance": {
+            "description": "Passes a set percentage of the time, chosen at random each check. Handy for adding a bit of variation to your automations.",
+            "fields": {
+                "percentage": {
+                    "description": "How often this condition should pass, as a percentage.",
+                    "name": "Percentage"
+                }
+            },
+            "name": "Chance"
+        },
+        "cooldown": {
+            "description": "Passes only if this automation or script has not run within the given time (or has never run). A built-in cooldown, so it does not re-fire too often.",
+            "fields": {
+                "duration": {
+                    "description": "How long to wait after the last run before this condition passes again.",
+                    "name": "Duration"
+                }
+            },
+            "name": "Cooldown"
+        },
+        "repair_issue_present": {
+            "name": "Repair issue outstanding",
+            "description": "Passes while a repair issue is outstanding. Issues somebody has ignored do not count.",
+            "fields": {
+                "domain": {
+                    "name": "Integrations",
+                    "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+                },
+                "severity": {
+                    "name": "Severity",
+                    "description": "Limit this to issues of a particular severity. Leave it empty for all of them."
+                }
+            }
+        },
+        "quota": {
+            "name": "Run allowance left",
+            "description": "Passes while this automation has run fewer than a given number of times within a given period. Scripts are not counted.",
+            "fields": {
+                "limit": {
+                    "name": "Limit",
+                    "description": "How many runs are allowed within the period."
+                },
+                "period": {
+                    "name": "Period",
+                    "description": "The window the limit applies to. It rolls, so a day means any twenty-four hours rather than between midnights."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Triggered by an automation",
+            "description": "Passes when another automation set this run going, whether it did so directly or through a script.",
+            "fields": {
+                "automation": {
+                    "name": "Automations",
+                    "description": "Limit this to particular automations. Leave it empty to accept any of them."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Triggered by a user",
+            "description": "Passes when a person is behind what set this off: a state change or an event they caused, including one that made a template trigger become true. A schedule, the sun, or an integration acting on its own carries nobody, and neither does forcing a run with the Run button.",
+            "fields": {
+                "person": {
+                    "name": "People",
+                    "description": "Only pass when one of these people started it. Leave empty to pass for anyone. A person has to have a user account linked to them, otherwise there is nothing to match against."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Not triggered by a user",
+            "description": "Passes when nobody can be held responsible for this run: a schedule, the sun, an integration acting on its own, or the Run button. Takes no options on purpose. To exclude specific people instead, put \"Triggered by a user\" inside a Not condition."
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Add members to a group",
+            "description": "Adds entities to a group made through the interface, while Home Assistant is running. Entities already in the group are left where they are.",
+            "fields": {
+                "group": {
+                    "name": "Group",
+                    "description": "The group to add to."
+                },
+                "members": {
+                    "name": "Members",
+                    "description": "The entities to add to the group."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Remove members from a group",
+            "description": "Takes entities out of a group made through the interface, while Home Assistant is running. Naming something that is not in the group does nothing, so this is also how you clear out a member that no longer exists.",
+            "fields": {
+                "group": {
+                    "name": "Group",
+                    "description": "The group to take them out of."
+                },
+                "members": {
+                    "name": "Members",
+                    "description": "The entities to remove from the group."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Set the members of a group",
+            "description": "Replaces the members of a group made through the interface with the ones given, while Home Assistant is running.",
+            "fields": {
+                "group": {
+                    "name": "Group",
+                    "description": "The group to change."
+                },
+                "members": {
+                    "name": "Members",
+                    "description": "The entities the group should hold from now on."
+                }
+            }
+        },
+        "blueprint_import": {
+            "description": "Import a blueprint.",
+            "fields": {
+                "url": {
+                    "description": "The URL to import the blueprint from.",
+                    "name": "URL"
+                }
+            },
+            "name": "Import blueprint"
+        },
+        "boo": {
+            "description": "Calling this action spooks Home Assistant. Performing this action will always fail.",
+            "name": "Boo!"
+        },
+        "homeassistant_add_alias_to_area": {
+            "description": "Adds an alias to an area.",
+            "fields": {
+                "alias": {
+                    "description": "The alias (or list of aliases) to add to the area.",
+                    "name": "Alias"
+                },
+                "area_id": {
+                    "description": "The ID of the area to add the alias to.",
+                    "name": "Area ID"
+                }
+            },
+            "name": "Add an alias to an area"
+        },
+        "homeassistant_add_alias_to_floor": {
+            "description": "Adds an alias to a floor.",
+            "fields": {
+                "alias": {
+                    "description": "The alias (or list of aliases) to add to the floor.",
+                    "name": "Alias"
+                },
+                "floor_id": {
+                    "description": "The ID of the floor to add the alias to.",
+                    "name": "Floor ID"
+                }
+            },
+            "name": "Add an alias to a floor"
+        },
+        "homeassistant_add_area_to_floor": {
+            "description": "Adds an area to a floor. Please note, if the area is already on a floor, it will be removed from the previous floor.",
+            "fields": {
+                "area_id": {
+                    "description": "The ID of the area(s) to add to the floor.",
+                    "name": "Area ID"
+                },
+                "floor_id": {
+                    "description": "The ID of the floor to add the area on.",
+                    "name": "Floor ID"
+                }
+            },
+            "name": "Add an area to a floor"
+        },
+        "homeassistant_add_device_to_area": {
+            "description": "Adds a device to an area. Please note, if the device is already in an area, it will be removed from the previous area.",
+            "fields": {
+                "area_id": {
+                    "description": "The ID of the area to add the device to.",
+                    "name": "Area ID"
+                },
+                "device_id": {
+                    "description": "The ID of the device(s) to add to the area.",
+                    "name": "Device ID"
+                }
+            },
+            "name": "Add a device to an area"
+        },
+        "homeassistant_add_entity_to_area": {
+            "description": "Adds an entity to an area. Please note, if the entity is already in an area, it will be removed from the previous area. This will override the area the device, that provides this entity, is in.",
+            "fields": {
+                "area_id": {
+                    "description": "The ID of the area to add the entity to.",
+                    "name": "Area ID"
+                },
+                "entity_id": {
+                    "description": "The ID of the entity (or entities) to add to the area.",
+                    "name": "Entity ID"
+                }
+            },
+            "name": "Add an entity to an area"
+        },
+        "homeassistant_add_label_to_area": {
+            "description": "Adds a label to an area. If multiple labels or multiple areas are provided, all combinations will be added.",
+            "fields": {
+                "area_id": {
+                    "description": "The ID(s) of the area(s) to add the label(s) to.",
+                    "name": "Area ID"
+                },
+                "label_id": {
+                    "description": "The ID(s) of the label(s) to add the area(s).",
+                    "name": "Label ID"
+                }
+            },
+            "name": "Add a label to an area"
+        },
+        "homeassistant_add_label_to_device": {
+            "description": "Adds a label to a device. If multiple labels or multiple devices are provided, all combinations will be added.",
+            "fields": {
+                "device_id": {
+                    "description": "The ID(s) of the device(s) to add the label(s) to.",
+                    "name": "Device ID"
+                },
+                "label_id": {
+                    "description": "The ID(s) of the label(s) to add the device(s).",
+                    "name": "Label ID"
+                }
+            },
+            "name": "Add a label to a device"
+        },
+        "homeassistant_add_label_to_entity": {
+            "description": "Adds a label to an entity. If multiple labels or multiple entities are provided, all combinations will be added.",
+            "fields": {
+                "entity_id": {
+                    "description": "The ID(s) of the entity/entities to add the label(s) to.",
+                    "name": "Entity ID"
+                },
+                "label_id": {
+                    "description": "The ID(s) of the label(s) to add the entity/entities.",
+                    "name": "Label ID"
+                }
+            },
+            "name": "Add a label to an entity"
+        },
+        "homeassistant_create_area": {
+            "description": "Creates a new area on the fly.",
+            "fields": {
+                "aliases": {
+                    "description": "A list of aliases for the area. This is useful if you want to use the area in a different language or different nickname.",
+                    "name": "Aliases"
+                },
+                "icon": {
+                    "description": "Icon to use for the area.",
+                    "name": "Icon"
+                },
+                "name": {
+                    "description": "The name of the area to create.",
+                    "name": "Name"
+                }
+            },
+            "name": "Create an area"
+        },
+        "homeassistant_create_floor": {
+            "description": "Creates a new floor on the fly.",
+            "fields": {
+                "aliases": {
+                    "description": "A list of aliases for the floor. This is useful if you want to use the floor in a different language or different nickname.",
+                    "name": "Aliases"
+                },
+                "icon": {
+                    "description": "Icon to use for the floor.",
+                    "name": "Icon"
+                },
+                "level": {
+                    "description": "The level the floor is on in your home.",
+                    "name": "Level"
+                },
+                "name": {
+                    "description": "The name of the floor to create.",
+                    "name": "Name"
+                }
+            },
+            "name": "Create a floor"
+        },
+        "homeassistant_create_label": {
+            "description": "Creates a new label on the fly.",
+            "fields": {
+                "color": {
+                    "description": "Colour to use for the label. Can be a colour name from the list, or a hex colour code (like #FF0000).",
+                    "name": "Colour"
+                },
+                "description": {
+                    "description": "Description for the label.",
+                    "name": "Description"
+                },
+                "icon": {
+                    "description": "Icon to use for the label.",
+                    "name": "Icon"
+                },
+                "name": {
+                    "description": "The name of the label to create.",
+                    "name": "Name"
+                }
+            },
+            "name": "Create a label"
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "description": "Deletes all orphaned entities that no longer have an integration that claim/provide them. Please note, if the integration was just removed, it might need a restart for Home Assistant to realise they are orphaned.\n**WARNING** Entities might have been marked orphaned because an integration is offline or not working since Home Assistant started. Calling this action will delete those entities as well.",
+            "name": "Delete all orphaned entities"
+        },
+        "homeassistant_delete_area": {
+            "description": "Deletes an area on the fly.",
+            "fields": {
+                "area_id": {
+                    "description": "The ID of the area to delete.",
+                    "name": "Area ID"
+                }
+            },
+            "name": "Delete an area"
+        },
+        "homeassistant_delete_floor": {
+            "description": "Deletes a floor on the fly.",
+            "fields": {
+                "floor_id": {
+                    "description": "The ID of the floor to delete.",
+                    "name": "Floor ID"
+                }
+            },
+            "name": "Delete a floor"
+        },
+        "homeassistant_delete_label": {
+            "description": "Deletes a label on the fly.",
+            "fields": {
+                "label_id": {
+                    "description": "The ID of the label to delete.",
+                    "name": "Label ID"
+                }
+            },
+            "name": "Delete a label"
+        },
+        "homeassistant_disable_config_entry": {
+            "description": "Disables integration entries, by entry or every entry of an integration.",
+            "fields": {
+                "config_entry_id": {
+                    "description": "The integration entry to disable.",
+                    "name": "Integration entry"
+                },
+                "domain": {
+                    "name": "Integration",
+                    "description": "Disable every entry of these integrations, the ones added later included."
+                }
+            },
+            "name": "Disable an integration"
+        },
+        "homeassistant_disable_device": {
+            "description": "Disables a device on the fly.",
+            "fields": {
+                "device_id": {
+                    "description": "The device(s) to disable.",
+                    "name": "Device"
+                }
+            },
+            "name": "Disable a device"
+        },
+        "homeassistant_disable_entity": {
+            "description": "Disables an entity (or entities) on the fly.",
+            "fields": {
+                "entity_id": {
+                    "description": "The entity/entities to disable.",
+                    "name": "Entity"
+                }
+            },
+            "name": "Disable an entity"
+        },
+        "homeassistant_disable_polling": {
+            "description": "Disables polling for updates for an integration entry.",
+            "fields": {
+                "config_entry_id": {
+                    "description": "The integration entry to disable polling for.",
+                    "name": "Integration entry"
+                }
+            },
+            "name": "Disable polling for updates"
+        },
+        "homeassistant_disable_user": {
+            "description": "Disables a user account, preventing them from logging in.",
+            "fields": {
+                "user_id": {
+                    "description": "The ID(s) of the user(s) to disable.",
+                    "name": "User ID"
+                }
+            },
+            "name": "Disable a user"
+        },
+        "homeassistant_enable_config_entry": {
+            "description": "Enables integration entries, by entry or every entry of an integration.",
+            "fields": {
+                "config_entry_id": {
+                    "description": "The integration entry to enable.",
+                    "name": "Integration entry"
+                },
+                "domain": {
+                    "name": "Integration",
+                    "description": "Enable every entry of these integrations, the ones added later included."
+                }
+            },
+            "name": "Enable an integration"
+        },
+        "homeassistant_enable_device": {
+            "description": "Enables a device on the fly.",
+            "fields": {
+                "device_id": {
+                    "description": "The raw device ID to enable. Disabled devices are not shown by Home Assistant's device selector. Multiple IDs can be provided as a YAML list.",
+                    "name": "Device ID"
+                }
+            },
+            "name": "Enable a device"
+        },
+        "homeassistant_enable_entity": {
+            "description": "Enables an entity (or entities) on the fly.",
+            "fields": {
+                "entity_id": {
+                    "description": "The entity/entities to enable.",
+                    "name": "Entity"
+                }
+            },
+            "name": "Enable an entity"
+        },
+        "homeassistant_enable_polling": {
+            "description": "Enables polling for updates for an integration entry.",
+            "fields": {
+                "config_entry_id": {
+                    "description": "The integration entry to enable polling for.",
+                    "name": "Integration entry"
+                }
+            },
+            "name": "Enable polling for updates"
+        },
+        "homeassistant_enable_user": {
+            "description": "Enables a user account, allowing them to log in.",
+            "fields": {
+                "user_id": {
+                    "description": "The ID(s) of the user(s) to enable.",
+                    "name": "User ID"
+                }
+            },
+            "name": "Enable a user"
+        },
+        "homeassistant_expose_entity": {
+            "description": "Exposes an entity (or entities) to voice assistants.",
+            "fields": {
+                "assistants": {
+                    "description": "The assistant(s) to apply this to.",
+                    "name": "Assistants"
+                },
+                "entity_id": {
+                    "description": "The entity/entities to expose.",
+                    "name": "Entity"
+                }
+            },
+            "name": "Expose an entity to assistants"
+        },
+        "homeassistant_hide_entity": {
+            "description": "Hides an entity (or entities) on the fly.",
+            "fields": {
+                "entity_id": {
+                    "description": "The entity/entities to hide.",
+                    "name": "Entity"
+                }
+            },
+            "name": "Hide an entity"
+        },
+        "homeassistant_ignore_all_discovered": {
+            "description": "Ignore all currently discovered devices that are shown on the integrations dashboard. This will not ignore devices that are discovered after this.",
+            "fields": {
+                "domain": {
+                    "description": "The integration domain to ignore all discovered devices for. If not provided, all domains will be considered to be ignored.",
+                    "name": "Integration domain"
+                }
+            },
+            "name": "Ignore all currently discovered devices"
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "description": "Lists all orphaned database entities unclaimed by any integration.",
+            "name": "List all orphaned database entities"
+        },
+        "homeassistant_remove_alias_from_area": {
+            "description": "Removes an alias from an area.",
+            "fields": {
+                "alias": {
+                    "description": "The alias (or list of aliases) to remove from the area.",
+                    "name": "Alias"
+                },
+                "area_id": {
+                    "description": "The ID of the area to remove the alias from.",
+                    "name": "Area ID"
+                }
+            },
+            "name": "Remove an alias from an area"
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "description": "Removes an alias from a floor.",
+            "fields": {
+                "alias": {
+                    "description": "The alias (or list of aliases) to remove from the floor.",
+                    "name": "Alias"
+                },
+                "floor_id": {
+                    "description": "The ID of the floor to remove the alias from.",
+                    "name": "Floor ID"
+                }
+            },
+            "name": "Remove an alias from a floor"
+        },
+        "homeassistant_remove_area_from_floor": {
+            "description": "Removes an area from a floor. As an area can only be on one floor, this call doesn't need to specify the floor.",
+            "fields": {
+                "area_id": {
+                    "description": "The ID of the area to remove the floor from.",
+                    "name": "Area ID"
+                }
+            },
+            "name": "Remove an area from a floor"
+        },
+        "homeassistant_remove_device_from_area": {
+            "description": "Removes a device from an area. As a device can only be in one area, this call doesn't need to specify the area.",
+            "fields": {
+                "device_id": {
+                    "description": "The ID of the device to remove the area from.",
+                    "name": "Device ID"
+                }
+            },
+            "name": "Remove a device from an area"
+        },
+        "homeassistant_remove_entity_from_area": {
+            "description": "Removes an entity from an area. As an entity can only be in one area, this call doesn't need to specify the area. Please note, the entity will still be in the area of the device that provides it after this call.",
+            "fields": {
+                "entity_id": {
+                    "description": "The ID of the entity (or entities) to remove the area from.",
+                    "name": "Entity ID"
+                }
+            },
+            "name": "Remove an entity from an area"
+        },
+        "homeassistant_remove_label_from_area": {
+            "description": "Removes a label from an area. If multiple labels or multiple areas are provided, all combinations will be removed.",
+            "fields": {
+                "area_id": {
+                    "description": "The ID(s) of the area(s) to remove the label(s) from.",
+                    "name": "Area ID"
+                },
+                "label_id": {
+                    "description": "The ID(s) of the label(s) to remove from the area(s).",
+                    "name": "Label ID"
+                }
+            },
+            "name": "Remove a label from an area"
+        },
+        "homeassistant_remove_label_from_device": {
+            "description": "Removes a label from a device. If multiple labels or multiple devices are provided, all combinations will be removed.",
+            "fields": {
+                "device_id": {
+                    "description": "The ID(s) of the device(s) to remove the label(s) from.",
+                    "name": "Device ID"
+                },
+                "label_id": {
+                    "description": "The ID(s) of the label(s) to remove from the device(s).",
+                    "name": "Label ID"
+                }
+            },
+            "name": "Remove a label from a device"
+        },
+        "homeassistant_remove_label_from_entity": {
+            "description": "Removes a label from an entity. If multiple labels or multiple entities are provided, all combinations will be removed.",
+            "fields": {
+                "entity_id": {
+                    "description": "The ID(s) of the entity/entities to remove the label(s) from.",
+                    "name": "Entity ID"
+                },
+                "label_id": {
+                    "description": "The ID(s) of the label(s) to remove from the entity/entities.",
+                    "name": "Label ID"
+                }
+            },
+            "name": "Remove a label from an entity"
+        },
+        "homeassistant_create_category": {
+            "name": "Create a category",
+            "description": "Creates a new category on the fly, for automations, scripts, scenes, or helpers. Returns the ID of the new category.",
+            "fields": {
+                "scope": {
+                    "name": "Scope",
+                    "description": "Where the category is used."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the category to create."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "Icon to use for the category."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Update a category",
+            "description": "Updates an existing category on the fly. Anything you leave out keeps the value it already has. The icon can be cleared by setting it to null.",
+            "fields": {
+                "scope": {
+                    "name": "Scope",
+                    "description": "Where the category is used."
+                },
+                "category_id": {
+                    "name": "Category",
+                    "description": "The ID or the name of the category to update."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "The new name for the category."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The new icon for the category."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Delete a category",
+            "description": "Deletes a category. Everything that was in it is left without a category.",
+            "fields": {
+                "scope": {
+                    "name": "Scope",
+                    "description": "Where the category is used."
+                },
+                "category_id": {
+                    "name": "Category",
+                    "description": "The ID or the name of the category to delete."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Add a category to an entity",
+            "description": "Puts an automation, script, scene, or helper in a category. It replaces the category it was in before, since each can only be in one.",
+            "fields": {
+                "category_id": {
+                    "name": "Category",
+                    "description": "The ID or the name of the category."
+                },
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The automation(s), script(s), scene(s), or helper(s) to put in the category."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Remove a category from an entity",
+            "description": "Takes an automation, script, scene, or helper out of a category. Anything in a different category is left alone.",
+            "fields": {
+                "category_id": {
+                    "name": "Category",
+                    "description": "The ID or the name of the category."
+                },
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The automation(s), script(s), scene(s), or helper(s) to take out of the category."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "description": "Renames an entity (or entities) on the fly.",
+            "fields": {
+                "entity_id": {
+                    "description": "The entity/entities to rename.",
+                    "name": "Entity"
+                },
+                "name": {
+                    "description": "The new name for the entity/entities.",
+                    "name": "Name"
+                }
+            },
+            "name": "Rename an entity"
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Set the icon of an entity",
+            "description": "Sets the icon of an entity (or entities) on the fly. Set it to null to go back to the icon the integration gives it.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity",
+                    "description": "The entity/entities to set the icon of."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The new icon, or null for the integration's own icon."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Add an alias to an entity",
+            "description": "Adds one or more aliases to an entity (or entities), which voice assistants can call it by.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity",
+                    "description": "The entity/entities to add the alias(es) to."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "The alias(es) to add."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Remove an alias from an entity",
+            "description": "Removes one or more aliases from an entity (or entities).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity",
+                    "description": "The entity/entities to remove the alias(es) from."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "The alias(es) to remove."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Set aliases for an entity",
+            "description": "Replaces the aliases of an entity (or entities). Whether the entity's own name counts as an alias stays as it was.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity",
+                    "description": "The entity/entities to set the aliases of."
+                },
+                "aliases": {
+                    "name": "Aliases",
+                    "description": "The aliases to set."
+                }
+            }
+        },
+        "homeassistant_restart": {
+            "description": "Restarts Home Assistant.",
+            "fields": {
+                "force": {
+                    "description": "Force the restart. WARNING! This will not gracefully shut down Home Assistant, it will skip configuration checks and ignore running database migrations. Only use this if you know what you are doing.",
+                    "name": "Force restart"
+                },
+                "safe_mode": {
+                    "description": "If the restart should be done in safe mode. This will disable all custom integrations and frontend modules.",
+                    "name": "Safe mode"
+                }
+            },
+            "name": "Restart"
+        },
+        "homeassistant_set_area_aliases": {
+            "description": "Sets aliases for an area. Overwrites and removes any existing aliases, fully replacing them with the new ones.",
+            "fields": {
+                "aliases": {
+                    "description": "The aliases to set for the area.",
+                    "name": "Aliases"
+                },
+                "area_id": {
+                    "description": "The ID of the area to set the aliases for.",
+                    "name": "Area ID"
+                }
+            },
+            "name": "Sets aliases for an area"
+        },
+        "homeassistant_set_floor_aliases": {
+            "description": "Sets aliases for a floor. Overwrites and removes any existing aliases, fully replacing them with the new ones.",
+            "fields": {
+                "aliases": {
+                    "description": "The aliases to set for the floor.",
+                    "name": "Aliases"
+                },
+                "floor_id": {
+                    "description": "The ID of the floor to set the aliases for.",
+                    "name": "Floor ID"
+                }
+            },
+            "name": "Sets aliases for a floor"
+        },
+        "homeassistant_unexpose_entity": {
+            "description": "Stops exposing an entity (or entities) to voice assistants.",
+            "fields": {
+                "assistants": {
+                    "description": "The assistant(s) to apply this to.",
+                    "name": "Assistants"
+                },
+                "entity_id": {
+                    "description": "The entity/entities to stop exposing.",
+                    "name": "Entity"
+                }
+            },
+            "name": "Stop exposing an entity to assistants"
+        },
+        "homeassistant_unhide_entity": {
+            "description": "Unhides an entity (or entities) on the fly.",
+            "fields": {
+                "entity_id": {
+                    "description": "The entity/entities to unhide.",
+                    "name": "Entity"
+                }
+            },
+            "name": "Unhide an entity"
+        },
+        "homeassistant_update_entity_id": {
+            "description": "Updates an entity's ID on the fly.",
+            "fields": {
+                "entity_id": {
+                    "description": "The entity/entities to update.",
+                    "name": "Entity"
+                },
+                "new_entity_id": {
+                    "description": "The new ID for the entity.",
+                    "name": "New Entity ID"
+                }
+            },
+            "name": "Update an entity's ID"
+        },
+        "input_number_create": {
+            "description": "Create a new input number helper on the fly. Returns the entity ID of the new input number.",
+            "fields": {
+                "icon": {
+                    "description": "The icon to use for the input number helper.",
+                    "name": "Icon"
+                },
+                "initial": {
+                    "description": "The initial value of the input number when Home Assistant starts.",
+                    "name": "Initial value"
+                },
+                "input_number_id": {
+                    "description": "The entity ID for the new input number helper. The input_number. prefix is added automatically. If not provided, the entity ID will be generated based on the name.",
+                    "name": "Input number entity ID"
+                },
+                "max": {
+                    "description": "The maximum value of the input number.",
+                    "name": "Maximum"
+                },
+                "min": {
+                    "description": "The minimum value of the input number.",
+                    "name": "Minimum"
+                },
+                "mode": {
+                    "description": "The display mode of the input number, which can be either a slider or an input box.",
+                    "name": "Display mode"
+                },
+                "name": {
+                    "description": "The name of the new input number helper.",
+                    "name": "Name"
+                },
+                "step": {
+                    "description": "The step size of the input number.",
+                    "name": "Step size"
+                },
+                "unit_of_measurement": {
+                    "description": "The unit of measurement of the input number.",
+                    "name": "Unit of measurement"
+                }
+            },
+            "name": "Create an input number"
+        },
+        "input_number_decrement": {
+            "description": "Decrease an input number entity value by a certain amount.",
+            "fields": {
+                "amount": {
+                    "description": "The amount to decrease the input number with. If not provided, the step of the number entity will be used.",
+                    "name": "Amount"
+                },
+                "cycle": {
+                    "description": "Carry on from the other end of the range instead of stopping at this one, the same way selecting the next option cycles a select.",
+                    "name": "Cycle"
+                }
+            },
+            "name": "Decrease value"
+        },
+        "input_number_delete": {
+            "description": "Deletes input number helpers made in the UI or with the create an input number action. Input numbers set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The input number(s) to delete."
+                }
+            },
+            "name": "Delete an input number"
+        },
+        "input_number_increment": {
+            "description": "Increase an input number entity value by a certain amount.",
+            "fields": {
+                "amount": {
+                    "description": "The amount to increase the input number with. If not provided, the step of the number entity will be used.",
+                    "name": "Amount"
+                },
+                "cycle": {
+                    "description": "Carry on from the other end of the range instead of stopping at this one, the same way selecting the next option cycles a select.",
+                    "name": "Cycle"
+                }
+            },
+            "name": "Increase value"
+        },
+        "input_number_max": {
+            "description": "Set an input number entity to its maximum value.",
+            "name": "Set maximum value"
+        },
+        "input_number_min": {
+            "description": "Set an input number entity to its minimum value.",
+            "name": "Set minimum value"
+        },
+        "input_number_set_range": {
+            "name": "Set range",
+            "description": "Changes the minimum, maximum or step of an input number made in the UI, the same as editing it. A value outside the new range is moved inside it.",
+            "fields": {
+                "min": {
+                    "name": "Minimum",
+                    "description": "The new minimum value."
+                },
+                "max": {
+                    "name": "Maximum",
+                    "description": "The new maximum value."
+                },
+                "step": {
+                    "name": "Step",
+                    "description": "The new step size."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Create a counter",
+            "description": "Creates a new counter helper on the fly. Returns the entity ID of the new counter.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new counter."
+                },
+                "counter_id": {
+                    "name": "Counter entity ID",
+                    "description": "The entity ID for the new counter. The counter. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "initial": {
+                    "name": "Initial value",
+                    "description": "The value the counter starts at, and goes back to on a reset."
+                },
+                "minimum": {
+                    "name": "Minimum",
+                    "description": "The lowest value the counter can go down to. Leave out for no limit."
+                },
+                "maximum": {
+                    "name": "Maximum",
+                    "description": "The highest value the counter can go up to. Leave out for no limit."
+                },
+                "step": {
+                    "name": "Step",
+                    "description": "How much the counter goes up or down by each time."
+                },
+                "restore": {
+                    "name": "Restore",
+                    "description": "Restore the value of the counter when Home Assistant starts, rather than starting over at the initial value."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new counter."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Delete a counter",
+            "description": "Deletes counter helpers made in the UI or with the create a counter action. Counters set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The counter(s) to delete."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Create an input boolean",
+            "description": "Creates a new input boolean (toggle) helper on the fly. Returns the entity ID of the new input boolean.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new input boolean."
+                },
+                "input_boolean_id": {
+                    "name": "Input boolean entity ID",
+                    "description": "The entity ID for the new input boolean. The input_boolean. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "initial": {
+                    "name": "Initial value",
+                    "description": "The value it starts with. If left out, it keeps the value it had before Home Assistant restarted."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new input boolean."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Delete an input boolean",
+            "description": "Deletes input boolean helpers made in the UI or with the create an input boolean action. Input booleans set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The input boolean(s) to delete."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Create an input text",
+            "description": "Creates a new input text helper on the fly. Returns the entity ID of the new input text.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new input text."
+                },
+                "input_text_id": {
+                    "name": "Input text entity ID",
+                    "description": "The entity ID for the new input text. The input_text. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "initial": {
+                    "name": "Initial value",
+                    "description": "The text it starts with. If left out, it keeps the text it had before Home Assistant restarted."
+                },
+                "min": {
+                    "name": "Minimum length",
+                    "description": "The shortest the text can be."
+                },
+                "max": {
+                    "name": "Maximum length",
+                    "description": "The longest the text can be."
+                },
+                "pattern": {
+                    "name": "Pattern",
+                    "description": "A regular expression the text has to match."
+                },
+                "mode": {
+                    "name": "Mode",
+                    "description": "Show the text as is, or hide it like a password."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new input text."
+                },
+                "unit_of_measurement": {
+                    "name": "Unit of measurement",
+                    "description": "The unit to show next to the text."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Delete an input text",
+            "description": "Deletes input text helpers made in the UI or with the create an input text action. Input texts set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The input text(s) to delete."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Create an input button",
+            "description": "Creates a new input button helper on the fly. Returns the entity ID of the new input button.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new input button."
+                },
+                "input_button_id": {
+                    "name": "Input button entity ID",
+                    "description": "The entity ID for the new input button. The input_button. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new input button."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Delete an input button",
+            "description": "Deletes input button helpers made in the UI or with the create an input button action. Input buttons set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The input button(s) to delete."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Create an input datetime",
+            "description": "Creates a new input datetime helper on the fly, holding a date, a time, or both. Returns the entity ID of the new input datetime.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new input datetime."
+                },
+                "input_datetime_id": {
+                    "name": "Input datetime entity ID",
+                    "description": "The entity ID for the new input datetime. The input_datetime. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "has_date": {
+                    "name": "Has a date",
+                    "description": "Whether it holds a date. At least one of date and time has to be on."
+                },
+                "has_time": {
+                    "name": "Has a time",
+                    "description": "Whether it holds a time. At least one of date and time has to be on."
+                },
+                "initial": {
+                    "name": "Initial value",
+                    "description": "The date and/or time it starts with, like 2026-12-31, 08:30:00, or 2026-12-31 08:30:00. If left out, it keeps the value it had before Home Assistant restarted."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new input datetime."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Delete an input datetime",
+            "description": "Deletes input datetime helpers made in the UI or with the create an input datetime action. Input datetimes set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The input datetime(s) to delete."
+                }
+            }
+        },
+        "input_select_random": {
+            "description": "Select a random option for an input_select entity.",
+            "fields": {
+                "options": {
+                    "description": "Limits the options to select from. If not provided, all options will be considered.",
+                    "name": "Options"
+                }
+            },
+            "name": "Select random option"
+        },
+        "input_select_reverse": {
+            "name": "Reverse options",
+            "description": "Reverses the order of the selectable options for an `input_select` entity, back to front. This is not persistent and will be undone once reloaded or Home Assistant restarts."
+        },
+        "input_select_shuffle": {
+            "description": "Shuffles the list of selectable options for an `input_select` entity. This is not persistent and will be undone once reloaded or Home Assistant restarts.",
+            "name": "Shuffle options"
+        },
+        "input_select_sort": {
+            "description": "Sorts the list of selectable options for an `input_select` entity. This is not persistent and will be undone once reloaded or Home Assistant restarts.",
+            "name": "Sort options"
+        },
+        "number_decrement": {
+            "description": "Decrease a number entity value by a certain amount.",
+            "fields": {
+                "amount": {
+                    "description": "The amount to decrease the number with. If not provided, the step of the number entity will be used.",
+                    "name": "Amount"
+                }
+            },
+            "name": "Decrease value"
+        },
+        "number_increment": {
+            "description": "Increase a number entity value by a certain amount.",
+            "fields": {
+                "amount": {
+                    "description": "The amount to increase the number with. If not provided, the step of the number entity will be used.",
+                    "name": "Amount"
+                }
+            },
+            "name": "Increase value"
+        },
+        "number_max": {
+            "description": "Set a number entity to its maximum value.",
+            "name": "Set maximum value"
+        },
+        "number_min": {
+            "description": "Set a number entity to its minimum value.",
+            "name": "Set minimum value"
+        },
+        "person_add_device_tracker": {
+            "description": "Add a device tracker to a person.",
+            "fields": {
+                "device_tracker": {
+                    "description": "The device tracker entity ID to add to the person.",
+                    "name": "Device tracker"
+                },
+                "entity_id": {
+                    "description": "The person entity ID to add the device tracker to.",
+                    "name": "Person"
+                }
+            },
+            "name": "Add a device tracker"
+        },
+        "person_remove_device_tracker": {
+            "description": "Remove a device tracker from a person.",
+            "fields": {
+                "device_tracker": {
+                    "description": "The device tracker entity ID to remove from the person.",
+                    "name": "Device tracker"
+                },
+                "entity_id": {
+                    "description": "The person entity ID to remove the device tracker from.",
+                    "name": "Person"
+                }
+            },
+            "name": "Remove a device tracker"
+        },
+        "random_fail": {
+            "description": "Performing this action will randomly fail.",
+            "name": "Random fail"
+        },
+        "recorder_import_statistics": {
+            "description": "Import long-term statistics.",
+            "fields": {
+                "has_mean": {
+                    "description": "If the statistics has a mean value.",
+                    "name": "Has a mean"
+                },
+                "has_sum": {
+                    "description": "If the statistics has a sum value.",
+                    "name": "Has a sum"
+                },
+                "name": {
+                    "description": "The name of the statistics.",
+                    "name": "Name"
+                },
+                "source": {
+                    "description": "The source of the statistics data.",
+                    "name": "Source"
+                },
+                "statistic_id": {
+                    "description": "The statistics ID (entity ID) to import for.",
+                    "name": "Statistics ID"
+                },
+                "stats": {
+                    "description": "A list of mappings/dictionaries with statistics to import. The dictionaries must contain a \"start\" key with a datetime string other valid options are \"mean\", \"sum\", \"min\", \"max\", \"last_reset\", and \"state\". All of those are optional and either an integer or a float, except for \"last_reset\" which is a datetime string.",
+                    "name": "Statistics"
+                },
+                "unit_of_measurement": {
+                    "description": "The unit of measurement of the statistics.",
+                    "name": "Unit of measurement"
+                }
+            },
+            "name": "Import statistics"
+        },
+        "repairs_create": {
+            "description": "Manually create and raise an issue in Home Assistant repairs.",
+            "fields": {
+                "description": {
+                    "description": "The description of the issue. Supports Markdown.",
+                    "name": "Description"
+                },
+                "domain": {
+                    "description": "This field can be used to set the domain of the issue. For example, by default (if not set), it will use \"spook\". This causes Spook to be shown in the logo/image of the issue. If you set it to \"homeassistant\", the Home Assistant logo will be used, or use \"hue\", \"zwave_js\", \"mqtt\", etc. to use the logo of that integration.",
+                    "name": "Domain"
+                },
+                "issue_id": {
+                    "description": "The issue can have an identifier, which allows you to cancel it later with that ID if needed. It also prevents duplicate issues to be created. If not provided, a random ID will be generated.",
+                    "name": "Issue ID"
+                },
+                "persistent": {
+                    "description": "If the issue should be persistent, which means it will survive restarts of Home Assistant. By default, issues are not persistent.",
+                    "name": "Persistent"
+                },
+                "severity": {
+                    "description": "The severity of the issue. This will be used to determine the priority of the issue. If not set, \"warning\" will be used.",
+                    "name": "Severity"
+                },
+                "title": {
+                    "description": "The title of the issue.",
+                    "name": "Title"
+                }
+            },
+            "name": "Create issue"
+        },
+        "repairs_ignore_all": {
+            "description": "Ignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
+            "fields": {
+                "domain": {
+                    "name": "Domain",
+                    "description": "Only ignore the issues raised by these integrations."
+                }
+            },
+            "name": "Ignore all issues"
+        },
+        "repairs_list": {
+            "name": "List issues",
+            "description": "Lists the issues currently raised in Home Assistant Repairs, with their titles, for an automation to act on or a dashboard to show.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Include ignored",
+                    "description": "Also list the issues that have been ignored."
+                },
+                "domain": {
+                    "name": "Domain",
+                    "description": "Only list the issues raised by these integrations."
+                },
+                "severity": {
+                    "name": "Severity",
+                    "description": "Only list the issues with these severities."
+                }
+            }
+        },
+        "repairs_remove": {
+            "description": "Removes a manually created Home Assistant repairs issue. This action can only remove issues created with the `repairs_create` action.",
+            "fields": {
+                "issue_id": {
+                    "description": "The issue ID to remove.",
+                    "name": "Issue ID"
+                }
+            },
+            "name": "Remove issue"
+        },
+        "repairs_unignore_all": {
+            "description": "Unignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
+            "fields": {
+                "domain": {
+                    "name": "Domain",
+                    "description": "Only unignore the issues raised by these integrations."
+                }
+            },
+            "name": "Unignore all issues"
+        },
+        "select_random": {
+            "description": "Select a random option for a select entity.",
+            "fields": {
+                "options": {
+                    "description": "Limits the options to select from. If not provided, all options will be considered.",
+                    "name": "Options"
+                }
+            },
+            "name": "Select random option"
+        },
+        "input_select_create": {
+            "name": "Create an input select",
+            "description": "Creates a new input select (dropdown) helper on the fly. Returns the entity ID of the new input select.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new input select."
+                },
+                "input_select_id": {
+                    "name": "Input select entity ID",
+                    "description": "The entity ID for the new input select. The input_select. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "options": {
+                    "name": "Options",
+                    "description": "The options to choose from. Each option can only be in it once."
+                },
+                "initial": {
+                    "name": "Initial option",
+                    "description": "The option it starts on, which has to be one of the options. If left out, it keeps the option it had before Home Assistant restarted."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new input select."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Delete an input select",
+            "description": "Deletes input select helpers made in the UI or with the create an input select action. Input selects set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The input select(s) to delete."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "description": "Sets the number of decimals shown for one or more sensors.",
+            "fields": {
+                "display_precision": {
+                    "description": "The number of decimals to show for the sensor.",
+                    "name": "Display precision"
+                },
+                "entity_id": {
+                    "description": "The sensor entity/entities to update.",
+                    "name": "Entity"
+                }
+            },
+            "name": "Set display precision"
+        },
+        "timer_create": {
+            "name": "Create a timer",
+            "description": "Creates a new timer helper on the fly. Returns the entity ID of the new timer.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new timer."
+                },
+                "timer_id": {
+                    "name": "Timer entity ID",
+                    "description": "The entity ID for the new timer. The timer. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "duration": {
+                    "name": "Duration",
+                    "description": "How long the timer runs when it is started."
+                },
+                "restore": {
+                    "name": "Restore",
+                    "description": "Restore the state of the timer when Home Assistant starts, so a running timer keeps running across a restart."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new timer."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Delete a timer",
+            "description": "Deletes timer helpers made in the UI or with the create a timer action. Timers set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The timer(s) to delete."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "description": "Set duration for an existing timer.",
+            "fields": {
+                "duration": {
+                    "description": "New duration for the timer, as a timedelta string.",
+                    "name": "Duration"
+                }
+            },
+            "name": "Set duration"
+        },
+        "zone_create": {
+            "description": "Create a new zone in Home Assistant on the fly.",
+            "fields": {
+                "icon": {
+                    "description": "Icon to use for the zone",
+                    "name": "Icon"
+                },
+                "latitude": {
+                    "description": "Latitude of the zone. This can be a template.",
+                    "name": "Latitude"
+                },
+                "longitude": {
+                    "description": "Longitude of the zone. This can be a template.",
+                    "name": "Longitude"
+                },
+                "name": {
+                    "description": "Name of the zone",
+                    "name": "Name"
+                },
+                "radius": {
+                    "description": "Radius of the zone",
+                    "name": "Radius"
+                },
+                "passive": {
+                    "name": "Passive",
+                    "description": "A passive zone is only there for automations: it is not shown on the map, and does not change where people and device trackers are."
+                }
+            },
+            "name": "Create a zone"
+        },
+        "zone_delete": {
+            "description": "Delete a zone. This works only with zones created and managed via the UI. Zones created and managed in YAML cannot be managed by Spook.",
+            "fields": {
+                "entity_id": {
+                    "description": "The ID of the entity (or entities) to remove.",
+                    "name": "Entity ID"
+                }
+            },
+            "name": "Delete a zone"
+        },
+        "water_heater_increase_temperature": {
+            "name": "Increase temperature",
+            "description": "Turns a water heater's setpoint up a step, within its limits.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How much to change it by. Leave it out to use the water heater's own step, or half a degree (one in Fahrenheit) when it has none."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Decrease temperature",
+            "description": "Turns a water heater's setpoint down a step, within its limits.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How much to change it by. Leave it out to use the water heater's own step, or half a degree (one in Fahrenheit) when it has none."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Increase humidity",
+            "description": "Turns a humidifier's target humidity up a step, within its limits.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to change it by. Leave it out to use the humidifier's own step, or one percent when it has none."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Decrease humidity",
+            "description": "Turns a humidifier's target humidity down a step, within its limits.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to change it by. Leave it out to use the humidifier's own step, or one percent when it has none."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Increase position",
+            "description": "Moves a cover a step further open, stopping at fully open.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to move it by. Ten percent when left out."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Decrease position",
+            "description": "Moves a cover a step further closed, stopping at fully closed.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to move it by. Ten percent when left out."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Increase position",
+            "description": "Moves a valve a step further open, stopping at fully open.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to move it by. Ten percent when left out."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Decrease position",
+            "description": "Moves a valve a step further closed, stopping at fully closed.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to move it by. Ten percent when left out."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Increase volume",
+            "description": "Turns a media player's volume up by the step you give, stopping at full volume.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to change the volume by."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Decrease volume",
+            "description": "Turns a media player's volume down by the step you give, stopping at silent.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How many percent to change the volume by."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Move item",
+            "description": "Moves an item in a to-do list to the top, the bottom, or after another item.",
+            "fields": {
+                "item": {
+                    "name": "Item",
+                    "description": "The title or uid of the item to move."
+                },
+                "after": {
+                    "name": "After",
+                    "description": "The title or uid of the item to put it after. Give this or a position."
+                },
+                "position": {
+                    "name": "Position",
+                    "description": "Move it to the top or the bottom of the list. Give this or an item to put it after."
+                }
+            }
+        },
+        "zone_update": {
+            "description": "Update properties of a zone on the fly.",
+            "fields": {
+                "entity_id": {
+                    "description": "The ID of the entity (or entities) to update.",
+                    "name": "Entity ID"
+                },
+                "icon": {
+                    "description": "Icon to use for the zone",
+                    "name": "Icon"
+                },
+                "latitude": {
+                    "description": "Latitude of the zone. This can be a template.",
+                    "name": "Latitude"
+                },
+                "longitude": {
+                    "description": "Longitude of the zone. This can be a template.",
+                    "name": "Longitude"
+                },
+                "name": {
+                    "description": "Name of the zone",
+                    "name": "Name"
+                },
+                "radius": {
+                    "description": "Radius of the zone",
+                    "name": "Radius"
+                },
+                "passive": {
+                    "name": "Passive",
+                    "description": "A passive zone is only there for automations: it is not shown on the map, and does not change where people and device trackers are."
+                }
+            },
+            "name": "Update a zone"
+        },
+        "wait_for_condition": {
+            "name": "Wait for a condition",
+            "description": "Wait until a condition is true. Returns straight away if it already is.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "The condition to wait for."
+                },
+                "timeout": {
+                    "name": "Timeout",
+                    "description": "How long to wait before giving up. Waits indefinitely when left out."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Snooze",
+            "description": "Turns an automation off for a while, and turns it back on when the time is up.",
+            "fields": {
+                "duration": {
+                    "name": "Duration",
+                    "description": "How long the automation stays off. It comes back on by itself when this is up, a restart of Home Assistant in between included."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Turn on for",
+            "description": "Turns an automation on for a while, and turns it back off when the time is up.",
+            "fields": {
+                "duration": {
+                    "name": "Duration",
+                    "description": "How long the automation stays on. It goes back off by itself when this is up, a restart of Home Assistant in between included."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Set brightness",
+            "description": "Sets the brightness of lights that are already on, and leaves the ones that are off alone.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Brightness",
+                    "description": "The brightness to set, as a percentage. Groups are adjusted light by light, so a light that is off stays off."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Increase brightness",
+            "description": "Turns up the lights that are already on, and leaves the ones that are off alone.",
+            "fields": {
+                "step_pct": {
+                    "name": "Step",
+                    "description": "How much brighter to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Decrease brightness",
+            "description": "Turns down the lights that are already on, stopping at the dimmest they go rather than switching them off.",
+            "fields": {
+                "step_pct": {
+                    "name": "Step",
+                    "description": "How much dimmer to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Set colour",
+            "description": "Sets the colour of lights that are already on, and leaves alone the ones that are off or cannot do colour.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Colour",
+                    "description": "The colour to set. Lights that cannot do colour are passed over rather than turned white."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Set colour temperature",
+            "description": "Sets the colour temperature of lights that are already on, each within the range it can actually reach.",
+            "fields": {
+                "kelvin": {
+                    "name": "Colour temperature",
+                    "description": "The colour temperature to set. Every light is held to its own range, since warm white on one lamp is a number another cannot reach."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Set effect",
+            "description": "Sets an effect on the lights that are already on and actually have it.",
+            "fields": {
+                "effect": {
+                    "name": "Effect",
+                    "description": "The name of the effect to set. Effect names differ per manufacturer, so lights that do not have this one are left as they are."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Delete event",
+            "description": "Deletes events from a calendar, found by their title or uid in a stretch of time. Hands back what it deleted, uid included.",
+            "fields": {
+                "summary": {
+                    "name": "Summary",
+                    "description": "The title of the events to delete, exactly as it is in the calendar."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "The identifier of the event to delete, for when you have it."
+                },
+                "start_date_time": {
+                    "name": "Start date and time",
+                    "description": "Where to start looking. Defaults to now."
+                },
+                "end_date_time": {
+                    "name": "End date and time",
+                    "description": "Where to stop looking. Give this or a duration."
+                },
+                "duration": {
+                    "name": "Duration",
+                    "description": "How far to look from the start. Give this or an end date and time."
+                },
+                "whole_series": {
+                    "name": "Whole series",
+                    "description": "For a recurring event, delete the whole series rather than only the occurrence that was found."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Update event",
+            "description": "Changes events in a calendar, found by their title or uid in a stretch of time. Hands back what it changed, uid included.",
+            "fields": {
+                "summary": {
+                    "name": "Summary",
+                    "description": "The title of the events to change, exactly as it is in the calendar."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "The identifier of the event to change, for when you have it."
+                },
+                "start_date_time": {
+                    "name": "Start date and time",
+                    "description": "Where to start looking. Defaults to now."
+                },
+                "end_date_time": {
+                    "name": "End date and time",
+                    "description": "Where to stop looking. Give this or a duration."
+                },
+                "duration": {
+                    "name": "Duration",
+                    "description": "How far to look from the start. Give this or an end date and time."
+                },
+                "new_summary": {
+                    "name": "New summary",
+                    "description": "The title to give the events."
+                },
+                "description": {
+                    "name": "Description",
+                    "description": "The description to give the events."
+                },
+                "location": {
+                    "name": "Location",
+                    "description": "The location to give the events."
+                },
+                "new_start": {
+                    "name": "New start",
+                    "description": "When the events start instead. They keep their length, unless a new end is given too."
+                },
+                "new_end": {
+                    "name": "New end",
+                    "description": "When the events end instead."
+                },
+                "shift": {
+                    "name": "Shift",
+                    "description": "Move the events by this much, later, or earlier when negative. Instead of a new start or end."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Increase temperature",
+            "description": "Turns a thermostat's setpoint up a step, both setpoints for one that heats and cools. A thermostat that is off stays off.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How much to change it by. Leave it out to use the thermostat's own step, or half a degree (one in Fahrenheit) when it has none."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Decrease temperature",
+            "description": "Turns a thermostat's setpoint down a step, both setpoints for one that heats and cools. A thermostat that is off stays off.",
+            "fields": {
+                "step": {
+                    "name": "Step",
+                    "description": "How much to change it by. Leave it out to use the thermostat's own step, or half a degree (one in Fahrenheit) when it has none."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Update a label",
+            "description": "Updates an existing label on the fly. Anything you leave out keeps the value it already has. The description, icon and colour can be cleared by setting them to null.",
+            "fields": {
+                "label_id": {
+                    "name": "Label ID",
+                    "description": "The ID of the label to update."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "New name for the label."
+                },
+                "description": {
+                    "name": "Description",
+                    "description": "New description for the label."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "New icon to use for the label."
+                },
+                "color": {
+                    "name": "Colour",
+                    "description": "Colour to use for the label. Can be a colour name from the list, or a hex colour code (like #FF0000)."
+                }
+            }
+        }
+    },
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Automation turned off",
+            "description": "Fires when somebody, or something, turns an automation off. Leave the target empty to watch every automation."
+        },
+        "sequence": {
+            "name": "Triggers in order",
+            "description": "Fires when several triggers happen one after another, in the order given.",
+            "fields": {
+                "steps": {
+                    "name": "Steps",
+                    "description": "The triggers that have to happen, in order. Only the one being waited for is listening, so a later step firing early is not a match."
+                },
+                "timeout": {
+                    "name": "Timeout",
+                    "description": "How long the whole sequence may take, counted from the first step. Left out, it waits indefinitely."
+                },
+                "reset": {
+                    "name": "Reset",
+                    "description": "Triggers that abandon a sequence already under way, putting it back to waiting for the first step."
+                }
+            }
+        },
+        "while": {
+            "name": "While a condition holds",
+            "description": "Fires when a condition turns true, and keeps firing on an interval for as long as it stays true.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "The condition to watch. Firing starts when it turns true and stops when it stops being true."
+                },
+                "every": {
+                    "name": "Every",
+                    "description": "How long to wait between one firing and the next, for as long as the condition holds."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Watchdog",
+            "description": "Fires when something that was expected to happen does not happen in time.",
+            "fields": {
+                "arm": {
+                    "name": "Arm",
+                    "description": "What starts the watch. The wait is measured from here, and arming again while already waiting starts the wait over."
+                },
+                "expect": {
+                    "name": "Expect",
+                    "description": "What is expected to follow. Arriving in time calls the watch off, and nothing fires."
+                },
+                "within": {
+                    "name": "Within",
+                    "description": "How long the expected thing has to arrive. This fires when that time passes and it has not."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entity will not settle",
+            "description": "Fires when an entity changes state more often than it should within a stretch of time.",
+            "fields": {
+                "changes": {
+                    "name": "Changes",
+                    "description": "How many changes of state it takes before this fires. Changes of attribute do not count, and neither does an entity appearing or disappearing."
+                },
+                "within": {
+                    "name": "Within",
+                    "description": "The stretch of time those changes have to fall inside. It slides along, so this is always about the most recent changes."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Condition turned true",
+            "description": "Fires when a condition goes from false to true, using the same condition building blocks as anywhere else.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "The condition to watch."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron schedule",
+            "description": "Fires on a crontab schedule, for the times Home Assistant's own time triggers cannot express, like every weekday at seven or the last Friday of the month.",
+            "fields": {
+                "schedule": {
+                    "name": "Schedule",
+                    "description": "A crontab expression with five fields: minute, hour, day of month, month, day of week. Supports ranges and steps, and the day-of-week extensions, so \"MON#2\" is the second Monday and \"5L\" the last Friday. Nicknames like \"@daily\" are not supported."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "Integration failed to set up",
+            "description": "Fires when a configuration entry has been unable to set itself up for a while, past the point where Home Assistant's own retries would have sorted it out.",
+            "fields": {
+                "for": {
+                    "name": "For",
+                    "description": "How long an entry has to keep failing before this fires. Home Assistant retries a failing entry every ten minutes at the slowest, so anything shorter than that reports trouble that may still fix itself."
+                },
+                "entry_id": {
+                    "name": "Entries",
+                    "description": "Limit this to particular configuration entries. Leave it empty to watch every one of them."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Repair issue created",
+            "description": "Fires when a new repair issue turns up, so you can hear about one without visiting the repairs page.",
+            "fields": {
+                "domain": {
+                    "name": "Integrations",
+                    "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+                },
+                "severity": {
+                    "name": "Severity",
+                    "description": "Limit this to issues of a particular severity. Leave it empty for all of them."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Repair issue resolved",
+            "description": "Fires when a repair issue goes away, either fixed or no longer reported.",
+            "fields": {
+                "domain": {
+                    "name": "Integrations",
+                    "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entity fell silent",
+            "description": "Fires when nothing has written to an entity for a while, which catches a device that died quietly rather than going unavailable.",
+            "fields": {
+                "for": {
+                    "name": "For",
+                    "description": "How long an entity has to stay silent before this fires. An entity that keeps reporting the same value is not silent."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Target temperature reached",
+            "description": "Fires when the temperature of a thermostat or water heater reaches its target, or jumps past it. Changing the target does not count, and neither does a device that is off.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerance",
+                    "description": "How close to the target still counts as there, in the device's unit. For a thermostat that settles just short of its setpoint. Zero means the target itself."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Update installed",
+            "description": "Fires when an update entity reports a different installed version, whether somebody pressed install, the device updated itself, or it was updated outside of Home Assistant."
+        },
+        "position_reached": {
+            "name": "Position reached",
+            "description": "Fires when a cover or valve gets to a position, or moves past it. One that is already there, or comes back from unavailable at it, does not count.",
+            "fields": {
+                "position": {
+                    "name": "Position",
+                    "description": "The position to reach, from 0 (closed) to 100 (open)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Script started",
+            "description": "Fires when a script starts a run. A run the script refuses, because it is already running, does not count. Leave the target empty to watch every script."
+        },
+        "debounce": {
+            "name": "Once it settles",
+            "description": "Fires once a trigger has stopped firing for a while, so a burst of them arrives as one. A motion sensor does not report motion once, it reports it twenty times.",
+            "fields": {
+                "triggers": {
+                    "name": "Triggers",
+                    "description": "The triggers to wait out. Any of them firing starts a burst and any of them firing again keeps it going, so several triggers are collapsed together rather than one at a time."
+                },
+                "for": {
+                    "name": "For",
+                    "description": "How long it has to have been quiet before this fires. Every firing starts that wait over, so something that never stops firing never gets reported."
+                }
+            }
+        },
+        "all_of": {
+            "name": "All of these happened",
+            "description": "Fires when every one of several triggers has fired inside the same window of time, in any order. Home Assistant's own triggers are a list where any one of them is enough; this is the other one.",
+            "fields": {
+                "triggers": {
+                    "name": "Triggers",
+                    "description": "The triggers that all have to have fired. Order does not matter, and a trigger firing again replaces its earlier turn rather than counting twice."
+                },
+                "within": {
+                    "name": "Within",
+                    "description": "How close together they have to be. The window slides, so a trigger that fired longer ago than this is forgotten while the others carry on counting."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entity came back",
+            "description": "Fires when an entity comes back after having been unavailable for a while, so a router rebooting does not read as everything in the house recovering.",
+            "fields": {
+                "for": {
+                    "name": "For",
+                    "description": "How long the entity has to have been away before coming back counts. Anything shorter is a flicker: reloading an integration takes every one of its entities through unavailable and back inside a second."
+                }
+            }
+        },
+        "user_added": {
+            "name": "User added",
+            "description": "Fires when somebody is given a login to Home Assistant. Users Home Assistant creates for its own integrations are left out."
+        },
+        "integration_added": {
+            "name": "Integration added",
+            "description": "Fires when an integration is added to Home Assistant, whoever or whatever added it."
+        },
+        "device_added": {
+            "name": "Device added",
+            "description": "Fires when a new device is added to Home Assistant, like a plug that was just paired."
+        },
+        "device_discovered": {
+            "name": "Device discovered",
+            "description": "Fires when Home Assistant discovers something new it could set up, like a device that just turned up on your network."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Critical",
+                "error": "Error",
+                "warning": "Warning"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Bottom",
+                "top": "Top"
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Ghosts found",
+            "ghosts_ignored": "Ghosts ignored",
+            "helpers_linked": "Helpers linked",
+            "version": "Version"
+        }
     }
-  }
 }

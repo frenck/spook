@@ -10,7 +10,7 @@ date: 2024-04-04T08:50:07+02:00
 Spook provides that allows you to manage and {term}`automate <automation>` the areas in Home Assistant programatically. Great for creating "dynamic" labels, or for creating labels on the fly.
 
 ```{figure} ./images/labels/example.png
-:alt: Screenshot of the developer actions tools, listing the new actions to manage labels.
+:alt: Screenshot of the Actions tool, listing the new actions to manage labels.
 :align: center
 ```
 
@@ -23,7 +23,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Adds a new label to your Home Assistant instance.
 
 ```{figure} ./images/labels/create.png
-:alt: Screenshot of the create label action in the developer tools.
+:alt: Screenshot of the create label action on the Tools page.
 :align: center
 ```
 
@@ -31,7 +31,7 @@ Adds a new label to your Home Assistant instance.
 :header-rows: 1
 * - Action properties
 * - {term}`Action`
-  - Create an label 👻
+  - Create a label 👻
 * - {term}`Action name`
   - `homeassistant.create_label`
 * - {term}`Action targets`
@@ -40,9 +40,9 @@ Adds a new label to your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_label)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_label)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_label)
 ```
 
 ```{list-table}
@@ -85,12 +85,91 @@ data:
 
 :::
 
+### Update a label
+
+Updates an existing label in your Home Assistant instance. Anything you leave
+out keeps the value it already has. Setting `description`, `icon` or `color` to
+`null` clears it.
+
+Note that leaving a field out is not the same as giving it an empty string: a
+`description: ""` sets the description to nothing at all, which is a change
+like any other.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Update a label 👻
+* - {term}`Action name`
+  - `homeassistant.update_label`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_label)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_label)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `label_id`
+  - {term}`string <string>`
+  - Yes
+  - `battery_powered`
+* - `name`
+  - {term}`string <string>`
+  - No
+  - `Battery powered`
+* - `description`
+  - {term}`string <string>` or `null`
+  - No
+  - `Label to tag all battery powered devices`
+* - `icon`
+  - {term}`string <string>` or `null`
+  - No
+  - `mdi:battery`
+* - `color`
+  - {term}`string <string>` or `null`
+  - No
+  - `indigo`
+```
+
+:::{note}
+You need to give at least one thing to change. A call with only a `label_id`
+is refused, so a misspelled parameter cannot pass for a successful update that
+quietly did nothing.
+
+Renaming a label to a name another label already carries is refused too, since
+Home Assistant keeps label names unique.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.update_label
+data:
+  label_id: "battery_powered"
+  description: "Label to tag all battery powered devices"
+```
+
+:::
+
 ### Delete a label
 
-Delete a new label to your Home Assistant instance.
+Deletes a label from your Home Assistant instance.
 
 ```{figure} ./images/labels/delete.png
-:alt: Screenshot of the delete label action in the developer tools.
+:alt: Screenshot of the delete label action on the Tools page.
 :align: center
 ```
 
@@ -107,9 +186,9 @@ Delete a new label to your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_label)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_label)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_label)
 ```
 
 ```{list-table}
@@ -163,7 +242,7 @@ data:
 Adds one or more labels(s) to an area.
 
 ```{figure} ./images/labels/add_to_area.png
-:alt: Screenshot of the add a label to an area action in the developer tools.
+:alt: Screenshot of the add a label to an area action on the Tools page.
 :align: center
 ```
 
@@ -180,9 +259,9 @@ Adds one or more labels(s) to an area.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_area)
 ```
 
 ```{list-table}
@@ -269,7 +348,7 @@ data:
 Removes one or more label(s) from an area.
 
 ```{figure} ./images/labels/remove_from_area.png
-:alt: Screenshot of the remove a label from an area action in the developer tools.
+:alt: Screenshot of the remove a label from an area action on the Tools page.
 :align: center
 ```
 
@@ -286,9 +365,9 @@ Removes one or more label(s) from an area.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_area)
 ```
 
 ```{list-table}
@@ -375,7 +454,7 @@ data:
 Adds one or more labels(s) to a device.
 
 ```{figure} ./images/labels/add_to_device.png
-:alt: Screenshot of the add a label to a device action in the developer tools.
+:alt: Screenshot of the add a label to a device action on the Tools page.
 :align: center
 ```
 
@@ -392,9 +471,9 @@ Adds one or more labels(s) to a device.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_device)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_device)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_device)
 ```
 
 ```{list-table}
@@ -429,9 +508,9 @@ That template will find the label ID of the label with the name "Battery powered
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
-Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
@@ -479,7 +558,7 @@ data:
 Removes one or more label(s) from a device.
 
 ```{figure} ./images/labels/remove_from_device.png
-:alt: Screenshot of the remove a label from a device action in the developer tools.
+:alt: Screenshot of the remove a label from a device action on the Tools page.
 :align: center
 ```
 
@@ -496,9 +575,9 @@ Removes one or more label(s) from a device.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_device)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_device)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_device)
 ```
 
 ```{list-table}
@@ -533,9 +612,9 @@ That template will find the label ID of the label with the name "Battery powered
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
-Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to remove the label from and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
@@ -583,7 +662,7 @@ data:
 Adds one or more labels(s) to an entity.
 
 ```{figure} ./images/labels/add_to_entity.png
-:alt: Screenshot of the add a label to an entity action in the developer tools.
+:alt: Screenshot of the add a label to an entity action on the Tools page.
 :align: center
 ```
 
@@ -600,9 +679,9 @@ Adds one or more labels(s) to an entity.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_entity)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_entity)
 ```
 
 ```{list-table}
@@ -677,7 +756,7 @@ data:
 Removes one or more label(s) from an entity.
 
 ```{figure} ./images/labels/remove_from_entity.png
-:alt: Screenshot of the remove a label from an entity action in the developer tools.
+:alt: Screenshot of the remove a label from an entity action on the Tools page.
 :align: center
 ```
 
@@ -694,9 +773,9 @@ Removes one or more label(s) from an entity.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_entity)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_entity)
 ```
 
 ```{list-table}
@@ -770,7 +849,7 @@ data:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

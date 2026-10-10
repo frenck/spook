@@ -14,12 +14,14 @@ parts:
       - file: core_extensions
       - file: enhanced_integrations
       - file: helpers
+      - file: assistants
       - file: other_features
 
   - caption: Core extensions
     chapters:
       - file: integrations
       - file: labels
+      - file: categories
       - file: floors
       - file: areas
       - file: devices
@@ -30,13 +32,30 @@ parts:
 
   - caption: Enhanced integrations
     chapters:
+      - file: integrations/alert
+      - file: integrations/assist_pipeline
       - file: integrations/automation
       - file: integrations/blueprint
+      - file: integrations/calendar
+      - file: integrations/climate
       - file: integrations/lovelace
       - file: integrations/group
       - file: integrations/cloud
+      - file: integrations/counter
+      - file: integrations/cover
+      - file: integrations/energy
+      - file: integrations/homeassistant
+      - file: integrations/homekit
+      - file: integrations/humidifier
+      - file: integrations/input_boolean
+      - file: integrations/input_button
+      - file: integrations/input_datetime
       - file: integrations/input_number
       - file: integrations/input_select
+      - file: integrations/input_text
+      - file: integrations/light
+      - file: integrations/media_player
+      - file: integrations/notify
       - file: integrations/number
       - file: integrations/person
       - file: integrations/proximity
@@ -46,19 +65,28 @@ parts:
       - file: integrations/scene
       - file: integrations/script
       - file: integrations/select
+      - file: integrations/sensor
       - file: integrations/switch_as_x
+      - file: integrations/template
       - file: integrations/timer
+      - file: integrations/todo
       - file: integrations/trend
       - file: integrations/utility_meter
+      - file: integrations/valve
+      - file: integrations/water_heater
       - file: integrations/zone
 
   - caption: Helpers
     chapters:
+      - file: helpers/calibration
       - file: helpers/inverse
+      - file: helpers/time_in_state
 
   - caption: Reference
     chapters:
       - file: actions
+      - file: conditions
+      - file: triggers
       - file: blueprints
       - file: glossary
 

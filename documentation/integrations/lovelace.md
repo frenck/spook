@@ -55,9 +55,70 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 :class: dropdown
 
 - Spook is not aware of all possible configuration for all possible cards. Especially with third-party cards, configuration can sometimes differ and Spook might not be able to detect the use of an unknown entity ID in such cases.
+- Most third-party cards use the same keys as Home Assistant's own (`entity`, `entities`), and those are read on any card. Bubble Card has a few of its own, which Spook knows about: the entity that opens a pop-up (`trigger_entity`), and the numbered buttons of a horizontal buttons stack (`1_entity`, `1_pir_sensor`, and so on).
+- Entities named inside templates, or in a card's own variables, are not checked. What a template ends up pointing at cannot be known without running it.
   :::
 
-## Features requests, ideas, and support
+### Unknown referenced areas
+
+Dashboards are inspected for the use of {term}`areas <area>`. An area can be referenced in more than one way: by an area card, by the area view strategy, by the areas dashboard strategy listing areas to hide or order, by the Mushroom template card, and by an `area_id` used as the target of an action. The word `area` on other cards is left alone, since some use it for a caption rather than an area. Spook looks for all of them and raises a repair issue naming the dashboard and the areas that are missing.
+
+What you see depends on where the reference sits, and the frontend decides that rather than Spook, so this page will not promise you a particular symptom. What Spook can tell you is which dashboard names which missing area, which is the part you need either way.
+
+To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown actions
+
+Dashboards are inspected for the {term}`actions <performing actions>` their buttons and cards perform. A tap, hold or double tap action set to perform an action that does not exist does nothing when used, and says nothing either: the button just sits there. Spook raises a repair issue naming the dashboard and the actions that are missing.
+
+This usually happens when a script was renamed or removed, or when the integration providing the action was removed. Spook looks again when an integration loads and when actions come and go, so an integration that takes a while to start does not leave a repair issue behind.
+
+Actions of an integration you disabled are not reported: switched off on purpose is not gone. Once you enable the integration again, they are checked as usual.
+
+To resolve the raised issue, edit the dashboard and remove or replace the actions that no longer exist. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Spook reads every action set to perform an action, under whatever name a card gives it, so third-party cards using the same shape as Home Assistant's own are covered too.
+- An action that is a template, like the JavaScript templates of button-card, is not checked. What it ends up performing cannot be known without running it.
+  :::
+
+### Missing dashboard resources
+
+Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks the ones it can: a resource served from `/local/` or `/hacsfiles/` maps to a file on disk, so Spook can see whether that file is there. If it is not, it will raise a repair issue listing the resources in question.
+
+Resources on an external URL, or served by an integration, are deliberately skipped. Spook cannot verify those without going and asking, so it does not claim to.
+
+A missing local resource usually means a custom card was removed but its resource stayed behind. The cost is paid on every page load, by every browser, for a file that is never going to arrive.
+
+To resolve the raised issue, go to Settings > Dashboards > Resources and remove or correct these resources. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Duplicate dashboard resources
+
+The same resource can be listed more than once, and nothing in Home Assistant stops it: every resource you add is handed a fresh ID without anybody checking what it points at.
+
+The usual way in is updating a custom card. The new version wants a new cache-busting URL, so `/local/some-card.js?v=1` gains a neighbour at `?v=2` instead of being edited. Both stay. The browser treats two URLs as two files and loads both, the card tries to register itself twice, and the second attempt throws. What you see is a broken card, which sends you looking at the card rather than at the resource list.
+
+Spook raises a repair issue naming each resource that appears more than once, and the URLs involved where they differ.
+
+For a resource served from `/local/` or `/hacsfiles/` the path is a file on disk, so two URLs differing only in their query string are the same file and are reported as duplicates.
+
+For any other resource, only an exact repeat counts. A query string on somebody else's server can be the difference between two genuinely different files, and Spook is not going to guess that it is not.
+
+The resource type is part of the comparison either way. Home Assistant loads a `module` differently from a `css`, so the same URL listed under two types is two instructions rather than one repeated, and Spook leaves those alone.
+
+Spook raises one repair issue per duplicated resource, so they can be dealt with one at a time. Each one offers three ways out:
+
+- **Clear the extra copies, keep the most recent.** Spook removes every copy but the last one added, which for a card updated by adding a resource instead of editing one is the version you meant to end up with.
+- **Let me fix it myself.** Points you at **Settings** > **Dashboards** > **Resources**, and leaves the issue in place until you have.
+- **Leave them, stop telling me.** Keeps the resources as they are and stops Spook mentioning that one again.
+
+Resources listed in YAML are static, so there is nothing Spook can delete for you there. Those duplicates are still reported, and choosing to fix one tells you which file to edit rather than offering a button that would quietly do nothing.
+
+Spook will automatically remove the repair issue once the issue is fixed.
+
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

@@ -3,49 +3,87 @@
         "step": {
             "binary_sensor": {
                 "data": {
-                    "entity_id": "Zdroj entity",
+                    "entity_id": "Zdrojová entita",
                     "hide_source": "Skryť zdrojovú entitu",
                     "name": "Názov"
                 },
-                "title": "Inverse 👻"
+                "title": "Invertovať 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "hide_source": "Skryť zdrojovú entitu",
+                    "inverse_position": "Invertovať otváranie, zatváranie a polohu",
+                    "inverse_tilt": "Invertovať sklon",
+                    "name": "Názov"
+                },
+                "title": "Invertovať 👻"
             },
             "switch": {
                 "data": {
-                    "entity_id": "Zdroj entity",
+                    "entity_id": "Zdrojová entita",
                     "hide_source": "Skryť zdrojovú entitu",
                     "name": "Názov"
                 },
-                "title": "Inverse 👻"
+                "title": "Invertovať 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "hide_source": "Skryť zdrojovú entitu",
+                    "name": "Názov"
+                },
+                "title": "Invertovať 👻"
             },
             "user": {
                 "menu_options": {
-                    "switch": "Inverse prepínač",
-                    "binary_sensor": "Inverse a binárne senzor"
+                    "switch": "Invertovať prepínač",
+                    "valve": "Invertovať ventil",
+                    "binary_sensor": "Invertovať binárny senzor",
+                    "cover": "Invertovať tienenie"
                 },
-                "description": "Tento pomocník vám umožní inverzovať správanie entity. Napríklad, zvrátiť otvorené / uzavreté alebo zap/vyp binárnych snímačov a spínačov.",
-                "title": "Inverse 👻"
+                "description": "Tento pomocník ti umožní invertovať správanie entity. Napríklad prehodiť otvorené/zatvorené alebo zap/vyp pri binárnych senzoroch, tienení, prepínačoch a ventiloch.",
+                "title": "Invertovať 👻"
             }
         }
     },
     "options": {
         "step": {
             "switch": {
-                "title": "Inverse 👻",
+                "title": "Invertovať 👻",
                 "data": {
                     "name": "Názov",
                     "hide_source": "Skryť zdrojovú entitu",
-                    "entity_id": "Zdroj entity"
+                    "entity_id": "Zdrojová entita"
                 }
             },
-            "binary_sensor": {
+            "valve": {
                 "data": {
-                    "entity_id": "Zdroj entity",
+                    "entity_id": "Zdrojová entita",
                     "hide_source": "Skryť zdrojovú entitu",
                     "name": "Názov"
                 },
-                "title": "Inverse 👻"
+                "title": "Invertovať 👻"
+            },
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "hide_source": "Skryť zdrojovú entitu",
+                    "name": "Názov"
+                },
+                "title": "Invertovať 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "hide_source": "Skryť zdrojovú entitu",
+                    "inverse_position": "Invertovať otváranie, zatváranie a polohu",
+                    "inverse_tilt": "Invertovať sklon",
+                    "name": "Názov"
+                },
+                "title": "Invertovať 👻"
             }
         }
     },
-    "title": "Inverse 👻"
+    "title": "Invertovať 👻"
 }

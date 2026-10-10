@@ -11,6 +11,16 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 
 ::::{grid} 1 2 2 3
 
+:::{card} Alert
+:footer: 📚 [Learn more](integrations/alert)
+[![](https://brands.home-assistant.io/alert/icon.png)](integrations/alert)
+:::
+
+:::{card} Assist pipeline
+:footer: 📚 [Learn more](integrations/assist_pipeline)
+[![](https://brands.home-assistant.io/assist_pipeline/icon.png)](integrations/assist_pipeline)
+:::
+
 :::{card} Automations
 :footer: 📚 [Learn more](integrations/automation)
 
@@ -23,9 +33,34 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/blueprint/icon.png)](integrations/blueprint)
 :::
 
+:::{card} Calendar
+:footer: 📚 [Learn more](integrations/calendar)
+[![](https://brands.home-assistant.io/calendar/icon.png)](integrations/calendar)
+:::
+
+:::{card} Climate
+:footer: 📚 [Learn more](integrations/climate)
+[![](https://brands.home-assistant.io/climate/icon.png)](integrations/climate)
+:::
+
+:::{card} Counter
+:footer: 📚 [Learn more](integrations/counter)
+[![](https://brands.home-assistant.io/counter/icon.png)](integrations/counter)
+:::
+
+:::{card} Cover
+:footer: 📚 [Learn more](integrations/cover)
+[![](https://brands.home-assistant.io/cover/icon.png)](integrations/cover)
+:::
+
 :::{card} Dashboards / Lovelace
 :footer: 📚 [Learn more](integrations/lovelace)
 [![](https://brands.home-assistant.io/lovelace/icon.png)](integrations/lovelace)
+:::
+
+:::{card} Energy
+:footer: 📚 [Learn more](integrations/energy)
+[![](https://brands.home-assistant.io/energy/icon.png)](integrations/energy)
 :::
 
 :::{card} Groups
@@ -40,6 +75,36 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/cloud/icon.png)](integrations/cloud)
 :::
 
+:::{card} Home Assistant Core
+:footer: 📚 [Learn more](integrations/homeassistant)
+[![](https://brands.home-assistant.io/homeassistant/icon.png)](integrations/homeassistant)
+:::
+
+:::{card} HomeKit Bridge
+:footer: 📚 [Learn more](integrations/homekit)
+[![](https://brands.home-assistant.io/homekit/icon.png)](integrations/homekit)
+:::
+
+:::{card} Humidifier
+:footer: 📚 [Learn more](integrations/humidifier)
+[![](https://brands.home-assistant.io/humidifier/icon.png)](integrations/humidifier)
+:::
+
+:::{card} Input boolean
+:footer: 📚 [Learn more](integrations/input_boolean)
+[![](https://brands.home-assistant.io/input_boolean/icon.png)](integrations/input_boolean)
+:::
+
+:::{card} Input button
+:footer: 📚 [Learn more](integrations/input_button)
+[![](https://brands.home-assistant.io/input_button/icon.png)](integrations/input_button)
+:::
+
+:::{card} Input datetime
+:footer: 📚 [Learn more](integrations/input_datetime)
+[![](https://brands.home-assistant.io/input_datetime/icon.png)](integrations/input_datetime)
+:::
+
 :::{card} Input number
 :footer: 📚 [Learn more](integrations/input_number)
 [![](https://brands.home-assistant.io/input_number/icon.png)](integrations/input_number)
@@ -48,6 +113,26 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 :::{card} Input select
 :footer: 📚 [Learn more](integrations/input_select)
 [![](https://brands.home-assistant.io/input_select/icon.png)](integrations/input_select)
+:::
+
+:::{card} Input text
+:footer: 📚 [Learn more](integrations/input_text)
+[![](https://brands.home-assistant.io/input_text/icon.png)](integrations/input_text)
+:::
+
+:::{card} Light
+:footer: 📚 [Learn more](integrations/light)
+[![](https://brands.home-assistant.io/light/icon.png)](integrations/light)
+:::
+
+:::{card} Media player
+:footer: 📚 [Learn more](integrations/media_player)
+[![](https://brands.home-assistant.io/media_player/icon.png)](integrations/media_player)
+:::
+
+:::{card} Notify
+:footer: 📚 [Learn more](integrations/notify)
+[![](https://brands.home-assistant.io/notify/icon.png)](integrations/notify)
 :::
 
 :::{card} Number
@@ -95,14 +180,29 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/select/icon.png)](integrations/select)
 :::
 
+:::{card} Sensor
+:footer: 📚 [Learn more](integrations/sensor)
+[![](https://brands.home-assistant.io/sensor/icon.png)](integrations/sensor)
+:::
+
 :::{card} Switch as X
 :footer: 📚 [Learn more](integrations/switch_as_x)
 [![](https://brands.home-assistant.io/switch_as_x/icon.png)](integrations/switch_as_x)
 :::
 
+:::{card} Template
+:footer: 📚 [Learn more](integrations/template)
+[![](https://brands.home-assistant.io/template/icon.png)](integrations/template)
+:::
+
 :::{card} Timer
 :footer: 📚 [Learn more](integrations/timer)
 [![](https://brands.home-assistant.io/timer/icon.png)](integrations/timer)
+:::
+
+:::{card} To-do list
+:footer: 📚 [Learn more](integrations/todo)
+[![](https://brands.home-assistant.io/todo/icon.png)](integrations/todo)
 :::
 
 :::{card} Trend
@@ -113,6 +213,16 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 :::{card} Utility meter
 :footer: 📚 [Learn more](integrations/utility_meter)
 [![](https://brands.home-assistant.io/utility_meter/icon.png)](integrations/utility_meter)
+:::
+
+:::{card} Valve
+:footer: 📚 [Learn more](integrations/valve)
+[![](https://brands.home-assistant.io/valve/icon.png)](integrations/valve)
+:::
+
+:::{card} Water heater
+:footer: 📚 [Learn more](integrations/water_heater)
+[![](https://brands.home-assistant.io/water_heater/icon.png)](integrations/water_heater)
 :::
 
 :::{card} Zone

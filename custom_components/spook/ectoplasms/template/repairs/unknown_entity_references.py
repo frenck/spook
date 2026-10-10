@@ -8,8 +8,14 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
 from homeassistant.core import Event, callback
 from homeassistant.helpers import entity_registry as er
 
+from ....action_extraction import async_extract_entities_from_helper_actions
 from ....const import LOGGER
-from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
+from ....entity_filtering import (
+    async_filter_known_entity_ids,
+    async_get_all_entity_ids,
+    async_get_all_services,
+    async_name_helper_in_the_registry,
+)
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 from ....template_extraction import async_extract_entities_from_config
@@ -66,24 +72,88 @@ class SpookRepair(AbstractSpookRepair):
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         known_entity_ids = async_get_all_entity_ids(self.hass, include_all_none=True)
+        known_services = async_get_all_services(self.hass)
 
         for entry in self.hass.config_entries.async_entries(self.domain):
             self.possible_issue_ids.add(entry.entry_id)
 
+            options = dict(entry.options)
             referenced = await async_extract_entities_from_config(
-                self.hass, dict(entry.options)
+                self.hass, options, known_services
             )
+
+            # Extracting the actions twice separates references that a step
+            # carrying `enabled: false` is the only source of: those cannot
+            # break a run, so the report says so instead of listing them
+            # alongside the ones that can.
+            active = referenced | await async_extract_entities_from_helper_actions(
+                self.hass,
+                options,
+                include_disabled=False,
+                known_services=known_services,
+            )
+            referenced |= await async_extract_entities_from_helper_actions(
+                self.hass, options, known_services=known_services
+            )
+
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,
                 referenced,
                 known_entity_ids=known_entity_ids,
             ):
+                unknown_active = async_filter_known_entity_ids(
+                    self.hass,
+                    active,
+                    known_entity_ids=known_entity_ids,
+                )
                 self.async_create_issue(
                     issue_id=entry.entry_id,
+                    # Carrying which of them nothing running references any
+                    # more, because the report says so and that changes when
+                    # a step is enabled. Left out, a dismissal made while a
+                    # reference was harmless would outlive it becoming a live
+                    # problem, which is the thing an ID of its own prevents.
+                    references=[
+                        *unknown_active,
+                        *(
+                            f"{entity_id} (disabled)"
+                            for entity_id in unknown_entities - unknown_active
+                        ),
+                    ],
                     translation_placeholders={
-                        "entities": async_describe_unknown_entities(
-                            self.hass, sorted(unknown_entities)
+                        "entities": await self._async_describe(
+                            unknown_entities, unknown_active
                         ),
                         "helper": entry.title,
+                        "entity_id": async_name_helper_in_the_registry(
+                            self.hass, entry.entry_id
+                        ),
+                        "edit": "/config/helpers",
                     },
                 )
+
+    async def _async_describe(self, unknown: set[str], unknown_active: set[str]) -> str:
+        """Describe the unknown entities, qualifying the disabled-only ones.
+
+        An entity is only qualified when nothing that runs references it. A
+        Jinja template inside a disabled step is still seen by the template
+        extraction, so such a reference stays unqualified -- the report errs
+        towards saying too much rather than calling a live problem harmless.
+        """
+        described = await async_describe_unknown_entities(
+            self.hass, sorted(unknown_active)
+        )
+        if disabled_only := unknown - unknown_active:
+            described = "\n".join(
+                part
+                for part in (
+                    described,
+                    await async_describe_unknown_entities(
+                        self.hass,
+                        sorted(disabled_only),
+                        note="only referenced from disabled steps",
+                    ),
+                )
+                if part
+            )
+        return described

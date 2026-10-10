@@ -21,7 +21,7 @@ Spook adds some new actions to the input number {term}`integration <integration>
 
 ```{figure} ../images/integrations/input_number/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for input number.
+:alt: Screenshot of the Actions tool, listing the new actions for input number.
 :align: center
 
 Spook adds many new actions to the input number helper integrations.
@@ -38,7 +38,7 @@ Spook adds the following new actions to your Home Assistant instance:
 ### Create an input number
 
 ```{figure} ../images/integrations/input_number/create.png
-:alt: Screenshot of the input number create action in the developer tools.
+:alt: Screenshot of the input number create action on the Tools page.
 :align: center
 ```
 
@@ -52,12 +52,12 @@ Spook adds the following new actions to your Home Assistant instance:
 * - {term}`Action targets`
   - No targets
 * - {term}`Action response`
-  - No response
+  - Optional, the `entity_id` of the new input number
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.create)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.create)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.create)
 ```
 
 ```{list-table}
@@ -124,12 +124,12 @@ data:
 
 ### Delete an input number
 
-:::{note}
-Input number helpers that are created and managed using manual YAML configuration cannot be deleted.
-:::
+Deletes one or more input number helpers made in the UI or with the action above, disabled ones included. Input numbers set up in YAML can only be removed from the YAML.
+
+Everything in the list is checked first: if one of them cannot be deleted, none of them are. Deleting takes an admin, the same as creating one.
 
 ```{figure} ../images/integrations/input_number/delete.png
-:alt: Screenshot of the input number delete action in the developer tools.
+:alt: Screenshot of the input number delete action on the Tools page.
 :align: center
 ```
 
@@ -141,14 +141,27 @@ Input number helpers that are created and managed using manual YAML configuratio
 * - {term}`Action name`
   - `input_number.delete`
 * - {term}`Action targets`
-  - Yes, `input_number` entities
+  - No targets
 * - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.delete)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.delete)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.delete)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `input_number.my_counter`
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -157,7 +170,7 @@ Input number helpers that are created and managed using manual YAML configuratio
 ```{code-block} yaml
 :linenos:
 action: input_number.delete
-target:
+data:
   entity_id: input_number.my_counter
 ```
 
@@ -168,7 +181,7 @@ target:
 Decrease an input number entity value by a certain amount.
 
 ```{figure} ../images/integrations/input_number/decrease.png
-:alt: Screenshot of the input number decrease value action in the developer tools.
+:alt: Screenshot of the input number decrease value action on the Tools page.
 :align: center
 ```
 
@@ -185,9 +198,9 @@ Decrease an input number entity value by a certain amount.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Adds an amount to decrement the value with
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
 ```
 
 ```{list-table}
@@ -201,9 +214,13 @@ Decrease an input number entity value by a certain amount.
   - {term}`integer <integer>`
   - No
   - Defaults to configured step value
+* - `cycle`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
 ```
 
-This action already exists but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
+This action already exists but is extended by Spook to add the `amount` and `cycle` attributes. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value. With `cycle`, going past the end of the range carries on from the other end, the same way selecting the next option cycles a select.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -224,7 +241,7 @@ data:
 Increase an input number entity value by a certain amount.
 
 ```{figure} ../images/integrations/input_number/increase.png
-:alt: Screenshot of the input number increase value action in the developer tools.
+:alt: Screenshot of the input number increase value action on the Tools page.
 :align: center
 ```
 
@@ -241,9 +258,9 @@ Increase an input number entity value by a certain amount.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Adds an amount to increment the value with
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
 ```
 
 ```{list-table}
@@ -257,9 +274,13 @@ Increase an input number entity value by a certain amount.
   - {term}`integer <integer>`
   - No
   - Defaults to configured step value
+* - `cycle`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
 ```
 
-This action already exists but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
+This action already exists but is extended by Spook to add the `amount` and `cycle` attributes. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value. With `cycle`, going past the end of the range carries on from the other end, the same way selecting the next option cycles a select.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -280,7 +301,7 @@ data:
 Set an input number entity to its maximum value.
 
 ```{figure} ../images/integrations/input_number/maximum.png
-:alt: Screenshot of the input number maximum value action in the developer tools.
+:alt: Screenshot of the input number maximum value action on the Tools page.
 :align: center
 ```
 
@@ -297,9 +318,9 @@ Set an input number entity to its maximum value.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -319,7 +340,7 @@ target:
 Set an input number entity to its minimum value.
 
 ```{figure} ../images/integrations/input_number/minimum.png
-:alt: Screenshot of the input number minimum value action in the developer tools.
+:alt: Screenshot of the input number minimum value action on the Tools page.
 :align: center
 ```
 
@@ -336,9 +357,9 @@ Set an input number entity to its minimum value.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -353,11 +374,74 @@ target:
 
 :::
 
+### Set range
+
+Changes the minimum, maximum or step of an input number, the same as editing it in the UI.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Input number: Set range 👻
+* - {term}`Action name`
+  - `input_number.set_range`
+* - {term}`Action targets`
+  - Yes, `input_number` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.set_range)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.set_range)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `min`
+  - {term}`float <float>`
+  - No
+  - `0`
+* - `max`
+  - {term}`float <float>`
+  - No
+  - `3600`
+* - `step`
+  - {term}`float <float>`
+  - No
+  - `1`
+```
+
+Give at least one of them; what is left out stays as it is. The change is stored, so it survives a restart, like editing the helper does. A value that falls outside the new range is moved inside it. The maximum has to stay above the minimum.
+
+This takes an admin when a user calls it, since it changes how the helper is set up. Automations and scripts are not affected. Only input numbers made in the UI can be changed; one set up in YAML is refused.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+A slider that fits a track of whatever length was just loaded:
+
+```{code-block} yaml
+:linenos:
+action: input_number.set_range
+target:
+  entity_id: input_number.track_position
+data:
+  max: "{{ states('sensor.track_length_seconds') }}"
+```
+
+:::
+
 ## Repairs
 
 Spook has no repair detections for this integration.
 
-## Uses cases
+## Use cases
 
 Some use cases for the enhancements Spook provides for this integration:
 
@@ -370,7 +454,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

@@ -24,6 +24,7 @@ from homeassistant.setup import async_setup_component
 from custom_components import spook
 from custom_components.spook.const import DOMAIN
 import pytest
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -89,7 +90,7 @@ async def test_automation_with_dangling_references_creates_issue(
         """Skip ectoplasm setup; this test targets the repair manager."""
 
     monkeypatch.setattr(spook, "PLATFORMS", [])
-    monkeypatch.setattr(spook, "link_sub_integrations", lambda _: False)
+    monkeypatch.setattr(spook, "link_sub_integrations", lambda _: set())
     monkeypatch.setattr(
         spook, "async_forward_setup_entry", _async_forward_no_ectoplasms
     )
@@ -113,9 +114,8 @@ async def test_automation_with_dangling_references_creates_issue(
     async_fire_time_changed(hass)
     await hass.async_block_till_done()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "automation_unknown_entity_references_automation.spooky_test",
+    issue = async_issue_about(
+        issue_registry, "automation_unknown_entity_references_automation.spooky_test"
     )
     assert issue
     assert issue.translation_placeholders
@@ -124,9 +124,8 @@ async def test_automation_with_dangling_references_creates_issue(
     assert "light.ghost" in entities
 
     # The dangling action also surfaces as an unknown service reference.
-    assert issue_registry.async_get_issue(
-        DOMAIN,
-        "automation_unknown_service_references_automation.spooky_test",
+    assert async_issue_about(
+        issue_registry, "automation_unknown_service_references_automation.spooky_test"
     )
 
     assert await hass.config_entries.async_unload(entry.entry_id)

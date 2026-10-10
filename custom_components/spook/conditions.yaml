@@ -1,3 +1,13 @@
+triggered_by_user:
+  fields:
+    person:
+      required: false
+      example: person.frenck
+      selector:
+        entity:
+          domain: person
+          multiple: true
+not_triggered_by_user: {}
 chance:
   fields:
     percentage:
@@ -10,3 +20,85 @@ chance:
           step: 1
           unit_of_measurement: "%"
           mode: slider
+cooldown:
+  fields:
+    duration:
+      required: true
+      example: "00:05:00"
+      selector:
+        duration:
+triggered_by_automation:
+  fields:
+    automation:
+      required: false
+      example: automation.goodnight
+      selector:
+        entity:
+          domain: automation
+          multiple: true
+repair_issue_present:
+  fields:
+    domain:
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
+    severity:
+      required: false
+      selector:
+        select:
+          multiple: true
+          translation_key: repair_issue_severity
+          options:
+            - critical
+            - error
+            - warning
+is_available:
+  target:
+    entity: {}
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+is_at_target_temperature:
+  target:
+    entity:
+      - domain: climate
+      - domain: water_heater
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
+    tolerance:
+      required: false
+      default: 0
+      example: 0.5
+      selector:
+        number:
+          min: 0
+          max: 10
+          step: 0.1
+          mode: box
+quota:
+  fields:
+    limit:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 64
+          step: 1
+          mode: box
+    period:
+      required: true
+      example: "24:00:00"
+      selector:
+        duration:

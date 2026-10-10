@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.script.repairs.unknown_area_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -39,9 +39,8 @@ async def test_script_with_unknown_area_creates_issue(
     repair = SpookRepair(hass)
     await repair.async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "script_unknown_area_references_script.spooky",
+    issue = async_issue_about(
+        issue_registry, "script_unknown_area_references_script.spooky"
     )
     assert issue
     assert issue.translation_placeholders

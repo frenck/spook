@@ -1,335 +1,3003 @@
 {
-  "config": {
-    "abort": {
-      "already_spooked": "Da... dobro... ne. U redu, hvala, doviđenja!"
-    },
-    "step": {
-      "user": {
-        "description": "Da li ste pročitali readme? Da li ste pročitali licencu? Da li ste zaista sigurni?"
-      },
-      "choice_restart": {
-        "description": "Da bi Spook završio podešavanje, Home Assistant mora biti restartovan.\n\nDa li želite da restartujete Home Assistant sada?",
-        "menu_options": {
-          "restart_now": "Restartuj sada",
-          "restart_later": "Restartuj kasnije"
-        }
-      }
-    }
-  },
-  "entity": {
-    "button": {
-      "homeassistant_reload": {
-        "name": "Ponovo učitaj"
-      },
-      "homeassistant_restart": {
-        "name": "Restartuj"
-      },
-      "repairs_ignore_all": {
-        "name": "Ignoriši sve"
-      },
-      "repairs_unignore_all": {
-        "name": "Ne ignoriši ništa"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "create": "Issue created",
-              "remove": "Issue removed",
-              "update": "Issue updated"
+    "config": {
+        "abort": {
+            "already_spooked": "Spook već opseda ovo mesto 👻\n\nJedan duh po kući je sasvim dovoljan. Spook-a možete pronaći pod [Uređaji i servisi](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook je ponovo budan 👻\n\nDajte mu trenutak da se osvrne oko sebe. Sve što pronađe biće prikazano pod [Popravke](/config/repairs).",
+            "enable_failed": "Spook ne želi da se probudi 👻\n\nPokušajte da ga sami ponovo uključite pod [Uređaji i servisi](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook ostaje da spava 👻\n\nNedostaje vam? Možete ga probuditi bilo kada pod [Uređaji i servisi](/config/integrations/integration/spook)."
+        },
+        "step": {
+            "user": {
+                "description": "Spook lebdi oko vašeg Home Assistant-a tražeći duhove: reference na stvari koje više ne postoje i ostatke koje niko nije očistio. Šta god da pronađe, to prijavljuje pod Popravke.\n\nTakođe proširuje ono što vaše automatizacije i skripte mogu da urade, sa dodatnim akcijama, pokretačima, uslovima i pomoćnicima, za još moćnije automatizacije.\n\nFer upozorenje: Spook nije deo Home Assistant-a. To je prilagođena integracija koja zalazi na mesta na koja nikada nije bila pozvana. Ako se desi nešto čudno, prvo posumnjajte na Spook-a i [javite nam]({issue_tracker_url}).\n\nSpremni da se uplašite?",
+                "title": "Bu! Upoznajte Spook, vašeg pomoćnika 👻"
+            },
+            "already_configured": {
+                "description": "Spook je već podešen, ali ga je neko isključio. Želite li da ga probudite?",
+                "menu_options": {
+                    "enable_existing": "Probudite Spook-a",
+                    "keep_sleeping": "Pustite ga da spava"
+                },
+                "title": "Spook spava 👻"
             }
-          },
-          "domain": {
-            "name": "Issue issuer"
-          },
-          "issue_id": {
-            "name": "Issue ID"
-          }
+        },
+        "create_entry": {
+            "spooked": "Spook lebdi okolo 👻\n\nDajte mu trenutak da se osvrne oko sebe. Sve što pronađe biće prikazano pod [Popravke](/config/repairs).\n\nDodatne akcije, pokretači i uslovi čekaju na vas u editorima automatizacija i skripti. Radoznali ste šta još Spook može da uradi? Sve imate u [dokumentaciji]({documentation_url}).\n\nUživate u Spook-u? 👻 ⭐ na [GitHub-u]({repository_url}) pomaže drugima da saznaju da je Spook zapravo sjajan. [Sponzorisanjem Frenck-a]({sponsor_url}) pomažete duhu da opstane, a njegov besplatni dvonedeljni [bilten]({newsletter_url}) nahraniće i vašu radoznalu dušu."
         }
-      }
     },
-    "sensor": {
-      "homeassistant_air_quality": {
-        "name": "Air quality"
-      },
-      "homeassistant_alarm_control_panel": {
-        "name": "Alarm control panels"
-      },
-      "homeassistant_area": {
-        "name": "Oblasti"
-      },
-      "homeassistant_automation": {
-        "name": "Automatizacije"
-      },
-      "homeassistant_binary_sensor": {
-        "name": "Binary sensors"
-      },
-      "homeassistant_button": {
-        "name": "Buttons"
-      },
-      "homeassistant_calendar": {
-        "name": "Calendars"
-      },
-      "homeassistant_camera": {
-        "name": "Cameras"
-      },
-      "homeassistant_climate": {
-        "name": "Climate"
-      },
-      "homeassistant_cover": {
-        "name": "Covers"
-      },
-      "homeassistant_custom_component": {
-        "name": "Custom integrations"
-      },
-      "homeassistant_date": {
-        "name": "Dates"
-      },
-      "homeassistant_datetime": {
-        "name": "Date/times"
-      },
-      "homeassistant_device": {
-        "name": "Uređaji"
-      },
-      "homeassistant_device_tracker": {
-        "name": "Device trackers"
-      },
-      "homeassistant_entities": {
-        "name": "Entiteti"
-      },
-      "homeassistant_fan": {
-        "name": "Fans"
-      },
-      "homeassistant_humidifier": {
-        "name": "Humidifiers"
-      },
-      "homeassistant_image": {
-        "name": "Images"
-      },
-      "homeassistant_input_boolean": {
-        "name": "Input booleans"
-      },
-      "homeassistant_input_button": {
-        "name": "Input buttons"
-      },
-      "homeassistant_input_datetime": {
-        "name": "Input date/times"
-      },
-      "homeassistant_input_number": {
-        "name": "Input numbers"
-      },
-      "homeassistant_input_select": {
-        "name": "Input selects"
-      },
-      "homeassistant_input_text": {
-        "name": "Input texts"
-      },
-      "homeassistant_integration": {
-        "name": "Integrations"
-      },
-      "homeassistant_light": {
-        "name": "Svetla"
-      },
-      "homeassistant_lock": {
-        "name": "Locks"
-      },
-      "homeassistant_media_player": {
-        "name": "Media players"
-      },
-      "homeassistant_number": {
-        "name": "Numbers"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "Persistent notifications"
-      },
-      "homeassistant_person": {
-        "name": "Persons"
-      },
-      "homeassistant_remote": {
-        "name": "Remotes"
-      },
-      "homeassistant_scene": {
-        "name": "Scenes"
-      },
-      "homeassistant_script": {
-        "name": "Scripts"
-      },
-      "homeassistant_select": {
-        "name": "Selects"
-      },
-      "homeassistant_sensor": {
-        "name": "Senzori"
-      },
-      "homeassistant_siren": {
-        "name": "Sirens"
-      },
-      "homeassistant_stt": {
-        "name": "Speech-to-text"
-      },
-      "homeassistant_sun": {
-        "name": "Suns"
-      },
-      "homeassistant_switch": {
-        "name": "Prekidači"
-      },
-      "homeassistant_text": {
-        "name": "Texts"
-      },
-      "homeassistant_time": {
-        "name": "Times"
-      },
-      "homeassistant_tts": {
-        "name": "Text-to-speech"
-      },
-      "homeassistant_update": {
-        "name": "Update"
-      },
-      "homeassistant_vacuum": {
-        "name": "Vacuums"
-      },
-      "homeassistant_water_heater": {
-        "name": "Water heaters"
-      },
-      "homeassistant_weather": {
-        "name": "Weather"
-      },
-      "homeassistant_zone": {
-        "name": "Zones"
-      },
-      "repairs_total_issues": {
-        "name": "Ukupno"
-      },
-      "repairs_ignored_issues": {
-        "name": "Ignorisano"
-      },
-      "repairs_active_issues": {
-        "name": "Aktivno"
-      }
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "Ponovo učitaj"
+            },
+            "homeassistant_restart": {
+                "name": "Ponovo pokreni"
+            },
+            "repairs_ignore_all": {
+                "name": "Zanemari sve"
+            },
+            "repairs_unignore_all": {
+                "name": "Poništi zanemarivanje svih"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Problem kreiran",
+                            "remove": "Problem uklonjen",
+                            "update": "Problem ažuriran"
+                        }
+                    },
+                    "domain": {
+                        "name": "Izvor problema"
+                    },
+                    "issue_id": {
+                        "name": "ID problema"
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "Kvalitet vazduha"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Alarmni paneli"
+            },
+            "homeassistant_area": {
+                "name": "Prostorije"
+            },
+            "homeassistant_automation": {
+                "name": "Automatizacije"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Binarni senzori"
+            },
+            "homeassistant_button": {
+                "name": "Dugmad"
+            },
+            "homeassistant_calendar": {
+                "name": "Kalendari"
+            },
+            "homeassistant_camera": {
+                "name": "Kamere"
+            },
+            "homeassistant_climate": {
+                "name": "Klime"
+            },
+            "homeassistant_cover": {
+                "name": "Zastori"
+            },
+            "homeassistant_custom_component": {
+                "name": "Prilagođene integracije"
+            },
+            "homeassistant_date": {
+                "name": "Datumi"
+            },
+            "homeassistant_datetime": {
+                "name": "Datumi/vremena"
+            },
+            "homeassistant_device": {
+                "name": "Uređaji"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Uređaji koji se prate"
+            },
+            "homeassistant_entities": {
+                "name": "Entiteti"
+            },
+            "homeassistant_fan": {
+                "name": "Ventilatori"
+            },
+            "homeassistant_humidifier": {
+                "name": "Ovlaživači"
+            },
+            "homeassistant_image": {
+                "name": "Slike"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Logički unosi"
+            },
+            "homeassistant_input_button": {
+                "name": "Dugmad za unos"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Unosi datuma/vremena"
+            },
+            "homeassistant_input_number": {
+                "name": "Numerički unosi"
+            },
+            "homeassistant_input_select": {
+                "name": "Padajući meniji za unos"
+            },
+            "homeassistant_input_text": {
+                "name": "Tekstualna polja za unos"
+            },
+            "homeassistant_integration": {
+                "name": "Integracije"
+            },
+            "homeassistant_light": {
+                "name": "Svetla"
+            },
+            "homeassistant_lock": {
+                "name": "Brave"
+            },
+            "homeassistant_media_player": {
+                "name": "Medijski plejeri"
+            },
+            "homeassistant_number": {
+                "name": "Brojevi"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Trajna obaveštenja"
+            },
+            "homeassistant_person": {
+                "name": "Osobe"
+            },
+            "homeassistant_remote": {
+                "name": "Daljinski upravljači"
+            },
+            "homeassistant_scene": {
+                "name": "Scene"
+            },
+            "homeassistant_script": {
+                "name": "Skripte"
+            },
+            "homeassistant_select": {
+                "name": "Izbori"
+            },
+            "homeassistant_sensor": {
+                "name": "Senzori"
+            },
+            "homeassistant_siren": {
+                "name": "Sirene"
+            },
+            "homeassistant_stt": {
+                "name": "Govor u tekst"
+            },
+            "homeassistant_sun": {
+                "name": "Sunce"
+            },
+            "homeassistant_switch": {
+                "name": "Prekidači"
+            },
+            "homeassistant_text": {
+                "name": "Tekstovi"
+            },
+            "homeassistant_time": {
+                "name": "Vremena"
+            },
+            "homeassistant_tts": {
+                "name": "Tekst u govor"
+            },
+            "homeassistant_update": {
+                "name": "Ažuriranja"
+            },
+            "homeassistant_vacuum": {
+                "name": "Usisivači"
+            },
+            "homeassistant_water_heater": {
+                "name": "Bojleri"
+            },
+            "homeassistant_weather": {
+                "name": "Vremenska prognoza"
+            },
+            "homeassistant_zone": {
+                "name": "Zone"
+            },
+            "repairs_total_issues": {
+                "name": "Ukupno"
+            },
+            "repairs_ignored_issues": {
+                "name": "Zanemareno"
+            },
+            "repairs_active_issues": {
+                "name": "Aktivno"
+            },
+            "homeassistant_counter": {
+                "name": "Brojači"
+            },
+            "homeassistant_group": {
+                "name": "Grupe"
+            },
+            "homeassistant_timer": {
+                "name": "Tajmeri"
+            },
+            "homeassistant_todo": {
+                "name": "Liste obaveza"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Slanje statusa asistentu Alexa"
+            },
+            "cloud_google_report_state": {
+                "name": "Slanje statusa Gugl asistentu"
+            },
+            "cloud_remote": {
+                "name": "Daljinski upravljač"
+            }
+        }
     },
-    "switch": {
-      "cloud_alexa_report_state": {
-        "name": "Alexa state reporting"
-      },
-      "cloud_google_report_state": {
-        "name": "Google Assistant state reporting"
-      },
-      "cloud_remote": {
-        "name": "Remote"
-      }
-    }
-  },
-  "issues": {
-    "automation_unknown_area_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {automation}"
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Nije moguće povezati sve pokretače „all-of” pokretača."
+        },
+        "area_not_found": {
+            "message": "Prostorija {area_id} nije pronađena."
+        },
+        "blueprint_backup_failed": {
+            "message": "Nije moguće skloniti kopiju datoteke {path}: {error}. Ništa nije upisano."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} ne može da radi ovde: {errors}. Ništa nije upisano."
+        },
+        "blueprint_could_not_write": {
+            "message": "Nije moguće upisati {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Nepodržan domen: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Greška pri preuzimanju nacrta sa URL adrese."
+        },
+        "blueprint_file_exists": {
+            "message": "Datoteka već postoji."
+        },
+        "blueprint_gone": {
+            "message": "{name} više nije ovde, tako da nema šta da se ažurira. Ništa nije upisano."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Ova URL adresa nije podržana."
+        },
+        "blueprint_write_failed": {
+            "message": "Greška pri upisu datoteke."
+        },
+        "blueprints_not_loaded": {
+            "message": "Nacrti za {domain} trenutno nisu učitani."
+        },
+        "calendar_events_which": {
+            "message": "Navedite koji događaji: dajte opis, „uid” ili oboje."
+        },
+        "calendar_range_backwards": {
+            "message": "Kraj perioda pretrage mora biti posle njegovog početka."
+        },
+        "calendar_range_required": {
+            "message": "Navedite dokle da se traži: dajte krajnji datum i vreme ili trajanje."
+        },
+        "cannot_disable_system_user": {
+            "message": "Nije moguće onemogućiti sistemskog korisnika: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Nije moguće omogućiti sistemskog korisnika: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Kategorija {category} nije pronađena za {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Nema šta da se ažurira u kategoriji {category}: navedite bar jedno od {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Šablon u ovom uslovu više ne sadrži Jinja, pa je konstanta i nikada se neće promeniti. To obično znači da ga je skripta već obradila pre nego što je ova akcija pokrenuta, što se dešava sa svakim šablonom u podacima akcije. Koristite uslov bez šablona ili sačekajte sam šablon pomoću 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Unos integracije {config_entry_id} nije pronađen."
+        },
+        "debounce_attach_failed": {
+            "message": "Nije moguće povezati sve pokretače „debounce” pokretača."
+        },
+        "device_not_found": {
+            "message": "Uređaj {device_id} nije pronađen."
+        },
+        "entity_id_taken": {
+            "message": "ID entiteta {entity_id} je već zauzet."
+        },
+        "entity_not_found": {
+            "message": "Entitet {entity_id} nije pronađen."
+        },
+        "entity_without_unique_id": {
+            "message": "Entitet {entity_id} nema jedinstveni ID, pa Home Assistant ne može da čuva ikonu ili pseudonime za njega."
+        },
+        "event_cannot_change": {
+            "message": "{summary} ne može da se promeni na taj način: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Navedite šta treba promeniti: novi opis, mesto ili nova vremena."
+        },
+        "event_shift_or_times": {
+            "message": "Pomerite događaj za određeni pomak ili mu dajte nova vremena, ne oboje."
+        },
+        "event_whole_days": {
+            "message": "{summary} traje cele dane, pa može da se pomera samo za cele dane."
+        },
+        "floor_not_found": {
+            "message": "Sprat {floor_id} nije pronađen."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} ne može da se pridruži ovoj grupi: sadrži entitete tipa {domains}."
+        },
+        "group_not_found_behind": {
+            "message": "Nije moguće pronaći grupu iza {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "Nije moguće pristupiti {domain} pomoćnicima koje Home Assistant čuva."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Nije moguće zadržati {entity_id} do vremena koje ne postoji."
+        },
+        "home_zone_radius": {
+            "message": "Kućna zona prima poluprečnik u celim metrima, nula ili više."
+        },
+        "home_zone_unsupported": {
+            "message": "Kućna zona prima samo geografsku širinu, dužinu i poluprečnik, a ne: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Ovaj numerički unos ne može da se menja: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Navedite unose integracije koje treba promeniti ili njihovu integraciju."
+        },
+        "integration_without_entries": {
+            "message": "Integracija {domain} nema unose."
+        },
+        "label_not_found": {
+            "message": "Oznaka {label_id} nije pronađena."
+        },
+        "label_nothing_to_update": {
+            "message": "Nema šta da se ažurira u oznaci {label_id}: navedite bar jedno od {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Maksimum ({maximum}) mora biti veći od minimuma ({minimum})."
+        },
+        "no_max_value": {
+            "message": "Entitet {entity_id} nema maksimalnu vrednost."
+        },
+        "no_min_value": {
+            "message": "Entitet {entity_id} nema minimalnu vrednost."
+        },
+        "not_a_group": {
+            "message": "{entity_id} nije grupa."
+        },
+        "person_not_editable": {
+            "message": "Ova osoba ne može da se menja: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook je naišao na grešku pri ponovnom pokretanju Home Assistant-a."
+        },
+        "sequence_attach_failed": {
+            "message": "Nije moguće povezati prvi korak pokretača po redosledu."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Navedite minimum, maksimum ili korak koji treba promeniti."
+        },
+        "spooked": {
+            "message": "Uplašeno! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Ovaj tajmer ne može da se menja: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Stavka ne može da se premesti posle same sebe."
+        },
+        "todo_item_not_found": {
+            "message": "Nema stavke {item} u {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Ništa ne može da se premesti posle poslednje stavke u {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Navedite gde: posle druge stavke, na vrh ili na dno."
+        },
+        "user_not_found": {
+            "message": "Nije moguće pronaći korisnika: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Vrednost {value} za {entity_id} nije broj."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Nije moguće povezati pokretače aktiviranja pokretača za nadgledanje."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Nije moguće povezati očekivane pokretače pokretača za nadgledanje."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} je grupa iz vaše „YAML” konfiguracije, koju Spook ne može da menja. Izmenite je u svojoj konfiguraciji ili koristite group.set, koji i dalje radi sa takvim grupama."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} je podešen u „YAML”-u i ne može da se obriše."
+        },
+        "zone_not_editable": {
+            "message": "Ova zona ne može da se menja: {entity_id}."
+        }
     },
-    "automation_unknown_device_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {automation}"
-    },
-    "automation_unknown_entity_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {automation}"
-    },
-    "automation_unknown_floor_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {automation}"
-    },
-    "automation_unknown_label_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {automation}"
-    },
-    "automation_unknown_service_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {automation}"
-    },
-    "group_unknown_members": {
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown group members in: {group}"
-    },
-    "integration_unknown_source": {
-      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "lovelace_unknown_entity_references": {
-      "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {dashboard}"
-    },
-    "proximity_unknown_ignored_zones": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-      "title": "Unknown ignored zones: {name}"
-    },
-    "proximity_unknown_tracked_entities": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown tracked entities: {name}"
-    },
-    "proximity_unknown_zone": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-      "title": "Unknown zone: {zone}"
-    },
-    "scene_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {scene}"
-    },
-    "script_unknown_area_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {script}"
-    },
-    "script_unknown_device_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {script}"
-    },
-    "script_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {script}"
-    },
-    "script_unknown_floor_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {script}"
-    },
-    "script_unknown_label_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {script}"
-    },
-    "script_unknown_service_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {script}"
-    },
-    "switch_as_x_unknown_source": {
-      "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "utility_meter_unknown_source": {
-      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "trend_unknown_source": {
-      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "description": "{description}",
+    "issues": {
+        "automation_unknown_area_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\nOva automatizacija koristi sledeće prostorije koje su nepoznate Home Assistant-u:\n\n{areas}\n\n\n\nDa biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nepostojećih prostorija.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate prostorije korišćene u: {automation}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće uređaje koji su nepoznati Home Assistant-u:\n\n{devices}\n\n\n\nDa biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nepostojećih uređaja.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati uređaji u: {automation}"
+        },
+        "automation_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lutao, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti u: {automation}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće spratove koji su nepoznati Home Assistant-u:\n\n{floors}\n\n\n\nDa biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nepostojećih spratova.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati spratovi u: {automation}"
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće oznake koje su nepoznate Home Assistant-u:\n\n{labels}\n\n\n\nDa biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nepostojećih oznaka.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate oznake u: {automation}"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće akcije koje su nepoznate Home Assistant-u:\n\n{services}\n\n\n\nDa biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nepostojećih akcija.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate radnje korišćene u: {automation}"
+        },
+        "group_unknown_members": {
+            "title": "Nepoznati članovi grupe u: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "description": "Spook je pronašao duha u vašim grupama 👻\n\nGrupa {group} (`{entity_id}`) ima članove koji su nepoznati Home Assistant-u:\n\n{entities}\n\nUklonite ih iz grupe, ili ih zadržite i Spook će prestati da ukazuje na njih.\n\nSpook 👻 Vaš pomoćnik.",
+                        "title": "Nepoznati članovi grupe u: {group}",
+                        "menu_options": {
+                            "remove": "Ukloni ove članove",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži ih, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovoj grupi.",
+                    "not_editable": "Ova grupa je podešena u YAML-u, tako da Spook ne može da je izmeni. Umesto toga, ažurirajte grupu u svojoj konfiguraciji.",
+                    "manage": "Ovom grupom možete sami upravljati na stranici [Pomoćnici](/config/helpers).",
+                    "changed": "Članovi navedeni u ovoj popravci su se vratili ili promenili otkako ih je Spook proverio, tako da ništa nije uklonjeno iz grupe. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
+        },
+        "lovelace_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće entitete koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [uredite kontrolnu tablu]({edit}) i uklonite upotrebu ovih nepostojećih entiteta.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti u: {dashboard}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook je pronašao duha u vašoj konfiguraciji blizine 👻\n\nDok je lutao okolo, Spook je naišao na sledeću konfiguraciju blizine:\n\n{name}\n\nOva konfiguracija ignoriše zone koje su nepoznate Home Assistant‑u:\n\n{zones}\n\n\n\nDa biste ispravili ovu grešku, izmenite konfiguraciju i uklonite ovu/ove zone.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate zanemarene zone: {name}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook je pronašao duha u vašoj konfiguraciji blizine 👻\n\nDok je lutao okolo, Spook je naišao na sledeću konfiguraciju blizine:\n\n{name}\n\nOva konfiguracija prati osobe ili uređaje koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, izmenite konfiguraciju i uklonite ovaj/ove entitete.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati praćeni entiteti: {name}"
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook je pronašao duha u vašoj konfiguraciji blizine 👻\n\nDok je lutao okolo, Spook je naišao na sledeću konfiguraciju blizine:\n\n{name}\n\nOva konfiguracija se zasniva na zoni koja je nepoznata Home Assistant‑u:\n\n`{zone}`\n\n\n\nDa biste ispravili ovu grešku, pošto ne možete da promenite zonu konfiguracije blizine, jedina opcija je da uklonite ovu instancu integracije blizine.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznata zona: {zone}"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašim scenama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću scenu:\n\n[{scene}]({edit})\n\nOva scena referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [izmenite scenu]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti u: {scene}"
+        },
+        "script_unknown_area_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće oblasti koje su nepoznate Home Assistant‑u:\n\n{areas}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih oblasti.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate prostorije korišćene u: {script}"
+        },
+        "script_unknown_device_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće uređaje koji su nepoznati Home Assistant‑u:\n\n{devices}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih uređaja.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati uređaji u: {script}"
+        },
+        "script_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti u: {script}"
+        },
+        "script_unknown_floor_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće spratove koji su nepoznati Home Assistant‑u:\n\n{floors}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih spratova.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati spratovi u: {script}"
+        },
+        "script_unknown_label_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće oznake koje su nepoznate Home Assistant‑u:\n\n{labels}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih oznaka.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate oznake u: {script}"
+        },
+        "script_unknown_service_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{services}\n\n\n\nOvo se često dešava kada je integracija koja obezbeđuje akciju uklonjena. Da biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih akcija ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate akcije korišćene u: {script}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{title}"
+                    }
+                }
+            },
             "title": "{title}"
-          }
+        },
+        "restart_required": {
+            "title": "Potrebno je ponovno pokretanje",
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Potrebno je ponovno pokretanje",
+                        "description": "Da bi se Spook 👻 potpuno podesio, potrebno je ponovo pokrenuti Home Assistant.\n\nIzaberite Potvrdi da biste sada ponovo pokrenuli Home Assistant.\n\nSpook 👻 Vaš pomoćnik."
+                    }
+                }
+            }
+        },
+        "alert_unknown_notifiers": {
+            "description": "Spook je pronašao duha u vašim alarmima 👻\n\nAlarm {alert} (`{entity_id}`) šalje obaveštenja putem sledećih akcija koje su nepoznate Home Assistant-u:\n\n{notifiers}\n\nAlarm se i dalje aktivira i prolazi kroz svoje cikluse, ali ova obaveštenja ne odlaze nikuda. Home Assistant ovo beleži u dnevnik tek u trenutku kada se alarm aktivira, što je loš trenutak da saznate da niko ne sluša.\n\nDa biste ispravili ovu grešku, uredite listu `notifiers:` za ovaj alarm u vašoj konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate usluge obaveštavanja koje obaveštenje koristi: {alert}"
+        },
+        "alert_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašim alarmima 👻\n\nAlarm {alert} (`{entity_id}`) prati entitet koji je nepoznat Home Assistant-u:\n\n{entities}\n\nAlarm može da se aktivira samo na osnovu entiteta koji prati, tako da se ovaj više nikada ne može pokrenuti. Izgleda isto kao i alarm koji nema šta da prijavi.\n\nDa biste ispravili ovu grešku, uredite odeljak `alert:` u vašoj konfiguraciji i usmerite ovaj alarm na entitet koji postoji.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entitet koji obaveštenje prati: {alert}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće uslove koje ne može da obezbedi nijedna integracija dostupna Home Assistant-u:\n\n{conditions}\n\n\n\nOvo se često dešava kada se ukloni integracija koja obezbeđuje uslov. Da biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nedostupnih uslova, ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati uslovi u: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće pokretače koje ne može da obezbedi nijedna integracija dostupna Home Assistant-u:\n\n{triggers}\n\nOvo se često dešava kada se ukloni integracija koja obezbeđuje pokretač. Da biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nedostupnih pokretača, ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati pokretači u: {automation}"
+        },
+        "unknown_customized_entities": {
+            "description": "Spook je pronašao duha u vašim prilagođavanjima 👻\n\nOdeljak `customize:` dodeljuje atribute sledećim entitetima koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nOvo se često dešava kada se entitet preimenuje ili ukloni, dok njegovo prilagođavanje ostane zaostalo. Da biste ispravili ovu grešku, uredite odeljak `customize:` u vašoj konfiguraciji i uklonite ove entitete.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti u vašim prilagođavanjima"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se prilagođena kartica ili njene datoteke uklone, ali resurs ostane za njima. Da biste ispravili ovu grešku, otvorite stranicu [Resursi](/config/lovelace/resources) i uklonite ili ispravite ove resurse. Ona nema sopstvenu karticu: na stranici Kontrolne table nalazi se iza tri tačke, gore desno.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Resursi kontrolne table ukazuju na datoteke koje nedostaju"
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n{dashboard}\n\nOva kontrolna tabla koristi sledeće prostorije koje su nepoznate Home Assistant-u:\n\n{areas}\n\n\n\nOvo se često dešava kada se prostorija preimenuje ili ukloni. Da biste ispravili ovu grešku, [uredite kontrolnu tablu]({edit}) i uklonite upotrebu ovih nepostojećih prostorija.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate prostorije korišćene u kontrolnoj tabli: {dashboard}"
+        },
+        "energy_unknown_references": {
+            "title": "Nepoznati entiteti korišćeni u energetskoj kontrolnoj tabli",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nepoznati entiteti korišćeni u energetskoj kontrolnoj tabli",
+                        "description": "Spook je pronašao duha u vašoj energetskoj kontrolnoj tabli 👻\n\nEnergetska kontrolna tabla koristi sledeće entitete, koji su nepoznati Home Assistant-u:\n\n{entities}\n\nOvo se obično dešava kada je entitet korišćen u konfiguraciji energije preimenovan ili uklonjen. Preimenovan? Onda otvorite [Podešavanja > Kontrolne table > Energija](/config/energy) i izaberite novi, da bi njegova istorija ostala na kontrolnoj tabli.\n\nUklonjen zauvek? Spook može umesto vas da ih izbaci iz konfiguracije energije. Merač koji nedostaje sa sobom nosi i svoj izvor ili uređaj, a cena ili trošak koji nedostaje se samo briše. Kontrolna tabla tada prestaje da prikazuje istoriju onoga što je izbačeno; sama statistika ostaje.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Izbaci ih iz konfiguracije energije",
+                            "manage": "Dozvoli mi da uradim to sam",
+                            "ignore": "Zadrži ih, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovim entitetima.",
+                    "manage": "Ove entitete možete sami ažurirati ili ukloniti u [konfiguraciji energije](/config/energy).",
+                    "nothing_to_remove": "Nijedan od njih više nije nepoznat, pa ništa nije izbačeno. Možda su se vratili, ili je neko već promenio konfiguraciju energije."
+                }
+            }
+        },
+        "unknown_helper_source_references": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nPomoćnik {helper} (`{domain}`, `{entity_id}`) koristi sledeće izvorne entitete koji su nepoznati Home Assistant-u:\n\n{sources}\n\nBez svojih izvora ovaj pomoćnik ne može da radi. {usage}\n\nUklonite pomoćnika, ili ga zadržite i Spook će prestati da ukazuje na njega.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "ignore": "Zadrži, prestani da me obaveštavaš",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "remove": "Ukloni ovog pomoćnika"
+                        },
+                        "title": "Nepoznati izvorni entiteti u pomoćniku: {helper}"
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovom pomoćniku.",
+                    "manage": "Ovim pomoćnikom možete sami upravljati na stranici [Pomoćnici](/config/helpers).",
+                    "changed": "Izvori ovog pomoćnika su se promenili otkako ih je Spook proverio, tako da pomoćnik nije menjan. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            },
+            "title": "Nepoznati izvorni entiteti u pomoćniku: {helper}"
+        },
+        "min_max_unknown_sources": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nMin/max pomoćnik {helper} (`{entity_id}`) kombinuje sledeće članove koji su nepoznati Home Assistant-u:\n\n{sources}\n\nUklonite ih kako bi pomoćnik nastavio sa radom pomoću preostalih članova, ili ih zadržite i Spook će prestati da ukazuje na njih.\n\nSpook 👻 Vaš pomoćnik.",
+                        "title": "Nepoznati članovi u min/max pomoćniku: {helper}",
+                        "menu_options": {
+                            "remove": "Ukloni ove članove",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži ih, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovom pomoćniku.",
+                    "manage": "Ovim pomoćnikom možete sami upravljati na stranici  [Pomoćnici ](/config/helpers).",
+                    "too_few_members": "Pomoćnik za minimum/maksimum zahteva najmanje dva člana, pa bi uklanjanje nedostajućih ostavilo premalo. Ponovo konfigurišite ili uklonite pomoćnika sami na stranici [Pomoćnici](/config/helpers).",
+                    "changed": "Članovi navedeni u ovoj popravci su se vratili ili promenili otkako ih je Spook proverio, tako da ništa nije uklonjeno iz pomoćnika. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            },
+            "title": "Nepoznati članovi u min/max pomoćniku: {helper}"
+        },
+        "empty_areas": {
+            "title": "Prazna prostorija: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Prazna prostorija: {area}",
+                        "description": "Prostorija {area} nema uređaje, nema entitete i nijedna automatizacija ili skripta je ne ciljaju.\n\nUklonite je, ili je zadržite i Spook će prestati da ukazuje na nju.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Ukloni ovu praznu prostoriju",
+                            "ignore": "Zadrži, prestani da me obaveštavaš",
+                            "manage": "Dozvoli mi da sam popravim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovoj prostoriji.",
+                    "manage": "Ovom prostorijom možete sami upravljati na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ova prostorija se ponovo koristi otkako ju je Spook proverio: ili sadrži nešto ili je koristi neka automatizacija ili skripta. Zbog toga nije menjana. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke"
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Prazan sprat: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Prazan sprat: {floor}",
+                        "description": "Sprat {floor} nema prostorije i nijedna automatizacija ili skripta ga ne ciljaju.\n\nUklonite ga, ili ga zadržite i Spook će prestati da ukazuje na njega.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Ukloni ovaj prazan sprat",
+                            "ignore": "Zadrži, prestani da me obaveštavaš",
+                            "manage": "Dozvoli mi da sam popravim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovom spratu.",
+                    "manage": "Ovim spratom možete sami upravljati na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovaj sprat se ponovo koristi otkako ga je Spook proverio: na njemu se nalazi neka prostorija ili ga koristi neka automatizacija ili skripta. Zbog toga nije menjan. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Zadrži ih, prestani da me obaveštavaš",
+                            "remove": "Ukloni ove uređaje za praćenje",
+                            "manage": "Dozvoli mi da sam popravim"
+                        },
+                        "description": "Spook je pronašao duha u vašim osobama 👻\n\n{person} prati sledeće uređaje za praćenje, koji su nepoznati Home Assistant‑u:\n\n{device_trackers}\n\nOvo se često dešava kada je uređaj za praćenje preimenovan ili je njegova integracija uklonjena.\n\nUklonite ih iz {person}, ili ih ostavite i Spook ih više neće prijavljivati.\n\nSpook 👻 Vaš pomoćnik.",
+                        "title": "Nepoznati uređaji za praćenje dodeljeni osobi: {person}"
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovoj osobi.",
+                    "manage": "Možete sami upravljati ovom osobom na stranici [Osobe](/config/person).",
+                    "not_editable": "Ova osoba je podešena u YAML-u, pa Spook ne može da je izmeni. Umesto toga, ažurirajte osobu u svojoj konfiguraciji."
+                }
+            },
+            "title": "Nepoznati uređaji za praćenje koje prati: {person}"
+        },
+        "unused_labels": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Zadrži, prestani da me obaveštavaš",
+                            "remove": "Ukloni ovu neiskorišćenu oznaku",
+                            "manage": "Dozvoli mi da sam popravim"
+                        },
+                        "title": "Neiskorišćena oznaka: {label}",
+                        "description": "Oznaka {label} nije primenjena ni na jedan entitet, uređaj ili prostoriju, i nijedna automatizacija ili skripta je ne koristi.\n\nUklonite je ili je zadržite, a Spook će prestati da je prijavljuje.\n\nSpook 👻 Vaš pomoćnik."
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovoj oznaci.",
+                    "manage": "Ovom oznakom možete upravljati sami na stranici [Oznake](/config/labels).",
+                    "changed": "Ova oznaka se ponovo koristi otkako ju je Spook proverio: ili je dodeljena nečemu ili je koristi neka automatizacija ili skripta. Zbog toga nije menjana. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            },
+            "title": "Neiskorišćena oznaka: {label}"
+        },
+        "unused_blueprints": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Zadrži, prestani da me obaveštavaš",
+                            "remove": "Ukloni ovaj neiskorišćeni nacrt",
+                            "manage": "Dozvoli mi da sam popravim"
+                        },
+                        "description": "Nacrt {blueprint} ne koristi nijedan {domain}.\n\nUklonite ga, ili ga zadržite i Spook će prestati da ukazuje na njega.\n\nSpook 👻 Vaš pomoćnik.",
+                        "title": "Nekorišćeni nacrt: {blueprint}"
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovom nacrtu.",
+                    "manage": "Ovim nacrtom možete upravljati sami na stranici [Nacrti](/config/blueprint/dashboard)."
+                }
+            },
+            "title": "Nekorišćeni nacrt: {blueprint}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće uslove koje nijedna dostupna integracija u Home Assistant‑u ne može da obezbedi:\n\n{conditions}\n\n\n\nOvo se često dešava kada je integracija koja obezbeđuje uslov uklonjena. Da biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nedostupnih uslova ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati uslovi u: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće pokretače koje nijedna dostupna integracija u Home Assistant‑u ne može da obezbedi:\n\n{triggers}\n\n\n\nOvo se često dešava kada je integracija koja obezbeđuje pokretač uklonjena. Da biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nedostupnih pokretača ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati pokretači u: {script}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nOn referencira sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{services}\n\n\n\nOvo se često dešava kada je pružalac akcije uklonjen ili je skripta preimenovana ili obrisana. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da koristi postojeće akcije.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate akcije korišćene u pomoćniku za šablone: {helper}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nNjegova konfiguracija referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nOvo se često dešava kada je entitet preimenovan ili uklonjen. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da referencira postojeće entitete.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti korišćeni u pomoćniku za šablone: {helper}"
+        },
+        "orphaned_statistics": {
+            "title": "Pronađene napuštene dugoročne statistike",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "remove": "Obriši ovu statistiku",
+                            "ignore": "Zadrži je, ne obaveštavaj me više",
+                            "manage": "Dozvoli mi da uradim to sam"
+                        },
+                        "title": "Pronađena je napuštena dugoročna statistika",
+                        "description": "Spook je pronašao duha u vašem sistemu za beleženje podataka 👻\n\nHome Assistant čuva dugoročnu statistiku za sledeće stavke, ali odgovarajući entitet više ne postoji:\n\n{statistics}\n\nOvo se obično dešava kada se senzor ukloni, a njegova statistika zadrži. Brisanje trajno uklanja tu istoriju podataka, pa Spook pre brisanja ponovo vrši proveru i ne dira ništa što se u međuvremenu ponovo pojavilo.\n\nSpook 👻 Vaš pomoćnik."
+                    }
+                },
+                "abort": {
+                    "nothing_to_clear": "Na listi nema stavki koje treba obrisati, tako da ništa nije uklonjeno. Ili statistika ponovo ima povezane entitete, ili je već uklonjena.",
+                    "clearing_took_too_long": "Spook je zatražio brisanje statistike, ali sistem za beleženje podataka još nije potvrdio završetak. Zadatak je na čekanju i najverovatnije će se izvršiti, tako da ova popravka ostaje aktivna dok Spook ponovo ne izvrši proveru.",
+                    "issue_ignored": "Spook vas od sada više neće obaveštavati o ovoj statistici.",
+                    "manage": "Ove stavke možete i sami obrisati na stranici [Statistika](/config/tools/statistics)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook je pronašao duha u vašoj grupi obaveštavanja 👻\n\nGrupa obaveštavanja `{group}` prosleđuje sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{members}\n\nGrupa i dalje isporučuje obaveštenja ostalim članovima i prijavljuje uspeh onome ko ju je pozvao, pa se problem ne primećuje uzvodno. Greška se pojavljuje samo kao zalutali zapis \"Task exception was never retrieved\" u logu, bez navođenja grupe, što izgleda kao bag. Član iza tog unosa jednostavno prestaje da prima obaveštenja.\n\nDa biste ispravili ovu grešku, izmenite listu `services:` ove grupe u konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati članovi u grupi za obaveštenja: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "remove": "Obriši suvišne kopije, zadrži najnoviju",
+                            "ignore": "Ostavi ih, prestani da mi govoriš",
+                            "manage": "Dozvoli mi da sam popravim"
+                        },
+                        "title": "Resurs kontrolne table naveden više puta: {resource}",
+                        "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nOvaj resurs kontrolne table je naveden {count} puta:\n\n{resources}\n\nOvo se obično dešava kada je prilagođena kartica ažurirana dodavanjem resursa za novu verziju umesto uređivanja postojećeg. Pregledač učitava oba resursa, kartica pokušava da se registruje dva puta, a drugi pokušaj ne uspe, što izgleda kao pokvarena kartica umesto dupliranog resursa.\n\nSpook može obrisati dodatne kopije i zadržati najnovije dodatu.\n\nSpook 👻 Vaš pomoćnik."
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovom resursu.",
+                    "manage": "Resursima kontrolne table možete sami da upravljate na [stranici Resursi](/config/lovelace/resources).",
+                    "yaml": "Ovi resursi su navedeni u vašoj „YAML” konfiguraciji, tako da Spook ne može da ih promeni umesto vas. Uredite odeljak `resources:` u vašoj „Lovelace” konfiguraciji i uklonite kopije resursa `{resource}` koje vam više nisu potrebne."
+                }
+            },
+            "title": "Resurs kontrolne table naveden više puta: {resource}"
+        },
+        "lovelace_missing_resources_yaml": {
+            "title": "Resursi kontrolne table ukazuju na nepostojeće datoteke",
+            "description": "Spook je pronašao duha na Vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se ukloni prilagođena kartica ili njene datoteke, ali resurs ostane konfigurisan.\n\nOvi resursi su navedeni u vašoj YAML konfiguraciji, pa ih stranica „Resursi“ ne može promeniti. Uredite odeljak `resources:` u svojoj Lovelace konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "unknown_engines": {
+            "title": "Pipeline asistenta koristi mehanizme kojih više nema: {pipeline}",
+            "description": "Spook je pronašao duha u vašim glasovnim asistentima 👻\n\nPipeline asistenta {pipeline} koristi sledeće, što je nepoznato Home Assistant-u:\n\n{engines}\n\nOvo obično znači da je integracija iza toga uklonjena. Pipeline-u to nije javljeno, pa sledeći put kada se pokrene javlja grešku o nedostajućem provajderu ili agentu, a ništa pre toga ne ukazuje ovde.\n\nDa biste ovo popravili, otvorite podešavanja ovog asistenta pod [Glasovni asistenti](/config/voice-assistants/assistants) i izaberite sistem koji je još uvek dostupan za svaki od ovih.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašem HomeKit mostu 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeći HomeKit most:\n\n{bridge}\n\nOvaj most navodi sledeće entitete koji su nepoznati sistemu Home Assistant:\n\n{entities}\n\n\n\nHomeKit ne prati entitete koji su preimenovani. Entitet koji je bio uključen, pa preimenovan ili uklonjen, nestaje iz aplikacije Home; entitet koji je bio isključen, pa preimenovan, ponovo će se pojaviti u njoj.\n\nDa biste rešili ovu grešku, idite na [integraciju HomeKit Bridge](/config/integrations/integration/homekit), izaberite Konfiguriši na ovom mostu i ponovo izaberite entitete.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti se koriste u HomeKit mostu: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook je pronašao duha u vašem HomeKit mostu 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeći HomeKit most:\n\n{bridge}\n\nOvaj most navodi sledeće entitete koji su nepoznati sistemu Home Assistant:\n\n{entities}\n\n\n\nHomeKit ne prati entitete koji su preimenovani. Entitet koji je bio uključen, pa preimenovan ili uklonjen, nestaje iz aplikacije Home; entitet koji je bio isključen, pa preimenovan, ponovo će se pojaviti u njoj.\n\nOvaj most je konfigurisan u vašoj YAML datoteci. Da biste rešili ovu grešku, uredite `filter` ovog mosta pod stavkom `homekit:` i uklonite ili ispravite ove entitete.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznati entiteti se koriste u HomeKit mostu: {bridge}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla pokreće sledeće akcije koje su nepoznate sistemu Home Assistant:\n\n{services}\n\n\n\nDugme ili kartica koji koriste neku od ovih akcija neće uraditi ništa kada se pritisnu. Ovo se najčešće dešava kada je skripta preimenovana ili uklonjena, ili kada je izbrisana cela integracija. Da biste rešili ovu grešku, [uredite kontrolnu tablu]({edit}) i uklonite ili zamenite ove akcije koje više ne postoje.\n\nSpook 👻 Vaš pomoćnik.",
+            "title": "Nepoznate akcije se koriste u kontrolnoj tabli: {dashboard}"
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Nepoznat senzor temperature za prostoriju: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nepoznat senzor temperature za prostoriju: {area}",
+                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor temperature koji je nepoznat Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ovaj senzor samo kada je odabran, pa kada je uklonjen ili preimenovan, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja temperature sa njega.\n\nObrišite podešavanje kako biste mogli ponovo da izaberete senzor, ili ga zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Obriši podešavanje",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
+                    "manage": "Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovaj senzor je ponovo dostupan ili podešavanje sada ukazuje na drugu lokaciju otkako ga je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Nepoznat senzor vlažnosti za prostoriju: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nepoznat senzor vlažnosti za prostoriju: {area}",
+                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor vlažnosti koji je nepoznat Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ovaj senzor samo kada je odabran, pa kada je uklonjen ili preimenovan, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja vlažnosti sa njega.\n\nObrišite podešavanje kako biste mogli ponovo da izaberete senzor, ili ga zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Obriši podešavanje",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
+                    "manage": "Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovaj senzor je ponovo dostupan ili podešavanje sada ukazuje na drugu lokaciju otkako ga je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Nepoznati senzori temperature i vlažnosti za prostoriju: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nepoznati senzori temperature i vlažnosti za prostoriju: {area}",
+                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor temperature i senzor vlažnosti koji su nepoznati Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ove senzore samo kada su odabrani, pa kada su uklonjeni ili preimenovani, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja sa njih.\n\nObrišite podešavanja kako biste mogli ponovo da izaberete senzore, ili ih zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Obriši podešavanja",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
+                    "manage": "Možete izabrati druge senzore u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovi senzori su ponovo dostupni ili podešavanja sada ukazuju na drugu lokaciju otkako ih je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
         }
-      },
-      "title": "{title}"
     },
-    "restart_required": {
-      "title": "Restart required",
-      "fix_flow": {
-        "step": {
-          "confirm_restart": {
-            "title": "Restart required",
-            "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
-          }
+    "services": {
+        "boo": {
+            "name": "Bu!",
+            "description": "Pozivanje ove akcije plaši Home Assistant. Izvršavanje ove akcije nikada neće uspeti."
+        },
+        "blueprint_import": {
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "URL za uvoz nacrta."
+                }
+            },
+            "description": "Uvoz nacrta.",
+            "name": "Uvezi nacrt"
+        },
+        "homeassistant_create_area": {
+            "fields": {
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv prostorije koju treba kreirati."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona koja se koristi za prostoriju."
+                },
+                "aliases": {
+                    "name": "Pseudonimi",
+                    "description": "Lista pseudonima za prostoriju. Ovo je korisno ako želite da koristite prostoriju na drugom jeziku ili sa drugačijim nadimkom."
+                }
+            },
+            "name": "Kreiraj prostoriju",
+            "description": "Kreira novu prostoriju u hodu."
+        },
+        "homeassistant_add_alias_to_area": {
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim (ili lista pseudonima) koji se dodaje prostoriji."
+                },
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije kojoj treba dodati pseudonim."
+                }
+            },
+            "description": "Dodavanje pseudonima prostoriji.",
+            "name": "Dodaj pseudonim prostoriji"
+        },
+        "homeassistant_remove_alias_from_area": {
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim (ili lista pseudonima) koji se uklanja iz prostorije."
+                },
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije iz koje treba ukloniti pseudonim."
+                }
+            },
+            "name": "Ukloni pseudonim iz prostorije",
+            "description": "Uklanjanje pseudonima iz prostorije."
+        },
+        "homeassistant_set_area_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi",
+                    "description": "Pseudonimi koji se postavljaju za prostoriju."
+                },
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije za koju treba postaviti pseudonime."
+                }
+            },
+            "name": "Postavi pseudonime za prostoriju",
+            "description": "Postavlja pseudonime za prostoriju. Prepravlja i uklanja sve postojeće pseudonime, u potpunosti ih zamenjujući novim."
+        },
+        "homeassistant_disable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Uređaj",
+                    "description": "Uređaj(i) koji se onemogućavaju."
+                }
+            },
+            "name": "Onemogući uređaj",
+            "description": "Onemogućava uređaj u hodu."
+        },
+        "homeassistant_update_entity_id": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet(i) za ažuriranje."
+                },
+                "new_entity_id": {
+                    "name": "Novi ID entiteta",
+                    "description": "Novi ID za entitet."
+                }
+            },
+            "description": "Ažurira ID entiteta u hodu.",
+            "name": "Ažuriraj ID entiteta"
+        },
+        "homeassistant_disable_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet(i) koji se onemogućavaju."
+                }
+            },
+            "name": "Onemogući entitet",
+            "description": "Onemogućava entitet (ili više njih) u hodu."
+        },
+        "homeassistant_enable_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet (ili entiteti) koje treba omogućiti."
+                }
+            },
+            "name": "Omogući entitet",
+            "description": "Omogućava entitet (ili više njih) u hodu."
+        },
+        "homeassistant_hide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet (ili entiteti) koje treba sakriti."
+                }
+            },
+            "name": "Sakrij entitet",
+            "description": "Sakriva entitet (ili entitete) u hodu."
+        },
+        "homeassistant_rename_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet (ili entiteti) koje treba preimenovati."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za entitet (ili entitete)."
+                }
+            },
+            "name": "Preimenuj entitet",
+            "description": "Preimenuje entitet (ili entitete) u hodu."
+        },
+        "homeassistant_unhide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet (ili entiteti) koje treba prikazati."
+                }
+            },
+            "name": "Prikaži entitet",
+            "description": "Prikazuje entitet (ili entitete) u hodu."
+        },
+        "homeassistant_create_floor": {
+            "fields": {
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv sprata koji treba kreirati."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona koja se koristi za sprat."
+                },
+                "level": {
+                    "name": "Nivo",
+                    "description": "Nivo na kojem se sprat nalazi u vašem domu."
+                },
+                "aliases": {
+                    "name": "Pseudonimi",
+                    "description": "Lista pseudonima za sprat. Ovo je korisno ako želite da koristite sprat na drugom jeziku ili sa drugačijim nadimkom."
+                }
+            },
+            "name": "Kreiraj sprat",
+            "description": "Kreira novi sprat u hodu."
+        },
+        "homeassistant_add_alias_to_floor": {
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim (ili lista pseudonima) koji se dodaje spratu."
+                },
+                "floor_id": {
+                    "name": "ID sprata",
+                    "description": "ID sprata kojem treba dodati pseudonim."
+                }
+            },
+            "name": "Dodaj pseudonim spratu",
+            "description": "Dodaje pseudonim spratu."
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim (ili lista pseudonima) koji se uklanja sa sprata."
+                },
+                "floor_id": {
+                    "name": "ID sprata",
+                    "description": "ID sprata iz kojeg treba ukloniti pseudonim."
+                }
+            },
+            "name": "Ukloni pseudonim sa sprata",
+            "description": "Uklanja pseudonim sa sprata."
+        },
+        "homeassistant_set_floor_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi",
+                    "description": "Pseudonimi koji se postavljaju za sprat."
+                },
+                "floor_id": {
+                    "name": "ID sprata",
+                    "description": "ID sprata za koji se postavljaju pseudonimi."
+                }
+            },
+            "name": "Postavi pseudonime za sprat",
+            "description": "Postavlja pseudonime za sprat. Prepravlja i uklanja sve postojeće pseudonime, u potpunosti ih zamenjujući novim."
+        },
+        "homeassistant_create_label": {
+            "fields": {
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv oznake koju treba kreirati."
+                },
+                "description": {
+                    "name": "Opis",
+                    "description": "Opis oznake"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona koja se koristi za oznaku."
+                },
+                "color": {
+                    "name": "Boja",
+                    "description": "Boja koja se koristi za oznaku. Može biti naziv boje sa liste ili heksadecimalni kod boje (kao što je #FF0000)."
+                }
+            },
+            "name": "Kreiraj oznaku",
+            "description": "Kreira novu oznaku u hodu."
+        },
+        "homeassistant_restart": {
+            "name": "Ponovo pokreni",
+            "description": "Ponovo pokreni Home Assistant.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Bezbedan režim",
+                    "description": "Da li ponovno pokretanje treba izvršiti u bezbednom režimu. Ovo će onemogućiti sve prilagođene integracije i module korisničkog interfejsa."
+                },
+                "force": {
+                    "name": "Prisilno ponovo pokreni",
+                    "description": "Prisilno izvrši ponovno pokretanje. UPOZORENJE! Ovo neće regularno isključiti Home Assistant, već će preskočiti provere konfiguracije i zanemariti pokrenute migracije baze podataka. Koristite ovo samo ako tačno znate šta radite."
+                }
+            }
+        },
+        "input_number_max": {
+            "description": "Postavlja entitet numeričkog unosa na njegovu maksimalnu vrednost.",
+            "name": "Postavi maksimalnu vrednost"
+        },
+        "input_number_min": {
+            "description": "Postavlja entitet numeričkog unosa na njegovu minimalnu vrednost.",
+            "name": "Postavi minimalnu vrednost"
+        },
+        "number_min": {
+            "description": "Postavlja numerički entitet na njegovu minimalnu vrednost.",
+            "name": "Postavi minimalnu vrednost"
+        },
+        "sensor_set_display_precision": {
+            "name": "Postavi preciznost prikaza",
+            "description": "Postavlja broj prikazanih decimalnih mesta za jedan ili više senzora.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Senzorski entitet/entiteti koji se ažuriraju."
+                },
+                "display_precision": {
+                    "description": "Broj decimalnih mesta koji se prikazuje za senzor.",
+                    "name": "Preciznost prikaza"
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Postavi trajanje",
+            "description": "Podešava trajanje postojećeg tajmera.",
+            "fields": {
+                "duration": {
+                    "description": "Novo trajanje tajmera, u obliku vremenskog (timedelta) teksta.",
+                    "name": "Trajanje"
+                }
+            }
+        },
+        "number_max": {
+            "name": "Postavi maksimalnu vrednost",
+            "description": "Postavlja numerički entitet na njegovu maksimalnu vrednost."
+        },
+        "repairs_create": {
+            "fields": {
+                "severity": {
+                    "name": "Ozbiljnost",
+                    "description": "Ozbiljnost problema. Ovo će se koristiti za određivanje prioriteta problema. Ako nije postavljeno, koristiće se „upozorenje“."
+                },
+                "issue_id": {
+                    "name": "ID problema",
+                    "description": "Problem može imati identifikator, što vam omogućava da ga kasnije otkažete pomoću tog ID-ja ako bude potrebno. Takođe sprečava kreiranje dupliranih problema. Ako nije naveden, biće generisan nasumični ID."
+                },
+                "description": {
+                    "name": "Opis",
+                    "description": "Opis problema. Podržava Markdown."
+                },
+                "persistent": {
+                    "description": "Da li problem treba da bude trajan, što znači da će opstati i nakon ponovnog pokretanja Home Assistant-a. Podrazumevano, problemi nisu trajni.",
+                    "name": "Trajno"
+                },
+                "domain": {
+                    "description": "Ovo polje se može koristiti za postavljanje domena problema. Na primer, podrazumevano (ako nije postavljeno), koristiće se 'spook'. Ovo dovodi do toga da se Spook prikazuje u logotipu/slici problema. Ako postavite na 'homeassistant', koristiće se logotip Home Assistant-a, a možete uneti i 'hue', 'zwave_js', 'mqtt' itd. kako biste koristili logotip te integracije.",
+                    "name": "Domen"
+                },
+                "title": {
+                    "description": "Naslov problema.",
+                    "name": "Naslov"
+                }
+            },
+            "description": "Ručno kreira i prijavljuje problem u odeljku Home Assistant Popravke.",
+            "name": "Kreiraj problem"
+        },
+        "input_select_shuffle": {
+            "name": "Promešaj opcije",
+            "description": "Menja redosled liste dostupnih opcija za `input_select` entitet. Ovo nije trajno i biće poništeno nakon ponovnog učitavanja ili ponovnog pokretanja Home Assistant-a."
+        },
+        "input_select_sort": {
+            "name": "Sortiraj opcije",
+            "description": "Sortira listu dostupnih opcija za `input_select` entitet. Ovo nije trajno i biće poništeno nakon ponovnog učitavanja ili ponovnog pokretanja Home Assistant-a."
+        },
+        "recorder_import_statistics": {
+            "fields": {
+                "source": {
+                    "name": "Izvor",
+                    "description": "Izvor podataka statistike."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv statistike."
+                },
+                "stats": {
+                    "name": "Statistika",
+                    "description": "Lista mapiranja/rečnika sa statistikama za uvoz. Rečnici moraju da sadrže ključ „start” sa datum‑vreme nizom. Ostale važeće opcije su „mean”, „sum”, „min”, „max”, „last_reset” i „state”. Sve su opcione i mogu biti ceo broj ili decimalni broj, osim „last_reset” koji je niz sa datumom i vremenom."
+                },
+                "statistic_id": {
+                    "name": "ID statistike",
+                    "description": "ID statistike (ID entiteta) za uvoz."
+                },
+                "has_mean": {
+                    "description": "Ako statistika ima srednju vrednost.",
+                    "name": "Sadrži srednju vrednost"
+                },
+                "has_sum": {
+                    "description": "Ako statistika ima sumu.",
+                    "name": "Sadrži sumu"
+                },
+                "unit_of_measurement": {
+                    "name": "Jedinica mere",
+                    "description": "Jedinica mere za podatke statistike."
+                }
+            },
+            "description": "Uvoz dugoročne statistike.",
+            "name": "Uvezi statistiku"
+        },
+        "zone_delete": {
+            "fields": {
+                "entity_id": {
+                    "description": "ID entiteta (ili više njih) koji se uklanja.",
+                    "name": "ID entiteta"
+                }
+            },
+            "description": "Obriši zonu. Ovo radi samo sa zonama koje su kreirane i kojima se upravlja preko korisničkog interfejsa. Spook ne može upravljati zonama koje su kreirane i konfigurisane kroz YAML.",
+            "name": "Obriši zonu"
+        },
+        "homeassistant_add_label_to_area": {
+            "fields": {
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake (ili oznaka) koje treba dodati prostoriji (ili prostorijama)."
+                },
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije (ili prostorija) na koje treba dodati oznaku (ili oznake)."
+                }
+            },
+            "name": "Dodaj oznaku prostoriji",
+            "description": "Dodaje oznaku prostoriji. Ako je navedeno više oznaka ili više prostorija, biće dodate sve njihove kombinacije."
+        },
+        "homeassistant_remove_label_from_entity": {
+            "fields": {
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake (ili oznaka) koje treba ukloniti sa entiteta (ili entiteta)."
+                },
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "ID entiteta (ili entiteta) sa kojih treba ukloniti oznaku (ili oznake)."
+                }
+            },
+            "name": "Ukloni oznaku sa entiteta",
+            "description": "Uklanja oznaku sa entiteta. Ako je navedeno više oznaka ili više entiteta, ukloniće se sve kombinacije."
+        },
+        "homeassistant_remove_label_from_device": {
+            "fields": {
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake (ili oznaka) koje treba ukloniti sa uređaja (ili uređaja)."
+                },
+                "device_id": {
+                    "name": "ID uređaja",
+                    "description": "ID uređaja (ili uređaja) sa kojih treba ukloniti oznaku (ili oznake)."
+                }
+            },
+            "name": "Ukloni oznaku sa uređaja",
+            "description": "Uklanja oznaku sa uređaja. Ako je navedeno više oznaka ili više uređaja, ukloniće se sve kombinacije."
+        },
+        "homeassistant_delete_label": {
+            "fields": {
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake za brisanje."
+                }
+            },
+            "name": "Obriši oznaku",
+            "description": "Briše oznaku u hodu."
+        },
+        "homeassistant_add_label_to_device": {
+            "fields": {
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake (ili oznaka) koje treba dodati uređaju (ili uređajima)."
+                },
+                "device_id": {
+                    "name": "ID uređaja",
+                    "description": "ID uređaja (ili uređaja) na koje treba dodati oznaku (ili oznake)."
+                }
+            },
+            "name": "Dodaj oznaku uređaju",
+            "description": "Dodaje oznaku uređaju. Ako je navedeno više oznaka ili više uređaja, biće dodate sve njihove kombinacije."
+        },
+        "homeassistant_remove_label_from_area": {
+            "fields": {
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake (ili oznaka) koje treba ukloniti iz prostorije (ili prostorija)."
+                },
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije (ili prostorija) iz koje treba ukloniti oznaku (ili oznake)."
+                }
+            },
+            "name": "Ukloni oznaku sa prostorije",
+            "description": "Uklanja oznaku sa prostorije. Ako je navedeno više oznaka ili više prostorija, ukloniće se sve kombinacije."
+        },
+        "homeassistant_add_label_to_entity": {
+            "fields": {
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake (ili oznaka) koje treba dodati entitetu (ili entitetima)."
+                },
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "ID entiteta (ili entiteta) na koje treba dodati oznaku (ili oznake)."
+                }
+            },
+            "name": "Dodaj oznaku entitetu",
+            "description": "Dodaje oznaku entitetu. Ako je navedeno više oznaka ili više entiteta, biće dodate sve njihove kombinacije."
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Dodaj uređaj u prostoriju",
+            "description": "Dodavanje uređaja u prostoriju. Napomena: ako se uređaj već nalazi u nekoj prostoriji, biće uklonjen iz prethodne.",
+            "fields": {
+                "device_id": {
+                    "name": "ID uređaja",
+                    "description": "ID uređaja koji se dodaju u ovu prostoriju."
+                },
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije u koju dodajete uređaj."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Dodaj uređaj koji se prati",
+            "description": "Dodaje uređaj koji se prati osobi.",
+            "fields": {
+                "device_tracker": {
+                    "name": "Uređaj koji se prati",
+                    "description": "ID entiteta uređaja koji se prati koji želite da dodate ovoj osobi."
+                },
+                "entity_id": {
+                    "name": "Osoba",
+                    "description": "ID entiteta osobe kojoj želite da dodate uređaj koji se prati."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "fields": {
+                "entity_id": {
+                    "name": "Osoba",
+                    "description": "ID entiteta osobe iz koje želite da uklonite uređaj koji se prati."
+                },
+                "device_tracker": {
+                    "name": "Uređaj koji se prati",
+                    "description": "ID entiteta uređaja koji se prati za uklanjanje sa ove osobe."
+                }
+            },
+            "description": "Uklanja uređaj koji se prati iz podešavanja osobe.",
+            "name": "Ukloni uređaj koji se prati"
+        },
+        "zone_update": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "ID entiteta (ili više njih) koji se ažurira."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv zone"
+                },
+                "radius": {
+                    "name": "Poluprečnik",
+                    "description": "Poluprečnik zone"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona koja se koristi za zonu"
+                },
+                "longitude": {
+                    "description": "Geografska dužina zone. Ovo može biti šablon.",
+                    "name": "Geografska dužina"
+                },
+                "latitude": {
+                    "description": "Geografska širina zone. Ovo može biti šablon.",
+                    "name": "Geografska širina"
+                },
+                "passive": {
+                    "description": "Pasivna zona služi samo za automatizacije: ne prikazuje se na mapi i ne utiče na lokaciju ljudi i uređaja za praćenje.",
+                    "name": "Pasivno"
+                }
+            },
+            "description": "Ažurira svojstva zone u hodu.",
+            "name": "Ažuriraj zonu"
+        },
+        "homeassistant_add_entity_to_area": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "ID entiteta (ili entiteta) koje treba dodati u prostoriju."
+                },
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije kojoj treba dodati entitet."
+                }
+            },
+            "name": "Dodaj entitet u prostoriju",
+            "description": "Dodaje entitet u prostoriju. Imajte na umu da će entitet, ako se već nalazi u nekoj prostoriji, biti uklonjen iz prethodne. Ovo će poništiti prostoriju u kojoj se nalazi uređaj koji obezbeđuje ovaj entitet."
+        },
+        "homeassistant_remove_entity_from_area": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "ID entiteta (ili entiteta) iz kojeg treba ukloniti prostoriju."
+                }
+            },
+            "name": "Ukloni entitet iz prostorije",
+            "description": "Uklanjanje entiteta iz prostorije. Pošto entitet može biti samo u jednoj prostoriji, ovaj poziv ne mora da navodi prostoriju. Napomena: entitet će nakon ovog poziva i dalje ostati u prostoriji uređaja koji ga obezbeđuje."
+        },
+        "homeassistant_expose_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet (ili entiteti) koje treba izložiti."
+                },
+                "assistants": {
+                    "name": "Asistenti",
+                    "description": "Asistent(i) na koje se ovo primenjuje."
+                }
+            },
+            "description": "Izlaže entitet (ili entitete) glasovnim asistentima.",
+            "name": "Izloži entitet asistentima"
+        },
+        "homeassistant_unexpose_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet (ili entiteti) koje treba prestati izlagati."
+                },
+                "assistants": {
+                    "name": "Asistenti",
+                    "description": "Asistent(i) na koje se ovo primenjuje."
+                }
+            },
+            "name": "Prestani da izlažeš entitet asistentima",
+            "description": "Obustavljanje izlaganja entiteta glasovnim asistentima."
+        },
+        "homeassistant_enable_user": {
+            "fields": {
+                "user_id": {
+                    "name": "ID korisnika",
+                    "description": "ID korisnika (ili korisnika) koje treba omogućiti."
+                }
+            },
+            "name": "Omogući korisnika",
+            "description": "Omogućava korisnički nalog, čime se korisniku dozvoljava prijava."
+        },
+        "homeassistant_disable_user": {
+            "fields": {
+                "user_id": {
+                    "name": "ID korisnika",
+                    "description": "ID korisnika (ili korisnika) koje treba onemogućiti."
+                }
+            },
+            "description": "Onemogućavanje korisničkog naloga, čime se sprečava njegovo prijavljivanje.",
+            "name": "Onemogući korisnika"
+        },
+        "homeassistant_delete_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije koju treba obrisati."
+                }
+            },
+            "name": "Obriši prostoriju",
+            "description": "Briše prostoriju u hodu."
+        },
+        "homeassistant_add_area_to_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije (ili prostorija) za dodavanje spratu."
+                },
+                "floor_id": {
+                    "name": "ID sprata",
+                    "description": "ID sprata na koji treba dodati prostoriju."
+                }
+            },
+            "name": "Dodaj prostoriju spratu",
+            "description": "Dodavanje prostorije na sprat. Napomena: ako se prostorija već nalazi na nekom spratu, biće uklonjena sa prethodnog."
+        },
+        "homeassistant_remove_area_from_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "ID prostorije",
+                    "description": "ID prostorije sa koje treba ukloniti sprat."
+                }
+            },
+            "name": "Ukloni prostoriju sa sprata",
+            "description": "Uklanjanje prostorije sa sprata. Pošto prostorija može biti samo na jednom spratu, ovaj poziv ne mora da navodi sprat."
+        },
+        "input_number_decrement": {
+            "fields": {
+                "cycle": {
+                    "description": "Nastavite sa drugog kraja opsega umesto da se zaustavite na trenutnom, na isti način na koji odabir sledeće opcije kružno menja izbor.",
+                    "name": "Ciklus"
+                },
+                "amount": {
+                    "name": "Iznos",
+                    "description": "Iznos za koji se smanjuje vrednost. Ako nije naveden, koristiće se korak entiteta numeričkog unosa."
+                }
+            },
+            "name": "Smanji vrednost",
+            "description": "Smanjuje vrednost entiteta numeričkog unosa za određeni iznos."
+        },
+        "input_number_increment": {
+            "fields": {
+                "cycle": {
+                    "description": "Nastavite sa drugog kraja opsega umesto da se zaustavite na trenutnom, na isti način na koji odabir sledeće opcije kružno menja izbor.",
+                    "name": "Ciklus"
+                },
+                "amount": {
+                    "name": "Iznos",
+                    "description": "Iznos za koji se povećava numerički unos. Ako nije naveden, koristiće se korak entiteta."
+                }
+            },
+            "description": "Povećava vrednost entiteta numeričkog unosa za određeni iznos.",
+            "name": "Povećaj vrednost"
+        },
+        "input_number_create": {
+            "fields": {
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog pomoćnika numeričkog unosa."
+                },
+                "input_number_id": {
+                    "name": "ID entiteta numeričkog unosa",
+                    "description": "ID entiteta za novog pomoćnika numeričkog unosa. Prefiks input_number. se dodaje automatski. Ako nije naveden, ID entiteta će biti generisan na osnovu naziva."
+                },
+                "step": {
+                    "name": "Veličina koraka",
+                    "description": "Veličina koraka numeričkog unosa."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona koja se koristi za pomoćnika numeričkog unosa."
+                },
+                "mode": {
+                    "description": "Režim prikaza numeričkog unosa, koji može biti klizač ili polje za unos.",
+                    "name": "Režim prikaza"
+                },
+                "unit_of_measurement": {
+                    "description": "Jedinica mere numeričkog unosa.",
+                    "name": "Jedinica mere"
+                },
+                "initial": {
+                    "description": "Početna vrednost numeričkog unosa kada se Home Assistant pokrene.",
+                    "name": "Početna vrednost"
+                },
+                "max": {
+                    "description": "Maksimalna vrednost numeričkog unosa.",
+                    "name": "Maksimum"
+                },
+                "min": {
+                    "description": "Minimalna vrednost numeričkog unosa.",
+                    "name": "Minimum"
+                }
+            },
+            "description": "Kreira novi pomoćni numerički unos u hodu. Vraća ID entiteta novog numeričkog unosa.",
+            "name": "Kreiraj numerički unos"
+        },
+        "zone_create": {
+            "fields": {
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv zone"
+                },
+                "radius": {
+                    "name": "Poluprečnik",
+                    "description": "Poluprečnik zone"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona koja se koristi za zonu"
+                },
+                "longitude": {
+                    "description": "Geografska dužina zone. Ovo može biti šablon.",
+                    "name": "Geografska dužina"
+                },
+                "latitude": {
+                    "description": "Geografska širina zone. Ovo može biti šablon.",
+                    "name": "Geografska širina"
+                },
+                "passive": {
+                    "description": "Pasivna zona služi samo za automatizacije: ne prikazuje se na mapi i ne utiče na lokaciju ljudi i uređaja za praćenje.",
+                    "name": "Pasivno"
+                }
+            },
+            "description": "Kreiraj novu zonu u Home Assistant‑u u hodu.",
+            "name": "Kreiraj zonu"
+        },
+        "homeassistant_enable_device": {
+            "name": "Omogući uređaj",
+            "description": "Omogućava uređaj u hodu.",
+            "fields": {
+                "device_id": {
+                    "name": "ID uređaja",
+                    "description": "Izvorni ID uređaja koji želite da omogućite. Onemogućeni uređaji se ne prikazuju u selektoru uređaja u Home Assistant-u. Više ID-ova možete navesti u obliku YAML liste."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Omogući integraciju",
+            "description": "Omogućava unose integracije, pojedinačno ili svaki unos integracije.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Unos integracije",
+                    "description": "Unos integracije koji treba omogućiti."
+                },
+                "domain": {
+                    "description": "Omogući svaki unos ovih integracija, uključujući i one koje budu dodate kasnije.",
+                    "name": "Integracija"
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Omogući proveru ažuriranja",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Unos integracije",
+                    "description": "Unos integracije za koji se omogućava provera ažuriranja."
+                }
+            },
+            "description": "Omogućava proveru ažuriranja za unos integracije."
+        },
+        "homeassistant_disable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Unos integracije",
+                    "description": "Unos integracije za koji treba onemogućiti proveru ažuriranja."
+                }
+            },
+            "name": "Onemogući proveru ažuriranja",
+            "description": "Onemogućava proveru ažuriranja za unos integracije."
+        },
+        "repairs_remove": {
+            "fields": {
+                "issue_id": {
+                    "name": "ID problema",
+                    "description": "ID problema koji se uklanja."
+                }
+            },
+            "description": "Uklanja ručno kreirani problem iz Home Assistant Popravki. Ova akcija može ukloniti samo probleme kreirane pomoću akcije `repairs_create`.",
+            "name": "Ukloni problem"
+        },
+        "homeassistant_remove_device_from_area": {
+            "fields": {
+                "device_id": {
+                    "name": "ID uređaja",
+                    "description": "ID uređaja iz kojeg treba ukloniti prostoriju."
+                }
+            },
+            "name": "Ukloni uređaj iz prostorije",
+            "description": "Uklanja uređaj iz prostorije. Pošto uređaj može biti samo u jednoj prostoriji, ovaj poziv ne mora da navede prostoriju."
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Onemogući integraciju",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Unos integracije",
+                    "description": "Unos integracije koji treba onemogućiti."
+                },
+                "domain": {
+                    "description": "Onemogući svaki unos ovih integracija, uključujući i one koje budu dodate kasnije.",
+                    "name": "Integracija"
+                }
+            },
+            "description": "Onemogućava unose integracije, pojedinačno ili svaki unos integracije."
+        },
+        "random_fail": {
+            "name": "Slučajni neuspeh",
+            "description": "Izvršavanje ove akcije će nasumično otkazati."
+        },
+        "homeassistant_delete_floor": {
+            "fields": {
+                "floor_id": {
+                    "name": "ID sprata",
+                    "description": "ID sprata koji treba obrisati."
+                }
+            },
+            "name": "Obriši sprat",
+            "description": "Briše sprat u hodu."
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Zanemari sve trenutno otkrivene uređaje",
+            "description": "Zanemari sve trenutno otkrivene uređaje koji su prikazani na kontrolnoj tabli sa integracijama. Ovo neće važiti za uređaje koji se otkriju nakon ovoga.",
+            "fields": {
+                "domain": {
+                    "name": "Domen integracije",
+                    "description": "Domen integracije za koji se zanemaruju svi otkriveni uređaji. Ako nije naveden, smatraće se da se zanemaruju svi domeni."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Zanemari sve probleme",
+            "description": "Zanemari sve probleme koji su trenutno pokrenuti u Home Assistant Popravkama, ili samo one koje su pokrenule određene integracije.",
+            "fields": {
+                "domain": {
+                    "name": "Domen",
+                    "description": "Zanemari samo probleme koje su pokrenule ove integracije."
+                }
+            }
+        },
+        "number_increment": {
+            "description": "Povećava vrednost numeričkog entiteta za određeni iznos.",
+            "fields": {
+                "amount": {
+                    "name": "Iznos",
+                    "description": "Iznos za koji se povećava vrednost. Ako nije naveden, koristiće se korak numeričkog entiteta."
+                }
+            },
+            "name": "Povećaj vrednost"
+        },
+        "number_decrement": {
+            "fields": {
+                "amount": {
+                    "name": "Iznos",
+                    "description": "Iznos za koji se smanjuje vrednost. Ako nije naveden, koristiće se korak numeričkog entiteta."
+                }
+            },
+            "name": "Smanji vrednost",
+            "description": "Smanjuje vrednost numeričkog entiteta za određeni iznos."
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Obriši sve napuštene entitete",
+            "description": "Briše sve napuštene entitete koji više nemaju integraciju koja ih zahteva/obezbeđuje. Napomena: ako je integracija upravo uklonjena, možda je potrebno ponovno pokretanje Home Assistant-a da bi prepoznao da su entiteti napušteni.\n**UPOZORENJE** Entiteti su možda označeni kao napušteni zato što je integracija van mreže ili ne radi od pokretanja Home Assistant-a. Pozivanje ove akcije će takođe obrisati i te entitete."
+        },
+        "input_number_delete": {
+            "description": "Briše pomoćne unose broja kreirane u korisničkom interfejsu ili pomoću akcije kreiranja unosa broja. Spook ne može obrisati unose broja podešene u YAML-u.",
+            "name": "Obriši numerički unos",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Unosi broja koje treba obrisati."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "description": "Prestani sa zanemarivanjem svih problema koji su trenutno pokrenuti u Home Assistant Popravkama, ili samo onih koje su pokrenule određene integracije.",
+            "name": "Poništi zanemarivanje svih problema",
+            "fields": {
+                "domain": {
+                    "name": "Domen",
+                    "description": "Prestani sa zanemarivanjem samo onih problema koje su pokrenule ove integracije."
+                }
+            }
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Prikaži sve napuštene entitete baze podataka",
+            "description": "Prikazuje sve napuštene entitete u bazi podataka koje nije preuzela nijedna integracija."
+        },
+        "select_random": {
+            "name": "Izaberi slučajnu opciju",
+            "description": "Bira slučajnu opciju za entitet izbora.",
+            "fields": {
+                "options": {
+                    "name": "Opcije",
+                    "description": "Ograničava opcije koje se mogu izabrati. Ako nije navedeno, u obzir će biti uzete sve opcije."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Izaberi slučajnu opciju unosa izbora",
+            "description": "Bira slučajnu opciju za unos izbora.",
+            "fields": {
+                "options": {
+                    "name": "Opcije",
+                    "description": "Ograničava opcije koje se mogu izabrati. Ako nije navedeno, u obzir će biti uzete sve opcije."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "fields": {
+                "description": {
+                    "name": "Opis",
+                    "description": "Novi opis za oznaku."
+                },
+                "color": {
+                    "name": "Boja",
+                    "description": "Boja koja se koristi za oznaku. Može biti naziv boje sa liste ili heksadecimalni kod boje (kao što je #FF0000)."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona za ovu oznaku."
+                },
+                "label_id": {
+                    "name": "ID oznake",
+                    "description": "ID oznake koju treba ažurirati."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za oznaku."
+                }
+            },
+            "name": "Ažuriraj oznaku",
+            "description": "Ažurira postojeću oznaku u hodu. Sve što izostavite zadržava svoju trenutnu vrednost. Opis, ikonica i boja se mogu obrisati postavljanjem na null."
+        },
+        "automation_snooze": {
+            "fields": {
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko dugo automatizacija ostaje isključena. Sama će se ponovo uključiti kada ovo vreme istekne, uključujući i slučaj da u međuvremenu dođe do ponovnog pokretanja Home Assistant-a."
+                }
+            },
+            "name": "Odloži",
+            "description": "Isključuje automatizaciju na određeno vreme, a zatim je ponovo uključuje nakon što to vreme istekne."
+        },
+        "automation_turn_on_for": {
+            "fields": {
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko dugo automatizacija ostaje uključena. Sama se isključuje kada vreme istekne, uključujući i u slučaju ponovnog pokretanja Home Assistant-a u međuvremenu."
+                }
+            },
+            "name": "Uključi na",
+            "description": "Uključuje automatizaciju na određeno vreme, a zatim je ponovo isključuje kada vreme istekne."
+        },
+        "light_set_brightness": {
+            "fields": {
+                "brightness_pct": {
+                    "name": "Osvetljenost",
+                    "description": "Jačina osvetljenja za podešavanje, izražena u procentima. Grupe se prilagođavaju svetlo po svetlo, pa ugašena svetla ostaju ugašena."
+                },
+                "transition": {
+                    "name": "Prelaz",
+                    "description": "Koliko bi prelaz trebalo da traje, u sekundama."
+                }
+            },
+            "name": "Podesi osvetljenje",
+            "description": "Podešava jačinu osvetljenja samo za svetla koja su već uključena, dok isključena svetla ne dira."
+        },
+        "light_set_color": {
+            "fields": {
+                "rgb_color": {
+                    "name": "Boja",
+                    "description": "Boja za podešavanje. Sijalice koje nemaju opciju boje se zaobilaze umesto da se upale u beloj boji."
+                },
+                "transition": {
+                    "name": "Prelaz",
+                    "description": "Koliko bi prelaz trebalo da traje, u sekundama."
+                }
+            },
+            "name": "Podesi boju",
+            "description": "Podešava boju svetala koja su već uključena, dok isključena svetla i ona koja ne podržavaju promenu boje ne dira."
+        },
+        "light_set_color_temperature": {
+            "fields": {
+                "kelvin": {
+                    "name": "Temperatura boje",
+                    "description": "Temperatura boje za podešavanje. Svako svetlo se zadržava unutar svog opsega, pošto je toplo bela na jednoj lampi vrednost koju druga ne može dostići."
+                },
+                "transition": {
+                    "name": "Prelaz",
+                    "description": "Koliko bi prelaz trebalo da traje, u sekundama."
+                }
+            },
+            "name": "Podesi temperaturu boje",
+            "description": "Podešava temperaturu boje za svetla koja su već uključena, svako u okviru opsega koji zapravo može da postigne."
+        },
+        "wait_for_condition": {
+            "fields": {
+                "condition": {
+                    "name": "Uslov",
+                    "description": "Uslov koji se čeka."
+                },
+                "timeout": {
+                    "name": "Istek vremena",
+                    "description": "Koliko dugo čekati pre odustajanja. Ako se izostavi, čekaće se beskonačno."
+                }
+            },
+            "name": "Čekanje uslova",
+            "description": "Čeka da uslov postane tačan. Odmah završava rad ako je uslov već ispunjen."
+        },
+        "light_decrease_brightness": {
+            "name": "Smanji osvetljenost",
+            "description": "Prigušuje svetla koja su već uključena, zaustavljajući se na njihovom minimumu umesto da ih potpuno isključi.",
+            "fields": {
+                "step_pct": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata prigušiti osvetljenje. Svaka sijalica se prigušuje sa svog trenutnog nivoa, tako da grupa zadržava međusobni odnos jačine umesto da se ujednači."
+                },
+                "transition": {
+                    "name": "Prelaz",
+                    "description": "Koliko bi prelaz trebalo da traje, u sekundama."
+                }
+            }
+        },
+        "light_set_effect": {
+            "fields": {
+                "effect": {
+                    "name": "Efekat",
+                    "description": "Naziv efekta koji se podešava. Nazivi efekata se razlikuju u zavisnosti od proizvođača, tako da svetla koja nemaju ovaj konkretan efekat ostaju nepromenjena."
+                }
+            },
+            "name": "Podesi efekat",
+            "description": "Aktivira efekat na svetlima koja su već uključena i zapravo ga podržavaju."
+        },
+        "light_increase_brightness": {
+            "name": "Povećaj osvetljenje",
+            "description": "Pojačava svetla koja su već uključena, dok isključena svetla ne dira.",
+            "fields": {
+                "step_pct": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata pojačati osvetljenje. Svaka sijalica se pojačava sa svog trenutnog nivoa, tako da grupa zadržava međusobni odnos jačine umesto da se ujednači."
+                },
+                "transition": {
+                    "name": "Prelaz",
+                    "description": "Koliko bi prelaz trebalo da traje, u sekundama."
+                }
+            }
+        },
+        "group_add_members": {
+            "name": "Dodaj članove u grupu",
+            "description": "Dodaje entitete u grupu napravljenu preko interfejsa, dok Home Assistant radi. Entiteti koji su već u grupi ostaju nepromenjeni.",
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa u koju ih treba dodati."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje treba dodati u grupu."
+                }
+            }
+        },
+        "group_remove_members": {
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa iz koje ih treba ukloniti."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje treba ukloniti iz grupe."
+                }
+            },
+            "name": "Ukloni članove iz grupe",
+            "description": "Uklanja entitete iz grupe koja je napravljena kroz interfejs, dok Home Assistant radi. Navođenje nečega što nije u grupi ne radi ništa, pa je ovo ujedno i način da očistite člana koji više ne postoji."
+        },
+        "group_set_members": {
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa koju treba izmeniti."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje bi grupa od sada trebalo da sadrži."
+                }
+            },
+            "description": "Zamenjuje članove grupe napravljene kroz interfejs navedenim članovima, dok Home Assistant radi.",
+            "name": "Postavi članove grupe"
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Dodaj kategoriju entitetu",
+            "fields": {
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "ID ili naziv kategorije."
+                },
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Automatizacije, skripte, scene ili pomoćnici koje treba staviti u kategoriju."
+                }
+            },
+            "description": "Smešta automatizaciju, skriptu, scenu ili pomoćnika u određenu kategoriju. Ovo zamenjuje prethodnu kategoriju u kojoj se nalazio, pošto svaki element može biti samo u jednoj."
+        },
+        "repairs_list": {
+            "fields": {
+                "include_ignored": {
+                    "description": "Takođe navedi probleme koji su zanemareni.",
+                    "name": "Uključi zanemarene"
+                },
+                "domain": {
+                    "name": "Domen",
+                    "description": "Navedi samo probleme koje su prijavile ove integracije."
+                },
+                "severity": {
+                    "description": "Navedi samo probleme sa ovim nivoima ozbiljnosti.",
+                    "name": "Ozbiljnost"
+                }
+            },
+            "name": "Navedi probleme",
+            "description": "Navodi probleme koji su trenutno prijavljeni u Home Assistant Popravkama, zajedno sa njihovim naslovima, kako bi automatizacija mogla da reaguje ili da se prikažu na kontrolnoj tabli."
+        },
+        "input_text_create": {
+            "fields": {
+                "pattern": {
+                    "description": "Regularni izraz sa kojim tekst mora da se poklapa.",
+                    "name": "Obrazac"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona za novi tekstualni unos."
+                },
+                "initial": {
+                    "name": "Početna vrednost",
+                    "description": "Tekst od kojeg počinje. Ako se izostavi, zadržava tekst koji je imao pre ponovnog pokretanja Home Assistanta."
+                },
+                "input_text_id": {
+                    "name": "ID entiteta tekstualnog unosa",
+                    "description": "ID entiteta za novi tekstualni unos. Prefiks input_text. se dodaje automatski. Ako se ne navede, ID entiteta će biti generisan na osnovu naziva."
+                },
+                "max": {
+                    "name": "Maksimalna dužina",
+                    "description": "Maksimalna dužina teksta."
+                },
+                "min": {
+                    "name": "Minimalna dužina",
+                    "description": "Minimalna dužina teksta."
+                },
+                "mode": {
+                    "name": "Režim",
+                    "description": "Prikaži tekst kakav jeste ili ga sakrij kao lozinku."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog tekstualnog unosa."
+                },
+                "unit_of_measurement": {
+                    "description": "Jedinica mere koja se prikazuje pored teksta.",
+                    "name": "Jedinica mere"
+                }
+            },
+            "name": "Kreiraj tekstualni unos",
+            "description": "Kreira novi pomoćni tekstualni unos u hodu. Vraća ID entiteta novog tekstualnog unosa."
+        },
+        "homeassistant_update_category": {
+            "fields": {
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "ID ili naziv kategorije za ažuriranje."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona za kategoriju."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za kategoriju."
+                },
+                "scope": {
+                    "name": "Opseg",
+                    "description": "Gde se kategorija koristi."
+                }
+            },
+            "name": "Ažuriraj kategoriju",
+            "description": "Ažurira postojeću kategoriju u hodu. Sve što izostavite zadržava vrednost koju već ima. Ikonica se može ukloniti postavljanjem njene vrednosti na null."
+        },
+        "homeassistant_delete_category": {
+            "fields": {
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "ID ili naziv kategorije za brisanje."
+                },
+                "scope": {
+                    "name": "Opseg",
+                    "description": "Gde se kategorija koristi."
+                }
+            },
+            "name": "Obriši kategoriju",
+            "description": "Briše kategoriju. Sve što se nalazilo u njoj ostaje bez kategorije."
+        },
+        "homeassistant_remove_category_from_entity": {
+            "fields": {
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "ID ili naziv kategorije."
+                },
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Automatizacije, skripte, scene ili pomoćnici koje treba ukloniti iz kategorije."
+                }
+            },
+            "name": "Ukloni kategoriju iz entiteta",
+            "description": "Uklanja automatizaciju, skriptu, scenu ili pomoćnika iz kategorije. Sve što je u drugoj kategoriji ostaje netaknuto."
+        },
+        "counter_create": {
+            "fields": {
+                "counter_id": {
+                    "name": "ID entiteta brojača",
+                    "description": "ID entiteta za novi brojač. Prefiks counter. se dodaje automatski. Ako se ne navede, ID entiteta će biti generisan na osnovu naziva."
+                },
+                "step": {
+                    "description": "Za koliko se vrednost brojača povećava ili smanjuje svaki put.",
+                    "name": "Korak"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona za novi brojač."
+                },
+                "initial": {
+                    "name": "Početna vrednost",
+                    "description": "Vrednost od koje brojač počinje i na koju se vraća prilikom resetovanja."
+                },
+                "maximum": {
+                    "name": "Maksimum",
+                    "description": "Najviša vrednost do koje brojač može ići. Izostavite ako nema ograničenja."
+                },
+                "minimum": {
+                    "name": "Minimum",
+                    "description": "Najniža vrednost do koje brojač može ići. Izostavite ako nema ograničenja."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog brojača."
+                },
+                "restore": {
+                    "name": "Obnovi",
+                    "description": "Obnovi vrednost brojača kada se Home Assistant pokrene, umesto da ponovo krene od početne vrednosti."
+                }
+            },
+            "name": "Kreiraj brojač",
+            "description": "Kreira novi pomoćni brojač u hodu. Vraća ID entiteta novog brojača."
+        },
+        "homeassistant_create_category": {
+            "name": "Kreiraj kategoriju",
+            "description": "Kreira novu kategoriju u hodu, za automatizacije, skripte, scene ili pomoćnike. Vraća ID nove kategorije.",
+            "fields": {
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona koja se koristi za kategoriju."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv kategorije koja se kreira."
+                },
+                "scope": {
+                    "name": "Opseg",
+                    "description": "Gde se kategorija koristi."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Kreiraj logički unos",
+            "description": "Kreira novi pomoćni logički unos (prekidač) u hodu. Vraća ID entiteta novog logičkog unosa.",
+            "fields": {
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona za novi logički unos."
+                },
+                "initial": {
+                    "name": "Početna vrednost",
+                    "description": "Vrednost od koje počinje. Ako se izostavi, zadržava vrednost koju je imao pre ponovnog pokretanja Home Assistanta."
+                },
+                "input_boolean_id": {
+                    "name": "ID entiteta logičkog unosa",
+                    "description": "ID entiteta za novi logički unos. Prefiks input_boolean. se dodaje automatski. Ako se ne navede, ID entiteta će biti generisan na osnovu naziva."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog logičkog unosa."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Kreiraj dugme za unos",
+            "description": "Kreira novo pomoćno dugme za unos u hodu. Vraća ID entiteta novog dugmeta za unos.",
+            "fields": {
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona za novo dugme za unos."
+                },
+                "input_button_id": {
+                    "name": "ID entiteta dugmeta za unos",
+                    "description": "ID entiteta za novo dugme za unos. Prefiks input_button. se dodaje automatski. Ako se ne navede, ID entiteta će biti generisan na osnovu naziva."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog dugmeta za unos."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Kreiraj unos datuma i vremena",
+            "description": "Kreira novi pomoćni unos datuma i vremena u hodu, koji sadrži datum, vreme ili oba. Vraća ID entiteta novog unosa datuma i vremena.",
+            "fields": {
+                "has_date": {
+                    "name": "Sadrži datum",
+                    "description": "Da li sadrži datum. Najmanje jedna opcija (datum ili vreme) mora biti uključena."
+                },
+                "has_time": {
+                    "name": "Sadrži vreme",
+                    "description": "Da li sadrži vreme. Najmanje jedna opcija (datum ili vreme) mora biti uključena."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona za novi unos datuma i vremena."
+                },
+                "initial": {
+                    "name": "Početna vrednost",
+                    "description": "Datum i/ili vreme od kojeg počinje, kao 2026-12-31, 08:30:00 ili 2026-12-31 08:30:00. Ako se izostavi, zadržava vrednost koju je imao pre ponovnog pokretanja Home Assistanta."
+                },
+                "input_datetime_id": {
+                    "name": "ID entiteta unosa datuma i vremena",
+                    "description": "ID entiteta za novi unos datuma i vremena. Prefiks input_datetime. se dodaje automatski. Ako se ne navede, ID entiteta će biti generisan na osnovu naziva."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog unosa datuma i vremena."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Kreiraj izbor unosa",
+            "description": "Kreira novi pomoćni izbor unosa (padajući meni) u hodu. Vraća ID entiteta novog izbora unosa.",
+            "fields": {
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona za novi izbor unosa."
+                },
+                "initial": {
+                    "name": "Početna opcija",
+                    "description": "Opcija od koje počinje, a koja mora biti jedna od ponuđenih opcija. Ako se izostavi, zadržava opciju koju je imao pre ponovnog pokretanja Home Assistanta."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog izbora unosa."
+                },
+                "options": {
+                    "name": "Opcije",
+                    "description": "Opcije koje se mogu izabrati. Svaka opcija se može naći na listi samo jednom."
+                },
+                "input_select_id": {
+                    "name": "ID entiteta izbora unosa",
+                    "description": "ID entiteta za novi izbor unosa. Prefiks input_select. se dodaje automatski. Ako se ne navede, ID entiteta će biti generisan na osnovu naziva."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Kreiraj tajmer",
+            "description": "Kreira novi pomoćni tajmer u hodu. Vraća ID entiteta novog tajmera.",
+            "fields": {
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko dugo tajmer radi kada se pokrene."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona za novi tajmer."
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Naziv novog tajmera."
+                },
+                "restore": {
+                    "name": "Obnovi",
+                    "description": "Obnovi stanje tajmera kada se Home Assistant pokrene, tako da tajmer koji radi nastavi da teče i nakon ponovnog pokretanja."
+                },
+                "timer_id": {
+                    "description": "ID entiteta za novi tajmer. Prefiks timer. se dodaje automatski. Ako se ne navede, ID entiteta će biti generisan na osnovu naziva.",
+                    "name": "ID entiteta tajmera"
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Obriši brojač",
+            "description": "Briše pomoćne brojače kreirane u korisničkom interfejsu ili pomoću akcije kreiranja brojača. Spook ne može obrisati brojače podešene u YAML-u.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Brojači koje treba obrisati."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Obriši logički unos",
+            "description": "Briše pomoćne logičke unose kreirane u korisničkom interfejsu ili pomoću akcije kreiranja logičkog unosa. Spook ne može obrisati logičke unose podešene u YAML-u.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Logički unosi koje treba obrisati."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Obriši dugme za unos",
+            "description": "Briše pomoćnu dugmad za unos kreiranu u korisničkom interfejsu ili pomoću akcije kreiranja dugmeta za unos. Spook ne može obrisati dugmad za unos podešenu u YAML-u.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Dugmad za unos koju treba obrisati."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Obriši unos datuma i vremena",
+            "description": "Briše pomoćne unose datuma i vremena kreirane u korisničkom interfejsu ili pomoću akcije kreiranja unosa datuma i vremena. Spook ne može obrisati unose datuma i vremena podešene u YAML-u.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Unosi datuma i vremena koje treba obrisati."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Obriši izbor unosa",
+            "description": "Briše pomoćne izbore unosa kreirane u korisničkom interfejsu ili pomoću akcije kreiranja izbora unosa. Spook ne može obrisati izbore unosa podešene u YAML-u.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Izbori unosa koje treba obrisati."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Obriši tekstualni unos",
+            "description": "Briše pomoćne tekstualne unose kreirane u korisničkom interfejsu ili pomoću akcije kreiranja tekstualnog unosa. Spook ne može obrisati tekstualne unose podešene u YAML-u.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Tekstualni unosi koje treba obrisati."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Obriši tajmer",
+            "description": "Briše pomoćne tajmere kreirane u korisničkom interfejsu ili pomoću akcije kreiranja tajmera. Spook ne može obrisati tajmere podešene u YAML-u.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta",
+                    "description": "Tajmeri koje treba obrisati."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Dodaj pseudonim entitetu",
+            "description": "Dodaje jedan ili više pseudonima entitetu (ili entitetima), pomoću kojih ih glasovni asistenti mogu pozvati.",
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim(i) za dodavanje."
+                },
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti kojima se dodaje(u) pseudonim(i)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim(i) za uklanjanje."
+                },
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti sa kojih se uklanja(ju) pseudonim(i)."
+                }
+            },
+            "name": "Ukloni pseudonim sa entiteta",
+            "description": "Uklanja jedan ili više pseudonima sa entiteta (ili entiteta)."
+        },
+        "homeassistant_set_entity_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi",
+                    "description": "Pseudonimi za postavljanje."
+                },
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti za koje se postavljaju pseudonimi."
+                }
+            },
+            "description": "Zamenjuje pseudonime entiteta (ili entiteta). Da li se sopstveno ime entiteta računa kao pseudonim, ostaje nepromenjeno.",
+            "name": "Postavi pseudonime za entitet"
+        },
+        "homeassistant_set_entity_icon": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti za koje se postavlja ikona."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona, ili „null“ za sopstvenu ikonu integracije."
+                }
+            },
+            "description": "Menja ikonu entiteta (ili entiteta) u hodu. Postavite na „null“ da biste se vratili na ikonu koju daje sama integracija.",
+            "name": "Postavi ikonu entiteta"
+        },
+        "calendar_update_event": {
+            "description": "Menja događaje u kalendaru pronađene na osnovu njihovog naslova ili UID-a u određenom vremenskom periodu. Vraća izmenjene podatke, uključujući UID.",
+            "fields": {
+                "description": {
+                    "name": "Opis",
+                    "description": "Opis koji se dodeljuje događajima."
+                },
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko daleko tražiti od početka. Unesite ovo ili datum i vreme završetka."
+                },
+                "end_date_time": {
+                    "name": "Datum i vreme završetka",
+                    "description": "Gde zaustaviti pretragu. Unesite ovo ili trajanje."
+                },
+                "location": {
+                    "name": "Lokacija",
+                    "description": "Lokacija koja se dodeljuje događajima."
+                },
+                "shift": {
+                    "description": "Pomerite događaje za ovoliko (kasnije, ili ranije ako je vrednost negativna), umesto unosa novog početka ili završetka.",
+                    "name": "Pomeranje"
+                },
+                "new_end": {
+                    "name": "Novi završetak",
+                    "description": "Kada se događaji umesto toga završavaju."
+                },
+                "new_start": {
+                    "name": "Novi početak",
+                    "description": "Kada događaji umesto toga počinju. Zadržavaju svoje trajanje, osim ako nije naveden i novi završetak."
+                },
+                "new_summary": {
+                    "name": "Novi naslov",
+                    "description": "Naslov koji se dodeljuje događajima."
+                },
+                "start_date_time": {
+                    "name": "Datum i vreme početka",
+                    "description": "Odakle početi pretragu. Podrazumevana vrednost je trenutno vreme."
+                },
+                "summary": {
+                    "name": "Naslov",
+                    "description": "Naslov događaja koji se menjaju, tačno onako kako je naveden u kalendaru."
+                },
+                "uid": {
+                    "description": "Identifikator događaja koji se menja, ako ga posedujete.",
+                    "name": "UID"
+                }
+            },
+            "name": "Ažuriraj događaj"
+        },
+        "calendar_delete_event": {
+            "name": "Obriši događaj",
+            "description": "Briše događaje iz kalendara pronađene na osnovu njihovog naslova ili UID-a u određenom vremenskom periodu. Vraća obrisane podatke, uključujući UID.",
+            "fields": {
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko daleko tražiti od početka. Unesite ovo ili datum i vreme završetka."
+                },
+                "end_date_time": {
+                    "name": "Datum i vreme završetka",
+                    "description": "Gde zaustaviti pretragu. Unesite ovo ili trajanje."
+                },
+                "whole_series": {
+                    "description": "Za ponavljajući događaj, obrišite celu seriju umesto samo pronađenog pojedinačnog pojavljivanja.",
+                    "name": "Cela serija"
+                },
+                "start_date_time": {
+                    "name": "Datum i vreme početka",
+                    "description": "Odakle početi pretragu. Podrazumevana vrednost je trenutno vreme."
+                },
+                "summary": {
+                    "name": "Naslov",
+                    "description": "Naslov događaja koji se brišu, tačno onako kako je naveden u kalendaru."
+                },
+                "uid": {
+                    "description": "Identifikator događaja koji se briše, ako ga posedujete.",
+                    "name": "UID"
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Povećaj temperaturu",
+            "description": "Povećava zadatu temperaturu termostata za jedan korak, odnosno obe zadate vrednosti ako termostat ima režim i za grejanje i za hlađenje. Termostat koji je isključen ostaje isključen.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog termostata, ili pola stepena (jedan stepen u Farenhajtima) kada termostat nema definisan sopstveni korak."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Smanji temperaturu",
+            "description": "Smanjuje zadatu temperaturu termostata za jedan korak, odnosno obe zadate vrednosti ako termostat ima režim i za grejanje i za hlađenje. Termostat koji je isključen ostaje isključen.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog termostata, ili pola stepena (jedan stepen u Farenhajtima) kada termostat nema definisan sopstveni korak."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Povećaj temperaturu",
+            "description": "Povećava zadatu temperaturu bojlera za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog bojlera, ili pola stepena (jedan stepen u Farenhajtima) kada bojler nema definisan sopstveni korak."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Smanji temperaturu",
+            "description": "Smanjuje zadatu temperaturu bojlera za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog bojlera, ili pola stepena (jedan stepen u Farenhajtima) kada bojler nema definisan sopstveni korak."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Povećaj vlažnost",
+            "description": "Povećava ciljanu vlažnost vazduha na ovlaživaču za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti vlažnost. Izostavite ovaj parametar da biste koristili podrazumevani korak samog ovlaživača, ili jedan procenat kada uređaj nema definisan sopstveni korak."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Smanji vlažnost",
+            "description": "Smanjuje ciljanu vlažnost vazduha na ovlaživaču za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti vlažnost. Izostavite ovaj parametar da biste koristili podrazumevani korak samog ovlaživača, ili jedan procenat kada uređaj nema definisan sopstveni korak."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Povećaj otvorenost",
+            "description": "Otvara roletnu za jedan korak, zaustavljajući se kada se potpuno otvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata je pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Smanji otvorenost",
+            "description": "Zatvara roletnu za jedan korak, zaustavljajući se kada se potpuno zatvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata je pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Povećaj otvorenost",
+            "description": "Otvara ventil za jedan korak, zaustavljajući se kada se potpuno otvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata ga pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Smanji otvorenost",
+            "description": "Zatvara ventil za jedan korak, zaustavljajući se kada se potpuno zatvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata ga pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Pojačaj zvuk",
+            "description": "Pojačava zvuk medijskog plejera za uneti korak, zaustavljajući se na maksimalnoj jačini zvuka.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti jačinu zvuka."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Smanji zvuk",
+            "description": "Smanjuje zvuk medijskog plejera za uneti korak, zaustavljajući se kada se potpuno utiša.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti jačinu zvuka."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Premesti stavku",
+            "description": "Premešta stavku na listi zadataka na vrh, na dno ili nakon neke druge stavke.",
+            "fields": {
+                "item": {
+                    "name": "Stavka",
+                    "description": "Naslov ili UID stavke koju treba premestiti."
+                },
+                "after": {
+                    "name": "Posle",
+                    "description": "Naslov ili UID stavke nakon koje je treba staviti. Navedite ovo ili poziciju."
+                },
+                "position": {
+                    "name": "Pozicija",
+                    "description": "Premestite je na vrh ili na dno liste. Navedite ovo ili stavku nakon koje je treba staviti."
+                }
+            }
+        },
+        "input_number_set_range": {
+            "description": "Menja minimum, maksimum ili korak numeričkog unosa napravljenog u korisničkom interfejsu, isto kao i njegovo uređivanje. Vrednost izvan novog opsega biće pomerena unutar njega.",
+            "fields": {
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Nova maksimalna vrednost."
+                },
+                "min": {
+                    "name": "Minimum",
+                    "description": "Nova minimalna vrednost."
+                },
+                "step": {
+                    "name": "Korak",
+                    "description": "Nova veličina koraka."
+                }
+            },
+            "name": "Postavi opseg"
+        },
+        "input_select_reverse": {
+            "name": "Obrni opcije",
+            "description": "Obrće redosled dostupnih opcija za `input_select` entitet, od poslednje ka prvoj. Ovo nije trajno i biće poništeno nakon ponovnog učitavanja ili ponovnog pokretanja Home Assistant-a."
         }
-      }
+    },
+    "conditions": {
+        "chance": {
+            "name": "Verovatnoća",
+            "description": "Uslov se ispunjava u određenom procentu slučajeva, koji se bira nasumično pri svakoj proveri. Korisno za dodavanje malo varijacije u vaše automatizacije.",
+            "fields": {
+                "percentage": {
+                    "name": "Procenat",
+                    "description": "Koliko često ovaj uslov treba da prođe, izraženo u procentima."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Period hlađenja",
+            "description": "Uslov je ispunjen samo ako ova automatizacija ili skripta nisu pokrenute u navedenom vremenskom periodu (ili ako nikada nisu pokrenute). Ugrađeni period hlađenja koji sprečava prečesto ponovno aktiviranje.",
+            "fields": {
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko dugo treba sačekati nakon poslednjeg pokretanja pre nego što ovaj uslov ponovo prođe."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "fields": {
+                "automation": {
+                    "name": "Automatizacije",
+                    "description": "Ograničite ovo na određene automatizacije. Ostavite prazno kako biste prihvatili bilo koju od njih."
+                }
+            },
+            "name": "Pokrenuto automatizacijom",
+            "description": "Uslov je ispunjen ako je druga automatizacija pokrenula ovo izvršavanje, bilo direktno ili putem skripte."
+        },
+        "repair_issue_present": {
+            "name": "Nerešen problem za popravku",
+            "description": "Uslov je ispunjen ako postoji nerešen problem u odeljku Popravke. Zanemareni problemi se ne računaju.",
+            "fields": {
+                "domain": {
+                    "name": "Integracije",
+                    "description": "Ograničite ovo na probleme koje prijavljuju određene integracije, prema njihovom domenu. Ostavite prazno za sve integracije."
+                },
+                "severity": {
+                    "name": "Ozbiljnost",
+                    "description": "Ograničite ovo na probleme određene ozbiljnosti. Ostavite prazno za sve nivoe."
+                }
+            }
+        },
+        "quota": {
+            "name": "Preostalo dozvoljenih pokretanja",
+            "description": "Uslov je ispunjen ako je ova automatizacija pokrenuta manje od zadatog broja puta unutar određenog perioda. Skripte se ne računaju.",
+            "fields": {
+                "limit": {
+                    "name": "Ograničenje",
+                    "description": "Koliko je pokretanja dozvoljeno unutar ovog perioda."
+                },
+                "period": {
+                    "name": "Vremenski period",
+                    "description": "Vremenski period na koji se ograničenje primenjuje. Prozor je klizni, pa tako „jedan dan“ označava bilo kojih 24 sata, a ne period između dve ponoći."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Pokrenuto od strane korisnika",
+            "description": "Uslov je ispunjen ako je pokretanje inicirala osoba: promenom stanja ili događajem koji je izazvala (uključujući i promenu koja je aktivirala šablonski pokretač). Vremenski raspored, položaj sunca, automatske integracije ili ručno pokretanje dugmetom „Pokreni“ ne računaju se kao pokretanje od strane korisnika.",
+            "fields": {
+                "person": {
+                    "name": "Osobe",
+                    "description": "Uslov je ispunjen samo kada je jedna od ovih osoba pokrenula akciju. Ostavite prazno kako bi uslov važio za bilo koga. Osoba mora imati povezan korisnički nalog, inače sistem nema sa čim da uporedi podatke."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Nije pokrenuto od strane korisnika",
+            "description": "Uslov je ispunjen kada niko nije odgovoran za ovo pokretanje: vremenski raspored, položaj sunca, automatska integracija ili pritisak na dugme „Pokreni“. Namerno nema dodatnih opcija. Ako umesto toga želite da isključite konkretne osobe, stavite uslov „Pokrenuto od strane korisnika“ unutar „Nije“ uslova."
+        },
+        "is_at_target_temperature": {
+            "fields": {
+                "behavior": {
+                    "name": "Ponašanje",
+                    "description": "Da li je dovoljno da bilo koji od uređaja bude u tom stanju, ili moraju svi."
+                },
+                "tolerance": {
+                    "description": "Koliko blizu cilju se i dalje smatra postignutim rezultatom, izraženo u jedinici mere uređaja. Koristi se za termostat koji se stabilizuje neposredno pre zadate tačke. Nula označava sam cilj.",
+                    "name": "Tolerancija"
+                }
+            },
+            "name": "Temperatura je na ciljnoj vrednosti",
+            "description": "Odobrava se kada je temperatura termostata ili bojlera na ciljnoj vrednosti. Za uređaj koji je isključen smatra se da nije na cilju, dok se nedostupni uređaji izuzimaju."
+        }
+    },
+    "triggers": {
+        "cron": {
+            "fields": {
+                "schedule": {
+                    "description": "Crontab izraz sa pet polja: minut, sat, dan u mesecu, mesec, dan u nedelji. Podržava opsege i korake, kao i proširenja za dane u nedelji, tako da „MON#2” označava drugi ponedeljak, a „5L” poslednji petak. Nadimci poput „@daily” nisu podržani.",
+                    "name": "Raspored"
+                }
+            },
+            "name": "Cron raspored",
+            "description": "Aktivira se prema crontab rasporedu za vremena koja ugrađeni vremenski pokretači Home Assistant-a ne mogu da definišu, kao što je svakog radnog dana u sedam ili poslednjeg petka u mesecu."
+        },
+        "watchdog": {
+            "fields": {
+                "arm": {
+                    "name": "Aktiviraj nadgledanje",
+                    "description": "Ono što pokreće nadgledanje. Vreme čekanja se meri od ovog trenutka, a ponovno aktiviranje tokom već započetog čekanja resetuje brojač na početak."
+                },
+                "expect": {
+                    "name": "Očekivano",
+                    "description": "Ono što se očekuje kao sledeći korak. Ako stigne na vreme, nadgledanje se obustavlja i ništa se ne aktivira."
+                },
+                "within": {
+                    "name": "Unutar",
+                    "description": "Vreme u okviru kojeg očekivani događaj mora da stigne. Aktiviranje se vrši ako ovo vreme istekne, a događaj se nije pojavio."
+                }
+            },
+            "name": "Nadgledanje",
+            "description": "Aktivira se kada se nešto što je očekivano ne desi na vreme."
+        },
+        "flapping": {
+            "fields": {
+                "changes": {
+                    "name": "Izmene",
+                    "description": "Koliko je promena stanja potrebno da bi se ovo aktiviralo. Promene atributa se ne računaju, kao ni pojavljivanje ili nestajanje entiteta."
+                },
+                "within": {
+                    "name": "Unutar",
+                    "description": "Vremenski period unutar kojeg te promene moraju da se dese. Prozor se pomera, tako da se ovo uvek odnosi na najnovije promene."
+                }
+            },
+            "name": "Entitet nestabilan i ne može da se smiri",
+            "description": "Aktivira se kada entitet menja stanje češće nego što bi trebalo unutar određenog vremenskog perioda."
+        },
+        "while": {
+            "fields": {
+                "condition": {
+                    "name": "Uslov",
+                    "description": "Uslov koji se prati. Aktiviranje počinje kada uslov postane ispunjen, a prekida se kada prestane da važi."
+                },
+                "every": {
+                    "name": "Svakih",
+                    "description": "Koliko se čeka između dva uzastopna aktiviranja, sve dok je uslov ispunjen."
+                }
+            },
+            "name": "Dok je uslov ispunjen",
+            "description": "Aktivira se kada se uslov ispuni, a zatim nastavlja sa periodičnim aktiviranjem sve dok je uslov tačan."
+        },
+        "condition_met": {
+            "fields": {
+                "condition": {
+                    "name": "Uslov",
+                    "description": "Uslov koji se prati."
+                }
+            },
+            "name": "Uslov postao tačan",
+            "description": "Aktivira se kada uslov pređe iz netačnog u tačno stanje, koristeći iste uslovne blokove kao i na bilo kom drugom mestu."
+        },
+        "stale": {
+            "name": "Entitet prestao da šalje podatke",
+            "description": "Aktivira se kada se stanje entiteta ne ažurira određeno vreme, što omogućava prepoznavanje uređaja koji su tiho prestali sa radom umesto da pređu u status nedostupnosti.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo entitet mora da ne šalje podatke pre nego što se ovo aktivira. Entitet koji nastavlja da prijavljuje istu vrednost ne smatra se utihnulim."
+                }
+            }
+        },
+        "sequence": {
+            "name": "Pokretači po redosledu",
+            "description": "Aktivira se kada se nekoliko pokretača desi jedan za drugim, tačno navedenim redosledom.",
+            "fields": {
+                "steps": {
+                    "name": "Koraci",
+                    "description": "Pokretači koji moraju da se dese redom. Aktivan je samo onaj pokretač koji se trenutno čeka, tako da se prevremeno izvršavanje nekog kasnijeg koraka neće smatrati pogotkom."
+                },
+                "timeout": {
+                    "name": "Istek vremena",
+                    "description": "Koliko ukupno može trajati ceo redosled, računajući od prvog koraka. Ako se izostavi, čekaće se beskonačno."
+                },
+                "reset": {
+                    "name": "Resetuj",
+                    "description": "Pokretači koji prekidaju redosled koji je već u toku, vraćajući ga na čekanje prvog koraka."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "fields": {
+                "domain": {
+                    "name": "Integracije",
+                    "description": "Ograničite ovo na probleme koje prijavljuju određene integracije, prema njihovom domenu. Ostavite prazno za sve integracije."
+                },
+                "severity": {
+                    "name": "Ozbiljnost",
+                    "description": "Ograničite ovo na probleme određene ozbiljnosti. Ostavite prazno za sve nivoe."
+                }
+            },
+            "name": "Kreiran problem za popravku",
+            "description": "Aktivira se kada se pojavi novi problem za popravku, tako da možete saznati za njega bez posete stranici „Popravke“."
+        },
+        "integration_failed": {
+            "name": "Podešavanje integracije neuspešno",
+            "description": "Aktivira se kada podešavanje unosa konfiguracije ne uspeva već neko vreme, i to nakon što su iscrpljeni svi interni ponovni pokušaji kojima bi Home Assistant samostalno rešio problem.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo unos mora neprekidno da prijavljuje grešku pre nego što se ovo aktivira. Home Assistant pokušava ponovo najviše na svakih deset minuta, pa bi bilo šta kraće od toga moglo da prijavi problem koji bi se inače sam rešio."
+                },
+                "entry_id": {
+                    "name": "Unosi",
+                    "description": "Ograničite ovo na određene unose konfiguracije. Ostavite prazno kako biste pratili svaki od njih."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Problem za popravku rešen",
+            "description": "Aktivira se kada problem za popravku nestane, bilo zato što je rešen ili zato što se više ne prijavljuje.",
+            "fields": {
+                "domain": {
+                    "name": "Integracije",
+                    "description": "Ograničite ovo na probleme koje prijavljuju određene integracije, prema njihovom domenu. Ostavite prazno za sve integracije."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Sve ovo se dogodilo",
+            "description": "Aktivira se kada se svaki od nekoliko pokretača pokrene unutar istog vremenskog prozora, bilo kojim redosledom. Sopstveni pokretači Home Assistant-a su lista gde je dovoljno da se bilo koji od njih aktivira; ovo je ona druga opcija.",
+            "fields": {
+                "within": {
+                    "description": "Koliko blizu jedno drugom moraju biti. Vremenski prozor se pomera, pa se pokretač koji se aktivirao ranije od ovog perioda zaboravlja, dok ostali nastavljaju da se računaju.",
+                    "name": "Unutar"
+                },
+                "triggers": {
+                    "name": "Pokretači",
+                    "description": "Pokretači koji svi moraju biti aktivirani. Redosled nije važan, a ponovna aktivacija pokretača samo osvežava njegovo stanje umesto da se računa dvaput."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entitet se ponovo pojavio",
+            "description": "Aktivira se kada se entitet vrati nakon što je neko vreme bio nedostupan, kako se ponovno pokretanje rutera ne bi očitalo kao oporavak svega u kući.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo entitet mora biti odsutan da bi se povratak računao. Sve kraće od toga je samo treperenje: ponovno učitavanje integracije prebacuje svaki njen entitet u stanje nedostupnosti i vraća ga nazad u roku od jedne sekunde."
+                }
+            }
+        },
+        "debounce": {
+            "description": "Aktivira se kada pokretač prestane da se pokreće na neko vreme, tako da čitav nalet signala stigne kao jedan. Senzor pokreta ne prijavljuje kretanje samo jednom, već ga prijavi dvadeset puta.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo mora da bude mirno pre nego što se ovo pokrene. Svaka nova aktivacija ponovo pokreće to čekanje, tako da se nešto što neprestano šalje signale nikada ne prijavljuje."
+                },
+                "triggers": {
+                    "name": "Pokretači",
+                    "description": "Pokretači koje treba sačekati. Aktivacija bilo kog od njih započinje nalet, a ponovna aktivacija ga održava, tako da se više pokretača spaja zajedno umesto jedan po jedan."
+                }
+            },
+            "name": "Kada se stanje stabilizuje"
+        },
+        "integration_added": {
+            "name": "Integracija je dodata",
+            "description": "Aktivira se kada se integracija doda u Home Assistant, bez obzira na to ko ju je ili šta dodalo."
+        },
+        "user_added": {
+            "name": "Korisnik je dodat",
+            "description": "Aktivira se kada se nekom odobri pristup sistemu Home Assistant. Korisnici koje Home Assistant kreira za sopstvene integracije su izuzeti."
+        },
+        "device_added": {
+            "name": "Uređaj je dodat",
+            "description": "Aktivira se kada se novi uređaj doda u Home Assistant, poput pametne utičnice koja je upravo uparena."
+        },
+        "device_discovered": {
+            "name": "Uređaj je otkriven",
+            "description": "Aktivira se kada Home Assistant otkrije nešto novo što bi mogao da podesi, poput uređaja koji se upravo pojavio na vašoj mreži."
+        },
+        "update_installed": {
+            "name": "Ažuriranje instalirano",
+            "description": "Aktivira se kada entitet ažuriranja prijavi drugačiju instaliranu verziju, bez obzira na to da li je neko pritisnuo dugme za instalaciju, da li se uređaj sam ažurirao ili je ažuriran van Home Assistant-a."
+        },
+        "automation_turned_off": {
+            "name": "Automatizacija isključena",
+            "description": "Aktivira se kada neko ili nešto isključi automatizaciju. Ostavite polje za cilj prazno kako biste pratili sve automatizacije."
+        },
+        "position_reached": {
+            "description": "Aktivira se kada pametna roletna/tenda ili ventil dostignu određeni položaj ili prođu pored njega. Položaj u kojem se uređaj već nalazi, kao i povratak u taj položaj nakon što je bio nedostupan, se ne računaju.",
+            "fields": {
+                "position": {
+                    "description": "Položaj koji treba dostići, od 0 (zatvoreno) do 100 (otvoreno).",
+                    "name": "Položaj"
+                }
+            },
+            "name": "Položaj je dostignut"
+        },
+        "script_started": {
+            "description": "Aktivira se kada skripta pokrene izvršavanje. Pokretanje koje skripta odbije zato što se već izvršava se ne računa. Ostavite polje za cilj prazno kako biste pratili sve skripte.",
+            "name": "Skripta je pokrenuta"
+        },
+        "target_temperature_reached": {
+            "description": "Aktivira se kada temperatura termostata ili bojlera dostigne ciljnu vrednost ili je prekorači. Promena ciljne vrednosti se ne računa, kao ni uređaj koji je isključen.",
+            "fields": {
+                "tolerance": {
+                    "description": "Koliko blizu cilju se i dalje smatra postignutim rezultatom, izraženo u jedinici mere uređaja. Koristi se za termostat koji se stabilizuje neposredno pre zadate tačke. Nula označava sam cilj.",
+                    "name": "Tolerancija"
+                }
+            },
+            "name": "Ciljna temperatura je dostignuta"
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritično",
+                "error": "Greška",
+                "warning": "Upozorenje"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Dole",
+                "top": "Gore"
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Pronađeni duhovi",
+            "ghosts_ignored": "Zanemareni duhovi",
+            "helpers_linked": "Povezani pomoćnici",
+            "version": "Verzija"
+        }
     }
-  }
 }

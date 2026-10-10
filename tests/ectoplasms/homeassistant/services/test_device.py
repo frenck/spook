@@ -143,7 +143,7 @@ async def test_disable_device_service_disables_parent_without_other_children(
     child = device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
@@ -174,7 +174,7 @@ async def test_disable_device_service_preserves_parent_disabled_reason(
     parent = device_registry.async_get_or_create(
         config_entry_id=disabled_config_entry.entry_id,
         identifiers={("test", "parent-device")},
-        via_device=("test", "grandparent-device"),
+        via_device_id=grandparent.id,
     )
 
     assert parent.disabled_by is DeviceEntryDisabler.CONFIG_ENTRY
@@ -182,7 +182,7 @@ async def test_disable_device_service_preserves_parent_disabled_reason(
     child = device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
@@ -219,12 +219,12 @@ async def test_disable_device_service_keeps_parent_enabled_with_enabled_children
     child = device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
     device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "sibling-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
@@ -256,7 +256,7 @@ async def test_enable_device_service_enables_parent_device(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
         disabled_by=DeviceEntryDisabler.USER,
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
@@ -269,32 +269,6 @@ async def test_enable_device_service_enables_parent_device(
 
     assert device_registry.async_get(child.id).disabled_by is None
     assert device_registry.async_get(parent.id).disabled_by is None
-
-
-@pytest.mark.usefixtures("device_services")
-async def test_enable_device_service_survives_via_device_self_reference(
-    hass: HomeAssistant,
-    hass_admin_user: MockUser,
-    config_entry: MockConfigEntry,
-    device_registry: DeviceRegistry,
-) -> None:
-    """Test enabling a device whose via_device_id points at itself."""
-    device = device_registry.async_get_or_create(
-        config_entry_id=config_entry.entry_id,
-        identifiers={("test", "self-referencing-device")},
-        disabled_by=DeviceEntryDisabler.USER,
-    )
-    device_registry.async_update_device(device_id=device.id, via_device_id=device.id)
-
-    await hass.services.async_call(
-        DOMAIN,
-        "enable_device",
-        {"device_id": device.id},
-        blocking=True,
-        context=Context(user_id=hass_admin_user.id),
-    )
-
-    assert device_registry.async_get(device.id).disabled_by is None
 
 
 @pytest.mark.usefixtures("device_services")

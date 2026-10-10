@@ -5,13 +5,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.lovelace import DOMAIN
-from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_LOVELACE_UPDATED,
-    EVENT_STATE_CHANGED,
 )
-from homeassistant.core import Event, callback
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
@@ -19,14 +17,46 @@ from ....dashboard_extraction import extract_entities_from_dashboard_node
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
+from ..dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Iterable
 
     from homeassistant.components.lovelace.dashboard import (
         LovelaceStorage,
         LovelaceYAML,
     )
+    from homeassistant.core import HomeAssistant
+
+
+@callback
+def _async_miscased_entity_ids(
+    hass: HomeAssistant, entity_ids: Iterable[str]
+) -> set[str]:
+    """Return the entity IDs written with capitals, exactly as written.
+
+    The frontend looks an entity up exactly as the card names it, and every
+    entity Home Assistant has is lower case. So `light.Kitchen` is never
+    found, not even when `light.kitchen` exists, and the card shows it as
+    unavailable. Reported as written, so the repair shows what was typed.
+
+    Only one that is an entity ID once lower cased counts, and it passes the
+    same checks as any other; anything else was never meant as one.
+    """
+    written_as: dict[str, set[str]] = {}
+    for entity_id in entity_ids:
+        if (lower_cased := entity_id.lower()) != entity_id:
+            written_as.setdefault(lower_cased, set()).add(entity_id)
+
+    # Nothing counts as known here: whether the lower case one exists or
+    # not, the card names something that does not.
+    return {
+        entity_id
+        for lower_cased in async_filter_known_entity_ids(
+            hass, entity_ids=written_as, known_entity_ids=set()
+        )
+        for entity_id in written_as[lower_cased]
+    }
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -41,35 +71,15 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_config_entry_changed = True
     inspect_on_reload = True
+    inspect_on_entity_added_or_removed = True
     automatically_clean_up_issues = True
 
-    _dashboards: dict[str, LovelaceStorage | LovelaceYAML]
+    _dashboards: dict[str | None, LovelaceStorage | LovelaceYAML]
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
         self._dashboards = self.hass.data["lovelace"].dashboards
         await super().async_activate()
-
-        @callback
-        def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
-            """Return if a state entity was added or removed."""
-            return (
-                event_data.get("old_state") is None
-                or event_data.get("new_state") is None
-            )
-
-        @callback
-        def _async_call_inspect_debouncer(_: Event) -> None:
-            """Trigger an inspection when a state entity is added or removed."""
-            self.inspect_debouncer.async_schedule_call()
-
-        self._event_subs.add(
-            self.hass.bus.async_listen(
-                EVENT_STATE_CHANGED,
-                _async_call_inspect_debouncer,
-                event_filter=_state_entity_changed,
-            ),
-        )
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
@@ -79,21 +89,20 @@ class SpookRepair(AbstractSpookRepair):
 
         # Loop over all dashboards and check if there are unknown entities
         # referenced in the dashboards.
-        for dashboard in self._dashboards.values():
-            url_path = dashboard.url_path or "lovelace"
+        async for dashboard, url_path, config in async_dashboard_configs(
+            self._dashboards
+        ):
             self.possible_issue_ids.add(url_path)
-            try:
-                config = await dashboard.async_load(force=False)
-            except ConfigNotFound:
-                LOGGER.debug("Config for dashboard %s not found, skipping", url_path)
+            if config is None:
                 continue
 
             extracted_entities = self.__async_extract_entities(config)
-            if unknown_entities := async_filter_known_entity_ids(
+            unknown_entities = async_filter_known_entity_ids(
                 self.hass,
                 entity_ids=set(extracted_entities.keys()),
                 known_entity_ids=known_entity_ids,
-            ):
+            ) | _async_miscased_entity_ids(self.hass, extracted_entities)
+            if unknown_entities:
                 # Get the view path of the first unknown entity (by view order)
                 first_view_path = next(
                     path
@@ -105,8 +114,9 @@ class SpookRepair(AbstractSpookRepair):
                     title = dashboard.config.get("title", url_path)
                 self.async_create_issue(
                     issue_id=url_path,
+                    references=unknown_entities,
                     translation_placeholders={
-                        "entities": async_describe_unknown_entities(
+                        "entities": await async_describe_unknown_entities(
                             self.hass, sorted(unknown_entities)
                         ),
                         "dashboard": title,
@@ -133,4 +143,14 @@ class SpookRepair(AbstractSpookRepair):
                 view_path: int | str = view.get("path") or view_index
                 for entity_id in extract_entities_from_dashboard_node(view):
                     entities.setdefault(entity_id, view_path)
+
+        # A dashboard run by a strategy, like the areas dashboard, has no views
+        # stored at all: only the strategy and its options. The views it makes
+        # are opened from the first one.
+        if isinstance(config, dict) and isinstance(
+            strategy := config.get("strategy"), dict
+        ):
+            for entity_id in extract_entities_from_dashboard_node(strategy):
+                entities.setdefault(entity_id, 0)
+
         return entities

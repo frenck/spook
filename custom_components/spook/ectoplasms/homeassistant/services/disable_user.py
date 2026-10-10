@@ -10,6 +10,8 @@ from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
+from ....const import DOMAIN as SPOOK_DOMAIN
+from ....errors import user_not_found
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -25,12 +27,22 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
+        # Everything is looked up before anything is written. A bad one late
+        # in the list should not leave the first ones changed behind an error.
+        users = []
         for user_id in call.data["user_id"]:
             user = await self.hass.auth.async_get_user(user_id)
             if user is None:
-                message = f"Could not find user: {user_id}"
-                raise HomeAssistantError(message)
+                raise user_not_found(user_id)
             if user.system_generated:
-                message = f"Cannot disable a system-generated user: {user_id}"
-                raise HomeAssistantError(message)
+                raise HomeAssistantError(
+                    translation_domain=SPOOK_DOMAIN,
+                    translation_key="cannot_disable_system_user",
+                    translation_placeholders={
+                        "user_id": user_id,
+                    },
+                )
+            users.append(user)
+
+        for user in users:
             await self.hass.auth.async_update_user(user, is_active=False)

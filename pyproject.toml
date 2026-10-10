@@ -62,6 +62,7 @@ src = ["custom_components/spook"]
 ignore = [
   "A005", # It is just wrong
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
+  "CPY001", # Spook has one LICENSE file, not a header on every file
   "D203", # Conflicts with other rules
   "D213", # Conflicts with other rules
   "RUF012", # Just broken
@@ -98,6 +99,9 @@ known-first-party = [
 combine-as-imports = true
 
 [tool.ruff.lint.per-file-ignores]
+"script/*.py" = [
+  "INP001", # Scripts are run, not imported, so they live outside any package
+]
 "tests/**/*.py" = [
   "I001", # Ruff/isort conflicts with Pylint's Home Assistant import ordering in tests
   "S101", # Asserts are expected in tests
@@ -139,14 +143,14 @@ environments = [
 
 [dependency-groups]
 dev = [
-  "aiosqlite>=0.22.1",
-  "pre-commit-hooks>=4.5.0",
-  "pylint>=3.1.0",
-  "pytest-homeassistant-custom-component==0.13.356",
-  "prek>=0.4.3",
-  "pytest-cov>=7.0.0",
-  "ruff>=0.3.2",
-  "zizmor>=1.25.2",
+  "aiosqlite==0.22.1",
+  "pre-commit-hooks==6.0.0",
+  "pylint==4.1.2",
+  "pytest-homeassistant-custom-component==0.13.371",
+  "prek==0.5.5",
+  "pytest-cov==7.1.0",
+  "ruff==0.17.0",
+  "zizmor==1.30.1",
 ]
 
 [build-system]

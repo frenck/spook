@@ -9,6 +9,11 @@
 
 ![Spook - Your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo_wordmark_catchphrase_2048x512.png)
 
+> Enjoying Spook? 👻 A ⭐ on [GitHub][repository] lets others know Spook is
+> actually pretty great. [Sponsoring Frenck][sponsor] keeps this ghost well
+> fed. And his free bi-weekly [newsletter][newsletter] keeps your inner ghost
+> well fed.
+
 # About
 
 Hi! I'm Spook 👻 and I'm a custom integration for use with Home Assistant.
@@ -22,6 +27,23 @@ tools. 🛠️
 **Spook is not affiliated with, endorsed, recommended, or supported by the Home Assistant project.**
 
 This custom integration is provided as-is, without any warranty.
+
+# Using Spook with AI agents
+
+Let an AI agent manage your Home Assistant? Then it should know what Spook
+can do, without reading all of the documentation first. Spook ships an agent
+skill for that: its actions, triggers, conditions and repairs, in a form an
+agent can look things up in.
+
+In Claude Code:
+
+```txt
+/plugin marketplace add frenck/spook
+/plugin install spook@spook
+```
+
+Other agents can use the skill folder directly:
+[`plugins/spook/skills/spook`](plugins/spook/skills/spook).
 
 # Contributing
 
@@ -81,6 +103,9 @@ SOFTWARE.
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-SPOOKED-red.svg
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
+[repository]: https://github.com/frenck/spook
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2026.svg
+[newsletter]: https://frenck.dev/newsletter/
 [scorecard-shield]: https://api.scorecard.dev/projects/github.com/frenck/spook/badge
 [scorecard]: https://scorecard.dev/viewer/?uri=github.com/frenck/spook
+[sponsor]: https://github.com/sponsors/frenck

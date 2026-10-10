@@ -5,25 +5,43 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from custom_components.spook import entity_filtering, entity_suggestions
 from custom_components.spook.entity_suggestions import async_describe_unknown_entities
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er
+    import pytest
 
 
-def test_plain_unknown_entity_has_no_detail(hass: HomeAssistant) -> None:
+def _count_close_matches(monkeypatch: pytest.MonkeyPatch) -> list[int]:
+    """Count difflib lookups, so cache reuse is observable."""
+    calls = [0]
+    original = entity_suggestions.difflib.get_close_matches
+
+    def _counting(*args: object, **kwargs: object) -> list[str]:
+        calls[0] += 1
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(entity_suggestions.difflib, "get_close_matches", _counting)
+
+    return calls
+
+
+async def test_plain_unknown_entity_has_no_detail(hass: HomeAssistant) -> None:
     """Test an unknown entity with no match or history is listed plainly."""
-    assert async_describe_unknown_entities(hass, ["sensor.ghost_xyzzy"]) == (
+    assert await async_describe_unknown_entities(hass, ["sensor.ghost_xyzzy"]) == (
         "- `sensor.ghost_xyzzy`"
     )
 
 
-def test_rename_suggestion_for_similar_entity(hass: HomeAssistant) -> None:
+async def test_rename_suggestion_for_similar_entity(hass: HomeAssistant) -> None:
     """Test a close existing entity is suggested as a likely rename."""
     hass.states.async_set("sensor.living_room_temperature", "21")
 
-    result = async_describe_unknown_entities(hass, ["sensor.living_room_temperatur"])
+    result = await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
 
     assert result == (
         "- `sensor.living_room_temperatur` "
@@ -40,13 +58,13 @@ async def test_deleted_entity_detail(
     deleted_entity_id = entry.entity_id
     entity_registry.async_remove(deleted_entity_id)
 
-    result = async_describe_unknown_entities(hass, [deleted_entity_id])
+    result = await async_describe_unknown_entities(hass, [deleted_entity_id])
 
     assert result.startswith(f"- `{deleted_entity_id}` (deleted on ")
     assert "was provided by `hue`)" in result
 
 
-def test_deleted_takes_precedence_over_rename(
+async def test_deleted_takes_precedence_over_rename(
     hass: HomeAssistant,
 ) -> None:
     """Test the deleted-entity detail is preferred over a rename guess."""
@@ -54,6 +72,143 @@ def test_deleted_takes_precedence_over_rename(
     hass.states.async_set("sensor.temperature", "21")
     # No deleted entity here, so this only asserts ordering does not crash;
     # the deleted path is covered above.
-    assert "did you mean" in async_describe_unknown_entities(
+    assert "did you mean" in await async_describe_unknown_entities(
         hass, ["sensor.temperatur"]
     )
+
+
+async def test_rename_suggestion_stays_within_the_domain(hass: HomeAssistant) -> None:
+    """Test a near match in another domain is not offered as a rename.
+
+    A rename that crossed domains is not a rename, and only comparing within
+    the domain is what keeps this cheap on a large instance.
+    """
+    hass.states.async_set("binary_sensor.living_room_motion", "off")
+
+    assert await async_describe_unknown_entities(
+        hass, ["sensor.living_room_motion"]
+    ) == ("- `sensor.living_room_motion`")
+
+
+async def test_rename_suggestion_is_looked_up_once(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a match is computed once, however many references there are.
+
+    One removed entity is usually referenced from many automations, and each
+    builds its own issue text. Doing the comparison per reference instead of
+    per entity is what made inspections expensive.
+    """
+    hass.states.async_set("sensor.living_room_temperature", "21")
+    calls = _count_close_matches(monkeypatch)
+
+    first = await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+    second = await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+    assert "did you mean" in first
+    assert first == second
+    assert calls[0] == 1
+
+
+async def test_rename_miss_is_looked_up_once(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test "nothing similar exists" is cached too.
+
+    Misses are the common case on a tidy instance, and they cost exactly as
+    much to compute as a hit does.
+    """
+    calls = _count_close_matches(monkeypatch)
+
+    first = await async_describe_unknown_entities(hass, ["sensor.ghost_xyzzy"])
+    second = await async_describe_unknown_entities(hass, ["sensor.ghost_xyzzy"])
+
+    assert first == second == "- `sensor.ghost_xyzzy`"
+    assert calls[0] == 1
+
+
+async def test_rename_suggestion_follows_the_entity_registry(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a cached answer does not outlive the entities it was based on.
+
+    An entity registering is the moment a new name exists to be suggested, so
+    a "nothing similar exists" answer has to stop being true at that point.
+    """
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
+    assert await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    ) == ("- `sensor.living_room_temperatur`")
+
+    entity_registry.async_get_or_create(
+        "sensor",
+        "demo",
+        "living_room_temperature",
+        suggested_object_id="living_room_temperature",
+    )
+    assert "did you mean" in await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+
+async def test_rename_suggestion_survives_a_state_coming_and_going(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state appearing does not throw the whole suggestion cache away.
+
+    Working a suggestion out means comparing against every entity in its
+    domain, and a house with a lot of broken references has a lot of them to
+    do. States arrive and leave constantly, so clearing on that put Home
+    Assistant into a loop of recomputing tens of seconds of them; #1667.
+
+    A suggestion made a moment before a state-only entity appeared is a
+    sentence in an issue description, not a wrong answer about what is
+    missing, so it is left standing until the registry moves.
+    """
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
+    assert await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    ) == ("- `sensor.living_room_temperatur`")
+
+    hass.states.async_set("sensor.living_room_temperature", "21")
+
+    assert await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    ) == ("- `sensor.living_room_temperatur`")
+
+
+async def test_an_ordinary_registry_write_keeps_the_suggestions(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a registry write that cannot change a name keeps the cache.
+
+    Entries are written for all sorts of reasons: an icon, a category, a
+    device being reassigned. None of those change what anything is called, so
+    none of them are worth recomputing every suggestion in the house over.
+    """
+    entry = entity_registry.async_get_or_create(
+        "sensor",
+        "demo",
+        "living_room_temperature",
+        suggested_object_id="living_room_temperature",
+    )
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
+    assert "did you mean" in await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+    suggestions = entity_filtering.async_get_rename_suggestion_cache(hass)
+    entity_registry.async_update_entity(entry.entity_id, icon="mdi:ghost")
+
+    assert entity_filtering.async_get_rename_suggestion_cache(hass) is suggestions

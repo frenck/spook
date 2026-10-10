@@ -9,9 +9,10 @@ from typing import TYPE_CHECKING
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.setup import async_setup_component
 
+from custom_components.spook import registry_usage
 from custom_components.spook.const import DOMAIN
-from custom_components.spook.ectoplasms.homeassistant.repairs import empty_areas
 from custom_components.spook.ectoplasms.homeassistant.repairs.empty_areas import (
     SpookRepair,
 )
@@ -121,7 +122,7 @@ async def test_area_referenced_by_automation_is_not_reported(
     area = area_registry.async_create("Hallway")
     freezer.tick(_AGED)
     monkeypatch.setattr(
-        empty_areas,
+        registry_usage,
         "automations_with_area",
         lambda _hass, area_id: ["automation.lights"] if area_id == area.id else [],
     )
@@ -129,6 +130,56 @@ async def test_area_referenced_by_automation_is_not_reported(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
+
+
+def _map_to_vacuum(
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    area_name: str,
+) -> str:
+    """Map the rooms of a vacuum to a new area, as its settings do."""
+    area = area_registry.async_create(area_name)
+    vacuum = entity_registry.async_get_or_create("vacuum", "roborock", "robot")
+    entity_registry.async_update_entity_options(
+        vacuum.entity_id, "vacuum", {"area_mapping": {area.id: ["16"]}}
+    )
+    return area.id
+
+
+async def test_area_a_vacuum_cleans_is_not_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an area mapped to rooms of a vacuum is left alone.
+
+    Nothing lives in it, but cleaning it by name needs it to be there.
+    """
+    area_id = _map_to_vacuum(area_registry, entity_registry, "Bedroom")
+    freezer.tick(_AGED)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area_id)) is None
+
+
+async def test_a_vacuum_cleaning_elsewhere_does_not_count(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a vacuum only keeps the areas it is mapped to."""
+    _map_to_vacuum(area_registry, entity_registry, "Attic")
+    area = area_registry.async_create("Ghost Room")
+    freezer.tick(_AGED)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id))
 
 
 def _flow_for(hass: HomeAssistant, area_id: str, area_name: str) -> EmptyAreaFixFlow:
@@ -216,3 +267,224 @@ async def test_fix_flow_remove_survives_already_removed_area(
     result = await flow.async_step_remove()
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert area_registry.async_get_area("gone") is None
+
+
+async def test_an_area_only_named_in_a_repeat_is_not_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The shape from the report: areas that exist so a script can list them.
+
+    A `repeat` `for_each` list is not a target of anything. Home Assistant's
+    `referenced_areas` reports the template rather than the list it walks, and
+    Spook's own target extraction skips templates, so neither sees the area at
+    all. It is plainly in use, and this repair offers to delete it.
+    """
+    area = area_registry.async_create("Vacuum Only")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "clean_upstairs": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": [area.id],
+                                "sequence": [
+                                    {
+                                        "action": "vacuum.clean_area",
+                                        "target": {"area_id": "{{ repeat.item }}"},
+                                    }
+                                ],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
+
+
+async def test_an_area_nobody_mentions_at_all_is_still_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """So the check above cannot pass by never reporting anything again."""
+    area_registry.async_create("Mentioned")
+    forgotten = area_registry.async_create("Forgotten")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "clean": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": ["mentioned"],
+                                "sequence": [{"action": "vacuum.start", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.id))
+
+
+async def test_an_automation_naming_it_counts_the_same_as_a_script(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The collector reads both, and only one of them was being tested.
+
+    Automations and scripts hold their configuration in different components,
+    so a wrong domain name or a missing `raw_config` on one of them would go
+    unnoticed while every other test here stayed green.
+    """
+    area = area_registry.async_create("Vacuum Only")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "Clean upstairs",
+                    "trigger": [],
+                    "action": [
+                        {
+                            "repeat": {
+                                "for_each": [area.id],
+                                "sequence": [{"action": "vacuum.start", "target": {}}],
+                            }
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
+
+
+async def test_an_area_named_only_inside_a_template_is_not_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A template is one string, and the ID is buried inside it.
+
+    `for_each: "{{ ['study'] }}"` names the area as plainly as a list would,
+    but an exact match against the whole template never finds it.
+    """
+    area = area_registry.async_create("Study")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "clean": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": "{{ ['" + area.id + "'] }}",
+                                "sequence": [{"action": "vacuum.start", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
+
+
+async def test_quotes_in_ordinary_text_are_not_a_mention(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Only templates get taken apart, and this is what that costs otherwise.
+
+    Prising literals out of every string would let a quoted word in an alias
+    keep an area alive. Being over-careful is the right way to be wrong here,
+    but not so careless that prose counts as a reference.
+    """
+    area = area_registry.async_create("Study")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "notes": {
+                    "alias": f"Somebody once mentioned '{area.id}' in passing",
+                    "sequence": [{"action": "vacuum.start", "target": {}}],
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id))
+
+
+async def test_an_area_that_filled_up_since_is_left_alone(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the button does not delete an area something moved into.
+
+    An issue can sit there for days. Deleting the area unassigns everything
+    in it, so whatever was put there since would quietly lose its area.
+    """
+    area = area_registry.async_create("Hallway")
+    flow = _flow_for(hass, area.id, "Hallway")
+
+    entity = entity_registry.async_get_or_create("light", "test", "hall")
+    entity_registry.async_update_entity(entity.entity_id, area_id=area.id)
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert area_registry.async_get_area(area.id) is not None
+    assert entity_registry.async_get(entity.entity_id).area_id == area.id

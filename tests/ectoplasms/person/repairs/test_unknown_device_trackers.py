@@ -1,11 +1,13 @@
 """Tests for the person unknown device trackers repair."""
 
-# pylint: disable=wrong-import-order
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
+from homeassistant.core import State
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
@@ -17,6 +19,7 @@ from custom_components.spook.repairs import (
     PersonUnknownDeviceTrackerFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import async_issue_about, async_count_scheduled_inspections
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant, ServiceCall
@@ -63,7 +66,7 @@ async def test_unknown_device_tracker_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.is_fixable
     assert issue.translation_placeholders == {"person": "Frenck"}
@@ -86,7 +89,7 @@ async def test_registered_device_tracker_is_not_flagged(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_all_known_trackers_create_no_issue(
@@ -99,7 +102,7 @@ async def test_all_known_trackers_create_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_no_person_component_does_nothing(
@@ -189,3 +192,123 @@ async def test_fix_flow_remove_yaml_person_aborts(
 
     assert result["type"] == "abort"
     assert result["reason"] == "not_editable"
+
+
+async def test_state_only_tracker_going_away_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a person breaks when a state-only tracker it follows disappears.
+
+    A state-only device tracker leaves no trace in the entity registry, so
+    this transition happens without a single registry event.
+    """
+    hass.states.async_set("device_tracker.phone", "home")
+    _install_person(hass, ["device_tracker.phone"])
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+
+    hass.states.async_remove("device_tracker.phone")
+    await repair._async_inspect_with_cleanup()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+
+async def test_issue_clears_when_a_state_only_tracker_returns(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the issue goes away once a state-only tracker exists again."""
+    _install_person(hass, ["device_tracker.phone"])
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    hass.states.async_set("device_tracker.phone", "home")
+    await repair._async_inspect_with_cleanup()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+
+
+async def _count_scheduled_inspections(
+    hass: HomeAssistant,
+    entity_id: str,
+    old_state: State | None,
+    new_state: State | None,
+) -> int:
+    """Return how many inspections one state change schedules."""
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+
+    return await async_count_scheduled_inspections(
+        hass, repair, entity_id, old_state, new_state
+    )
+
+
+async def test_state_only_tracker_addition_rechecks_person_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state entity appearing schedules an inspection."""
+    assert (
+        await _count_scheduled_inspections(
+            hass, "device_tracker.phone", None, State("device_tracker.phone", "home")
+        )
+        == 1
+    )
+
+
+async def test_state_only_tracker_removal_rechecks_person_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state entity disappearing schedules an inspection."""
+    assert (
+        await _count_scheduled_inspections(
+            hass, "device_tracker.phone", State("device_tracker.phone", "home"), None
+        )
+        == 1
+    )
+
+
+async def test_ordinary_tracker_state_change_does_not_recheck(
+    hass: HomeAssistant,
+) -> None:
+    """Test a tracker simply moving does not schedule an inspection.
+
+    Device trackers change state constantly. Rechecking on every one of
+    those would be pure noise.
+    """
+    assert (
+        await _count_scheduled_inspections(
+            hass,
+            "device_tracker.phone",
+            State("device_tracker.phone", "home"),
+            State("device_tracker.phone", "not_home"),
+        )
+        == 0
+    )
+
+
+async def test_other_domain_lifecycle_does_not_recheck(
+    hass: HomeAssistant,
+) -> None:
+    """Test entities outside device_tracker never schedule an inspection.
+
+    Home Assistant validates a person's trackers with
+    `cv.entities_domain(device_tracker)`, so nothing in another domain can
+    ever be in that list. Waking for a sensor would be pure overhead.
+    """
+    assert (
+        await _count_scheduled_inspections(
+            hass, "sensor.something_else", None, State("sensor.something_else", "42")
+        )
+        == 0
+    )
+    assert (
+        await _count_scheduled_inspections(
+            hass, "sensor.something_else", State("sensor.something_else", "42"), None
+        )
+        == 0
+    )

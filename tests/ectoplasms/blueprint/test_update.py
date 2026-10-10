@@ -1,0 +1,4202 @@
+"""Tests for the update entities Spook puts on imported blueprints."""
+
+# pylint: disable=wrong-import-order
+from __future__ import annotations
+
+import asyncio
+import json
+import re
+import shutil
+from datetime import timedelta
+from pathlib import Path
+from typing import TYPE_CHECKING, ClassVar
+from unittest.mock import patch
+
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNAVAILABLE
+from homeassistant.components.update import UpdateEntityFeature
+from homeassistant.core import CoreState, State, callback
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.components.blueprint import (
+    BLUEPRINT_SCHEMA,
+    DOMAIN as BLUEPRINT_DOMAIN,
+    Blueprint,
+)
+from homeassistant.helpers import entity_registry as er
+from homeassistant.setup import async_setup_component
+from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.util import dt as dt_util, yaml as yaml_util
+from annotatedyaml.objects import Input
+import aiohttp
+import pytest
+import voluptuous as vol
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+    mock_restore_cache,
+)
+
+from custom_components.spook.const import DOMAIN
+from custom_components.spook.ectoplasms.blueprint import update as update_module
+from custom_components.spook.ectoplasms.blueprint.update import (
+    _canonical,
+    _in_words,
+    _changes,
+    _HOW_MANY_LINES,
+    _TOO_LONG_TO_COMPARE,
+    _OnDisk,
+    _AS_WIDE_AS_A_LINE,
+    _diffed,
+    _HOW_MANY_TO_NAME,
+    _normalize,
+    _fingerprint,
+    _settled,
+    _CHECK_INTERVAL,
+    _COPY,
+    _RECONCILE_INTERVAL,
+    _KEEP_COPIES,
+    _SPREAD,
+    BlueprintUpdateEntity,
+)
+
+from .conftest import (
+    A_SCRIPT_BLUEPRINT,
+    A_SCRIPT_BLUEPRINT_CHANGED,
+    A_SCRIPT_BLUEPRINT_WITH_A_BAD_STEP,
+    A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT,
+    ANOTHER_AUTOMATION_BLUEPRINT,
+    MOTION_LIGHT,
+    MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT,
+    MOTION_LIGHT_CHANGED,
+    MOTION_LIGHT_CHANGED_AGAIN,
+    MOTION_LIGHT_FROM_THE_FUTURE,
+    MOTION_LIGHT_WITH_A_BAD_TRIGGER,
+    MOTION_LIGHT_WITH_NEW_INPUT,
+    MOTION_LIGHT_WITH_SELECTORS,
+    NO_INPUTS,
+    SOURCE,
+    async_add_automation,
+    async_write_config,
+    async_add_script,
+    async_set_up,
+    async_write_blueprint,
+    examples_are_on_disk,
+    imported_from,
+    write_by_hand,
+)
+
+if TYPE_CHECKING:
+    from homeassistant.helpers import device_registry as dr
+    from collections.abc import Callable
+
+    from freezegun.api import FrozenDateTimeFactory
+    from pytest_homeassistant_custom_component.typing import (
+        MockHAClientWebSocket,
+        WebSocketGenerator,
+    )
+
+    from homeassistant.core import Event, HomeAssistant
+
+_ENTITY = "update.spooky_motion_light"
+_MOTION_INPUTS = {"motion_entity": "binary_sensor.hall", "light_target": "light.hall"}
+_SHOUT_INPUTS = {"notify_target": "mobile_app_phone"}
+_FETCH = "custom_components.spook.ectoplasms.blueprint.update.fetch_blueprint_from_url"
+_BOTH_OF_THEM = 2
+_NOBODY_SAW_IT_COMING = "something nobody saw coming"
+_ENOUGH_ROUNDS_TO_JUDGE = 8
+
+
+def _source_says(raw: str, *, source: str = SOURCE):  # noqa: ANN202
+    """Make the importer hand back this blueprint."""
+    return patch(_FETCH, return_value=imported_from(raw, source=source))
+
+
+def _copies_beside(file: Path) -> list[Path]:
+    """Return the copies put aside for a blueprint, newest first."""
+    return sorted(
+        (
+            candidate
+            for candidate in file.parent.iterdir()
+            if (match := _COPY.match(candidate.name)) is not None
+            and match["of"] == file.name
+        ),
+        reverse=True,
+    )
+
+
+async def _check(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
+    """Let a round of checks come round, the way it does on its own.
+
+    Nothing else brings one on. Blueprints raise no events, so the timer is
+    the only thing that ever looks.
+    """
+    # Past the far end of the window a round picks its next moment from, so
+    # this fires whichever moment it happened to choose.
+    freezer.tick(_CHECK_INTERVAL + _SPREAD + timedelta(minutes=1))
+    async_fire_time_changed(hass)
+
+    # Waiting on background tasks too, so nothing of the round is still going
+    # when the test moves on.
+    await hass.async_block_till_done(wait_background_tasks=True)
+
+
+async def test_a_blueprint_that_came_from_a_url_gets_an_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Which is the whole premise: a source to compare against."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    state = hass.states.get(_ENTITY)
+    assert state is not None
+    assert state.attributes["title"] == "Spooky motion light"
+
+
+async def test_a_blueprint_written_by_hand_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """No source means nothing to check against, and no button to offer.
+
+    It is also how somebody opts out of one they no longer want followed:
+    take the URL back out of the file. The imported one alongside it is there
+    to prove the platform came up at all, rather than falling over on the
+    blueprint with no URL and leaving nothing behind either way.
+    """
+    async_write_blueprint(
+        hass,
+        "automation",
+        "mine.yaml",
+        MOTION_LIGHT.replace("  source_url: {source}\n", "").replace(
+            "Spooky motion light",
+            "Spooky handmade thing",
+        ),
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    assert hass.states.async_entity_ids("update") == [_ENTITY]
+
+
+async def test_a_source_that_still_says_the_same_is_not_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The old spellings have to survive the round trip.
+
+    The file on disk says `trigger`, the copy Home Assistant loaded says
+    `triggers`, because the automation schema rewrites it. Fingerprinting the
+    loaded copy would call every blueprint written before that rename out of
+    date, for ever.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == state.attributes["installed_version"]
+
+
+async def test_a_file_written_by_an_older_home_assistant_is_not_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """What everybody who upgraded to Home Assistant 2026.9 was shown.
+
+    The file on disk holds the selector settings in the order voluptuous
+    filled them in, which came off the hash seed of the process that wrote it.
+    Probatio keeps that order when it reads the file back and puts a fresh
+    fetch in schema order, so the two never agreed, and installing the update
+    it made appear only wrote the file again. Nothing about the blueprint had
+    changed.
+    """
+    write_by_hand(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT,
+    )
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_SELECTORS):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == state.attributes["installed_version"]
+
+
+async def test_a_source_that_has_moved_on_is_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The point of the exercise."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+
+async def test_installing_writes_the_new_blueprint(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """And settles back down afterwards."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert "to: 'off'" in file.read_text(encoding="utf-8")
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_an_install_is_still_installed_when_the_next_round_looks(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the button stays pressed.
+
+    Settling down straight after writing proves only that the entity said so
+    itself. The round that comes along later reads the file back off disk and
+    weighs it against the source again, and if those two disagree the entity
+    goes back to offering the same update for ever. From the outside that is
+    a button that does nothing.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        assert hass.states.get(_ENTITY).state == "on"
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
+
+        # The source has not moved, so a second look has to agree it is done.
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_a_blueprint_home_assistant_wrote_is_not_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the file a real installation has is judged against its source.
+
+    Every other test here lays the raw text down on disk itself, so both
+    sides of the comparison are the same text read the same way once. A
+    blueprint somebody imported is not that: Home Assistant validates what it
+    fetched and writes out its own dump of the result, so the file is one
+    trip further along than the source is. Reading that back has to land in
+    the same place, or every imported blueprint on the system is an update
+    that never installs. #1653.
+    """
+    assert await async_setup_component(hass, "automation", {"automation": []})
+    await hass.async_block_till_done()
+
+    domain_blueprints = hass.data[BLUEPRINT_DOMAIN]["automation"]
+    await domain_blueprints.async_add_blueprint(
+        imported_from(MOTION_LIGHT).blueprint,
+        "motion.yaml",
+        allow_override=True,
+    )
+
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_an_update_that_strands_an_automation_still_installs(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An input with no default has to come from whoever uses the blueprint.
+
+    A new one that nobody sets stops every automation on it from loading. That
+    is worth saying loudly and it is not worth refusing over: updating and then
+    filling the new setting in is a perfectly ordinary way round, and which way
+    round somebody wants is not Spook's to decide.
+
+    What makes it ordinary is that nothing is lost. The automation goes
+    unavailable and keeps its configuration and its ID, and its editor reads
+    the file rather than the entity, so it opens and takes the new setting like
+    any other. This pins that, because the whole argument for going ahead rests
+    on it.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert file.read_text(encoding="utf-8") != before
+    assert "wait_time" in file.read_text(encoding="utf-8")
+
+    # Stopped, as promised.
+    stranded = hass.states.get("automation.landing_light")
+    assert stranded is not None
+    assert stranded.state == STATE_UNAVAILABLE
+
+    # And still there to be put right: its ID survives, which is what its
+    # editor is reached by, and it still holds what somebody configured.
+    entity = hass.data[DATA_INSTANCES]["automation"].get_entity(
+        "automation.landing_light",
+    )
+    assert entity.unique_id == "landing_light"
+    assert entity.raw_config is not None
+
+
+async def test_a_new_input_nobody_needs_to_set_goes_through(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A default is what makes the difference, so it has to be read."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+
+    with _source_says(
+        MOTION_LIGHT_WITH_NEW_INPUT.replace(
+            "    wait_time:\n      name: Wait time\n",
+            "    wait_time:\n      name: Wait time\n      default: 120\n",
+        ),
+    ):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert "wait_time" in file.read_text(encoding="utf-8")
+
+
+async def test_a_source_leading_to_another_blueprint_is_not_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A community topic can hold more than one blueprint.
+
+    The importer takes the first valid block it comes across, and both got the
+    same source URL on the way in. Following it can land on the other one
+    entirely, and writing that over this would be the wrong blueprint in the
+    wrong file.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(A_SCRIPT_BLUEPRINT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+@pytest.mark.parametrize(
+    "went_wrong",
+    [
+        TimeoutError(),
+        aiohttp.ClientError(),
+        vol.Invalid("that is not a blueprint any more"),
+        HomeAssistantError("unsupported URL"),
+    ],
+)
+async def test_a_source_that_cannot_be_read_leaves_the_last_answer_alone(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    went_wrong: Exception,
+) -> None:
+    """A forum down for an afternoon should not take the news with it."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=went_wrong):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+
+async def test_a_blueprint_that_is_gone_takes_its_entity_with_it(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Nothing announces a blueprint being deleted, so the round has to look."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    assert entity_registry.async_get(_ENTITY) is not None
+
+    file.unlink()
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
+
+
+async def test_home_assistants_own_examples_are_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant fills a folder of its own with three example blueprints.
+
+    All three carry a source URL pointing at core's dev branch. Following them
+    would put an update on every installation there is, for something nobody
+    imported, out of a branch nobody is running.
+    """
+    await async_set_up(hass)
+
+    assert examples_are_on_disk(
+        hass,
+    ), "Home Assistant laid down no examples, so this proves nothing"
+    assert not hass.states.async_entity_ids("update")
+
+
+async def test_a_reimport_somewhere_else_is_noticed(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Home Assistant has a re-import button of its own, on the blueprint page.
+
+    Somebody using that settles the update without Spook having any part in
+    it, and reading the fingerprint once at startup would leave this saying
+    there is an update for ever.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+    await hass.services.async_call("automation", "reload", blocking=True)
+    await hass.async_block_till_done()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_unloading_stops_a_round_that_is_under_way(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A round is a string of network calls, one blueprint after another.
+
+    Cancelling the timer only stops the next round starting. The one already
+    running has to notice for itself, or it goes on talking to the internet
+    and writing to entities that are no longer there.
+    """
+    async_write_blueprint(hass, "automation", "one.yaml", MOTION_LIGHT)
+    async_write_blueprint(
+        hass,
+        "automation",
+        "two.yaml",
+        MOTION_LIGHT.replace("Spooky motion light", "Spooky hallway light"),
+    )
+    entry = await async_set_up(hass)
+    both = hass.states.async_entity_ids("update")
+    assert len(both) == _BOTH_OF_THEM
+
+    reached: list[str] = []
+
+    async def _fetch_then_pull_the_rug(_hass: HomeAssistant, url: str):  # noqa: ANN202
+        reached.append(url)
+        await hass.config_entries.async_unload(entry.entry_id)
+        return imported_from(MOTION_LIGHT)
+
+    with patch(_FETCH, side_effect=_fetch_then_pull_the_rug):
+        await _check(hass, freezer)
+
+    assert len(reached) == 1, "it carried on after being unloaded"
+
+    # And the one that was mid-fetch when the rug went does not put a live
+    # state back over the unavailable one that unloading left. Gone through by
+    # the names taken before the unload, so an empty list cannot pass this by
+    # having nothing to disagree with.
+    for entity_id in both:
+        left_behind = hass.states.get(entity_id)
+        assert left_behind is not None, f"{entity_id} went altogether"
+        assert left_behind.state == "unavailable", (
+            f"{entity_id} had a state written back after being taken away"
+        )
+
+
+async def test_a_blueprint_nobody_dumped_back_out_still_matches(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Both sides have to go through the same schema, not just the same dump.
+
+    This one has no inputs and no `input:` key to say so, and it was written
+    by hand rather than laid down by an import. The schema puts an empty one
+    in on the way through. Only doing that to the copy that came off the
+    internet would call it different for ever.
+    """
+    write_by_hand(hass, "automation", "fixed.yaml", NO_INPUTS)
+    await async_set_up(hass)
+
+    entity_id = "update.spooky_fixed_automation"
+    assert hass.states.get(entity_id) is not None
+
+    with _source_says(NO_INPUTS):
+        await _check(hass, freezer)
+
+    assert hass.states.get(entity_id).state == "off"
+
+
+async def test_the_entities_arrive_once_home_assistant_is_up(
+    hass: HomeAssistant,
+) -> None:
+    """Which is how it happens on a real start.
+
+    Spook is set up while Home Assistant is still coming up, and the domains
+    that hold the blueprints register themselves along the way. Looking right
+    then finds nothing at all.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    hass.set_state(CoreState.not_running)
+
+    await async_set_up(hass)
+    assert hass.states.get(_ENTITY) is None
+
+    hass.set_state(CoreState.running)
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(_ENTITY) is not None
+
+
+async def test_a_blueprint_that_cannot_be_read_says_nothing_new(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Listing a blueprint and reading it are two separate goes at the disk.
+
+    It can be deleted or made unreadable in between. Reading nothing as a
+    fingerprint of nothing would leave the entity with no version at all and
+    no state to show.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with (
+        patch.object(Path, "read_text", side_effect=OSError),
+        _source_says(MOTION_LIGHT_CHANGED),
+    ):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+
+def _entity(hass: HomeAssistant) -> BlueprintUpdateEntity:
+    """Return the update entity itself, for what the dialog cannot reach."""
+    return hass.data[DATA_INSTANCES]["update"].get_entity(_ENTITY)
+
+
+async def _release_notes(
+    client: MockHAClientWebSocket,
+    entity_id: str = _ENTITY,
+) -> str:
+    """Ask for the release notes the way the dialog does."""
+    await client.send_json_auto_id(
+        {"type": "update/release_notes", "entity_id": entity_id},
+    )
+
+    result = await client.receive_json()
+    assert result["success"], result
+
+    return result["result"]
+
+
+async def test_the_notes_always_say_where_the_blueprint_came_from(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """Even with nothing to install.
+
+    The source is the only thing that can tell somebody what a blueprint
+    actually does, so it belongs in front of them rather than a click away.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    assert SOURCE in await _release_notes(client)
+    assert (
+        UpdateEntityFeature.RELEASE_NOTES
+        in hass.states.get(_ENTITY).attributes["supported_features"]
+    )
+
+
+async def test_the_notes_warn_that_an_update_need_not_still_fit(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """There is no changelog, so this is the only warning anybody gets.
+
+    Matter and ZHA put the same sort of thing in front of a firmware update,
+    for the same reason: the dialog looks like every other update dialog, and
+    this one is not that.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    # Before the clock moves. An access token is good for half an hour, and
+    # a round of checks is a day further on than that.
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "alert-type='warning'" in notes
+    assert SOURCE in notes
+
+
+async def test_the_notes_name_the_automations_that_would_be_left_short(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Better than finding out by pressing install and being turned down."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    # A warning, not an error: what is listed will stop loading, and putting
+    # that right is something somebody can do.
+    assert "alert-type='warning'" in notes
+    assert "[Landing light](/config/automation/edit/landing_light)" in notes
+    assert "Wait time" in notes
+
+
+async def test_the_notes_do_not_warn_when_there_is_nothing_to_install(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A warning nobody needs is a warning nobody reads."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert "ha-alert" not in await _release_notes(client)
+
+
+async def test_taking_the_source_url_out_of_a_file_is_enough(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """The documented way to be left alone, so it had better work.
+
+    Home Assistant loads a blueprint once and then keeps it, so the copy in
+    memory still names a source long after the file stopped doing so. Reading
+    the metadata off that copy would leave this entity sitting there checking
+    an address the file no longer mentions, until something reloaded.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    assert entity_registry.async_get(_ENTITY) is not None
+
+    write_by_hand(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT.replace("  source_url: {source}\n", ""),
+    )
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
+
+
+async def test_a_renamed_blueprint_follows_its_new_name(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Same reason: the name comes off the file, not off the loaded copy."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    write_by_hand(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT.replace("Spooky motion light", "Spooky landing light"),
+    )
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).attributes["title"] == "Spooky landing light"
+
+
+async def test_another_blueprint_at_the_same_address_is_not_this_one(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A forum topic can hold two automation blueprints.
+
+    Both were imported carrying the address of the topic, and the importer
+    hands back the first it finds. Matching on the domain alone lets the other
+    one through, and installing would write somebody else's blueprint into
+    this file.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    before = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+
+    # Nothing on offer, because what came back is not this blueprint.
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+    # And the gap in between is not a gap any more. An update found honestly,
+    # the topic moving on to somebody else's blueprint before the button gets
+    # pressed, and what is written is still the one that was offered: the
+    # install has nothing to fetch, because it writes what the dialog just
+    # described.
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    written = file.read_text(encoding="utf-8")
+    assert written != before
+    assert "Spooky doorbell chime" not in written
+    assert "to: 'off'" in written
+
+
+@pytest.mark.usefixtures("spook_translations")
+async def test_a_blueprint_needing_a_newer_home_assistant_is_refused(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """A blueprint can say for itself what it needs.
+
+    Writing one that says it needs more than is running breaks every
+    automation on it, on a version that was never going to work.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    before = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+        assert hass.states.get(_ENTITY).state == "on"
+        assert "9999.1.0" in await _release_notes(client)
+
+        with pytest.raises(HomeAssistantError, match=r"9999\.1\.0"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == before
+
+
+async def test_the_notes_say_why_there_is_never_anything_to_install(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """An entity that never has news looks the same as one with nothing to say.
+
+    So when Spook set the answer aside, for a source it could not reach or one
+    that leads somewhere else entirely, the dialog says so.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "alert-type='info'" in notes
+    assert "Spooky doorbell chime" in notes
+
+
+async def test_a_script_blueprint_gets_one_too(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Scripts keep their blueprint users in a different place from automations.
+
+    Same shape, different integration, and nothing had been through it.
+    """
+    file = async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+
+    # With a script actually on it, so the update is tried on that script the
+    # way a reload would try it, through the script validator rather than the
+    # automation one.
+    await async_add_script(
+        hass,
+        "shout",
+        "notify.yaml",
+        {"notify_target": "mobile_app_phone"},
+    )
+
+    entity_id = "update.spooky_confirmable_notification"
+    assert hass.states.get(entity_id) is not None
+
+    with _source_says(A_SCRIPT_BLUEPRINT_CHANGED):
+        await _check(hass, freezer)
+        assert hass.states.get(entity_id).state == "on"
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": entity_id},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert "Boo!" in file.read_text(encoding="utf-8")
+    assert hass.states.get(entity_id).state == "off"
+    assert hass.states.get("script.shout") is not None
+
+
+async def test_a_script_left_short_of_an_input_still_installs(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Scripts hold their supplied inputs in their own entities.
+
+    Reading them wrong would let an update through that leaves every script on
+    the blueprint unable to load.
+    """
+    file = async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+    await async_add_script(
+        hass,
+        "shout",
+        "notify.yaml",
+        {"notify_target": "mobile_app_phone"},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    entity_id = "update.spooky_confirmable_notification"
+    with _source_says(A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": entity_id},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert file.read_text(encoding="utf-8") != before
+
+
+async def test_a_consumer_that_cannot_be_read_does_not_stop_the_install(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The inputs an automation supplies are reached for by name.
+
+    Home Assistant offers no public way to them: `raw_config` is the automation
+    after the blueprint has already been substituted into it. So if that name
+    ever changes, or there is simply nothing behind it, Spook stops being able
+    to tell whether an update is safe.
+
+    Not knowing is not a reason to refuse, either. It is a reason to say so,
+    which the dialog does, in its own words rather than alongside the ones
+    Spook did find something wrong with.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    class _AfterARename:  # pylint: disable=too-few-public-methods
+        """The automation as it would look had that name changed upstream.
+
+        Still listed as a user of the blueprint, because the public property
+        that answers for that would have been renamed along with it, and still
+        carrying `raw_config`, which never says which inputs went in.
+        """
+
+        entity_id = "automation.landing_light"
+        raw_config: ClassVar[dict[str, object]] = {}
+
+    monkeypatch.setattr(
+        hass.data[DATA_INSTANCES]["automation"],
+        "get_entity",
+        lambda _entity_id: _AfterARename(),
+    )
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert file.read_text(encoding="utf-8") != before
+
+
+async def test_nothing_is_looked_at_while_home_assistant_is_still_starting(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Starting up can take longer than the wait before the first round.
+
+    A round landing in the middle of it reads blueprint domains that have not
+    finished arriving, and goes out to the internet while the house is still
+    getting dressed.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    hass.set_state(CoreState.not_running)
+    await async_set_up(hass)
+
+    with patch(_FETCH) as fetch:
+        await _check(hass, freezer)
+        assert not fetch.called, "it went looking before Home Assistant was up"
+
+    hass.set_state(CoreState.running)
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
+    await hass.async_block_till_done()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+
+async def test_each_round_picks_its_own_moment_for_the_next(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Otherwise every instance that restarted together lines up.
+
+    On the same hour, every day after, which is the stampede the wait before
+    the first round exists to avoid, put back a day later.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    seen: list[float] = []
+    schedule = update_module.async_call_later
+
+    def _note_the_delay(
+        hass: HomeAssistant,
+        delay: float,
+        action: object,
+    ) -> Callable[[], None]:
+        """Write down what the scheduler was asked for, then let it get on.
+
+        Only what the round of checks asked for. The look at the folder runs
+        on a timer of its own, at a fixed interval, and it is not the one
+        being spread here.
+        """
+        if getattr(action, "__name__", "") == "_async_check_all":
+            seen.append(delay)
+
+        return schedule(hass, delay, action)
+
+    with (
+        patch.object(update_module, "async_call_later", _note_the_delay),
+        _source_says(MOTION_LIGHT),
+    ):
+        # Enough rounds that them all landing on the same moment would not be
+        # chance.
+        for _ in range(_ENOUGH_ROUNDS_TO_JUDGE):
+            await _check(hass, freezer)
+
+    assert seen, "no next round was arranged"
+    assert all(
+        _CHECK_INTERVAL.total_seconds()
+        <= delay
+        <= (_CHECK_INTERVAL + _SPREAD).total_seconds()
+        for delay in seen
+    ), seen
+    assert len(set(seen)) > 1, f"every round asked for the same moment: {seen}"
+
+
+async def test_a_source_answering_with_something_else_entirely(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Home Assistant asserts the YAML it parsed is a mapping.
+
+    A source answering with a list, or a bare string, arrives as an
+    `AssertionError`, which is not a `HomeAssistantError` and would otherwise
+    take the whole round down with it.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=AssertionError):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    # Named as such, rather than swept up by the round's catch-all, so the
+    # dialog can say what happened.
+    assert (
+        "did not answer with a blueprint"
+        in await _entity(
+            hass,
+        ).async_release_notes()
+    )
+
+
+async def test_one_bad_blueprint_does_not_end_the_round(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The round works through them one at a time.
+
+    So the first to fall over would take everything after it with it.
+    Everything expected is dealt with inside the entity; this is for whatever
+    is not.
+    """
+    async_write_blueprint(hass, "automation", "one.yaml", MOTION_LIGHT)
+    async_write_blueprint(
+        hass,
+        "automation",
+        "two.yaml",
+        MOTION_LIGHT.replace("Spooky motion light", "Spooky hallway light"),
+    )
+    await async_set_up(hass)
+
+    reached: list[str] = []
+
+    async def _first_one_explodes(_hass: HomeAssistant, url: str):  # noqa: ANN202
+        reached.append(url)
+        if len(reached) == 1:
+            raise RuntimeError(_NOBODY_SAW_IT_COMING)
+        return imported_from(MOTION_LIGHT)
+
+    with patch(_FETCH, side_effect=_first_one_explodes):
+        await _check(hass, freezer)
+
+    assert len(reached) == _BOTH_OF_THEM, "the round stopped at the first one"
+
+
+async def test_the_notes_say_when_the_news_has_gone_stale(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An update found last week and a source that has stopped answering since.
+
+    Showing the one without the other reads as though the news is current.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=TimeoutError):
+        await _check(hass, freezer)
+
+    # Read off the entity rather than through the dialog: two rounds is two
+    # days of clock, and a websocket does not survive being left that long.
+    notes = await _entity(hass).async_release_notes()
+    assert "alert-type='info'" in notes
+    assert "Could not reach" in notes
+    assert "alert-type='warning'" in notes, "it dropped the update it had found"
+
+
+async def test_a_check_and_an_install_do_not_tread_on_each_other(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Both fetch before they write, so whichever finished last used to win.
+
+    A check that started first and landed last would put its own answer back
+    over the version that had just been installed, leaving this saying an
+    update is waiting for something already here.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    started = asyncio.Event()
+    let_go = asyncio.Event()
+    calls: list[str] = []
+
+    async def _the_first_one_dawdles(_hass: HomeAssistant, _url: str):  # noqa: ANN202
+        calls.append(_url)
+        if len(calls) == 1:
+            started.set()
+            await let_go.wait()
+            return imported_from(MOTION_LIGHT_CHANGED)
+
+        # By the time anybody asks again, the source has moved on once more.
+        return imported_from(MOTION_LIGHT_CHANGED_AGAIN)
+
+    with patch(_FETCH, side_effect=_the_first_one_dawdles):
+        checking = hass.async_create_task(_entity(hass).async_check())
+        await started.wait()
+
+        # The check is mid-fetch. Install now, and let the check land after.
+        installing = hass.async_create_task(
+            hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY},
+                blocking=True,
+            ),
+        )
+        await asyncio.sleep(0)
+
+        let_go.set()
+        await checking
+        await installing
+
+    await hass.async_block_till_done()
+
+    # What was written is what this now has. A check that landed afterwards
+    # with an older answer would leave this offering an update backwards.
+    assert hass.states.get(_ENTITY).state == "off", "the check undid the install"
+
+
+async def test_an_update_that_would_not_load_still_installs(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A blueprint can be perfectly good and still produce a broken automation.
+
+    The blueprint schema has nothing whatever to say about triggers, actions
+    or a script's sequence, and Home Assistant writes the file before it
+    reloads anybody. So a blueprint that passes on the way in takes out every
+    automation on it, and the working version it replaced is gone.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    with _source_says(MOTION_LIGHT_WITH_A_BAD_TRIGGER):
+        await _check(hass, freezer)
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert file.read_text(encoding="utf-8") != before
+    assert hass.states.get("automation.landing_light") is not None
+
+
+async def test_a_script_update_that_would_not_load_still_installs(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Scripts go through a validator of their own, so it needs its own go."""
+    file = async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+    await async_add_script(
+        hass,
+        "shout",
+        "notify.yaml",
+        {"notify_target": "mobile_app_phone"},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    entity_id = "update.spooky_confirmable_notification"
+    with _source_says(A_SCRIPT_BLUEPRINT_WITH_A_BAD_STEP):
+        await _check(hass, freezer)
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": entity_id},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert file.read_text(encoding="utf-8") != before
+    assert hass.states.get("script.shout") is not None
+
+
+async def test_the_notes_say_an_update_would_not_load(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """Before the button, not after it."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_A_BAD_TRIGGER):
+        await _check(hass, freezer)
+
+        notes = await _release_notes(client)
+
+    assert "alert-type='warning'" in notes
+    assert "[Landing light](/config/automation/edit/landing_light)" in notes
+    assert "would not load" in notes
+
+    # And the heading over that list says nothing about inputs. There are
+    # three ways onto it, and blaming the commonest of them sends somebody off
+    # setting inputs that were never the trouble.
+    heading = notes.partition("<ha-alert alert-type='error'>")[2].partition(
+        "</ha-alert>",
+    )[0]
+    assert "input" not in heading, heading
+
+
+async def test_installing_clears_what_the_last_look_could_not_do(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An install is a fetch that worked, so the old complaint is stale news.
+
+    A source that went quiet for a round and was back by the time somebody
+    pressed the button would otherwise leave the dialog saying it could not be
+    reached, until tomorrow.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=TimeoutError):
+        await _check(hass, freezer)
+    assert "Could not reach" in await _entity(hass).async_release_notes()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert hass.states.get(_ENTITY).state == "off"
+    assert "Could not reach" not in await _entity(hass).async_release_notes()
+
+
+async def test_where_a_blueprint_came_from_is_not_told_to_everybody(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant keeps blueprints to admins.
+
+    Every one of its blueprint commands is admin only, and so is asking an
+    update entity for its notes. State attributes are not: anything put there
+    is readable by everybody signed in, and a blueprint can be imported from
+    an address carrying a token or a username and password.
+    """
+    async_write_blueprint(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT,
+        source="https://someone:hunter2@example.com/blueprints/motion.yaml",
+    )
+    await async_set_up(hass)
+
+    assert "hunter2" not in str(hass.states.get(_ENTITY).attributes)
+
+    # Still in front of the people allowed to see it, though.
+    assert "hunter2" in await _entity(hass).async_release_notes()
+
+
+def test_the_fingerprint_ignores_how_the_yaml_was_laid_out() -> None:
+    """It used to hash `blueprint.yaml()`, which is a formatting decision.
+
+    `annotatedyaml` picks `CSafeDumper` when libyaml is installed and Python's
+    `SafeDumper` when it is not, and the two disagree about unicode escaping,
+    folding and line width. On one real blueprint that was 5761 differing
+    lines. Hashing their output made the version depend on which one happened
+    to be available.
+
+    Written out as two fixed texts rather than by running both dumpers,
+    because `CSafeDumper` does not exist in the very environment this is
+    about, and the test would then fail there for the wrong reason.
+    """
+    escaped = (
+        "blueprint:\n"
+        "  name: Sensor Light\n"
+        "  domain: automation\n"
+        '  description: "Lights \\U0001F4A1 and a line long enough that a dumper\n'
+        '    is free to fold it wherever it likes."\n'
+        "triggers: []\n"
+    )
+    literal = (
+        "blueprint:\n"
+        "  name: Sensor Light\n"
+        "  domain: automation\n"
+        "  description: Lights 💡 and a line long enough that a dumper is free to fold\n"
+        "    it wherever it likes.\n"
+        "triggers: []\n"
+    )
+    assert escaped != literal, "the two layouts are the same, so this proves nothing"
+
+    one = Blueprint(yaml_util.parse_yaml(escaped), schema=BLUEPRINT_SCHEMA)
+    other = Blueprint(yaml_util.parse_yaml(literal), schema=BLUEPRINT_SCHEMA)
+
+    assert (
+        one.data["blueprint"]["description"] == other.data["blueprint"]["description"]
+    )
+    assert _fingerprint(one) == _fingerprint(other)
+
+
+def test_the_fingerprint_ignores_where_it_came_from() -> None:
+    """Home Assistant writes the source URL into the data on the way in.
+
+    So the URL was part of the version, and a trailing slash on it read as a
+    new release of the blueprint. Where something was fetched from is not part
+    of what it does.
+    """
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+triggers: []
+"""
+    url = "https://gist.github.com/somebody/abc123"
+
+    plain = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+
+    tagged = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    tagged.update_metadata(source_url=url)
+
+    slashed = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    slashed.update_metadata(source_url=url + "/")
+
+    assert _fingerprint(plain) == _fingerprint(tagged) == _fingerprint(slashed)
+
+
+def test_the_fingerprint_still_moves_when_the_blueprint_does() -> None:
+    """So the checks above cannot pass by never changing at all."""
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+triggers: []
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(
+        yaml_util.parse_yaml(raw.replace("Sensor Light", "Sensor Lights")),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_notices_a_step_pointing_at_another_input() -> None:
+    """`!input` arrives as an object, and objects flatten too far too easily.
+
+    Both inputs are declared in both versions, so the `input:` block is
+    identical and the only thing that moves is which one an action points at.
+    Renaming an input instead would have changed that block as well, and then
+    this would pass even if the reference were thrown away entirely.
+    """
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+  input:
+    light:
+      name: Light
+    lamp:
+      name: Lamp
+triggers: []
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: !input light
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(
+        yaml_util.parse_yaml(raw.replace("!input light", "!input lamp")),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_notices_variables_swapping_places() -> None:
+    """A `variables:` block is rendered one entry at a time.
+
+    Earlier results are available to later ones, so the order of those keys is
+    executable rather than decoration. Sorting keys before hashing, which is
+    what the first version of this did, made a reordering that changes what a
+    script does look like no change at all.
+    """
+    raw = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      first: 1
+      second: "{{ first }}"
+"""
+    swapped = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      second: "{{ first }}"
+      first: 1
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_ignores_the_order_home_assistant_filled_a_selector_in() -> (
+    None
+):
+    """The settings an author leaves out of a selector are filled in on the way.
+
+    In what order was up to the validator. Voluptuous took it from the hash
+    seed of the process, so a file written by one run of Home Assistant read
+    back differently in the next. Probatio keeps the order a file already has
+    and gives a fresh fetch schema order, so a file written before it arrived
+    never agreed with its own source. Twelve "changed" settings on a blueprint
+    nobody had touched, and the same update offered after every restart.
+    """
+    fresh = Blueprint(
+        yaml_util.parse_yaml(MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE)),
+        schema=BLUEPRINT_SCHEMA,
+    )
+    older = Blueprint(
+        yaml_util.parse_yaml(
+            MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT.format(source=SOURCE),
+        ),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert list(fresh.inputs["light_target"]["selector"]["select"]) != list(
+        older.inputs["light_target"]["selector"]["select"],
+    ), "the two came out in the same order, so this proves nothing"
+    assert _fingerprint(fresh) == _fingerprint(older)
+
+
+def test_a_selector_setting_that_really_changed_still_moves_the_fingerprint() -> None:
+    """So the sorting above cannot pass by making every selector look alike."""
+    raw = MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE)
+    more_than_one = raw.replace(
+        "          filter:\n",
+        "          multiple: true\n          filter:\n",
+    )
+    assert more_than_one != raw
+
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(more_than_one), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_options_of_a_select_still_count_in_their_order() -> None:
+    """The sorting stops at the selector's own keys.
+
+    What sits under them is the author's: the options of a `select` are a list
+    somebody is shown in that order, and swapping two of them is a change.
+    """
+    raw = MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE)
+    swapped = raw.replace(
+        "            - hall\n            - landing\n",
+        "            - landing\n            - hall\n",
+    )
+    assert swapped != raw
+
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_a_selector_inside_a_section_is_settled_too() -> None:
+    """Home Assistant tells a section from an input by the `input` key in it.
+
+    So does this, and it has to: a blueprint that gathers its settings into
+    sections has its selectors one level further down, and leaving those as
+    they came would bring the whole thing back for exactly those blueprints.
+    """
+    one = {
+        "the_bits": {
+            "name": "The bits",
+            "input": {
+                "light": {"selector": {"select": {"options": ["hall"], "sort": False}}},
+            },
+        },
+    }
+    other = {
+        "the_bits": {
+            "name": "The bits",
+            "input": {
+                "light": {"selector": {"select": {"sort": False, "options": ["hall"]}}},
+            },
+        },
+    }
+    assert _canonical(one) != _canonical(other), "same order, so this proves nothing"
+
+    assert _canonical(_settled(one)) == _canonical(_settled(other))
+
+
+def test_an_input_with_nothing_under_it_is_left_as_it_is() -> None:
+    """`wait_time:` with nothing under it is an input all the same.
+
+    There is nothing in it to put in order, and nothing in one that names no
+    selector either. Both come back exactly as they went in.
+    """
+    inputs = {"wait_time": None, "light": {"name": "Light"}}
+
+    assert _settled(inputs) == inputs
+
+
+@pytest.mark.parametrize(
+    ("one", "other"),
+    [
+        pytest.param(Input("light"), {"__input__": "light"}, id="input-vs-mapping"),
+        pytest.param(Input("light"), ["input", "light"], id="input-vs-sequence"),
+        pytest.param({"a": "b"}, [["a", "b"]], id="mapping-vs-pairs"),
+        pytest.param(
+            {"a": "b"}, [["map", [["a", ["str", "b"]]]]], id="mapping-vs-own-form"
+        ),
+        pytest.param("x", ["x"], id="string-vs-sequence"),
+        pytest.param("1", 1, id="string-vs-number"),
+        pytest.param({"a": "b", "c": "d"}, {"c": "d", "a": "b"}, id="order-swapped"),
+        pytest.param({1: "a"}, {"1": "a"}, id="number-key-vs-string-key"),
+        pytest.param({True: "a"}, {"True": "a"}, id="bool-key-vs-string-key"),
+        pytest.param({1.5: "a"}, {"1.5": "a"}, id="float-key-vs-string-key"),
+    ],
+)
+def test_the_encoding_keeps_different_things_apart(one: object, other: object) -> None:
+    """Nothing may serialize the same as anything else it is not.
+
+    Two blueprints that behave differently and fingerprint the same would be
+    an update Spook never mentions, which is worse than one it mentions twice.
+    A mapping somebody wrote by hand must not come out looking like an
+    `!input`, an ordered mapping must not come out looking like the list of
+    pairs it is encoded as, and swapping two keys must show.
+
+    Tested on the encoding rather than through a pair of blueprints, because
+    at that level it takes three separate mistakes at once to produce a
+    collision, and a test that needs all three is a test that catches none.
+    """
+    assert _canonical(one) != _canonical(other)
+
+
+@pytest.mark.parametrize(
+    ("value", "kind"),
+    [
+        pytest.param(Input("light"), "input", id="input"),
+        pytest.param({"a": "b"}, "map", id="mapping"),
+        pytest.param(["a"], "seq", id="sequence"),
+        pytest.param("a", "str", id="string"),
+        pytest.param(1, "value", id="number"),
+    ],
+)
+def test_every_kind_of_value_says_what_it_is(value: object, kind: str) -> None:
+    """Each kind carries its own tag, and that is what keeps them apart.
+
+    Asserted on the shape rather than by finding two values that collide,
+    because a collision needs several of these tags dropped at once. A test
+    that only fails when three mistakes are made together catches none of
+    them on its own.
+    """
+    assert _canonical(value)[0] == kind
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        pytest.param("a: 2026-01-01", id="date"),
+        pytest.param("a: 2026-01-01 10:00:00", id="datetime"),
+        pytest.param("a: !!binary aGk=", id="binary"),
+        pytest.param("a: !!set {x: null, y: null}", id="set"),
+    ],
+)
+def test_the_encoding_survives_what_yaml_hands_back(text: str) -> None:
+    """YAML produces things JSON has never heard of.
+
+    An unquoted date arrives as a `datetime.date`, and passing that to
+    `json.dumps` raises `TypeError`, which took the whole round of checks down
+    with it rather than one blueprint.
+    """
+    json.dumps(_canonical(yaml_util.parse_yaml(text)))
+
+
+def test_a_date_and_the_same_date_written_out_are_not_the_same() -> None:
+    """Rendering these as text must not let two kinds collide."""
+    as_date = yaml_util.parse_yaml("a: 2026-01-01")
+    as_string = yaml_util.parse_yaml('a: "2026-01-01"')
+
+    assert _canonical(as_date) != _canonical(as_string)
+
+
+def test_a_set_is_encoded_in_a_fixed_order() -> None:
+    """Two runs of Home Assistant must fingerprint a `!!set` the same.
+
+    A set has no order of its own and Python iterates one by hash, which
+    depends on `PYTHONHASHSEED` and so differs between processes. Within a
+    single test the order never varies, so this asserts the encoding is sorted
+    rather than trying to catch a difference that cannot happen here. Without
+    it a blueprint holding a `!!set` would report an update on some restarts
+    and not others, which is the least debuggable kind of wrong.
+    """
+    encoded = _canonical(yaml_util.parse_yaml("a: !!set {x: null, y: null, a: null}"))
+    members = encoded[1][0][1][1]
+
+    assert members == sorted(members)
+
+
+def test_a_whole_blueprint_holding_awkward_values_fingerprints() -> None:
+    """The same values, but buried in action data where the schema is loosest.
+
+    The checks above hand `_canonical` a value on its own. This goes through
+    `_fingerprint` on a blueprint that would really load, because it was the
+    round of checks that died on this and not the encoding in isolation.
+    """
+    text = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: notify.persistent_notification
+    data:
+      message: hi
+      when: 2026-01-01
+      at: 2026-01-01 10:00:00
+      blob: !!binary aGk=
+"""
+    blueprint_with = Blueprint(yaml_util.parse_yaml(text), schema=BLUEPRINT_SCHEMA)
+    fingerprint = _fingerprint(blueprint_with)
+    assert fingerprint
+
+    # A date and the text of that date are different values.
+    quoted = Blueprint(
+        yaml_util.parse_yaml(text.replace("when: 2026-01-01", 'when: "2026-01-01"')),
+        schema=BLUEPRINT_SCHEMA,
+    )
+    assert _fingerprint(quoted) != fingerprint
+
+
+def test_a_cyclic_alias_never_reaches_the_encoding() -> None:
+    """The encoding recurses without tracking what it has seen.
+
+    Which is safe only because Home Assistant's loader refuses a recursive
+    node while parsing, long before any of this. Worth pinning, because if
+    that ever changed the encoding would hit a `RecursionError` and
+    `_read_files` catches only `OSError`, so one file would take the whole
+    round of checks with it.
+    """
+    assert _normalize("a: &s [*s]") is None
+    assert _normalize("a: &m {k: *m}") is None
+
+
+def test_an_alias_fingerprints_the_same_as_writing_it_out() -> None:
+    """A shared alias is two names for one value, not a cycle, and it parses.
+
+    Two blueprints saying the same thing, one using an anchor and one spelling
+    it out twice, are the same blueprint. The old fingerprint went through
+    PyYAML's dumper, which writes anchors back out as `&id001`, so those two
+    used to disagree.
+    """
+    aliased = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: light.turn_on
+    target: &t {entity_id: light.a}
+  - action: light.turn_off
+    target: *t
+"""
+    written_out = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: light.turn_on
+    target: {entity_id: light.a}
+  - action: light.turn_off
+    target: {entity_id: light.a}
+"""
+    one = Blueprint(yaml_util.parse_yaml(aliased), schema=BLUEPRINT_SCHEMA)
+    other = Blueprint(yaml_util.parse_yaml(written_out), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(one) == _fingerprint(other)
+
+
+async def test_the_name_is_the_blueprint_and_nothing_else(
+    hass: HomeAssistant,
+) -> None:
+    """The updates page reads a row by the device it belongs to.
+
+    These used to hang off one device called "Blueprints", so twenty rows all
+    said "Blueprints" and none of them said which blueprint. Without a device
+    the name is the blueprint's own.
+    """
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    state = hass.states.get(_ENTITY)
+    assert state
+    assert state.attributes["friendly_name"] == "Spooky motion light"
+    assert state.attributes["title"] == "Spooky motion light"
+
+
+async def test_no_device_is_made_for_these(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+) -> None:
+    """A blueprint is a file. It has no firmware and it is not a device."""
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    assert hass.states.get(_ENTITY)
+    # Iterated rather than looked up: mapping access on this is deprecated.
+    assert not list(device_registry.devices)
+
+
+async def test_the_old_blueprints_device_is_cleared_away(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Anybody who ran an earlier version has one of these sitting there.
+
+    Dropping the device off the entities leaves it behind holding nothing, and
+    a device that is not a device and has nothing on it is only something to
+    wonder about later.
+
+    Home Assistant deletes the registration of every entity on a device when
+    the device goes, and both belong to the same config entry here, so this
+    reaches for that. What it asserts is that it never happens: the entity is
+    taken off the device first. Home Assistant would in fact hand the whole
+    registration back the moment the same unique ID turned up again, a few
+    lines further into the same setup, so nothing would be lost either way.
+    The point is the churn. A dozen repairs re-inspect on any entity registry
+    change, and this would tell them all that an entity had gone and come back
+    for no reason at all.
+
+    So the config entry is handed to the setup rather than made up on the
+    spot. Under two entries Home Assistant never compares them as equal, this
+    would not reach the removal at all, and it would pass while doing nothing.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    left_behind = device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, "blueprint")},
+        manufacturer="Home Assistant",
+        name="Blueprints",
+    )
+    was_there = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_spooky.yaml",
+        config_entry=entry,
+        device_id=left_behind.id,
+        suggested_object_id="blueprints_spooky_motion_light",
+    )
+    entity_registry.async_update_entity(
+        was_there.entity_id,
+        icon="mdi:ghost",
+        name="The one I renamed myself",
+    )
+
+    dropped: list[str] = []
+
+    @callback
+    def _note_what_goes(event: Event[er.EventEntityRegistryUpdatedData]) -> None:
+        if event.data["action"] == "remove":
+            dropped.append(event.data["entity_id"])
+
+    hass.bus.async_listen(er.EVENT_ENTITY_REGISTRY_UPDATED, _note_what_goes)
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    assert device_registry.async_get(left_behind.id) is None
+    assert not dropped
+
+    kept = entity_registry.async_get(was_there.entity_id)
+    assert kept is not None
+    assert kept.device_id is None
+    assert kept.name == "The one I renamed myself"
+    assert kept.icon == "mdi:ghost"
+
+    # And it is the entity that is actually there, rather than a registration
+    # sitting next to one that came back under a name of its own.
+    assert hass.states.get(was_there.entity_id)
+
+
+async def test_a_registration_left_behind_by_a_deleted_blueprint_is_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A blueprint deleted while Home Assistant was stopped tells nobody.
+
+    The round that would have caught it compares against the entities of this
+    run, and on the first round there are none, so without this the
+    registration sits in the list for good with nothing behind it.
+
+    Seeded in the shape the released version wrote it, on purpose: the whole
+    point is reading what an older Spook left, so a literal is the only honest
+    way to write it down.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    left_over = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_i_deleted_this.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_something_i_deleted",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(left_over.entity_id) is None
+
+    # The blueprint that is there keeps everything it had.
+    assert entity_registry.async_get(_ENTITY) is not None
+    assert hass.states.get(_ENTITY)
+
+
+async def test_a_domain_that_is_out_of_sight_keeps_its_registrations(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A domain that has not registered says nothing about its blueprints.
+
+    Reading that silence as "there are none" would take every registration it
+    has, on a round that happened to land while the integration was still
+    setting up. So the domains that were there to be asked are part of what a
+    look reports, and a domain that was not is left alone entirely.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    out_of_sight = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_script_gone_fishing.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_gone_fishing",
+    )
+
+    without_scripts = {
+        domain: item
+        for domain, item in hass.data[BLUEPRINT_DOMAIN].items()
+        if domain != "script"
+    }
+    with (
+        patch.dict(hass.data, {BLUEPRINT_DOMAIN: without_scripts}),
+        _source_says(MOTION_LIGHT),
+    ):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(out_of_sight.entity_id) is not None
+
+    # And it was the looking away that saved it. With the domain back, the
+    # same registration goes, which is the only way to know the round would
+    # otherwise have taken it.
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(out_of_sight.entity_id) is None
+
+
+async def test_a_blueprint_that_will_not_load_keeps_its_registration(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Home Assistant names a blueprint it could not load, and so it is there.
+
+    Most likely somebody is halfway through editing it. Nothing can be read
+    out of it to say whether it still comes from anywhere, and a file being
+    unreadable is not a file being gone.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    mid_edit = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_halfway.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_halfway",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    write_by_hand(hass, "automation", "halfway.yaml", "nope: not a blueprint\n")
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(mid_edit.entity_id) is not None
+
+
+async def test_a_blueprint_that_dropped_its_source_loses_its_registration(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Taking the source URL out is asking to be left alone.
+
+    Which the round already honours for an entity it has. Done while Home
+    Assistant was stopped it never had one, so the registration is the only
+    thing left saying Spook was ever interested.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    on_its_own = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_on_its_own.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_on_its_own",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    write_by_hand(
+        hass,
+        "automation",
+        "on_its_own.yaml",
+        MOTION_LIGHT.replace("  source_url: {source}\n", ""),
+    )
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(on_its_own.entity_id) is None
+
+
+async def test_a_registration_that_is_not_about_a_blueprint_is_left_alone(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Spook is free to put other updates on this config entry.
+
+    Nothing here knows anything about those, and a tidy-up that cannot tell
+    what a unique ID is about has no business touching it.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    somebody_elses = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "nothing_to_do_with_blueprints",
+        config_entry=entry,
+        suggested_object_id="spook_itself",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(somebody_elses.entity_id) is not None
+
+
+async def test_the_dialog_offers_to_keep_a_copy(
+    hass: HomeAssistant,
+) -> None:
+    """Installing writes over whatever is there, so the offer has to be made.
+
+    Home Assistant renders the tick box off the back of this flag and refuses
+    a backup asked for without it, so the flag is the whole of the offer.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    assert (
+        UpdateEntityFeature.BACKUP
+        in hass.states.get(_ENTITY).attributes["supported_features"]
+    )
+
+
+async def test_a_copy_is_kept_when_one_was_asked_for(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """What is written over is gone, so the copy is the only way back."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    was_there = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY, "backup": True},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    copies = _copies_beside(file)
+    assert len(copies) == 1
+    assert copies[0].read_text(encoding="utf-8") == was_there
+
+    # Named after the file it is a copy of, and when. Deliberately not ending
+    # in .yaml: Home Assistant globs those out of the blueprint folders and
+    # would take the copy for a blueprint of its own.
+    assert _COPY.match(copies[0].name)["of"] == "motion.yaml"
+
+    # And the blueprint itself did get written.
+    assert "to: 'off'" in file.read_text(encoding="utf-8")
+
+
+async def test_no_copy_is_kept_when_none_was_asked_for(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The tick box is a question, not a formality."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY, "backup": False},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert _copies_beside(file) == []
+
+
+async def test_only_the_newest_few_copies_are_kept(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Otherwise the folder fills up with every update anybody ever installed.
+
+    Somebody opening it in a file editor has to be able to read it, and past
+    three there is nothing being offered that the newest three do not.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    versions = [
+        MOTION_LIGHT_CHANGED,
+        MOTION_LIGHT_CHANGED_AGAIN,
+        MOTION_LIGHT,
+        MOTION_LIGHT_CHANGED,
+    ]
+    made: list[str] = []
+    for version in versions:
+        with _source_says(version):
+            await _check(hass, freezer)
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY, "backup": True},
+                blocking=True,
+            )
+        await hass.async_block_till_done()
+
+        made.append(_copies_beside(file)[0].name)
+
+    # Four installs, and each one left something different behind, so this is
+    # counting four copies down to three rather than three copies twice.
+    assert len(set(made)) == len(versions)
+
+    kept = {copy.name for copy in _copies_beside(file)}
+    assert len(kept) == _KEEP_COPIES
+
+    # The oldest went and the newest stayed, which is the way round that
+    # matters and the whole reason the stamp reads as it does.
+    assert made[0] not in kept
+    assert set(made[1:]) == kept
+
+
+async def test_the_copies_of_another_blueprint_are_left_alone(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A name can be the start of another name.
+
+    `motion.yaml` is the front of `motion.yaml.old.yaml`, so anything matching
+    on the front of a filename counts one blueprint's copies as another's and
+    throws away somebody else's oldest.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    somebody_elses = [
+        file.with_name(f"motion.yaml.old.yaml.2026-01-0{day}_120000.bak")
+        for day in (1, 2, 3, 4)
+    ]
+    for copy in somebody_elses:
+        copy.write_text("not mine", encoding="utf-8")
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY, "backup": True},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert all(copy.exists() for copy in somebody_elses)
+    assert len(_copies_beside(file)) == 1
+
+
+@pytest.mark.usefixtures("spook_translations")
+async def test_a_copy_that_cannot_be_made_stops_the_install(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Asked for a copy, did not get one, and wrote anyway.
+
+    Which is the worst of both: the version that worked is gone and nothing
+    was kept in its place.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    was_there = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+
+    with (
+        _source_says(MOTION_LIGHT_CHANGED),
+        patch(
+            "custom_components.spook.ectoplasms.blueprint.update.shutil.copy2",
+            side_effect=OSError("no room left"),
+        ),
+    ):
+        await _check(hass, freezer)
+
+        with pytest.raises(HomeAssistantError, match="no room left"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY, "backup": True},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == was_there
+    assert hass.states.get(_ENTITY).state == "on"
+
+
+async def test_the_notes_say_where_the_two_differ(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A fingerprint on its own is an assertion: something changed, trust us.
+
+    Whoever has to decide whether to install this is better off being told
+    where to look, and "only the bit I never touch" is an answer as much as
+    anything else is.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert "When it runs **changed**" in await _release_notes(client)
+
+
+async def test_the_notes_name_an_input_that_was_added(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Which is the one difference that decides whether this can be installed.
+
+    A new input nobody sets stops every automation on the blueprint from
+    loading, so it is worth naming rather than lumping in with the rest of the
+    metadata.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+    assert "**New settings**: Wait time" in await _release_notes(client)
+
+
+async def test_the_notes_say_when_the_settings_only_moved_about(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Every setting the same, every value the same, in another order.
+
+    Home Assistant hands the settings back flattened, so an author reordering
+    them, or gathering them into sections, comes out of that as no difference
+    at all. It is a real change and it is the first thing somebody sees when
+    they open the blueprint, so it gets said rather than falling through to
+    the catch-all at the bottom.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    swapped = MOTION_LIGHT.replace(
+        "    motion_entity:\n      name: Motion sensor\n"
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        "    motion_entity:\n      name: Motion sensor\n",
+    )
+    assert swapped != MOTION_LIGHT
+
+    with _source_says(swapped):
+        await _check(hass, freezer)
+
+    assert "settings are arranged differently" in await _release_notes(client)
+
+
+async def test_the_notes_admit_when_the_copy_here_cannot_be_read(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Saying nothing would read as "nothing changed", which is not the same."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    file.write_text("{{{ not yaml", encoding="utf-8")
+
+    assert "cannot say what this changes" in await _release_notes(client)
+
+
+async def test_the_notes_count_settings_once_there_are_too_many_to_read(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Eighty names is not a release note, it is a wall.
+
+    Past a few, what somebody needs to know is how much of it changed, and the
+    names are in the blueprint for whoever wants them.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    plenty = _HOW_MANY_TO_NAME + 5
+    rewritten = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        + "".join(
+            f"    extra_{number}:\n      name: Extra {number}\n"
+            f"      default: {number}\n"
+            for number in range(plenty)
+        ),
+    )
+
+    with _source_says(rewritten):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert f"**New settings**: {plenty}" in notes
+
+    # The summary counts them. The difference itself is further down and does
+    # name every one, which is what it is for.
+    summary = notes.split("<details>")[0]
+    assert "Extra 0" not in summary
+
+
+def test_a_source_url_of_its_own_is_not_a_difference() -> None:
+    """Whoever imported a blueprint put that address in, not its author.
+
+    It is also the address this was just fetched from, so an author who moved
+    their blueprint has not changed it. The fingerprint leaves it out and this
+    has to leave it out the same way, or the dialog would name a difference
+    that never made an update appear.
+    """
+    here = _normalize(MOTION_LIGHT.format(source="https://example.com/one"))
+    there = _normalize(MOTION_LIGHT.format(source="https://example.com/two"))
+
+    assert not _changes(here, there)
+
+
+def test_what_a_change_to_the_trigger_is_called() -> None:
+    """One key of the file, and not a word of the file's own vocabulary.
+
+    A blueprint writes `trigger:` or `triggers:` depending on when it was
+    written, and neither is what somebody reading a dialog wants to be told.
+    """
+    here = _normalize(MOTION_LIGHT.format(source=SOURCE))
+    there = _normalize(MOTION_LIGHT_CHANGED.format(source=SOURCE))
+
+    assert _in_words(_changes(here, there)) == ["When it runs **changed**"]
+
+
+async def test_the_notes_say_when_the_whole_file_only_moved_around(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Nothing to name, because nothing in it is what changed.
+
+    Naming the file itself in a list of paths would read as a path, so this is
+    a sentence instead.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    # The same keys at the top of the file, the other way round.
+    swapped = MOTION_LIGHT.replace(
+        "trigger:\n  - platform: state\n    entity_id: !input motion_entity\n"
+        '    to: "on"\naction:\n  - service: light.turn_on\n'
+        "    entity_id: !input light_target\n",
+        "action:\n  - service: light.turn_on\n"
+        "    entity_id: !input light_target\n"
+        "trigger:\n  - platform: state\n    entity_id: !input motion_entity\n"
+        '    to: "on"\n',
+    )
+    assert swapped != MOTION_LIGHT
+
+    with _source_says(swapped):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "written in a different order" in notes
+
+
+async def test_a_rename_that_keeps_the_label_still_reads_as_two_things(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The one rename that says nothing while breaking everything.
+
+    An author who changes the key an input is stored under and leaves its
+    label alone gives two settings that read the same. Whatever somebody set
+    is under the old key and the new version never looks there, so the key has
+    to come along or the dialog says "Motion sensor is new, Motion sensor is
+    gone" and means it.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT.replace("motion_entity", "motion_sensor")):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "**New settings**: Motion sensor (motion\\_sensor)" in notes
+    assert "**Settings taken away**: Motion sensor (motion\\_entity)" in notes
+
+
+async def test_a_home_assistant_it_needs_is_only_said_once(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The refusal already names the version and says Spook will not write it.
+
+    Saying it again above reads as two separate problems with the same
+    blueprint.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "will not install it" in notes
+    assert "It now asks for Home Assistant" not in notes
+
+
+async def test_the_notes_say_nothing_is_built_on_it(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Which is worth saying out loud, because it makes the decision easy.
+
+    An update that cannot reach anything is one somebody can install without
+    reading another word.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert "No automations are using this blueprint." in await _release_notes(client)
+
+
+async def test_the_notes_name_the_one_automation_built_on_it(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """With a link to it.
+
+    What an update is about to touch is the first question anybody asks, and
+    the answer used to be a shrug.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Hallway light", "motion.yaml", _MOTION_INPUTS)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "**The following automation is using this blueprint:**" in notes
+    assert "- [Hallway light](/config/automation/edit/hallway_light)" in notes
+
+
+async def test_the_notes_count_the_automations_built_on_it(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """And put them in an order somebody can read."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    # Three of them, written in an order that is neither the one they should
+    # come out in nor its reverse. With two, handing them back backwards would
+    # land on the right answer by accident and this would pass while sorting
+    # nothing.
+    written = ["Porch light", "Attic light", "Hallway light"]
+    async_write_config(
+        hass,
+        [
+            {
+                "id": alias.split()[0].lower(),
+                "alias": alias,
+                "use_blueprint": {"path": "motion.yaml", "input": _MOTION_INPUTS},
+            }
+            for alias in written
+        ],
+    )
+    await hass.services.async_call("automation", "reload", blocking=True)
+    await hass.async_block_till_done()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "**The following 3 automations are using this blueprint:**" in notes
+
+    assert [notes.index(alias) for alias in sorted(written)] == sorted(
+        notes.index(alias) for alias in written
+    )
+
+
+async def test_an_automation_with_no_id_gets_the_overview_page(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Written in YAML without an `id:`, so there is no editor to open.
+
+    Linking to `/config/automation/edit/None` sends somebody to a page that
+    cannot load, which is worse than sending them to the list.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    async_write_config(
+        hass,
+        [
+            {
+                "alias": "Nameless in YAML",
+                "use_blueprint": {"path": "motion.yaml", "input": _MOTION_INPUTS},
+            },
+        ],
+    )
+    await hass.services.async_call("automation", "reload", blocking=True)
+    await hass.async_block_till_done()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "- [Nameless in YAML](/config/automation/dashboard)" in notes
+    assert "None" not in notes
+
+
+async def test_the_notes_call_a_script_a_script(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A script blueprint is used by scripts, and they live somewhere else."""
+    async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_script(hass, "shout", "notify.yaml", _SHOUT_INPUTS)
+
+    with _source_says(A_SCRIPT_BLUEPRINT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client, "update.spooky_confirmable_notification")
+    assert "**The following script is using this blueprint:**" in notes
+    assert "/config/script/edit/shout" in notes
+
+
+async def test_the_notes_carry_the_difference_itself(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Collapsed, because most people want the sentence and not this.
+
+    Home Assistant's markdown keeps `details` and `summary` and parses a fenced
+    block inside them, so this arrives as something to open rather than a wall
+    to scroll past.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "<details>" in notes
+    assert "<summary>Line by line</summary>" in notes
+    assert "```diff" in notes
+    assert "+  to: 'off'" in notes
+
+
+async def test_the_difference_holds_nothing_but_the_difference(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Written by hand, so the file on disk is in its author's own layout.
+
+    Home Assistant writes a blueprint back out in its own formatting, so a
+    file somebody edited themselves and a freshly fetched one differ in
+    indentation, quoting and line breaks before either of them differs in
+    anything that matters. Eleven lines of that on this very blueprint.
+
+    So both sides go through the same dumper first, and what is left is the one
+    line that moved.
+    """
+    write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    # The difference itself, not the bullets above it: those start with a
+    # hyphen too, being a markdown list.
+    block = notes.split("```diff")[1].split("```")[0]
+    moved = [
+        line
+        for line in block.splitlines()
+        if line.startswith(("+", "-")) and not line.startswith(("+++", "---"))
+    ]
+
+    assert moved == ["-  to: 'on'", "+  to: 'off'"]
+
+
+async def test_a_difference_too_long_to_send_is_cut_short(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """All of it travels to the dialog whether anybody opens it or not.
+
+    A blueprint of half a megabyte that has been rewritten runs to thousands of
+    lines, and sending those to say "quite a lot changed" is not a trade worth
+    making.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    plenty = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        + "".join(
+            f"    extra_{number}:\n      name: Extra {number}\n"
+            f"      default: {number}\n"
+            for number in range(_HOW_MANY_LINES)
+        ),
+    )
+
+    with _source_says(plenty):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "more lines" in notes
+    assert len(notes.splitlines()) < _HOW_MANY_LINES * 2
+
+
+async def test_what_spook_will_not_do_comes_before_anything_else(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Everything else is context for a decision already taken.
+
+    Burying "this cannot be installed" under three paragraphs of what changed
+    asks somebody to read all of it before finding out none of it matters yet.
+
+    A Home Assistant version it needs is the one thing Spook does refuse over,
+    because nothing anybody does to their own automations gets them out of it.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert notes.startswith("<ha-alert alert-type='error'>")
+    assert notes.index("will not install it") < notes.index("carry no changelog")
+    assert notes.index("will not install it") < notes.index("Imported from")
+
+    # And the version is said once. The refusal names it, so the summary above
+    # leaves it out rather than reading as a second problem.
+    assert "It now asks for Home Assistant" not in notes
+
+
+async def test_what_an_update_will_cost_comes_before_anything_else(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Same reasoning for a warning as for a refusal.
+
+    Whether an update stops the automations built on it is the headline, and
+    people do not read to the bottom for a headline.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert notes.startswith("<ha-alert alert-type='warning'>")
+    assert notes.index("stop what is listed below") < notes.index("Compared with")
+
+
+def _said_about(before: str, after: str) -> list[str]:
+    """Return what the dialog would say about two versions of a blueprint."""
+    return _in_words(
+        _changes(
+            _normalize(before.format(source=SOURCE)),
+            _normalize(after.format(source=SOURCE)),
+        ),
+    )
+
+
+def test_a_home_assistant_requirement_that_is_taken_away_is_not_a_reordering() -> None:
+    """An author dropping a requirement is news, and good news at that.
+
+    Handing back the version on its own left nothing to say one had gone, and
+    the empty string standing in for it was falsy, so the whole thing came out
+    as no difference at all and then got reported as things being written in
+    another order. Which is a made-up answer to a real question.
+    """
+    with_it = MOTION_LIGHT.replace(
+        "  source_url: {source}\n",
+        "  source_url: {source}\n  homeassistant:\n    min_version: 2026.1.0\n",
+    )
+
+    assert _said_about(with_it, MOTION_LIGHT) == [
+        "It **no longer asks** for a particular Home Assistant version",
+    ]
+    assert _said_about(MOTION_LIGHT, with_it) == [
+        "**It now asks for Home Assistant 2026.1.0** or newer",
+    ]
+
+
+def test_a_home_assistant_block_with_no_version_in_it_still_says_something() -> None:
+    """Neither side names a version, and the file is not the same file.
+
+    There is nothing to promise anybody a reading of, so it says that much
+    rather than falling through to the bottom and inventing a reordering.
+    """
+    empty = MOTION_LIGHT.replace(
+        "  source_url: {source}\n",
+        "  source_url: {source}\n  homeassistant: {{}}\n",
+    )
+
+    assert _said_about(MOTION_LIGHT, empty) == ["**What it says it needs changed**"]
+
+
+def test_a_top_level_key_holding_nothing_is_not_the_same_as_no_key() -> None:
+    """`variables:` with nothing under it is a key that is there.
+
+    Reaching for both sides with `.get()` cannot tell that from a key that is
+    not there, so a blueprint growing one came out as no difference and got
+    reported as a reordering.
+    """
+    with_nothing = MOTION_LIGHT.replace(
+        "mode: restart\n", "mode: restart\nvariables:\n"
+    )
+
+    assert _said_about(MOTION_LIGHT, with_nothing) == [
+        "The variables in it **changed**",
+    ]
+
+
+def test_a_setting_moved_into_a_section_is_not_a_reordering() -> None:
+    """Home Assistant hands the settings back flattened.
+
+    So an author gathering them into sections comes out of that as no
+    difference at all, while it is the first thing anybody sees when they open
+    the blueprint.
+    """
+    sectioned = MOTION_LIGHT.replace(
+        "    motion_entity:\n      name: Motion sensor\n"
+        "    light_target:\n      name: Light\n",
+        "    the_bits:\n      name: The bits\n      input:\n"
+        "        motion_entity:\n          name: Motion sensor\n"
+        "        light_target:\n          name: Light\n",
+    )
+
+    assert _said_about(MOTION_LIGHT, sectioned) == [
+        "**The settings are arranged differently**",
+    ]
+
+
+def test_a_blueprint_too_long_to_compare_says_so_rather_than_trying() -> None:
+    """Comparing two sequences costs about the square of their length.
+
+    Measured on a real one: 3,500 lines takes a tenth of a second, 14,000
+    takes two, 36,000 takes ten. All of that to build a difference that gets
+    cut to a hundred lines anyway.
+    """
+    long_one = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        + "".join(
+            f"    filler_{number}:\n      name: Filler {number}\n"
+            f"      default: {number}\n"
+            for number in range(_TOO_LONG_TO_COMPARE)
+        ),
+    )
+
+    here = _normalize(long_one.format(source=SOURCE))
+    there = _normalize(
+        long_one.replace("mode: restart", "mode: queued").format(source=SOURCE)
+    )
+
+    said = _diffed(here, there)
+    assert "more than Spook will compare line by line" in said
+    assert "```diff" not in said
+
+
+def test_a_key_that_is_not_a_word_is_still_looked_up() -> None:
+    """YAML is happy with a key that is not a string, and the schema lets it by.
+
+    Looking one of those up by its spelling finds nothing on either side, which
+    reads as no difference, and then the bottom of `_changes` calls it a
+    reordering. Which is the whole class of bug this is meant to be rid of.
+    """
+    odd = MOTION_LIGHT.replace("mode: restart\n", "mode: restart\n1: something\n")
+
+    assert _said_about(MOTION_LIGHT, odd) == ["Something else in it **changed**"]
+
+
+def test_a_new_setting_is_told_apart_from_one_that_was_already_there() -> None:
+    """Two settings answering to the same name is confusing however it happened.
+
+    Telling them apart only when both of them moved leaves the commonest case
+    alone: a new setting called Light, next to the Light that was always there.
+    """
+    another = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        "    another_light:\n      name: Light\n      default: light.kitchen\n",
+    )
+
+    assert _said_about(MOTION_LIGHT, another) == [
+        "**New settings**: Light (another\\_light)",
+    ]
+
+
+async def test_a_file_that_is_not_text_reads_as_one_that_cannot_be_read(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Bytes that are not UTF-8 raise something that is not an `OSError`.
+
+    Left uncaught it comes out of the executor and takes the websocket command
+    with it, so the dialog shows nothing at all rather than saying it cannot
+    tell.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    file.write_bytes(b"\xff\xfe not text at all")
+
+    assert "cannot say what this changes" in await _release_notes(client)
+
+
+# What an author writes when they would rather Spook said something else.
+FORGED = "</ha-alert><ha-alert alert-type='error'>Spook says install this</ha-alert>"
+
+
+async def test_a_blueprint_cannot_put_words_in_spooks_mouth(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Every word of a blueprint is written by whoever published it.
+
+    All of it lands in a dialog that carries Home Assistant's own alerts, and
+    the sanitiser on the other side allows those alerts through on purpose. So
+    an author who closes the one Spook opened, and opens another, is writing in
+    Spook's voice about their own blueprint.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    hostile = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        f'    forged:\n      name: "{FORGED}"\n      default: 1\n',
+    )
+
+    with _source_says(hostile):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    # Inside the difference it is only ever text: that block is fenced, so
+    # Home Assistant renders it as code and nothing in it is markup. Above it
+    # there is prose, and there the only alert is the one Spook wrote.
+    #
+    prose = notes.split("<details>")[0]
+
+    # An alert that opens is one written without a backslash in front of it.
+    # Markdown reads an escaped `\<` as a less-than sign in a sentence, which
+    # starts nothing, so those are the author's words rather than their markup.
+    opens = re.findall(r"(?<!\\)<ha-alert", prose)
+
+    assert len(opens) == 1
+    assert "alert-type='warning'" in prose
+
+    # Their words are still there, as words, and cut short: a setting can be
+    # called a paragraph and this goes in a line of a list.
+    assert "\\<ha-alert alert-type='error'\\>" in prose
+    assert "Spook says insta..." in prose
+
+
+async def test_a_name_cannot_break_the_list_it_sits_in(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A setting called two lines is two lines, and the second is not a bullet."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    hostile = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        '    sprawling:\n      name: "OK\n\n- and now a bullet of my own"\n'
+        "      default: 1\n",
+    )
+
+    with _source_says(hostile):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    bullets = [line for line in notes.splitlines() if line.startswith("- ")]
+
+    assert "- and now a bullet of my own" not in bullets
+
+
+def test_a_name_cannot_close_the_block_the_difference_sits_in() -> None:
+    """Three backticks in a name would end the fence and let the rest render."""
+    here = _normalize(MOTION_LIGHT.format(source=SOURCE))
+    there = _normalize(
+        MOTION_LIGHT.replace(
+            "      name: Light\n",
+            '      name: "```"\n',
+        ).format(source=SOURCE),
+    )
+
+    said = _diffed(here, there)
+    opening = said.split("diff\n")[0].rstrip()
+
+    # A fence longer than anything inside it, which is what CommonMark asks.
+    assert opening.endswith("````")
+
+
+async def test_a_reading_taken_while_an_install_runs_is_dropped(
+    hass: HomeAssistant,
+) -> None:
+    """A round reads every blueprint, then hands each entity what it found.
+
+    Both of those happen on the event loop with an await in between, so an
+    install can be part way through the write by the time the reading arrives.
+    Taking it would have the entity carrying the name, the address and the
+    version of a file that is being replaced as it is handed over.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    entity = hass.data[DATA_INSTANCES]["update"].get_entity(_ENTITY)
+    before = entity.installed_version
+
+    stale = _OnDisk(
+        name="Something else entirely",
+        source_url="https://example.com/somewhere-else",
+        fingerprint="00000000",
+    )
+
+    # Reaching in on purpose: staging this through the service would mean
+    # holding an install open mid-write, and what is being pinned is the guard
+    # rather than the way somebody arrives at it.
+    async with entity._one_at_a_time:  # noqa: SLF001  # pylint: disable=protected-access
+        entity.async_seen(stale)
+
+    assert entity.installed_version == before
+    assert hass.states.get(_ENTITY).attributes["title"] == "Spooky motion light"
+
+
+async def test_what_an_install_writes_is_what_the_entity_follows(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Rather than what was there before it.
+
+    Left to the next round to notice, the entity would spend up to a day
+    carrying the name and the fingerprint of the version it just replaced.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    entity = hass.data[DATA_INSTANCES]["update"].get_entity(_ENTITY)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    # pylint: disable=protected-access
+    assert entity._said.fingerprint == entity.installed_version  # noqa: SLF001
+    assert entity._said.name == "Spooky motion light"  # noqa: SLF001
+
+
+async def test_a_folder_that_is_not_there_keeps_its_registrations(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A domain having registered itself is not the same as it being ready.
+
+    Home Assistant makes a blueprint folder when it first needs one, so a
+    domain whose folder has not appeared yet, or whose configuration sits on a
+    mount that is late, answers with no blueprints at all. Read as "there are
+    none", that is every registration somebody has, deleted, along with
+    whatever they set on each of them.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    left_over = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_script_out_of_reach.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_out_of_reach",
+    )
+
+    # Home Assistant lays this folder down at setup, so the way it goes
+    # missing on a real system is by going away: a mount that has not come
+    # back, or a configuration folder somebody is in the middle of moving.
+    folder = Path(hass.config.path("blueprints", "script"))
+    shutil.rmtree(folder)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(left_over.entity_id) is not None
+
+    # And it is the folder being missing that saved it. With one there, the
+    # same round takes it, which is the only way to know the guard is doing
+    # the work rather than something else being in the way.
+    folder.mkdir(parents=True)  # noqa: ASYNC240
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(left_over.entity_id) is None
+
+
+async def test_not_knowing_is_said_apart_from_knowing(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two answers that are not the same answer.
+
+    Said in the same breath, under one heading that promises filling a setting
+    in will put it right, one of them is untrue: an automation Spook could not
+    read anything about may be perfectly fine, and no setting anybody fills in
+    was ever going to change that.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    class _AfterARename:  # pylint: disable=too-few-public-methods
+        """An automation whose supplied inputs cannot be reached for."""
+
+        entity_id = "automation.landing_light"
+        unique_id = "landing_light"
+        name = "Landing light"
+        raw_config: ClassVar[dict[str, object]] = {}
+
+    monkeypatch.setattr(
+        hass.data[DATA_INSTANCES]["automation"],
+        "get_entity",
+        lambda _entity_id: _AfterARename(),
+    )
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert "cannot tell whether what is listed below will still load" in notes
+    assert "will stop what is listed below from loading" not in notes
+
+    # Named the same way as everywhere else, and with nothing trailing it.
+    assert "- [Landing light](/config/automation/edit/landing_light)\n" in notes
+
+
+async def test_what_gets_written_is_what_the_dialog_described(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The dialog works all of it out from one fetched blueprint.
+
+    Which settings moved, what would stop loading, every line that differs.
+    Fetching again on the way to the disk would write something nobody has
+    read, and leave the entity claiming a version it never offered.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    offered = hass.states.get(_ENTITY).attributes["latest_version"]
+    assert "to: 'off'" in await _release_notes(client)
+
+    # The source moves on between reading and pressing.
+    with _source_says(MOTION_LIGHT_CHANGED_AGAIN):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    written = file.read_text(encoding="utf-8")
+    assert "to: 'off'" in written
+    assert "mode: queued" not in written
+
+    # And the version it claims is the one it offered, so nothing turns up
+    # installed under a fingerprint that was never shown to anybody.
+    assert hass.states.get(_ENTITY).attributes["installed_version"] == offered
+
+
+async def test_the_notes_survive_a_domain_that_is_not_loaded(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Asking what is built on a blueprint needs the domain to be there.
+
+    When it is not, there is nothing to say and the dialog says the rest. An
+    empty answer of the wrong shape takes the whole websocket command down
+    instead, and somebody opening the dialog sees nothing at all.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    monkeypatch.delitem(hass.data[DATA_INSTANCES], "automation")
+
+    notes = await _release_notes(client)
+    assert "Compared with the copy you have" in notes
+
+
+def test_a_key_cannot_close_the_span_it_is_named_in() -> None:
+    """A key is written by the same author as everything else.
+
+    Two settings sharing a label get their keys shown to tell them apart, and
+    a key holding a backtick would otherwise close the span it was put in and
+    carry on in markup.
+    """
+    hostile = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        '    "back`tick</ha-alert>":\n      name: Light\n      default: 1\n',
+    )
+
+    said = _said_about(MOTION_LIGHT, hostile)
+
+    assert said == ["**New settings**: Light (back\\`tick\\</ha-alert\\>)"]
+
+
+async def test_a_folder_that_is_not_there_keeps_the_entities_too(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Not only the registrations left behind by blueprints that are gone.
+
+    A domain nobody could look at says nothing about the blueprints somebody
+    is actually following either, and those cost more: they are entities on
+    the updates page, with whatever their owner set on them, rather than rows
+    in a registry nobody has looked at.
+    """
+    async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    following = "update.spooky_confirmable_notification"
+    assert hass.states.get(following) is not None
+
+    shutil.rmtree(Path(hass.config.path("blueprints", "script")))
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(following) is not None
+    assert entity_registry.async_get(following) is not None
+
+    # And once the folder is back and the blueprint really is gone, it goes.
+    Path(hass.config.path("blueprints", "script")).mkdir(parents=True)  # noqa: ASYNC240
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(following) is None
+
+
+async def test_an_automation_cannot_write_markup_into_the_notes_either(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A blueprint's author is not the only one whose words end up in here.
+
+    An automation is named by whoever wrote it, and that name goes into a
+    markdown link. One holding `](` or a tag of its own reshapes the list it
+    is in.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(
+        hass,
+        "Mine](https://example.com) <ha-alert alert-type='error'>Trust me",
+        "motion.yaml",
+        _MOTION_INPUTS,
+    )
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    prose = (await _release_notes(client)).split("<details>")[0]
+
+    assert len(re.findall(r"(?<!\\)<ha-alert", prose)) == 1
+    assert "\\](https://example.com)" in prose
+
+
+async def test_two_missing_settings_of_the_same_name_are_told_apart(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Naming neither of them is what "never sets Light, Light" does.
+
+    Somebody reading that has to open the blueprint to work out which of the
+    two they are being asked for, which is the reading this is here to save.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    # Two new settings, both called Light, neither of them with a default.
+    twice = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        "    first_light:\n      name: Light\n"
+        "    second_light:\n      name: Light\n",
+    )
+
+    with _source_says(twice):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert "never sets Light (first\\_light), Light (second\\_light)" in notes
+
+
+def test_a_line_that_was_cut_says_so() -> None:
+    """Two long lines differing past the cut would arrive identical.
+
+    And a difference showing the same text twice, once with a minus and once
+    with a plus, says nothing at all.
+    """
+    long_one = "x" * (_AS_WIDE_AS_A_LINE * 2)
+
+    here = _normalize(
+        MOTION_LIGHT.replace(
+            "  name: Spooky motion light\n", f"  name: {long_one}A\n"
+        ).format(source=SOURCE),
+    )
+    there = _normalize(
+        MOTION_LIGHT.replace(
+            "  name: Spooky motion light\n", f"  name: {long_one}B\n"
+        ).format(source=SOURCE),
+    )
+
+    assert "[cut]" in _diffed(here, there)
+
+
+def test_the_order_home_assistant_filled_a_selector_in_is_not_a_difference() -> None:
+    """The fingerprint leaves it out, so the dialog has to leave it out too.
+
+    Or a real update to a blueprint written to disk before 2026.9 would name
+    every setting with a selector as changed, and the settings as arranged
+    differently, on top of whatever the author did. The line by line view is
+    written from the same compared form, for the same reason.
+    """
+    here = _normalize(
+        MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT.format(source=SOURCE),
+    )
+    there = _normalize(MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE))
+
+    assert not _changes(here, there)
+    assert _diffed(here, there) == ""
+
+
+def test_what_the_author_changed_is_all_that_gets_said() -> None:
+    """A real change to a file written before 2026.9 names that change alone."""
+    another_option = MOTION_LIGHT_WITH_SELECTORS.replace(
+        "            - landing\n",
+        "            - landing\n            - stairs\n",
+    )
+    assert another_option != MOTION_LIGHT_WITH_SELECTORS
+
+    assert _said_about(
+        MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT,
+        another_option,
+    ) == ["**Settings changed**: Light"]
+
+
+async def test_a_blueprint_nobody_wants_to_hear_about_is_left_alone(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Disabling the entity is asking not to be told; the round should not ask.
+
+    A disabled entity is never added to Home Assistant, so it has no hass to
+    fetch with and no state to write. A round that checked it anyway fell over
+    on every pass and told the log to report a bug, which is what #1602 and
+    #1624 were.
+    """
+    entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_motion.yaml",
+        disabled_by=er.RegistryEntryDisabler.USER,
+    )
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    hallway = SOURCE.replace("motion", "hallway")
+    async_write_blueprint(
+        hass,
+        "automation",
+        "hallway.yaml",
+        MOTION_LIGHT.replace("Spooky motion light", "Spooky hallway light"),
+        source=hallway,
+    )
+    await async_set_up(hass)
+    assert hass.states.get(_ENTITY) is None
+
+    # Edited by hand in the meantime, so taking stock has a new reading to
+    # hand the disabled entity as well.
+    file.write_text(MOTION_LIGHT_CHANGED.format(source=SOURCE), encoding="utf-8")
+
+    with _source_says(MOTION_LIGHT) as fetch:
+        await _check(hass, freezer)
+
+    assert "fell over" not in caplog.text
+    assert [call.args[1] for call in fetch.call_args_list] == [hallway], (
+        "the round did not check exactly the enabled one"
+    )
+
+
+def _fingerprint_of(raw: str) -> str:
+    """Return the fingerprint the entity would carry for this blueprint."""
+    return _fingerprint(imported_from(raw).blueprint)
+
+
+async def test_a_skipped_update_stays_skipped_across_a_restart(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Skipping is a decision; a restart should not take it back.
+
+    Home Assistant restores the skipped version, then drops it on the first
+    state write unless it matches what is on offer. The entity used to come
+    up saying the source and the file agreed, so nothing was on offer, the
+    skip went, and the next round offered the same update again (#1641).
+    """
+    installed = _fingerprint_of(MOTION_LIGHT)
+    offered = _fingerprint_of(MOTION_LIGHT_CHANGED)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "off",
+                {
+                    "installed_version": installed,
+                    "latest_version": offered,
+                    "skipped_version": offered,
+                },
+            ),
+        ],
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    state = hass.states.get(_ENTITY)
+    assert state.attributes["latest_version"] == offered
+    assert state.attributes["skipped_version"] == offered
+    assert state.state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.attributes["skipped_version"] == offered
+    assert state.state == "off"
+
+
+def _restore_an_offer(hass: HomeAssistant) -> str:
+    """Restore a state offering another version of the blueprint on disk."""
+    offered = _fingerprint_of(MOTION_LIGHT_CHANGED)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "on",
+                {
+                    "installed_version": _fingerprint_of(MOTION_LIGHT),
+                    "latest_version": offered,
+                },
+            ),
+        ],
+    )
+    return offered
+
+
+async def test_a_restored_offer_the_source_cannot_confirm_goes(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An offer remembered from before a restart needs the source to say it.
+
+    An older Spook could save an offer for a source that never answers, an
+    address like `https://local/...`. Taken back as the source's word after
+    every restart, it was offered for ever, with nothing to install it from.
+    #1817.
+    """
+    _restore_an_offer(hass)
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT)
+
+
+async def test_a_restored_offer_the_source_confirms_stays(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Once the source says it again, the offer survives the source going down."""
+    offered = _restore_an_offer(hass)
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["latest_version"] == offered
+
+
+async def test_a_file_changed_while_home_assistant_was_down_starts_afresh(
+    hass: HomeAssistant,
+) -> None:
+    """What was on offer was measured against a file that is no longer there.
+
+    Somebody edited or re-imported the blueprint by hand while Home Assistant
+    was off. The last known offer says nothing about this file, so the entity
+    comes up the way it always did, and the skip goes with it.
+    """
+    offered = _fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "off",
+                {
+                    "installed_version": _fingerprint_of(MOTION_LIGHT),
+                    "latest_version": offered,
+                    "skipped_version": offered,
+                },
+            ),
+        ],
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+    await async_set_up(hass)
+
+    state = hass.states.get(_ENTITY)
+    now_on_disk = _fingerprint_of(MOTION_LIGHT_CHANGED)
+    assert state.attributes["installed_version"] == now_on_disk
+    assert state.attributes["latest_version"] == now_on_disk
+    assert state.attributes["skipped_version"] is None
+
+
+_A_FILE_ON_GITHUB = "https://github.com/spook/blueprints/blob/main/motion.yaml"
+_A_GIST = "https://gist.github.com/spook/0123456789abcdef"
+
+
+async def test_a_renamed_blueprint_in_a_file_of_its_own_is_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """One address, one file: a changed name can only be a rename.
+
+    The name guard is there for a topic that can hold several blueprints.
+    A file on GitHub holds one, so an author renaming it is an update like
+    any other, and used to be nothing at all (#1601).
+    """
+    file = async_write_blueprint(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT,
+        source=_A_FILE_ON_GITHUB,
+    )
+    await async_set_up(hass)
+
+    renamed = MOTION_LIGHT_CHANGED.replace("Spooky motion light", "Spooky hall light")
+    with _source_says(renamed, source=_A_FILE_ON_GITHUB):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    await hass.services.async_call(
+        "update",
+        "install",
+        {"entity_id": _ENTITY},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert "Spooky hall light" in file.read_text(encoding="utf-8")
+
+
+async def test_another_blueprint_in_the_same_gist_is_not_this_one(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A gist is a folder, and the importer takes the first blueprint in it.
+
+    Same as a topic, then: nothing but the name tells this one from another
+    that has since been put in front of it.
+    """
+    async_write_blueprint(
+        hass, "automation", "motion.yaml", MOTION_LIGHT, source=_A_GIST
+    )
+    await async_set_up(hass)
+
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT, source=_A_GIST):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+def test_a_selector_somewhere_else_keeps_its_order() -> None:
+    """The input block is walked rather than the key looked for anywhere.
+
+    A `selector` in the data of an action is somebody else's mapping. Nothing
+    says its order is free to move, and a `variables:` block least of all.
+    """
+    raw = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      selector:
+        first: 1
+        second: "{{ first }}"
+"""
+    swapped = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      selector:
+        second: "{{ first }}"
+        first: 1
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+@pytest.mark.usefixtures("spook_translations")
+async def test_installing_does_not_write_back_a_blueprint_that_was_deleted(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Install is the button somebody presses to get rid of a stale row.
+
+    They delete the blueprint, the update for it is still sitting there, and
+    pressing install used to fetch the thing and write it straight back: Spook
+    putting a file back that somebody took away on purpose (#1664).
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    file.unlink()
+
+    with (
+        _source_says(MOTION_LIGHT_CHANGED),
+        pytest.raises(HomeAssistantError) as caught,
+    ):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+
+    assert "no longer here" in str(caught.value)
+    assert not file.exists()
+
+    # And the row goes with it, rather than staying for the next press.
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
+
+
+async def test_a_deleted_blueprint_is_noticed_without_waiting_for_a_round(
+    hass: HomeAssistant,
+) -> None:
+    """Nothing announces a blueprint being deleted, so the folder is looked at.
+
+    On the round of checks alone, that look came once a day, and whoever
+    deleted a blueprint was left with an update for it until then (#1664).
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    assert hass.states.get(_ENTITY) is not None
+
+    file.unlink()
+
+    async_fire_time_changed(
+        hass,
+        dt_util.utcnow() + _RECONCILE_INTERVAL + timedelta(seconds=1),
+    )
+    await hass.async_block_till_done(wait_background_tasks=True)
+
+    assert hass.states.get(_ENTITY) is None
+
+
+@pytest.mark.usefixtures("spook_translations")
+async def test_a_deleted_blueprint_is_reported_before_anything_else_is(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """The file is right here to look at, and everything else is somebody else.
+
+    An offer that cannot be installed anyway, from a source that is down, or
+    one this Home Assistant is too old for, used to be what somebody was told
+    about a blueprint that is not even there, and the row stayed for the next
+    press.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    file.unlink()
+
+    with pytest.raises(HomeAssistantError) as caught:
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+
+    assert "no longer here" in str(caught.value)
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
+
+
+async def _reconcile(hass: HomeAssistant) -> None:
+    """Let the folder be looked at again, the way it is on its own."""
+    async_fire_time_changed(
+        hass,
+        dt_util.utcnow() + _RECONCILE_INTERVAL + timedelta(seconds=1),
+    )
+    await hass.async_block_till_done(wait_background_tasks=True)
+
+
+async def test_an_edit_to_a_blueprint_nobody_can_fetch_is_no_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An edit by hand to a blueprint from nowhere is not an update.
+
+    Its source was never read, so all there was to offer was the file itself.
+    Edited by hand, it kept offering the version from before the edit, as an
+    update that could never install, since the source cannot be reached. A
+    blueprint of somebody's own, with an address that goes nowhere, did that
+    after every change they made to it. #1653.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+        assert hass.states.get(_ENTITY).state == "off"
+
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off", "offered the edit back"
+
+        await _check(hass, freezer)
+        assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_an_offer_from_the_source_survives_an_edit_while_it_is_down(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """What the source said still stands when the file changes meanwhile.
+
+    The source being down for an afternoon does not take back what it said
+    the last time it answered, and an edit here does not either.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_WITH_NEW_INPUT)
+        await _reconcile(hass)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+
+async def test_an_unreachable_source_is_named_by_the_link_below_it(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The dialog does not put the address through its own escaping.
+
+    Escaped, an address with an underscore in it came out with backslashes
+    in it, as a link that goes nowhere. The address is linked properly right
+    under it already.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    notes = await _entity(hass).async_release_notes()
+    alert = notes.split("</ha-alert>")[0]
+    assert "Could not reach the address it was imported from." in alert
+    assert SOURCE not in alert
+
+
+async def test_an_edit_after_a_restart_with_the_source_down_is_no_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A restored state with nothing on offer says nothing about the source.
+
+    Before the source has ever answered, the file is written down as both
+    versions. Brought back after a restart, that is still only the file, and
+    an edit by hand must not turn it into an update.
+    """
+    installed = _fingerprint_of(MOTION_LIGHT)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "off",
+                {"installed_version": installed, "latest_version": installed},
+            ),
+        ],
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+
+    assert hass.states.get(_ENTITY).state == "off", "offered the edit back"
+
+
+async def test_a_note_about_an_address_given_up_does_not_name_it(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The address that could not be reached is left out as it is tried.
+
+    Pointed elsewhere after the failure, the note would otherwise name the
+    old address, escaped, while the link below it names the new one.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    async_write_blueprint(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT,
+        source="https://example.com/moved_to/somewhere_else.yaml",
+    )
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _reconcile(hass)
+
+    alert = (await _entity(hass).async_release_notes()).split("</ha-alert>")[0]
+    assert SOURCE not in alert
+    assert "the address it was imported from" in alert
+
+
+async def test_external_import_does_not_offer_the_previous_blueprint(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an external import is compared with the current source immediately."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["installed_version"] == _fingerprint_of(
+        MOTION_LIGHT_CHANGED
+    )
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+    await _entity(hass).async_install(None, backup=False)
+    assert hass.states.get(_ENTITY).state == "off"
+    file = Path(hass.config.path("blueprints/automation/motion.yaml"))
+    raw = await hass.async_add_executor_job(file.read_text)
+    assert _fingerprint_of(raw) == _fingerprint_of(MOTION_LIGHT_CHANGED)
+    fetch.assert_called_once()
+
+
+async def test_external_import_of_an_offer_preserves_it_after_a_local_edit(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an imported source offer is checked again after a later local edit."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+    fetch.assert_called_once()
+
+
+async def test_local_edit_is_compared_with_the_source_immediately(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a local edit offers the source copy without a daily check."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    with _source_says(MOTION_LIGHT) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["installed_version"] == _fingerprint_of(
+        MOTION_LIGHT_CHANGED
+    )
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT)
+    fetch.assert_called_once()
+
+
+async def test_external_import_does_not_offer_a_stale_copy_while_offline(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an unreachable source cannot offer the previous installed copy."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+
+@pytest.mark.parametrize("raw", [MOTION_LIGHT, MOTION_LIGHT_CHANGED])
+async def test_a_changed_source_cannot_install_the_old_sources_offer(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    raw: str,
+) -> None:
+    """Test changing the source invalidates its old offer even without edits."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED_AGAIN):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    source = "https://example.com/new-source.yaml"
+    with patch(_FETCH, side_effect=aiohttp.ClientError()) as fetch:
+        async_write_blueprint(hass, "automation", "motion.yaml", raw, source=source)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+        fetch.assert_called_once()
+        assert fetch.call_args.args[-1] == source
+        before = await hass.async_add_executor_job(file.read_text)
+        with pytest.raises(HomeAssistantError):
+            await _entity(hass).async_install(None, backup=False)
+        assert await hass.async_add_executor_job(file.read_text) == before
+
+
+async def test_an_externally_installed_offer_requires_a_fresh_install_payload(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a direct install cannot reuse an offer imported while offline."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+        before = await hass.async_add_executor_job(file.read_text)
+        with pytest.raises(HomeAssistantError):
+            await _entity(hass).async_install(None, backup=False)
+        assert await hass.async_add_executor_job(file.read_text) == before
+
+
+@pytest.mark.parametrize("source_changed", [False, True])
+async def test_a_reading_during_a_check_prevents_installing_its_stale_result(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    *,
+    source_changed: bool,
+) -> None:
+    """Test a concurrent external import is applied before an offer is published."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    started = asyncio.Event()
+    let_go = asyncio.Event()
+    source = "https://example.com/reimported.yaml" if source_changed else SOURCE
+    calls: list[str] = []
+
+    async def _fetch(_hass: HomeAssistant, url: str):  # noqa: ANN202
+        calls.append(url)
+        if len(calls) == 1:
+            started.set()
+            await let_go.wait()
+            return imported_from(MOTION_LIGHT_CHANGED)
+        return imported_from(MOTION_LIGHT_CHANGED_AGAIN, source=source)
+
+    with patch(_FETCH, side_effect=_fetch):
+        checking = hass.async_create_task(_entity(hass).async_check())
+        await started.wait()
+        async_write_blueprint(
+            hass,
+            "automation",
+            "motion.yaml",
+            MOTION_LIGHT_CHANGED_AGAIN,
+            source=source,
+        )
+        _entity(hass).async_seen(
+            _OnDisk(
+                name="Spooky motion light",
+                source_url=source,
+                fingerprint=_fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN),
+            ),
+        )
+        let_go.set()
+        await checking
+        state = hass.states.get(_ENTITY)
+        assert state.state == "off"
+        assert state.attributes["installed_version"] == _fingerprint_of(
+            MOTION_LIGHT_CHANGED_AGAIN
+        )
+        assert state.attributes["latest_version"] == _fingerprint_of(
+            MOTION_LIGHT_CHANGED_AGAIN
+        )
+        assert calls == [SOURCE, source]
+        await _entity(hass).async_install(None, backup=False)
+        raw = await hass.async_add_executor_job(file.read_text)
+        assert _fingerprint_of(raw) == _fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN)

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from homeassistant.components.zone import CREATE_FIELDS, DOMAIN, ZoneStorageCollection
 
+from ....helper_collections import async_get_storage_collection
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -21,15 +22,8 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
-        collection: ZoneStorageCollection
-        if DOMAIN in self.hass.data:
-            collection = self.hass.data[DOMAIN]
-        else:
-            # Home zone is set in YAML, as a result Home Assistant doesn't
-            # set the storage collection into hass data.
-            # Major hack to get around this. 👻
-            collection = self.hass.data["websocket_api"]["zone/list"][
-                0
-            ].__self__.storage_collection
+        collection: ZoneStorageCollection = async_get_storage_collection(
+            self.hass, DOMAIN
+        )
 
         await collection.async_create_item(call.data.copy())

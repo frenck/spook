@@ -16,13 +16,13 @@ from ....entity_filtering import (
     async_find_services_in_sequence,
     async_get_all_services,
 )
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced services in automations."""
 
     domain = automation.DOMAIN
@@ -46,10 +46,6 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     async def _async_setup_inspection(self) -> None:
         """Cache known services for this inspection cycle."""
         self._known_services = async_get_all_services(self.hass)
-
-    def _should_inspect_entity(self, entity: Any) -> bool:
-        """Skip disabled automations."""
-        return entity.enabled
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown services called by ``entity``."""

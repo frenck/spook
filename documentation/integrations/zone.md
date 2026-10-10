@@ -21,7 +21,7 @@ Spook adds new actions to the zone integrations that allow you to manage and mod
 
 ```{figure} ../images/integrations/zone/example.png
 :name: example
-:alt: Screenshot of the recorder import statistics action in the developer tools.
+:alt: Screenshot of the recorder import statistics action on the Tools page.
 :align: center
 
 Spook adds an action that allows importing data into the recorder.
@@ -40,7 +40,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Adds a new zone to your Home Assistant instance.
 
 ```{figure} ../images/integrations/zone/create.png
-:alt: Screenshot of the zone create action in the developer tools.
+:alt: Screenshot of the zone create action on the Tools page.
 :align: center
 ```
 
@@ -57,9 +57,9 @@ Adds a new zone to your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create)
 ```
 
 ```{list-table}
@@ -89,9 +89,15 @@ Adds a new zone to your Home Assistant instance.
   - {term}`float <float>`
   - No
   - 100
+* - `passive`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
 ```
 
 The `radius` attribute must be entered in meters.
+
+A passive zone is only there for automations: it is not shown on the map, and does not change where people and device trackers are. Handy for a zone an automation creates for itself, like the spot you parked, and deletes again once it is done with it.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -117,8 +123,10 @@ Updates properties of an existing zone.
 Zones that are created and managed using manual YAML configuration cannot be updated.
 :::
 
+The home zone (`zone.home`) can be moved and resized too, with `latitude`, `longitude` and `radius`. It is drawn from the location of your whole Home Assistant instance, so that is what changes: the same location Home Assistant's own `homeassistant.set_location` sets, and the one everything else that uses your location follows. Its name and icon cannot be changed this way, its radius is in whole meters, and it is never passive.
+
 ```{figure} ../images/integrations/zone/update.png
-:alt: Screenshot of the zone update action in the developer tools.
+:alt: Screenshot of the zone update action on the Tools page.
 :align: center
 ```
 
@@ -135,9 +143,9 @@ Zones that are created and managed using manual YAML configuration cannot be upd
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update)
 ```
 
 ```{list-table}
@@ -171,9 +179,13 @@ Zones that are created and managed using manual YAML configuration cannot be upd
   - {term}`float <float>`
   - No
   - 100
+* - `passive`
+  - {term}`boolean <boolean>`
+  - No
+  - `true`
 ```
 
-The `radius` attribute must be entered in meters. Only the parameters that are provided will be updated. Other parameters will remain unchanged.
+The `radius` attribute must be entered in meters. Only the parameters that are provided will be updated. Other parameters will remain unchanged. Set `passive` to make a zone only there for automations, or to make a passive zone an ordinary one again.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -184,6 +196,16 @@ action: zone.update
 data:
   entity_id: zone.statue_of_liberty
   name: "Statue of Liberty, New York"
+  radius: 250
+```
+
+Resizing the home zone:
+
+```{code-block} yaml
+:linenos:
+action: zone.update
+data:
+  entity_id: zone.home
   radius: 250
 ```
 
@@ -198,7 +220,7 @@ Zones that are created and managed using manual YAML configuration cannot be del
 :::
 
 ```{figure} ../images/integrations/zone/delete.png
-:alt: Screenshot of the zone delete action in the developer tools.
+:alt: Screenshot of the zone delete action on the Tools page.
 :align: center
 ```
 
@@ -215,9 +237,9 @@ Zones that are created and managed using manual YAML configuration cannot be del
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete)
 ```
 
 ```{list-table}
@@ -260,7 +282,7 @@ data:
 
 Spook has no repair detections for this integration.
 
-## Uses cases
+## Use cases
 
 Some use cases for the enhancements Spook provides for this integration:
 
@@ -270,7 +292,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

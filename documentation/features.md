@@ -29,6 +29,12 @@ Spook enhances the following Home Assistant integrations by sprinkling some {ter
 Spook also provides {term}`helpers <helper>`. The helpers allows you to perform calculations or modifications on existing {term}`entities <entity>` and return the result of that as a new entity.
 :::
 
+:::{card} Assistants
+:footer: 📚 [Learn more](assistants)
+
+AI assistants can ask Spook about the ghosts in your home, find where things are used, check a draft automation before it is saved, and fix a ghost when you let them.
+:::
+
 :::{card} Other features
 :footer: 📚 [Learn more](other_features)
 If it doesn't fit in any of the above, you can find it here. 🙃  

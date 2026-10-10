@@ -23,7 +23,7 @@ integrations. It is recommended to use this action only when necessary.
 :::
 
 ```{figure} ./images/misc/restart.png
-:alt: Screenshot of the Home Assistant restart action in the developer tools.
+:alt: Screenshot of the Home Assistant restart action on the Tools page.
 :align: center
 ```
 
@@ -40,9 +40,9 @@ integrations. It is recommended to use this action only when necessary.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Extends the existing restart action with a "force" option.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
 ```
 
 ```{list-table}
@@ -78,7 +78,7 @@ data:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for these features. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

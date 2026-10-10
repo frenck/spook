@@ -23,7 +23,7 @@ Spook enhances the integration by providing actions that allow you to raise and 
 
 ```{figure} ../images/integrations/repairs/example.png
 :name: example
-:alt: Screenshot of the repairs actions Spook adds to Home Assistant, taken from the developer tools.
+:alt: Screenshot of the repairs actions Spook adds to Home Assistant, taken from the Tools page.
 :align: center
 
 Spook adds many new actions to the repairs integration so that you can create your own.
@@ -97,7 +97,7 @@ to raise low battery reports for your devices or to raise an issue when
 a device becomes unreachable.
 
 ```{figure} ../images/integrations/repairs/create.png
-:alt: Screenshot of the repairs create issue action in the developer tools.
+:alt: Screenshot of the repairs create issue action on the Tools page.
 :align: center
 ```
 
@@ -119,9 +119,9 @@ a device becomes unreachable.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
 ```
 
 ```{list-table}
@@ -180,10 +180,12 @@ data:
 
 ### Ignore all issues
 
-Adds a single action to ignore all issues currently raised in the repairs dashboard.
+Adds a single action to ignore all issues currently raised in the repairs dashboard, or only the ones particular integrations raised.
+
+This takes an admin when a user calls it, since it changes what every user sees on the repairs dashboard. Automations and scripts are not affected.
 
 ```{figure} ../images/integrations/repairs/ignore_all.png
-:alt: Screenshot of the repairs ignore all issues action in the developer tools.
+:alt: Screenshot of the repairs ignore all issues action on the Tools page.
 :align: center
 ```
 
@@ -200,10 +202,25 @@ Adds a single action to ignore all issues currently raised in the repairs dashbo
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
 ```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - Defaults to every integration / `hacs`
+```
+
+Leave `domain` out to ignore every issue. Name one or more integrations, and only the issues those raised are ignored.
 
 :::{tip}
 This might sometimes seem helpful; however, ignoring an issue is not a solution. It is better to fix the issue, remove the integration that is causing it, or report a bug.
@@ -219,6 +236,83 @@ Every issue raised by Home Assistant (and also Spook) should be solvable. If not
 action: repairs.ignore_all
 ```
 
+Only the issues HACS raises, like the restart it asks for after every update:
+
+```{code-block} yaml
+:linenos:
+action: repairs.ignore_all
+data:
+  domain: hacs
+```
+
+:::
+
+### List issues
+
+Lists the issues currently raised in the repairs dashboard, with the same titles the dashboard shows them with, in the language Home Assistant is set to. For an automation to act on them, or to show them on a dashboard of your own.
+
+The newest issue comes first. Ignored issues are left out, like on the repairs dashboard, unless you ask for them.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Repairs: List issues 👻
+* - {term}`Action name`
+  - `repairs.list`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - Yes, the list of issues
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.list)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.list)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `include_ignored`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `hue`
+* - `severity`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `error`
+```
+
+Each issue in the response has its `domain`, `issue_id`, `title`, `severity` (`critical`, `error`, or `warning`), `created`, `is_fixable`, `learn_more_url`, `breaks_in_ha_version`, and whether it is `ignored`.
+
+Issues made with `repairs.create` come back a little different. Their `issue_id` carries the `user_` prefix that `repairs.create` adds, so drop one `user_` before handing a listed ID to `repairs.remove` or `repairs.create`. And their `domain` is always `spook`, whatever `domain` they were created with, so filter on `spook` (or leave `domain` out) to find them.
+
+Listing issues takes an admin, the same as the repairs dashboard does.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: repairs.list
+data:
+  severity:
+    - critical
+    - error
+response_variable: repairs
+```
+
+The titles are then in `{{ repairs.issues | map(attribute='title') | list }}`.
+
 :::
 
 ### Remove issue
@@ -226,7 +320,7 @@ action: repairs.ignore_all
 Remove an issue from the repairs integration.
 
 ```{figure} ../images/integrations/repairs/remove.png
-:alt: Screenshot of the repairs remove issue action in the developer tools.
+:alt: Screenshot of the repairs remove issue action on the Tools page.
 :align: center
 ```
 
@@ -243,9 +337,9 @@ Remove an issue from the repairs integration.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
 ```
 
 ```{list-table}
@@ -280,10 +374,12 @@ data:
 
 ### Unignore all issues
 
-Adds a single action to unignore all repair issues currently still active (but previously ignored).
+Adds a single action to unignore all repair issues currently still active (but previously ignored), or only the ones particular integrations raised.
+
+This takes an admin when a user calls it, since it changes what every user sees on the repairs dashboard. Automations and scripts are not affected.
 
 ```{figure} ../images/integrations/repairs/unignore_all.png
-:alt: Screenshot of the repairs unignore all issues action in the developer tools.
+:alt: Screenshot of the repairs unignore all issues action on the Tools page.
 :align: center
 ```
 
@@ -300,10 +396,25 @@ Adds a single action to unignore all repair issues currently still active (but p
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
 ```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - Defaults to every integration / `hacs`
+```
+
+Leave `domain` out to unignore every issue. Name one or more integrations, and only the issues those raised are unignored.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -313,23 +424,33 @@ Adds a single action to unignore all repair issues currently still active (but p
 action: repairs.unignore_all
 ```
 
+Only the issues HACS raises:
+
+```{code-block} yaml
+:linenos:
+action: repairs.unignore_all
+data:
+  domain: hacs
+```
+
 :::
 
 ## Repairs
 
 Spook has no repair detections for this integration.
 
-## Uses cases
+## Use cases
 
 Some use cases for the enhancements Spook provides for this integration:
 
 - Creating and raising your own issues has lots of possibilities. For example, you could create an issue when a device is low on battery or when a device is offline for a long time. You could also create an issue when a device is not responding to commands or when a device is not responding to commands in a certain time frame. The possibilities are endless.
+- Show the open repairs on a dashboard of your own, or send yourself a daily summary of what still needs fixing.
 
 ## Blueprints & tutorials
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

@@ -34,11 +34,186 @@ Spook does not provide any new devices or entities for this integration.
 
 ## Actions
 
-Spook does not provide action enhancements for this integration.
+Spook adds the following new actions to your Home Assistant instance:
+
+### Snooze
+
+Turns an automation off for a while, and turns it back on when the time is up.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Automation: Snooze 👻
+* - {term}`Action name`
+  - `automation.snooze`
+* - {term}`Action targets`
+  - Yes, `automation` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `duration`
+  - {term}`string <string>`
+  - Yes
+  - `01:00:00`
+```
+
+Turning an automation off is the only way to make it stop for an hour, and an automation turned off stays off: past the restart, past the weekend, until somebody notices. The usual way around that is a helper entity and a second automation to turn the first one back on, which is two moving parts for something that should be one.
+
+This is that, in one action. It survives a restart of Home Assistant, because the time it is due back is written down rather than left in a timer that dies with the process.
+
+The other way round, holding one on for a while, is [Turn on for](#turn-on-for).
+
+Turning the automation back on yourself cancels the snooze. Saying so is a clearer statement of what you want than a wake-up time set earlier, so Spook takes it that way and forgets the rest.
+
+An automation can snooze itself, which is the plainest way to write "and not again for an hour". Snoozing stops an automation starting again; it does not stop the run that asked, so the steps after it still happen.
+
+:::{seealso} Example actions in {term}`YAML`
+:class: dropdown
+
+Quiet the doorbell for an hour:
+
+```{code-block} yaml
+:linenos:
+action: automation.snooze
+target:
+  entity_id: automation.doorbell_announce
+data:
+  duration: "01:00:00"
+```
+
+Everything in the bedroom, until the morning:
+
+```{code-block} yaml
+:linenos:
+action: automation.snooze
+target:
+  area_id: bedroom
+data:
+  duration: "08:00:00"
+```
+
+Tell me the pool is warm, then leave it alone for twelve hours:
+
+```{code-block} yaml
+:linenos:
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: "The pool is {{ states('sensor.pool_temperature') }} degrees"
+  - action: automation.snooze
+    target:
+      entity_id: automation.pool_temperature_notification
+    data:
+      duration: "12:00:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- An automation that is already off is left alone, and Spook says so in the log. Waking it would turn on something you turned off, which is not what snoozing asks for.
+- Snoozing one that is already asleep moves its wake-up time rather than starting a second one.
+- The automation is off while it sleeps, so anything reading its state sees exactly that. There is no third state between on and off.
+  :::
+
+### Turn on for
+
+Turns an automation on for a while, and turns it back off when the time is up.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Automation: Turn on for 👻
+* - {term}`Action name`
+  - `automation.turn_on_for`
+* - {term}`Action targets`
+  - Yes, `automation` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `duration`
+  - {term}`string <string>`
+  - Yes
+  - `01:00:00`
+```
+
+The other way round from [Snooze](#snooze), and the same trap in reverse: an automation turned on stays on, so "just for tonight" needs somebody to remember. Guest mode you switch on in December and find again in March, holiday lighting that outlives the holiday, a debug automation left running.
+
+This is that, in one action, and it survives a restart of Home Assistant for the same reason: the time it is due back off is written down rather than left in a timer that dies with the process.
+
+Turning the automation off yourself cancels the run, the same way turning one on cancels a snooze.
+
+:::{seealso} Example actions in {term}`YAML`
+:class: dropdown
+
+Guest mode, for the weekend:
+
+```{code-block} yaml
+:linenos:
+action: automation.turn_on_for
+target:
+  entity_id: automation.guest_mode
+data:
+  duration: "48:00:00"
+```
+
+The party lighting, until the party is over:
+
+```{code-block} yaml
+:linenos:
+action: automation.turn_on_for
+target:
+  entity_id: automation.disco_floor
+data:
+  duration: "04:00:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- An automation that is already on is left alone, and Spook says so in the log. Turning it off later would switch off something you switched on, which is not what this asks for.
+- Asking again for one already running moves the time it goes off rather than starting a second one.
+- The automation is on while it runs, so anything reading its state sees exactly that. There is no third state between on and off.
+  :::
 
 ## Repairs
 
 While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
+
+Automations that are turned off are left alone. An automation that is off does nothing, so nothing in it can go wrong yet, and it is often turned off exactly because something in it is broken. As soon as you turn it back on, Spook looks at it again and reports what it finds.
+
+The same goes for an entity, device, area, floor or label that only disabled steps, triggers or conditions (`enabled: false`) name. A disabled step does nothing either, and is usually parked on purpose. Anything a running step names as well is still reported.
 
 ### Unknown referenced areas
 
@@ -54,9 +229,39 @@ Spook found an issue with an automation that is using a non-existing area.
 
 To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown referenced attributes
+
+Automations are inspected for the attributes they use: the `attribute` of state and numeric state triggers and conditions, the attribute Spook's own state trigger follows, and attributes named in templates, like `state_attr('light.kitchen', 'brightness')`. If an automation uses an attribute its entity does not have, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation, the attribute, the entity, and what was most likely meant when Spook is near certain of it.
+
+A trigger waiting on an attribute that never shows up loads fine and never fires, and nothing tells you. That is the ghost this catches.
+
+Many attributes only show up some of the time: a media player that is off drops most of its own, and integrations add their own that come and go. So an attribute is only reported when Spook cannot find it anywhere: not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`. An attribute or entity that is only worked out while running, from a variable for example, is not checked. Neither is a template using `states` or `state_attr` when the automation gives that name a meaning of its own, as a variable, a field or a response variable.
+
+Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks again once a reload of automations is done, when a automation is added or removed, when the entity registry changes, when an integration loads or its configuration changes, and once a day. An attribute that newly shows up on an entity is picked up the next time it looks.
+
+To resolve the raised issue, edit the automation and use an attribute the entity has. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced states
+
+Automations are inspected for the states they wait for and check: the `to`, `from`, `not_to` and `not_from` of state triggers, the `state` of state conditions, the same options of Spook's own state trigger, and in templates `is_state('light.kitchen', 'on')` and a state compared to text, like `states('light.kitchen') == 'on'`, `states.light.kitchen.state != 'off'` or `states('light.kitchen') in ['on', 'off']`. If an automation uses a state its entity is never in, like `On` for a light that is `on` or `off`, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation, the state, the entity, and what was most likely meant when Spook is near certain of it.
+
+A trigger waiting for a state that never comes loads fine and never fires, and nothing tells you. That is the ghost this catches.
+
+Only entities whose states are a fixed set are checked: the ones Home Assistant itself lists for that kind of entity (a light, a cover, a lock, an alarm panel, a media player, and so on), or the options the entity offers right now, like a select, a dropdown helper, or a sensor with a fixed list of values. A plain sensor, a number or a text can be anything, so those are not checked, and neither are persons and device trackers, whose states are zone names. Everything the entity was in counts as well: right now, and anything the recorder remembers. An entity whose state is set from outside of its integration, by a REST call or a Python script for example, is not checked either.
+
+For some kinds of entity, Home Assistant itself makes sure the state is one of the set: lights, switches, binary sensors, covers, locks, valves, climate entities, and the like. There, a state that differs from a real one in upper and lower case alone, like `On`, is always reported, and anything else outside of the set when Spook has the whole history of the entity from the recorder. For the rest, the set is what is usual rather than all that is possible: a media player made from a template can be in any state it likes, and a select, a dropdown helper or a sensor with a fixed list of values can get new options while running. Those only get a state reported that differs from a real one in case alone, and only when Spook has the whole history of the entity. The same goes for an entity that works out its state in a way of its own.
+
+A state or entity that is only worked out while running, from a variable or a template for example, is not checked. Neither is a state with an `attribute`: then the value is that attribute's. In templates, only a comparison with nothing else taking part in it is read: once a filter like `| lower`, a `~` or anything like it is in between, what is compared is no longer the state itself. A template is not read for `states`, `is_state` or `state_attr` either when the automation gives that name a meaning of its own, as a variable, a field or a response variable.
+
+Spook looks at the same moments as for unknown attributes: ten minutes after Home Assistant starts, after that again once a reload of automations is done, when an automation is added or removed, when the entity registry changes, when an integration loads or its configuration changes, and once a day.
+
+To resolve the raised issue, edit the automation and use a state the entity can be in. Spook will automatically remove the repair issue once the issue is fixed.
+
 ### Unknown referenced devices
 
 Automations are inspected for the use of devices. If an automation is using a device that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the device that is referenced but not found.
+
+Only values shaped like a device ID are considered. Home Assistant hands those out itself and they are always thirty-two hexadecimal characters. Integrations are free to take a field called `device_id` meaning their own hardware, and some do: RFLink's `device_id` is a protocol address. Those are not devices Home Assistant knows about and never will be, so Spook leaves them alone. A real device that was removed still leaves an ID of the right shape behind, so nothing worth finding is given up.
 
 ```{figure} ../images/integrations/automation/unknown_device.png
 :name: Spook found an issue with an automation that is using a non-existing device.
@@ -86,9 +291,39 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 Automations are inspected for the use of actions. If an automation is using a action that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the action that is referenced but not found.
 
+Actions of an integration you disabled are not reported: switched off on purpose is not gone. Once you enable the integration again, they are checked as usual.
+
 To resolve the raised issue, you can either remove the reference to the non-existing actions. Spook will automatically remove the repair issue once the issue is fixed.
 
-## Features requests, ideas, and support
+### Unknown referenced floors
+
+Automations are inspected for the use of {term}`floors <floor>`. If an automation is targeting a floor in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the floor that is referenced but not found.
+
+To resolve the raised issue, you can either remove the reference to the non-existing floor or fix the referenced floor. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced labels
+
+Automations are inspected for the use of {term}`labels <label>`. If an automation is targeting a label that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the label that is referenced but not found.
+
+To resolve the raised issue, you can either remove the reference to the non-existing label or fix the referenced label. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced conditions
+
+Automations are inspected for the conditions they use. Conditions are provided by {term}`integrations <integration>`, so a condition that no installed integration can provide cannot be evaluated. An automation like that fails validation outright and becomes unavailable, which is why Spook deliberately inspects unavailable automations: they are the broken ones.
+
+Home Assistant does notice, but it raises a generic issue about the automation. Spook names the exact conditions, which is the part you need in order to fix it.
+
+This usually means the integration that provided the condition was removed. To resolve the raised issue, you can either remove the use of these conditions or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced triggers
+
+Automations are inspected for the triggers they use. Like conditions, triggers come from integrations, and if no installed integration can provide a trigger, the whole automation goes down with it: it fails validation and becomes unavailable.
+
+So this is not a silent failure, it is a nameless one. Home Assistant raises a generic issue about the automation without saying which trigger caused it. Spook names the trigger.
+
+To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
+
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

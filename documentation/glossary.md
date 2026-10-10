@@ -9,7 +9,6 @@ date: 2024-01-09T17:14:53+01:00
 
 % TODO:
 % automation trigger
-% condition
 % jinja2
 % state
 % mapping
@@ -73,9 +72,11 @@ Boolean
 :::
 
 :::{glossary}
-Config entry
-: A config entry in {term}`Home Assistant` is a configuration for an {term}`integration <integration>`. It is a technical term from the developer sources leaking into the user space, which may sometimes sound confusing. In short, it is the configuration you see on the integrations page. Most integrations can be set up multiple times (like adding two Hue bridges or multiple ESPHome devices). Each such "integration instance" is a config entry.
-: This is sometimes referred to as "integration instance" or "integration entry".
+Condition
+: A condition decides whether an {term}`automation <automation>` or {term}`script <script>` carries on. A condition between the trigger and the {term}`actions <action>` is a gate on the whole run: when it does not pass, none of the actions happen.
+: Conditions are also used inside a {term}`sequence <sequence>`, in an `if` or a `choose` block. There they only decide which branch runs, and a branch that does not run leaves the rest of the sequence alone.
+: {term}`Integrations <integration>` can provide their own conditions, which is how Spook adds some. Those are named after the integration providing them, like `sun.is_up` or `spook.triggered_by_user`, while the ones built into Home Assistant itself, `state` or `template`, carry no prefix at all.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/conditions/)
 :::
 
 :::{glossary}
@@ -83,12 +84,6 @@ Dashboard
 : A dashboard in {term}`Home Assistant` is a user interface that displays information and control {term}`entities <entity>` in your home. Dashboards are used to create a user interface to control your home, such as turning on the lights or seeing the current temperature. Dashboards are fully customizable and can be created in many different ways. There is a vibrant community that shares their dashboards so that you can get inspiration and ideas for your own dashboard.
 : You might come across the term "Lovelace", which is the codename originally used for dashboards.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/getting-started/concepts-terminology/#dashboards)
-:::
-
-:::{glossary}
-Developer tools
-: The developer tools in {term}`Home Assistant` are a set of tools that can be used to inspect, debug and play with your Home Assistant instance. It may sound very technical, but don't let that scare you. The developer tools can be used to, for example, inspect the state of {term}`entities <entity>`, experiment with {term}`performing action <performing actions>`, or test and debug your {term}`templates <template>`.
-: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/tools/dev-tools/)
 :::
 
 :::{glossary}
@@ -168,6 +163,12 @@ Integration
 a {term}`device <device>` or {term}`action <action>` with your Home Assistant installation. Home Assistant comes with well over a thousand integrations out of the box, but you can also install your own custom integrations.
 : Custom integrations, however, are not supported by the Home Assistant project. They are not reviewed or tested by the Home Assistant development team and thus may negatively impact the stability of your Home Assistant instance.
 : Spook 👻 is a custom integration for Home Assistant that is available via {term}`HACS`.
+:::
+
+:::{glossary}
+Integration entry
+: An integration entry in {term}`Home Assistant` is a configuration for an {term}`integration <integration>`. In short, it is the configuration you see on the integrations page. Most integrations can be set up multiple times (like adding two Hue bridges or multiple ESPHome devices), and each of those is an integration entry.
+: Home Assistant's own developer documentation calls this a "config entry", and you will still see `config_entry_id` when working with it in {term}`YAML`. That is a technical term from the developer sources leaking into the user space, which is why Spook says "integration entry" instead.
 :::
 
 :::{glossary}
@@ -296,9 +297,24 @@ Template test function
 :::
 
 :::{glossary}
+Tools
+: The tools in {term}`Home Assistant` are a set of tools that can be used to inspect, debug and play with your Home Assistant instance. You will find them under **Settings** > **Tools**. It may sound very technical, but don't let that scare you. They can be used to, for example, inspect the state of {term}`entities <entity>`, experiment with {term}`performing action <performing actions>`, or test and debug your {term}`templates <template>`.
+: These were called the "developer tools" and lived in their own place in the sidebar until Home Assistant moved and renamed them in 2026. Plenty of guides out there still call them that.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/tools/dev-tools/)
+:::
+
+:::{glossary}
+Trigger
+: A trigger is what sets an {term}`automation <automation>` going. Something happens, a state changes, a time comes round, an event is fired, and the automation runs. An automation can have several, and any one of them firing is enough.
+: A trigger is not a {term}`condition <condition>`. A trigger is a moment; a condition is a question asked at that moment.
+: {term}`Integrations <integration>` can provide their own triggers, which is how Spook adds some. Newer ones are named after the integration and the thing they fire on, like `sun.sunset` or `spook.sequence`. Older ones are named after the integration alone and take the detail as an option, like `mqtt` or `sun` with an `event`. Both spellings work.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/automation/trigger/)
+:::
+
+:::{glossary}
 YAML
 : The complex definition would be: <wiki:YAML> is a human-readable data-serialization language. But a more simplified explanation would be: It is a structure in which we can write configuration files that are readable for both humans and machines.
-: It is the format {term}`Home Assistant` uses to store its configuration and data. Opinions are divided on whether YAML is a good or bad format or hard or easy to use. The fact remains, is that Home Assistant uses it a lot, and it definitly worth while learning it. YAML itself really isn't that complex, but it does have some quirks that you need to be aware of. The most complex part of using YAML with Home Assistant is not YAML itself but all the things you can do with it in Home Assistant.
+: It is the format {term}`Home Assistant` uses to store its configuration and data. Opinions are divided on whether YAML is a good or bad format or hard or easy to use. The fact remains, is that Home Assistant uses it a lot, and it definitely worth while learning it. YAML itself really isn't that complex, but it does have some quirks that you need to be aware of. The most complex part of using YAML with Home Assistant is not YAML itself but all the things you can do with it in Home Assistant.
 : Don't let it scare you. You'll get the hang of it quickly.
 : [Read a tutorial on YAML](https://spacelift.io/blog/yaml)
 :::

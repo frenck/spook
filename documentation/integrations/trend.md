@@ -34,7 +34,7 @@ Spook inspects all trend sensors created to find source entities they meter that
 
 To resolve the raised issue, you can either remove the trend helper or restore the referenced source entity. Spook will automatically remove the repair issue once the issue is fixed.
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

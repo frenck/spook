@@ -35,6 +35,10 @@ if TYPE_CHECKING:
         "{% if true %}on{% endif %}",
         "prefix {{ x }} suffix",
         "{% set x = 1 %}{{ x }}",
+        # A comment on its own is still a template, and Home Assistant will
+        # take one as a shorthand condition. #1520.
+        "{# just a comment #}",
+        "{# leading comment #}{{ x }}",
     ],
 )
 def test_is_template_string_recognizes_jinja(value: str) -> None:
@@ -49,6 +53,7 @@ def test_is_template_string_recognizes_jinja(value: str) -> None:
         "light.kitchen",
         "{{ unmatched",
         "{% unmatched",
+        "{# unmatched",
         "{ not jinja }",
     ],
 )
@@ -196,9 +201,57 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
             {"light.kitchen"},
         ),
         ("{{ 'light.' ~ room }}", set()),
+        # Glued to more with `+`, or to a literal right next to it.
+        ("{{ states('sensor.room' + suffix) }}", set()),
+        ("{{ states(prefix + 'sensor.room') }}", set()),
+        ("{{ states('sensor.room' '_bedroom') }}", set()),
+        # Adding up two lookups is no gluing.
+        (
+            "{{ states('sensor.a') | float + states('sensor.b') | float }}",
+            {"sensor.a", "sensor.b"},
+        ),
+        ("{{ ['light.a'] + ['light.b'] }}", {"light.a", "light.b"}),
         ("{{ states('unknown_domain.foo') }}", set()),
         ("{{ states('light.') }}", set()),
         ("{{ 'light.turn_on' }}", set()),
+        # A state lookup tries the entity ID in lower case too, so a mixed
+        # case one names the lower case entity.
+        ("{{ states('sensor.Pump_Interval') }}", {"sensor.pump_interval"}),
+        ("{{ is_state('Light.Kitchen', 'on') }}", {"light.kitchen"}),
+        ("{{ state_attr( 'Sensor.Pump' , 'x') }}", {"sensor.pump"}),
+        ("{{ expand('Light.Kitchen') }}", {"light.kitchen"}),
+        ("{{ states.sensor.Pump_Interval.state }}", {"sensor.pump_interval"}),
+        ("{{ state_translated('Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ has_value('Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ is_state_attr('Light.Kitchen', 'mode', 'x') }}", {"light.kitchen"}),
+        ("{{ closest('Sensor.Phone') }}", {"sensor.phone"}),
+        # A registry lookup does not, Jinja's own names never ignore case, and
+        # mixed case text is just text.
+        ("{{ device_id('sensor.Pump_Interval') }}", set()),
+        ("{{ distance('Sensor.Phone') }}", set()),
+        ("{{ STATES('sensor.Pump') }}", set()),
+        ("{{ States.sensor.Pump.state }}", set()),
+        ("{{ 'Sensor.Status' }}", set()),
+        # Nor a lookup written in a string, or in the text around expressions.
+        ("{{ \"states('Sensor.Pump')\" }}", set()),
+        ("text states('Sensor.Pump') {{ 1 }}", set()),
+        # Nor the argument of a filter or a test, which is not the entity.
+        ("{{ 'sensor.source' | state_attr('sensor.Label') }}", {"sensor.source"}),
+        ("{{ 'sensor.source' is is_state('Sensor.Ready') }}", {"sensor.source"}),
+        # Nor a piece of an argument.
+        ("{{ states('sensor.Pump' + '_interval') }}", set()),
+        ("{{ states('sensor.Pump' '_interval') }}", set()),
+        # Nor a call through something, with or without spaces.
+        ("{{ obj . states('Sensor.Absent') }}", set()),
+        ("{% raw %}{{ states('Sensor.Example') }}{% endraw %}", set()),
+        # Nor a name that only ends in one, or one the template defines.
+        ("{{ my_states('Sensor.Pump') }}", set()),
+        ("{{ obj.states('Sensor.Pump') }}", set()),
+        ("{{ x.states.sensor.Pump.state }}", set()),
+        (
+            "{% macro states(x) %}{% endmacro %}{{ states('Sensor.Pump') }}",
+            set(),
+        ),
     ],
 )
 def test_extract_entities_from_template_regex(
@@ -223,7 +276,6 @@ async def test_filter_template_entities_ignores_ignored_domains(
     unknown = await async_filter_known_entity_ids_with_templates(
         hass,
         {
-            "{{ states('scene.goodnight') }}",
             "{{ states('group.family') }}",
             "{{ states('device_tracker.phone') }}",
             "persistent_notification.update",
@@ -233,6 +285,24 @@ async def test_filter_template_entities_ignores_ignored_domains(
     )
 
     assert unknown == {"light.missing"}
+
+
+async def test_filter_template_entities_reports_missing_scenes(
+    hass: HomeAssistant,
+) -> None:
+    """Test scenes are checked rather than ignored wholesale.
+
+    Scenes used to sit in the ignored domains because `scene.create` builds
+    them at runtime. Those are found by scanning configurations now, so a
+    scene nothing creates is a genuinely missing one.
+    """
+    unknown = await async_filter_known_entity_ids_with_templates(
+        hass,
+        {"{{ states('scene.goodnight') }}"},
+        known_entity_ids=set(),
+    )
+
+    assert unknown == {"scene.goodnight"}
 
 
 async def test_extract_entities_from_config_reuses_known_services(
@@ -298,18 +368,17 @@ async def test_extract_entities_from_config_reuses_duplicate_template_results(
     assert calls == 1
 
 
-async def test_filter_plain_entity_ids_does_not_get_services(
-    hass: HomeAssistant,
+def _counting_services(
     monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Test plain entity filtering avoids service lookups."""
-    calls = 0
+    services: set[str],
+) -> list[int]:
+    """Count service lookups, so the cost of filtering is observable."""
+    calls = [0]
 
     def async_get_all_services(_: HomeAssistant) -> set[str]:
         """Return registered services."""
-        nonlocal calls
-        calls += 1
-        return {"light.turn_on"}
+        calls[0] += 1
+        return services
 
     monkeypatch.setattr(
         template_extraction,
@@ -317,12 +386,49 @@ async def test_filter_plain_entity_ids_does_not_get_services(
         async_get_all_services,
     )
 
+    return calls
+
+
+async def test_filter_plain_entity_ids_does_not_get_services_when_all_known(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a configuration with nothing wrong pays nothing for the check.
+
+    Action names are only subtracted from what survived the entity check, so
+    there is nothing to look up when everything is known. That is the case on
+    almost every inspection.
+    """
+    calls = _counting_services(monkeypatch, {"light.turn_on"})
+
+    assert (
+        await async_filter_known_entity_ids_with_templates(
+            hass,
+            {"sensor.known", "light.known"},
+            known_entity_ids={"sensor.known", "light.known"},
+        )
+        == set()
+    )
+    assert calls[0] == 0
+
+
+async def test_filter_plain_entity_ids_never_builds_the_service_set(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test findings are checked against the registry, not against a built set.
+
+    Enumerating every action in the instance costs more than the handful of
+    lookups actually needed, and this runs once per inspected item.
+    """
+    calls = _counting_services(monkeypatch, {"light.turn_on"})
+
     assert await async_filter_known_entity_ids_with_templates(
         hass,
-        {"sensor.missing", "light.unknown"},
+        {"sensor.missing", "light.unknown", "binary_sensor.gone"},
         known_entity_ids=set(),
-    ) == {"sensor.missing", "light.unknown"}
-    assert calls == 0
+    ) == {"sensor.missing", "light.unknown", "binary_sensor.gone"}
+    assert calls[0] == 0
 
 
 async def test_time_date_entities_are_known(

@@ -8,14 +8,17 @@ from homeassistant.components import automation
 from homeassistant.helpers import area_registry as ar
 
 from ....entity_filtering import async_filter_known_area_ids, async_get_all_area_ids
-from ....reference_extraction import extract_targets_from_config
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from ....reference_extraction import (
+    extract_targets_from_config,
+    only_in_disabled_steps,
+)
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced areas in automations."""
 
     domain = automation.DOMAIN
@@ -45,6 +48,10 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         # references nested in some step types, like repeat sequences.
         if raw_config := getattr(entity, "raw_config", None):
             area_ids.update(extract_targets_from_config(raw_config).area_ids)
+            # A disabled step does nothing, so what only it names is left out.
+            area_ids -= only_in_disabled_steps(
+                raw_config, lambda found: extract_targets_from_config(found).area_ids
+            )
 
         return async_filter_known_area_ids(
             self.hass,

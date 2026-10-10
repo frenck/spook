@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -11,7 +12,9 @@ import yaml
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.repairs import AbstractSpookRepairBase
-from custom_components.spook.services import AbstractSpookServiceBase
+from custom_components.spook.services import (
+    AbstractSpookServiceBase,
+)
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -79,6 +82,34 @@ def test_repair_modules_expose_spook_repair(module_file: Path) -> None:
     assert hasattr(module, "SpookRepair")
     assert isinstance(module.SpookRepair, type)
     assert issubclass(module.SpookRepair, AbstractSpookRepairBase)
+
+
+def test_services_wait_for_their_domain() -> None:
+    """Every service on somebody else's domain is waited for.
+
+    Every kind of Spook service registers only once its domain is set up.
+    Most wait for a domain that turns up later, but naming it in the manifest
+    is what has it there from the start, so the action is in place before
+    anything calls it. One on Spook's own platforms does not wait at all.
+    """
+    manifest = json.loads((SPOOK_ROOT / "manifest.json").read_text())
+    waited_for = {
+        *manifest["dependencies"],
+        *manifest["after_dependencies"],
+        DOMAIN,
+    }
+
+    unwaited = set()
+    for module_file in SERVICE_MODULES:
+        service_class = _import_module(module_file).SpookService
+
+        if service_class.domain not in waited_for:
+            unwaited.add(service_class.domain)
+
+    assert not unwaited, (
+        f"Services for {sorted(unwaited)}, which the manifest does not wait "
+        f"for. Spook may be set up first and skip them for good."
+    )
 
 
 def test_service_modules_have_service_descriptions() -> None:

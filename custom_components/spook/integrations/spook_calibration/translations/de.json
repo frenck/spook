@@ -1,0 +1,37 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Quell-Entität",
+                    "name": "Name",
+                    "offset": "Offset",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Wird zum Wert der Quelle addiert. Ein Sensor, der 1,5 Grad zu hoch misst, bekommt -1,5. In der Einheit, in der die Quelle misst.",
+                    "factor": "Der Wert der Quelle wird zuerst damit multipliziert. Lass ihn auf 1, um nur den Offset zu addieren."
+                },
+                "description": "Dieser Helfer korrigiert einen Sensor, der danebenliegt: eine Temperatur ein Grad zu hoch, eine Luftfeuchtigkeit ein paar Prozent zu niedrig. Er zeigt den Wert der Quelle mal den Faktor, plus den Offset.",
+                "title": "Kalibrierung 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Quell-Entität",
+                    "offset": "Offset",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Wird zum Wert der Quelle addiert. Ein Sensor, der 1,5 Grad zu hoch misst, bekommt -1,5. In der Einheit, in der die Quelle misst.",
+                    "factor": "Der Wert der Quelle wird zuerst damit multipliziert. Lass ihn auf 1, um nur den Offset zu addieren."
+                },
+                "title": "Kalibrierung 👻"
+            }
+        }
+    },
+    "title": "Kalibrierung 👻"
+}

@@ -7,9 +7,14 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.helpers import area_registry as ar, config_validation as cv
+from homeassistant.helpers import (
+    area_registry as ar,
+    config_validation as cv,
+)
 
+from ....errors import area_not_found
 from ....services import AbstractSpookAdminService
+from ..labels import async_check_labels_exist
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -27,9 +32,20 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
+        async_check_labels_exist(self.hass, call.data["label_id"])
+
         area_registry = ar.async_get(self.hass)
+
+        # Everything is looked up before anything is written. A typo in the
+        # last one should not leave the first ones changed behind an error.
+        updates: dict[str, set[str]] = {}
         for area_id in call.data["area_id"]:
-            if area_entry := area_registry.async_get_area(area_id):
-                labels = area_entry.labels.copy()
-                labels.difference_update(call.data["label_id"])
-                area_registry.async_update(area_id, labels=labels)
+            if (area_entry := area_registry.async_get_area(area_id)) is None:
+                raise area_not_found(area_id)
+
+            labels = area_entry.labels.copy()
+            labels.difference_update(call.data["label_id"])
+            updates[area_id] = labels
+
+        for area_id, labels in updates.items():
+            area_registry.async_update(area_id, labels=labels)

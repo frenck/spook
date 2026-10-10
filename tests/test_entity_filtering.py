@@ -6,21 +6,24 @@ from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
 )
 
 from custom_components.spook.entity_filtering import (
+    async_drop_existing_action_names,
     async_filter_known_device_ids,
+    async_filter_known_entity_ids,
     async_filter_known_services,
     async_find_services_in_sequence,
     async_get_all_device_ids,
 )
+from tests.device_registry_helpers import simulate_composite_split
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    import pytest
 
 
 def test_find_services_skips_disabled_nested_steps() -> None:
@@ -68,33 +71,6 @@ def test_find_services_keeps_enabled_none_steps() -> None:
     assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
 
 
-async def test_templated_action_names_are_not_reported_unknown(
-    hass: HomeAssistant,
-) -> None:
-    """Test templated action names never surface as unknown services.
-
-    The service reference repairs walk validated script configs, where
-    ``cv.SERVICE_SCHEMA`` turns a templated action name into a ``Template``
-    object. The known-services filter drops non-string values, so templated
-    names must never be reported as unknown.
-
-    Note for future raw-config walkers: in raw (unvalidated) configs a
-    templated action name is a plain string and needs an explicit
-    ``is_template_string`` skip instead.
-    """
-    sequence = cv.SCRIPT_SCHEMA(
-        [
-            {"action": "{{ 'notify.' ~ who }}"},
-            {"service": "{{ 'light.turn_' ~ toggle_state }}"},
-            {"action": "notify.ghost"},
-        ]
-    )
-
-    found = async_find_services_in_sequence(sequence)
-
-    assert async_filter_known_services(hass, services=found) == {"notify.ghost"}
-
-
 def test_find_services_stops_at_bare_condition() -> None:
     """Test steps after a bare condition step are not reported."""
     sequence = [
@@ -104,6 +80,18 @@ def test_find_services_stops_at_bare_condition() -> None:
     ]
 
     assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
+
+
+def test_find_usages_looks_past_a_bare_condition() -> None:
+    """Test a search for where an action is named is not gated by a condition."""
+    sequence = [
+        {"condition": "template", "value_template": "{{ is_state('a.b', 'on') }}"},
+        {"action": "zha.issue_zigbee_cluster_command"},
+    ]
+
+    assert async_find_services_in_sequence(sequence, include_disabled=True) == {
+        "zha.issue_zigbee_cluster_command"
+    }
 
 
 def test_find_services_ignores_disabled_bare_condition() -> None:
@@ -134,6 +122,73 @@ def test_find_services_condition_gates_only_its_own_sequence() -> None:
     assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
 
 
+async def test_templated_action_names_are_not_reported_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Test templated action names never surface as unknown services.
+
+    The service reference repairs walk validated script configs, where
+    ``cv.SERVICE_SCHEMA`` turns a templated action name into a ``Template``
+    object. The known-services filter drops non-string values, so templated
+    names must never be reported as unknown.
+
+    Note for future raw-config walkers: in raw (unvalidated) configs a
+    templated action name is a plain string and needs an explicit
+    ``is_template_string`` skip instead.
+    """
+    sequence = cv.SCRIPT_SCHEMA(
+        [
+            {"action": "{{ 'notify.' ~ who }}"},
+            {"service": "{{ 'light.turn_' ~ toggle_state }}"},
+            {"action": "notify.ghost"},
+        ]
+    )
+
+    found = async_find_services_in_sequence(sequence)
+
+    assert async_filter_known_services(hass, services=found) == {"notify.ghost"}
+
+
+def test_actions_of_a_disabled_integration_are_not_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Switched off on purpose is not gone.
+
+    Disabling an integration takes its actions with it, and an automation
+    calling one is not broken: it is waiting for the integration to come back.
+    """
+    MockConfigEntry(domain="webostv", disabled_by=ConfigEntryDisabler.USER).add_to_hass(
+        hass
+    )
+
+    assert async_filter_known_services(
+        hass, services={"webostv.button", "notify.ghost"}
+    ) == {"notify.ghost"}
+
+
+def test_one_enabled_entry_keeps_the_integration_counted(
+    hass: HomeAssistant,
+) -> None:
+    """With another entry still on, a missing action is really missing."""
+    MockConfigEntry(domain="webostv", disabled_by=ConfigEntryDisabler.USER).add_to_hass(
+        hass
+    )
+    MockConfigEntry(domain="webostv").add_to_hass(hass)
+
+    assert async_filter_known_services(hass, services={"webostv.button"}) == {
+        "webostv.button"
+    }
+
+
+def test_an_integration_without_entries_is_not_disabled(
+    hass: HomeAssistant,
+) -> None:
+    """No config entries at all is not a choice someone made."""
+    assert async_filter_known_services(hass, services={"webostv.button"}) == {
+        "webostv.button"
+    }
+
+
 def test_registered_device_ids_are_known(
     hass: HomeAssistant,
     device_registry: dr.DeviceRegistry,
@@ -149,14 +204,13 @@ def test_registered_device_ids_are_known(
     assert device.id in async_get_all_device_ids(hass)
     assert async_filter_known_device_ids(
         hass,
-        device_ids={device.id, "not-a-device"},
-    ) == {"not-a-device"}
+        device_ids={device.id, "052b668647129b431b1f10448e96e8ec"},
+    ) == {"052b668647129b431b1f10448e96e8ec"}
 
 
 def test_composite_device_ids_are_known(
     hass: HomeAssistant,
     device_registry: dr.DeviceRegistry,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test pre-split device IDs are not reported as unknown.
 
@@ -170,13 +224,62 @@ def test_composite_device_ids_are_known(
         config_entry_id=entry.entry_id,
         identifiers={("test", "split-device")},
     )
-    # Stubbed so the test also runs on cores that predate the device split.
-    monkeypatch.setattr(
-        device_registry.devices,
-        "get_composite_splits",
-        lambda: {"pre-split-id": [split]},
-        raising=False,
-    )
+    simulate_composite_split(device_registry, split, "pre-split-id")
 
     assert "pre-split-id" in async_get_all_device_ids(hass)
     assert async_filter_known_device_ids(hass, device_ids={"pre-split-id"}) == set()
+
+
+async def test_action_names_are_not_unknown_entities(hass: HomeAssistant) -> None:
+    """Test a name belonging to an existing action is not a missing entity.
+
+    A legacy notify group registers `notify.my_phone` as an action and no
+    entity at all, so a reference to it is not dangling. Reporting it sends
+    someone looking for an entity that was never meant to exist.
+    """
+    hass.services.async_register("notify", "my_phone", lambda _call: None)
+
+    unknown = async_filter_known_entity_ids(
+        hass,
+        {"notify.my_phone", "light.removed"},
+        known_entity_ids=set(),
+    )
+
+    assert unknown == {"light.removed"}
+
+
+async def test_action_names_are_only_looked_up_when_needed(
+    hass: HomeAssistant,
+) -> None:
+    """Test nothing is looked up when every reference is known.
+
+    Almost every inspection finds nothing wrong, and that case should not pay
+    for the action lookup at all.
+    """
+    hass.states.async_set("light.kept", "on")
+
+    assert (
+        async_filter_known_entity_ids(
+            hass,
+            {"light.kept"},
+            known_entity_ids={"light.kept"},
+        )
+        == set()
+    )
+
+
+async def test_a_malformed_candidate_does_not_abort_the_check(
+    hass: HomeAssistant,
+) -> None:
+    """Test a name without a domain is handled rather than raised on.
+
+    An exception here would take down the whole inspection, and not every
+    caller has already validated the shape of what it collected.
+    """
+    assert async_filter_known_entity_ids(
+        hass,
+        {"light.removed"},
+        known_entity_ids=set(),
+    ) == {"light.removed"}
+
+    assert async_drop_existing_action_names(hass, {"nodomain"}) == {"nodomain"}

@@ -4,22 +4,25 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
+from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
+from custom_components.spook.ectoplasms.group.repairs import unknown_members
 from custom_components.spook.ectoplasms.group.repairs.unknown_members import SpookRepair
 from custom_components.spook.repairs import (
     GroupUnknownMembersFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    import pytest
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
 _ISSUE_ID = "group_unknown_members_light.living"
@@ -43,7 +46,7 @@ async def test_unknown_member_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.is_fixable
     assert issue.data
@@ -62,7 +65,7 @@ async def test_group_with_known_members_is_not_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_fix_flow_remove_prunes_ui_group(
@@ -87,7 +90,12 @@ async def test_fix_flow_remove_prunes_ui_group(
     )
     assert isinstance(flow, GroupUnknownMembersFixFlow)
     flow.hass = hass
-    flow.data = {"group_entity_id": reg.entity_id, "group": "Living", "entities": "x"}
+    flow.data = {
+        "group_entity_id": reg.entity_id,
+        "group": "Living",
+        "entities": "x",
+        "group_unknown_entity_ids": "light.gone",
+    }
 
     # The menu names the group and its entity id.
     menu = await flow.async_step_init()
@@ -120,3 +128,184 @@ async def test_fix_flow_remove_yaml_group_aborts(
 
     assert result["type"] == FlowResultType.ABORT
     assert result["reason"] == "not_editable"
+
+
+async def test_remove_reloads_the_running_group(hass: HomeAssistant) -> None:
+    """Test the group that is running loses the member, not just the options.
+
+    Runs the real group integration rather than a stand-in, because the whole
+    question is whether the entity Home Assistant is serving changed. Nothing
+    in the group integration listens for its own entry changing, so writing
+    the options and stopping there leaves the member in the group until a
+    restart, while the button says it is done.
+    """
+    hass.states.async_set("light.real", "on")
+    assert await async_setup_component(hass, "group", {})
+
+    entry = MockConfigEntry(
+        domain="group",
+        title="Hallway",
+        options={
+            "group_type": "light",
+            "name": "Hallway",
+            "entities": ["light.real", "light.gone"],
+            "hide_members": False,
+        },
+    )
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert hass.states.get("light.hallway").attributes["entity_id"] == [
+        "light.real",
+        "light.gone",
+    ]
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "group_entity_id": "light.hallway",
+        "group": "Hallway",
+        "entities": "- `light.gone`",
+        "group_unknown_entity_ids": "light.gone",
+    }
+    result = await flow.async_step_remove()
+    await hass.async_block_till_done()
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert entry.options["entities"] == ["light.real"]
+    assert hass.states.get("light.hallway").attributes["entity_id"] == ["light.real"]
+
+
+async def test_only_the_members_the_issue_named_are_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a member missing for a moment when the button is pressed stays.
+
+    The issue named one member. Another one being away right then, its
+    integration reloading say, is not one somebody agreed to drop, and
+    dropping it would be for good.
+    """
+    hass.states.async_set("light.known", "on")
+    entry = MockConfigEntry(
+        domain="group",
+        options={
+            "entities": ["light.known", "light.gone", "light.away"],
+            "group_type": "light",
+        },
+    )
+    entry.add_to_hass(hass)
+    reg = entity_registry.async_get_or_create(
+        "light", "group", "living", config_entry=entry
+    )
+    hass.states.async_set("light.away", "on")
+    _install_group(hass, reg.entity_id, ["light.known", "light.gone", "light.away"])
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, f"group_unknown_members_{reg.entity_id}")
+    assert issue
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    hass.states.async_remove("light.away")
+    await flow.async_step_remove()
+
+    assert entry.options["entities"] == ["light.known", "light.away"]
+
+
+async def test_a_member_that_came_back_is_not_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test nothing is pruned when what the issue named is back."""
+    hass.states.async_set("light.known", "on")
+    hass.states.async_set("light.gone", "on")
+    entry = MockConfigEntry(
+        domain="group",
+        options={"entities": ["light.known", "light.gone"], "group_type": "light"},
+    )
+    entry.add_to_hass(hass)
+    reg = entity_registry.async_get_or_create(
+        "light", "group", "living", config_entry=entry
+    )
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "group_entity_id": reg.entity_id,
+        "group_unknown_entity_ids": "light.gone",
+    }
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entities"] == ["light.known", "light.gone"]
+
+
+async def test_the_fix_asks_what_is_missing_the_way_the_repair_does(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the fix does not drop what the repair would never call missing.
+
+    The repair leaves device trackers alone: one without a state is a phone
+    that has not reported in yet, not a ghost. A fix with a simpler idea of
+    "missing" would drop it from the group all the same.
+    """
+    hass.states.async_set("light.known", "on")
+    entry = MockConfigEntry(
+        domain="group",
+        options={
+            "entities": ["light.known", "device_tracker.phone"],
+            "group_type": "light",
+        },
+    )
+    entry.add_to_hass(hass)
+    reg = entity_registry.async_get_or_create(
+        "light", "group", "living", config_entry=entry
+    )
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "group_entity_id": reg.entity_id,
+        "group_unknown_entity_ids": "device_tracker.phone",
+    }
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entities"] == ["light.known", "device_tracker.phone"]
+
+
+async def test_a_group_added_mid_round_does_not_end_it(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the round survives a group arriving while it describes one.
+
+    Describing what is missing can hand the event loop a turn, and a group
+    set up in that turn changed the very dictionary being walked.
+    """
+    _install_group(hass, "light.living", ["light.gone"])
+    entities = hass.data[DATA_ENTITY_PLATFORM]["group"][0].entities
+    original = unknown_members.async_describe_unknown_entities
+
+    async def _describe_while_a_group_arrives(*args: Any, **kwargs: Any) -> str:
+        entities["light.new"] = SimpleNamespace(
+            entity_id="light.new", name="New", _entity_ids=[]
+        )
+        return await original(*args, **kwargs)
+
+    monkeypatch.setattr(
+        unknown_members,
+        "async_describe_unknown_entities",
+        _describe_while_a_group_arrives,
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID)

@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from homeassistant.components.automation import automations_with_area
-from homeassistant.components.script import scripts_with_area
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.helpers import (
     area_registry as ar,
@@ -15,6 +13,8 @@ from homeassistant.helpers import (
 from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
+from ....reference_extraction import async_collect_mentioned_strings
+from ....registry_usage import async_area_in_use
 from ....repairs import AbstractSpookRepair
 
 # Give a freshly created area time to be filled before nagging about it.
@@ -46,9 +46,9 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
+        mentioned = async_collect_mentioned_strings(self.hass)
+
         area_registry = ar.async_get(self.hass)
-        device_registry = dr.async_get(self.hass)
-        entity_registry = er.async_get(self.hass)
 
         cutoff = dt_util.utcnow() - _MINIMUM_AGE
         for area in area_registry.async_list_areas():
@@ -57,13 +57,7 @@ class SpookRepair(AbstractSpookRepair):
             if area.created_at > cutoff:
                 # Just created; leave time to assign devices and entities.
                 continue
-            if dr.async_entries_for_area(device_registry, area.id):
-                continue
-            if er.async_entries_for_area(entity_registry, area.id):
-                continue
-            if automations_with_area(self.hass, area.id):
-                continue
-            if scripts_with_area(self.hass, area.id):
+            if async_area_in_use(self.hass, area.id, mentioned):
                 continue
 
             self.async_create_issue(

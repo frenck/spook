@@ -12,11 +12,11 @@ from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs.unknown_helper_source_references import (
     SpookRepair,
 )
 import pytest
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -91,9 +91,8 @@ async def test_unknown_source_repair_smoke(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"unknown_helper_source_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"unknown_helper_source_references_{entry.entry_id}"
     )
     assert issue, f"No issue was created for the {helper_domain} ghost source"
     assert issue.translation_placeholders

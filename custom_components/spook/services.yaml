@@ -20,6 +20,347 @@ blueprint_import:
       selector:
         text:
 
+automation_snooze:
+  name: Snooze 👻
+  description: >-
+    Turns an automation off for a while, and turns it back on when the time is
+    up. It survives a restart of Home Assistant, so a snooze does not quietly
+    become a disable.
+  target:
+    entity:
+      domain: automation
+  fields:
+    duration:
+      name: Duration
+      description: How long the automation stays off.
+      required: true
+      example: "01:00:00"
+      selector:
+        duration:
+
+automation_turn_on_for:
+  name: Turn on for 👻
+  description: >-
+    Turns an automation on for a while, and turns it back off when the time is
+    up. It survives a restart of Home Assistant, so "just for tonight" does not
+    quietly become forever.
+  target:
+    entity:
+      domain: automation
+  fields:
+    duration:
+      name: Duration
+      description: How long the automation stays on.
+      required: true
+      example: "01:00:00"
+      selector:
+        duration:
+
+light_set_brightness:
+  name: Set brightness 👻
+  description: >-
+    Sets the brightness of lights that are already on, and leaves the ones
+    that are off alone. Groups are adjusted light by light rather than by
+    their average.
+  target:
+    entity:
+      domain: light
+  fields:
+    brightness_pct:
+      name: Brightness
+      description: The brightness to set, as a percentage.
+      required: true
+      example: 50
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_increase_brightness:
+  name: Increase brightness 👻
+  description: >-
+    Turns up the lights that are already on, and leaves the ones that are off
+    alone. Each light steps from its own level, so a group keeps its shape
+    instead of levelling out.
+  target:
+    entity:
+      domain: light
+  fields:
+    step_pct:
+      name: Step
+      description: How much brighter to go, as a percentage.
+      required: true
+      example: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_decrease_brightness:
+  name: Decrease brightness 👻
+  description: >-
+    Turns down the lights that are already on, stopping at the dimmest they go
+    rather than switching them off. Each light steps from its own level.
+  target:
+    entity:
+      domain: light
+  fields:
+    step_pct:
+      name: Step
+      description: How much dimmer to go, as a percentage.
+      required: true
+      example: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_set_color:
+  name: Set color 👻
+  description: >-
+    Sets the color of lights that are already on, and leaves alone the ones
+    that are off or cannot do color.
+  target:
+    entity:
+      domain: light
+  fields:
+    rgb_color:
+      name: Color
+      description: The color to set.
+      required: true
+      example: "[255, 100, 100]"
+      selector:
+        color_rgb:
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_set_color_temperature:
+  name: Set color temperature 👻
+  description: >-
+    Sets the color temperature of lights that are already on, each within the
+    range it can actually reach.
+  target:
+    entity:
+      domain: light
+  fields:
+    kelvin:
+      name: Color temperature
+      description: The color temperature to set.
+      required: true
+      example: 2700
+      selector:
+        color_temp:
+          unit: kelvin
+          min: 2000
+          max: 6500
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_set_effect:
+  name: Set effect 👻
+  description: >-
+    Sets an effect on the lights that are already on and actually have it.
+    Effect names differ per manufacturer, so a room is usually a mix.
+  target:
+    entity:
+      domain: light
+  fields:
+    effect:
+      name: Effect
+      description: The name of the effect to set.
+      required: true
+      example: Colorloop
+      selector:
+        text:
+
+calendar_delete_event:
+  name: Delete event 👻
+  description: >-
+    Deletes events from a calendar, found by their title or uid in a stretch
+    of time.
+  target:
+    entity:
+      domain: calendar
+      supported_features:
+        - calendar.CalendarEntityFeature.DELETE_EVENT
+  fields:
+    summary:
+      required: false
+      example: Dentist
+      selector:
+        text:
+    uid:
+      required: false
+      selector:
+        text:
+    start_date_time:
+      required: false
+      example: "2026-10-04 08:00:00"
+      selector:
+        datetime:
+    end_date_time:
+      required: false
+      example: "2026-10-04 20:00:00"
+      selector:
+        datetime:
+    duration:
+      required: false
+      selector:
+        duration:
+    whole_series:
+      required: false
+      default: false
+      selector:
+        boolean:
+
+calendar_update_event:
+  name: Update event 👻
+  description: >-
+    Changes events in a calendar, found by their title or uid in a stretch of
+    time.
+  target:
+    entity:
+      domain: calendar
+      supported_features:
+        - calendar.CalendarEntityFeature.UPDATE_EVENT
+  fields:
+    summary:
+      required: false
+      example: Dentist
+      selector:
+        text:
+    uid:
+      required: false
+      selector:
+        text:
+    start_date_time:
+      required: false
+      example: "2026-10-04 08:00:00"
+      selector:
+        datetime:
+    end_date_time:
+      required: false
+      example: "2026-10-04 20:00:00"
+      selector:
+        datetime:
+    duration:
+      required: false
+      selector:
+        duration:
+    new_summary:
+      required: false
+      example: Orthodontist
+      selector:
+        text:
+    description:
+      required: false
+      selector:
+        text:
+          multiline: true
+    location:
+      required: false
+      selector:
+        text:
+    new_start:
+      required: false
+      selector:
+        datetime:
+    new_end:
+      required: false
+      selector:
+        datetime:
+    shift:
+      required: false
+      selector:
+        duration:
+          allow_negative: true
+
+climate_increase_temperature:
+  name: Increase temperature 👻
+  description: >-
+    Turns a thermostat's setpoint up a step, both setpoints for one that heats and cools.
+  target:
+    entity:
+      domain: climate
+      supported_features:
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+  fields:
+    step:
+      required: false
+      example: 0.5
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
+climate_decrease_temperature:
+  name: Decrease temperature 👻
+  description: >-
+    Turns a thermostat's setpoint down a step, both setpoints for one that heats and cools.
+  target:
+    entity:
+      domain: climate
+      supported_features:
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE
+        - climate.ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+  fields:
+    step:
+      required: false
+      example: 0.5
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-
@@ -186,26 +527,46 @@ homeassistant_delete_area:
 homeassistant_disable_config_entry:
   name: Disable an integration 👻
   description: >-
-    Disables an integration configuration entry.
+    Disables integration entries, by entry or every entry of an integration.
   fields:
     config_entry_id:
-      name: Config entry
-      description: The integration configuration entry to disable.
-      required: true
+      name: Integration entry
+      description: The integration entry to disable.
+      required: false
       selector:
         config_entry:
+    domain:
+      name: Integration
+      description: >-
+        Disable every entry of these integrations, the ones added later
+        included.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
 
 homeassistant_enable_config_entry:
   name: Enable an integration 👻
   description: >-
-    Enables an integration configuration entry.
+    Enables integration entries, by entry or every entry of an integration.
   fields:
     config_entry_id:
-      name: Config entry
-      description: The integration configuration entry to enable.
-      required: true
+      name: Integration entry
+      description: The integration entry to enable.
+      required: false
       selector:
         config_entry:
+    domain:
+      name: Integration
+      description: >-
+        Enable every entry of these integrations, the ones added later
+        included.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
 
 homeassistant_disable_device:
   name: Disable a device 👻
@@ -302,6 +663,33 @@ homeassistant_enable_entity:
         entity:
           multiple: true
 
+homeassistant_expose_entity:
+  name: Expose an entity to assistants 👻
+  description: >-
+    Exposes an entity (or entities) to voice assistants.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to expose.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    assistants:
+      name: Assistants
+      description: The assistant(s) to apply this to.
+      required: true
+      selector:
+        select:
+          multiple: true
+          options:
+            - label: Alexa
+              value: cloud.alexa
+            - label: Google Assistant
+              value: cloud.google_assistant
+            - label: Assist
+              value: conversation
+
 homeassistant_hide_entity:
   name: Hide an entity 👻
   description: >-
@@ -333,6 +721,115 @@ homeassistant_rename_entity:
       required: true
       selector:
         text:
+
+homeassistant_set_entity_icon:
+  name: Set the icon of an entity 👻
+  description: >-
+    Sets the icon of an entity (or entities) on the fly. Set it to null to go
+    back to the icon the integration gives it.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to set the icon of.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    icon:
+      name: Icon
+      description: The new icon, or null for the integration's own icon.
+      required: true
+      selector:
+        icon:
+
+homeassistant_add_alias_to_entity:
+  name: Add an alias to an entity 👻
+  description: >-
+    Adds one or more aliases to an entity (or entities), which voice
+    assistants can call it by.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to add the alias(es) to.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    alias:
+      name: Alias
+      description: The alias(es) to add.
+      required: true
+      selector:
+        text:
+          multiple: true
+
+homeassistant_remove_alias_from_entity:
+  name: Remove an alias from an entity 👻
+  description: >-
+    Removes one or more aliases from an entity (or entities).
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to remove the alias(es) from.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    alias:
+      name: Alias
+      description: The alias(es) to remove.
+      required: true
+      selector:
+        text:
+          multiple: true
+
+homeassistant_set_entity_aliases:
+  name: Set aliases for an entity 👻
+  description: >-
+    Replaces the aliases of an entity (or entities). Whether the entity's own
+    name counts as an alias stays as it was.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to set the aliases of.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    aliases:
+      name: Aliases
+      description: The aliases to set.
+      required: true
+      selector:
+        text:
+          multiple: true
+
+homeassistant_unexpose_entity:
+  name: Stop exposing an entity to assistants 👻
+  description: >-
+    Stops exposing an entity (or entities) to voice assistants.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to stop exposing.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    assistants:
+      name: Assistants
+      description: The assistant(s) to apply this to.
+      required: true
+      selector:
+        select:
+          multiple: true
+          options:
+            - label: Alexa
+              value: cloud.alexa
+            - label: Google Assistant
+              value: cloud.google_assistant
+            - label: Assist
+              value: conversation
 
 homeassistant_unhide_entity:
   name: Unhide an entity 👻
@@ -525,13 +1022,13 @@ homeassistant_create_label:
             - label: Purple
               value: purple
             - label: Deep purple
-              value: deep_purple
+              value: deep-purple
             - label: Indigo
               value: indigo
             - label: Blue
               value: blue
             - label: Light blue
-              value: light_blue
+              value: light-blue
             - label: Cyan
               value: cyan
             - label: Teal
@@ -539,21 +1036,120 @@ homeassistant_create_label:
             - label: Green
               value: green
             - label: Light green
-              value: light_green
+              value: light-green
             - label: Lime
               value: lime
             - label: Yellow
               value: yellow
+            - label: Amber
+              value: amber
             - label: Orange
               value: orange
             - label: Deep orange
-              value: deep_orange
+              value: deep-orange
             - label: Brown
               value: brown
+            - label: Light grey
+              value: light-grey
             - label: Grey
               value: grey
+            - label: Dark grey
+              value: dark-grey
             - label: Blue grey
-              value: blue_grey
+              value: blue-grey
+            - label: Black
+              value: black
+            - label: White
+              value: white
+
+homeassistant_update_label:
+  name: Update a label 👻
+  description: >-
+    Updates an existing label on the fly. Anything you leave out keeps the
+    value it already has. The description, icon and color can be cleared by
+    setting them to null.
+  fields:
+    label_id:
+      name: Label ID
+      description: The ID of the label to update.
+      required: true
+      selector:
+        label:
+    name:
+      name: Name
+      description: New name for the label.
+      required: false
+      selector:
+        text:
+    description:
+      name: Description
+      description: New description for the label.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: New icon to use for the label.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:tag
+    color:
+      name: Color
+      description: >-
+        Color to use for the label. Can be a color name from the list, or a
+        hex color code (like #FF0000).
+      selector:
+        select:
+          options:
+            - label: Primary theme color
+              value: primary
+            - label: Accent theme color
+              value: accent
+            - label: Disabled theme color
+              value: disabled
+            - label: Red
+              value: red
+            - label: Pink
+              value: pink
+            - label: Purple
+              value: purple
+            - label: Deep purple
+              value: deep-purple
+            - label: Indigo
+              value: indigo
+            - label: Blue
+              value: blue
+            - label: Light blue
+              value: light-blue
+            - label: Cyan
+              value: cyan
+            - label: Teal
+              value: teal
+            - label: Green
+              value: green
+            - label: Light green
+              value: light-green
+            - label: Lime
+              value: lime
+            - label: Yellow
+              value: yellow
+            - label: Amber
+              value: amber
+            - label: Orange
+              value: orange
+            - label: Deep orange
+              value: deep-orange
+            - label: Brown
+              value: brown
+            - label: Light grey
+              value: light-grey
+            - label: Grey
+              value: grey
+            - label: Dark grey
+              value: dark-grey
+            - label: Blue grey
+              value: blue-grey
             - label: Black
               value: black
             - label: White
@@ -685,6 +1281,149 @@ homeassistant_remove_label_from_entity:
         entity:
           multiple: true
 
+homeassistant_create_category:
+  name: Create a category 👻
+  description: >-
+    Creates a new category on the fly, for automations, scripts, scenes, or
+    helpers. Returns the ID of the new category.
+  fields:
+    scope:
+      name: Scope
+      description: Where the category is used.
+      required: true
+      selector:
+        select:
+          options:
+            - label: Automations
+              value: automation
+            - label: Helpers
+              value: helpers
+            - label: Scenes
+              value: scene
+            - label: Scripts
+              value: script
+    name:
+      name: Name
+      description: The name of the category to create.
+      required: true
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: Icon to use for the category.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:shape
+
+homeassistant_update_category:
+  name: Update a category 👻
+  description: >-
+    Updates an existing category on the fly. Anything you leave out keeps the
+    value it already has. The icon can be cleared by setting it to null.
+  fields:
+    scope:
+      name: Scope
+      description: Where the category is used.
+      required: true
+      selector:
+        select:
+          options:
+            - label: Automations
+              value: automation
+            - label: Helpers
+              value: helpers
+            - label: Scenes
+              value: scene
+            - label: Scripts
+              value: script
+    category_id:
+      name: Category
+      description: The ID or the name of the category to update.
+      required: true
+      selector:
+        text:
+    name:
+      name: Name
+      description: The new name for the category.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: The new icon for the category.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:shape
+
+homeassistant_delete_category:
+  name: Delete a category 👻
+  description: >-
+    Deletes a category. Everything that was in it is left without a category.
+  fields:
+    scope:
+      name: Scope
+      description: Where the category is used.
+      required: true
+      selector:
+        select:
+          options:
+            - label: Automations
+              value: automation
+            - label: Helpers
+              value: helpers
+            - label: Scenes
+              value: scene
+            - label: Scripts
+              value: script
+    category_id:
+      name: Category
+      description: The ID or the name of the category to delete.
+      required: true
+      selector:
+        text:
+
+homeassistant_add_category_to_entity:
+  name: Add a category to an entity 👻
+  description: >-
+    Puts an automation, script, scene, or helper in a category. It replaces the
+    category it was in before, since each can only be in one.
+  fields:
+    category_id:
+      name: Category
+      description: The ID or the name of the category.
+      required: true
+      selector:
+        text:
+    entity_id:
+      name: Entity ID
+      description: The automation(s), script(s), scene(s), or helper(s) to put in the category.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+homeassistant_remove_category_from_entity:
+  name: Remove a category from an entity 👻
+  description: >-
+    Takes an automation, script, scene, or helper out of a category. Anything in
+    a different category is left alone.
+  fields:
+    category_id:
+      name: Category
+      description: The ID or the name of the category.
+      required: true
+      selector:
+        text:
+    entity_id:
+      name: Entity ID
+      description: The automation(s), script(s), scene(s), or helper(s) to take out of the category.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
 homeassistant_delete_label:
   name: Delete a label 👻
   description: >-
@@ -715,11 +1454,11 @@ homeassistant_ignore_all_discovered:
 homeassistant_disable_polling:
   name: Disable polling for updates 👻
   description: >-
-    Disables polling for updates for an integration configuration entry.
+    Disables polling for updates for an integration entry.
   fields:
     config_entry_id:
-      name: Config entry
-      description: The integration configuration entry to disable polling for.
+      name: Integration entry
+      description: The integration entry to disable polling for.
       required: true
       selector:
         config_entry:
@@ -727,11 +1466,11 @@ homeassistant_disable_polling:
 homeassistant_enable_polling:
   name: Enable polling for updates 👻
   description: >-
-    Enables polling for updates for an integration configuration entry.
+    Enables polling for updates for an integration entry.
   fields:
     config_entry_id:
-      name: Config entry
-      description: The integration configuration entry to enable polling for.
+      name: Integration entry
+      description: The integration entry to enable polling for.
       required: true
       selector:
         config_entry:
@@ -754,7 +1493,7 @@ homeassistant_list_orphaned_database_entities:
 
 homeassistant_restart:
   name: Restart 👻
-  description: Restart the Home Assistant action.
+  description: Restarts Home Assistant.
   fields:
     safe_mode:
       name: Safe mode
@@ -787,7 +1526,8 @@ recorder_import_statistics:
         entity:
     name:
       name: Name
-      description: The name of the statistics.
+      description: >-
+        The name of the statistics. Defaults to the statistics ID.
       required: false
       selector:
         text:
@@ -844,6 +1584,66 @@ select_random:
       selector:
         object:
 
+input_select_create:
+  name: Create an input select 👻
+  description: >-
+    Creates a new input select (dropdown) helper on the fly. Returns the entity
+    ID of the new input select.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input select.
+      required: true
+      selector:
+        text:
+    input_select_id:
+      name: Input select entity ID
+      description: >-
+        The entity ID for the new input select. The input_select. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    options:
+      name: Options
+      description: The options to choose from. Each option can only be in it once.
+      required: true
+      selector:
+        text:
+          multiple: true
+    initial:
+      name: Initial option
+      description: >-
+        The option it starts on, which has to be one of the options. If left
+        out, it keeps the option it had before Home Assistant restarted.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: The icon for the new input select.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:form-dropdown
+
+input_select_delete:
+  name: Delete an input select 👻
+  description: >-
+    Deletes input select helpers made in the UI or with the create an input
+    select action. Input selects set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input select(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_select
+
 input_select_random:
   name: Select random option 👻
   description: >-
@@ -860,6 +1660,16 @@ input_select_random:
       required: false
       selector:
         object:
+
+input_select_reverse:
+  name: Reverse options 👻
+  description: >-
+    Reverses the order of the selectable options for an `input_select`
+    entity, back to front. This is not persistent and will be undone once
+    reloaded or Home Assistant restarts.
+  target:
+    entity:
+      domain: input_select
 
 input_select_shuffle:
   name: Shuffle options 👻
@@ -947,6 +1757,15 @@ input_number_decrement:
       required: false
       selector:
         number:
+    cycle:
+      name: Cycle
+      description: >-
+        Carry on from the other end of the range instead of stopping at this
+        one, the same way selecting the next option cycles a select.
+      required: false
+      default: false
+      selector:
+        boolean:
 
 input_number_increment:
   name: Increase value 👻
@@ -964,6 +1783,15 @@ input_number_increment:
       required: false
       selector:
         number:
+    cycle:
+      name: Cycle
+      description: >-
+        Carry on from the other end of the range instead of stopping at this
+        one, the same way selecting the next option cycles a select.
+      required: false
+      default: false
+      selector:
+        boolean:
 
 input_number_max:
   name: Set maximum value 👻
@@ -981,10 +1809,397 @@ input_number_min:
     entity:
       domain: input_number
 
+input_number_set_range:
+  name: Set range 👻
+  description: >-
+    Changes the minimum, maximum or step of an input number made in the UI,
+    the same as editing it. A value outside the new range is moved inside it.
+  target:
+    entity:
+      domain: input_number
+  fields:
+    min:
+      name: Minimum
+      description: The new minimum value.
+      required: false
+      example: 0
+      selector:
+        number:
+          mode: box
+          step: any
+    max:
+      name: Maximum
+      description: The new maximum value.
+      required: false
+      example: 3600
+      selector:
+        number:
+          mode: box
+          step: any
+    step:
+      name: Step
+      description: The new step size.
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.000000001
+          mode: box
+          step: any
+
+counter_create:
+  name: Create a counter 👻
+  description: >-
+    Creates a new counter helper on the fly. Returns the entity ID of the new
+    counter.
+  fields:
+    name:
+      name: Name
+      description: The name of the new counter.
+      required: true
+      selector:
+        text:
+    counter_id:
+      name: Counter entity ID
+      description: >-
+        The entity ID for the new counter. The counter. prefix is added
+        automatically. If not provided, the entity ID will be generated based on
+        the name.
+      required: false
+      selector:
+        text:
+    initial:
+      name: Initial value
+      description: The value the counter starts at, and goes back to on a reset.
+      required: false
+      default: 0
+      selector:
+        number:
+          mode: box
+    minimum:
+      name: Minimum
+      description: The lowest value the counter can go down to. Leave out for no limit.
+      required: false
+      selector:
+        number:
+          mode: box
+    maximum:
+      name: Maximum
+      description: The highest value the counter can go up to. Leave out for no limit.
+      required: false
+      selector:
+        number:
+          mode: box
+    step:
+      name: Step
+      description: How much the counter goes up or down by each time.
+      required: false
+      default: 1
+      selector:
+        number:
+          min: 1
+          mode: box
+    restore:
+      name: Restore
+      description: >-
+        Restore the value of the counter when Home Assistant starts, rather than
+        starting over at the initial value.
+      required: false
+      default: true
+      selector:
+        boolean:
+    icon:
+      name: Icon
+      description: The icon for the new counter.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:counter
+
+counter_delete:
+  name: Delete a counter 👻
+  description: >-
+    Deletes counter helpers made in the UI or with the create a counter action.
+    Counters set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The counter(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: counter
+
+input_boolean_create:
+  name: Create an input boolean 👻
+  description: >-
+    Creates a new input boolean (toggle) helper on the fly. Returns the entity
+    ID of the new input boolean.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input boolean.
+      required: true
+      selector:
+        text:
+    input_boolean_id:
+      name: Input boolean entity ID
+      description: >-
+        The entity ID for the new input boolean. The input_boolean. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    initial:
+      name: Initial value
+      description: >-
+        The value it starts with. If left out, it keeps the value it had
+        before Home Assistant restarted.
+      required: false
+      selector:
+        boolean:
+    icon:
+      name: Icon
+      description: The icon for the new input boolean.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:toggle-switch-outline
+
+input_boolean_delete:
+  name: Delete an input boolean 👻
+  description: >-
+    Deletes input boolean helpers made in the UI or with the create an input
+    boolean action. Input booleans set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input boolean(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_boolean
+
+input_text_create:
+  name: Create an input text 👻
+  description: >-
+    Creates a new input text helper on the fly. Returns the entity ID of the
+    new input text.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input text.
+      required: true
+      selector:
+        text:
+    input_text_id:
+      name: Input text entity ID
+      description: >-
+        The entity ID for the new input text. The input_text. prefix is added
+        automatically. If not provided, the entity ID will be generated based on
+        the name.
+      required: false
+      selector:
+        text:
+    initial:
+      name: Initial value
+      description: >-
+        The text it starts with. If left out, it keeps the text it had before
+        Home Assistant restarted.
+      required: false
+      selector:
+        text:
+    min:
+      name: Minimum length
+      description: The shortest the text can be.
+      required: false
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 255
+          mode: box
+    max:
+      name: Maximum length
+      description: The longest the text can be.
+      required: false
+      default: 100
+      selector:
+        number:
+          min: 1
+          max: 255
+          mode: box
+    pattern:
+      name: Pattern
+      description: A regular expression the text has to match.
+      required: false
+      selector:
+        text:
+    mode:
+      name: Mode
+      description: Show the text as is, or hide it like a password.
+      required: false
+      default: text
+      selector:
+        select:
+          options:
+            - label: Text
+              value: text
+            - label: Password
+              value: password
+    icon:
+      name: Icon
+      description: The icon for the new input text.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:form-textbox
+    unit_of_measurement:
+      name: Unit of measurement
+      description: The unit to show next to the text.
+      required: false
+      selector:
+        text:
+
+input_text_delete:
+  name: Delete an input text 👻
+  description: >-
+    Deletes input text helpers made in the UI or with the create an input text
+    action. Input texts set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input text(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_text
+
+input_button_create:
+  name: Create an input button 👻
+  description: >-
+    Creates a new input button helper on the fly. Returns the entity ID of the
+    new input button.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input button.
+      required: true
+      selector:
+        text:
+    input_button_id:
+      name: Input button entity ID
+      description: >-
+        The entity ID for the new input button. The input_button. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: The icon for the new input button.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:gesture-tap-button
+
+input_button_delete:
+  name: Delete an input button 👻
+  description: >-
+    Deletes input button helpers made in the UI or with the create an input
+    button action. Input buttons set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input button(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_button
+
+input_datetime_create:
+  name: Create an input datetime 👻
+  description: >-
+    Creates a new input datetime helper on the fly, holding a date, a time, or
+    both. Returns the entity ID of the new input datetime.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input datetime.
+      required: true
+      selector:
+        text:
+    input_datetime_id:
+      name: Input datetime entity ID
+      description: >-
+        The entity ID for the new input datetime. The input_datetime. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    has_date:
+      name: Has a date
+      description: >-
+        Whether it holds a date. At least one of date and time has to be on.
+      required: false
+      selector:
+        boolean:
+    has_time:
+      name: Has a time
+      description: >-
+        Whether it holds a time. At least one of date and time has to be on.
+      required: false
+      selector:
+        boolean:
+    initial:
+      name: Initial value
+      description: >-
+        The date and/or time it starts with, like 2026-12-31, 08:30:00, or
+        2026-12-31 08:30:00. If left out, it keeps the value it had before
+        Home Assistant restarted.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: The icon for the new input datetime.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:calendar-clock
+
+input_datetime_delete:
+  name: Delete an input datetime 👻
+  description: >-
+    Deletes input datetime helpers made in the UI or with the create an input
+    datetime action. Input datetimes set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input datetime(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_datetime
+
 input_number_create:
   name: Create an input number 👻
   description: >-
-    Create a new input number helper on the fly.
+    Create a new input number helper on the fly. Returns the entity ID of the
+    new input number.
   fields:
     name:
       name: Name
@@ -1066,12 +2281,18 @@ input_number_create:
 input_number_delete:
   name: Delete an input number 👻
   description: >-
-    Delete an input number helper. This works only with input numbers created
-    and managed via the UI. Input numbers created and managed in YAML cannot
-    be managed by Spook.
-  target:
-    entity:
-      domain: input_number
+    Deletes input number helpers made in the UI or with the create an input
+    number action. Input numbers set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input number(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_number
 
 person_add_device_tracker:
   name: Add a device tracker 👻
@@ -1188,7 +2409,51 @@ repairs_create:
 repairs_ignore_all:
   name: Ignore all issues 👻
   description: >-
-    Ignore all issues currently raised in Home Assistant Repairs.
+    Ignore all issues currently raised in Home Assistant Repairs, or only
+    those raised by particular integrations.
+  fields:
+    domain:
+      name: Domain
+      description: Only ignore the issues raised by these integrations.
+      required: false
+      example: hacs
+      selector:
+        text:
+          multiple: true
+
+repairs_list:
+  name: List issues 👻
+  description: >-
+    Lists the issues currently raised in Home Assistant Repairs, with their
+    titles, for an automation to act on or a dashboard to show.
+  fields:
+    include_ignored:
+      name: Include ignored
+      description: Also list the issues that have been ignored.
+      required: false
+      default: false
+      selector:
+        boolean:
+    domain:
+      name: Domain
+      description: Only list the issues raised by these integrations.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
+    severity:
+      name: Severity
+      description: Only list the issues with these severities.
+      required: false
+      selector:
+        select:
+          multiple: true
+          translation_key: repair_issue_severity
+          options:
+            - critical
+            - error
+            - warning
 
 repairs_remove:
   name: Remove issue 👻
@@ -1207,7 +2472,104 @@ repairs_remove:
 repairs_unignore_all:
   name: Unignore all issues 👻
   description: >-
-    Unignore all issues currently raised in Home Assistant Repairs.
+    Unignore all issues currently raised in Home Assistant Repairs, or only
+    those raised by particular integrations.
+  fields:
+    domain:
+      name: Domain
+      description: Only unignore the issues raised by these integrations.
+      required: false
+      example: hacs
+      selector:
+        text:
+          multiple: true
+
+sensor_set_display_precision:
+  name: Set display precision 👻
+  description: >-
+    Sets the number of decimals shown for one or more sensors.
+  fields:
+    entity_id:
+      name: Entity
+      description: The sensor entity/entities to update.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          domain: sensor
+    display_precision:
+      name: Display precision
+      description: The number of decimals to show for the sensor.
+      required: true
+      selector:
+        number:
+          min: 0
+          max: 100
+          mode: box
+
+timer_create:
+  name: Create a timer 👻
+  description: >-
+    Creates a new timer helper on the fly. Returns the entity ID of the new
+    timer.
+  fields:
+    name:
+      name: Name
+      description: The name of the new timer.
+      required: true
+      selector:
+        text:
+    timer_id:
+      name: Timer entity ID
+      description: >-
+        The entity ID for the new timer. The timer. prefix is added
+        automatically. If not provided, the entity ID will be generated based on
+        the name.
+      required: false
+      selector:
+        text:
+    duration:
+      name: Duration
+      description: How long the timer runs when it is started.
+      required: false
+      default:
+        hours: 0
+        minutes: 0
+        seconds: 0
+      selector:
+        duration:
+    restore:
+      name: Restore
+      description: >-
+        Restore the state of the timer when Home Assistant starts, so a running
+        timer keeps running across a restart.
+      required: false
+      default: false
+      selector:
+        boolean:
+    icon:
+      name: Icon
+      description: The icon for the new timer.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:timer-outline
+
+timer_delete:
+  name: Delete a timer 👻
+  description: >-
+    Deletes timer helpers made in the UI or with the create a timer action.
+    Timers set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The timer(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: timer
 
 timer_set_duration:
   name: Set duration 👻
@@ -1266,6 +2628,15 @@ zone_create:
           max: 999999999999
           unit_of_measurement: m
           mode: box
+    passive:
+      name: Passive
+      description: >-
+        A passive zone is only there for automations: it is not shown on the
+        map, and does not change where people and device trackers are.
+      required: false
+      default: false
+      selector:
+        boolean:
 
 zone_update:
   name: Update a zone 👻
@@ -1317,6 +2688,14 @@ zone_update:
           step: any
           unit_of_measurement: m
           mode: box
+    passive:
+      name: Passive
+      description: >-
+        A passive zone is only there for automations: it is not shown on the
+        map, and does not change where people and device trackers are.
+      required: false
+      selector:
+        boolean:
 
 zone_delete:
   name: Delete a zone 👻
@@ -1333,3 +2712,324 @@ zone_delete:
           multiple: true
           filter:
             - domain: zone
+
+wait_for_condition:
+  name: Wait for a condition 👻
+  description: >-
+    Wait until a condition is true. Returns straight away if it already is.
+  fields:
+    condition:
+      name: Condition
+      description: The condition to wait for.
+      required: true
+      selector:
+        condition:
+    timeout:
+      name: Timeout
+      description: >-
+        How long to wait before giving up. Waits indefinitely when left out.
+      required: false
+      example: "00:05:00"
+      selector:
+        duration:
+
+group_add_members:
+  name: Add members to a group 👻
+  description: >-
+    Adds entities to a group made through the interface, while Home Assistant
+    is running. Entities already in the group are left where they are.
+  fields:
+    group:
+      name: Group
+      description: The group to add to.
+      required: true
+      example: light.hallway
+      selector:
+        entity:
+          integration: group
+    members:
+      name: Members
+      description: The entities to add to the group.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+group_remove_members:
+  name: Remove members from a group 👻
+  description: >-
+    Takes entities out of a group made through the interface, while Home
+    Assistant is running. Naming something that is not in the group does
+    nothing, so this is also how you clear out a member that no longer exists.
+  fields:
+    group:
+      name: Group
+      description: The group to take them out of.
+      required: true
+      example: light.hallway
+      selector:
+        entity:
+          integration: group
+    members:
+      name: Members
+      description: The entities to remove from the group.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+group_set_members:
+  name: Set the members of a group 👻
+  description: >-
+    Replaces the members of a group made through the interface with the ones
+    given, while Home Assistant is running.
+  fields:
+    group:
+      name: Group
+      description: The group to change.
+      required: true
+      example: light.hallway
+      selector:
+        entity:
+          integration: group
+    members:
+      name: Members
+      description: The entities the group should hold from now on.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+water_heater_increase_temperature:
+  name: Increase temperature 👻
+  description: >-
+    Turns a water heater's setpoint up a step.
+  target:
+    entity:
+      domain: water_heater
+      supported_features:
+        - water_heater.WaterHeaterEntityFeature.TARGET_TEMPERATURE
+  fields:
+    step:
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
+water_heater_decrease_temperature:
+  name: Decrease temperature 👻
+  description: >-
+    Turns a water heater's setpoint down a step.
+  target:
+    entity:
+      domain: water_heater
+      supported_features:
+        - water_heater.WaterHeaterEntityFeature.TARGET_TEMPERATURE
+  fields:
+    step:
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
+humidifier_increase_humidity:
+  name: Increase humidity 👻
+  description: >-
+    Turns a humidifier's target humidity up a step.
+  target:
+    entity:
+      domain: humidifier
+  fields:
+    step:
+      required: false
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+humidifier_decrease_humidity:
+  name: Decrease humidity 👻
+  description: >-
+    Turns a humidifier's target humidity down a step.
+  target:
+    entity:
+      domain: humidifier
+  fields:
+    step:
+      required: false
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+cover_increase_position:
+  name: Increase position 👻
+  description: >-
+    Moves a cover a step further open.
+  target:
+    entity:
+      domain: cover
+      supported_features:
+        - cover.CoverEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+cover_decrease_position:
+  name: Decrease position 👻
+  description: >-
+    Moves a cover a step further closed.
+  target:
+    entity:
+      domain: cover
+      supported_features:
+        - cover.CoverEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+valve_increase_position:
+  name: Increase position 👻
+  description: >-
+    Moves a valve a step further open.
+  target:
+    entity:
+      domain: valve
+      supported_features:
+        - valve.ValveEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+valve_decrease_position:
+  name: Decrease position 👻
+  description: >-
+    Moves a valve a step further closed.
+  target:
+    entity:
+      domain: valve
+      supported_features:
+        - valve.ValveEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+media_player_increase_volume:
+  name: Increase volume 👻
+  description: >-
+    Turns a media player's volume up by the step you give.
+  target:
+    entity:
+      domain: media_player
+      supported_features:
+        - media_player.MediaPlayerEntityFeature.VOLUME_SET
+  fields:
+    step:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 0.5
+          max: 100
+          step: 0.5
+          unit_of_measurement: "%"
+          mode: box
+
+media_player_decrease_volume:
+  name: Decrease volume 👻
+  description: >-
+    Turns a media player's volume down by the step you give.
+  target:
+    entity:
+      domain: media_player
+      supported_features:
+        - media_player.MediaPlayerEntityFeature.VOLUME_SET
+  fields:
+    step:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 0.5
+          max: 100
+          step: 0.5
+          unit_of_measurement: "%"
+          mode: box
+
+todo_move_item:
+  name: Move item 👻
+  description: >-
+    Moves an item in a to-do list to the top, the bottom, or after another
+    item.
+  target:
+    entity:
+      domain: todo
+      supported_features:
+        - todo.TodoListEntityFeature.MOVE_TODO_ITEM
+  fields:
+    item:
+      required: true
+      example: Take out the bins
+      selector:
+        text:
+    after:
+      required: false
+      example: Do the dishes
+      selector:
+        text:
+    position:
+      required: false
+      selector:
+        select:
+          translation_key: todo_move_position
+          options:
+            - top
+            - bottom

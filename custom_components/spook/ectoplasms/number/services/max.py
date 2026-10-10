@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 from homeassistant.components.number import DOMAIN, NumberEntity
 from homeassistant.exceptions import HomeAssistantError
 
+from ....const import DOMAIN as SPOOK_DOMAIN
 from ....services import AbstractSpookEntityComponentService
 
 if TYPE_CHECKING:
@@ -26,6 +27,11 @@ class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
     ) -> None:
         """Handle the service call."""
         if entity.max_value is None:
-            msg = f"Entity {entity.entity_id} has no max value"
-            raise HomeAssistantError(msg)
+            raise HomeAssistantError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="no_max_value",
+                translation_placeholders={
+                    "entity_id": entity.entity_id,
+                },
+            )
         await entity.async_set_native_value(entity.native_max_value)

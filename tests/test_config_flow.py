@@ -30,48 +30,32 @@ async def test_config_flow_shows_initial_form(hass: HomeAssistant) -> None:
     assert result["type"] is FlowResultType.FORM
     assert result["step_id"] == "user"
     assert result["errors"] is None
+    assert result["description_placeholders"] == {
+        "issue_tracker_url": "https://github.com/frenck/spook/issues",
+    }
 
 
-async def test_config_flow_can_create_entry_with_restart_later(
+async def test_config_flow_creates_entry_without_asking_for_a_restart(
     hass: HomeAssistant,
 ) -> None:
-    """Test the config flow can create an entry using restart later."""
+    """Test the config flow creates the entry straight away."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": config_entries.SOURCE_USER},
         data={},
-    )
-
-    assert result["type"] is FlowResultType.MENU
-    assert result["step_id"] == "choice_restart"
-
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        user_input={"next_step_id": "restart_later"},
     )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Your homie"
     assert result["data"] == {}
-
-
-async def test_config_flow_restart_now_sets_setup_restart_flag(
-    hass: HomeAssistant,
-) -> None:
-    """Test restart now stores the setup restart flag."""
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN,
-        context={"source": config_entries.SOURCE_USER},
-        data={},
-    )
-
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        user_input={"next_step_id": "restart_now"},
-    )
-
-    assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert hass.data[DOMAIN] == "Boo!"
+    assert result["description"] == "spooked"
+    assert result["description_placeholders"] == {
+        "documentation_url": "https://spook.boo",
+        "newsletter_url": "https://frenck.dev/newsletter/",
+        "repository_url": "https://github.com/frenck/spook",
+        "sponsor_url": "https://github.com/sponsors/frenck",
+    }
+    assert DOMAIN not in hass.data
 
 
 async def test_config_flow_aborts_when_spook_is_already_configured(
@@ -116,7 +100,7 @@ async def test_config_flow_can_enable_existing_disabled_entry(
 
     assert result["type"] is FlowResultType.MENU
     assert result["step_id"] == "already_configured"
-    assert result["menu_options"] == ["enable_existing"]
+    assert result["menu_options"] == ["enable_existing", "keep_sleeping"]
 
     result = await hass.config_entries.flow.async_configure(
         result["flow_id"],
@@ -159,6 +143,40 @@ async def test_config_flow_enable_existing_disabled_entry_can_fail(
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "enable_failed"
     async_set_disabled_by.assert_awaited_once_with(entry.entry_id, disabled_by=None)
+
+
+async def test_config_flow_can_let_a_disabled_entry_sleep(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test letting a disabled Spook sleep leaves it disabled."""
+    entry = MockConfigEntry(
+        disabled_by=config_entries.ConfigEntryDisabler.USER,
+        domain=DOMAIN,
+        title="Your homie",
+        data={},
+    )
+    entry.add_to_hass(hass)
+    async_set_disabled_by = AsyncMock(return_value=True)
+    monkeypatch.setattr(
+        hass.config_entries,
+        "async_set_disabled_by",
+        async_set_disabled_by,
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_USER},
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={"next_step_id": "keep_sleeping"},
+    )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "kept_sleeping"
+    async_set_disabled_by.assert_not_awaited()
+    assert entry.disabled_by is config_entries.ConfigEntryDisabler.USER
 
 
 async def test_config_flow_aborts_when_enabled_and_disabled_entries_exist(

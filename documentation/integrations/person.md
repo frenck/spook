@@ -21,7 +21,7 @@ Spook adds some new actions to the person {term}`integration <integration>`, tha
 
 ```{figure} ../images/integrations/person/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for persons.
+:alt: Screenshot of the Actions tool, listing the new actions for persons.
 :align: center
 
 Spook adds some new actions to the person integration.
@@ -40,7 +40,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Adds a device tracker to a person.
 
 ```{figure} ../images/integrations/person/add_device_tracker.png
-:alt: Screenshot of the person add device tracker action in the developer tools.
+:alt: Screenshot of the person add device tracker action on the Tools page.
 :align: center
 ```
 
@@ -57,9 +57,9 @@ Adds a device tracker to a person.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=person.add_device_tracker)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.add_device_tracker)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.add_device_tracker)
 ```
 
 ```{list-table}
@@ -109,7 +109,7 @@ data:
 Removes a device tracker from a person.
 
 ```{figure} ../images/integrations/person/remove_device_tracker.png
-:alt: Screenshot of the person remove device tracker action in the developer tools.
+:alt: Screenshot of the person remove device tracker action on the Tools page.
 :align: center
 ```
 
@@ -126,9 +126,9 @@ Removes a device tracker from a person.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker)
 ```
 
 ```{list-table}
@@ -175,9 +175,17 @@ data:
 
 ## Repairs
 
-Spook has no repair detections for this integration.
+While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
 
-## Uses cases
+### Unknown device trackers
+
+A person is a collection of device trackers, and the person's location is whatever those trackers say it is. Spook inspects every person to find trackers that no longer exist. If Spook finds such a case, it will raise a repair issue, naming the person and the trackers that are missing.
+
+This usually happens when a tracker was renamed, or when the integration providing it was removed. Nothing announces it: the person keeps working on the trackers that remain, so somebody whose phone tracker quietly disappeared just becomes a little less accurately located.
+
+The raised issue is fixable. Spook can remove the missing trackers from the person for you, or you can fix it yourself on the People page. A person set up in {term}`YAML` cannot be edited by Spook, so for those the issue points you at your configuration instead.
+
+## Use cases
 
 Some use cases for the enhancements Spook provides for this integration:
 
@@ -187,7 +195,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

@@ -13,10 +13,10 @@ The following integration management actions are added to your Home Assistant in
 
 ### Disable an integration
 
-Disable a single instance of an integration by its {term}`config entry <config entry>`.
+Disable a single instance of an integration by its {term}`integration entry <integration entry>`, or every instance of an integration at once.
 
 ```{figure} ./images/integration/disable_config_entry.png
-:alt: Screenshot of the Home Assistant disable config entry action in the developer tools.
+:alt: Screenshot of the Home Assistant disable config entry action on the Tools page.
 :align: center
 ```
 
@@ -33,9 +33,9 @@ Disable a single instance of an integration by its {term}`config entry <config e
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
 ```
 
 ```{list-table}
@@ -47,16 +47,22 @@ Disable a single instance of an integration by its {term}`config entry <config e
   - Default / Example
 * - `config_entry_id`
   - {term}`string <string>` | {term}`list of strings <list>`
-  - Yes
+  - No
   - `dc23e666e6100f184e642a0ac345d3eb`
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `hue`
 ```
+
+Give one or both. A `domain` takes every entry of that integration, including entries added after the automation was written. A domain without any entries is refused, so a typo does not quietly do nothing.
 
 :::{tip} Finding the config entry ID
 :class: dropdown
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the integration you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -67,6 +73,15 @@ Use this action in the {term}`developer tools <developer tools>`, in the UI sele
 action: homeassistant.disable_config_entry
 data:
   config_entry_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+Every entry of an integration:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.disable_config_entry
+data:
+  domain: hue
 ```
 
 Or multiple at once:
@@ -84,10 +99,10 @@ data:
 
 ### Enable an integration
 
-Enable a single instance of an integration by its {term}`config entry <config entry>`.
+Enable a single instance of an integration by its {term}`integration entry <integration entry>`, or every instance of an integration at once.
 
 ```{figure} ./images/integration/enable_config_entry.png
-:alt: Screenshot of the Home Assistant enable config entry action in the developer tools.
+:alt: Screenshot of the Home Assistant enable config entry action on the Tools page.
 :align: center
 ```
 
@@ -104,9 +119,9 @@ Enable a single instance of an integration by its {term}`config entry <config en
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
 ```
 
 ```{list-table}
@@ -118,16 +133,22 @@ Enable a single instance of an integration by its {term}`config entry <config en
   - Default / Example
 * - `config_entry_id`
   - {term}`string <string>` | {term}`list of strings <list>`
-  - Yes
+  - No
   - `dc23e666e6100f184e642a0ac345d3eb`
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `hue`
 ```
+
+Give one or both. A `domain` takes every entry of that integration, including entries added after the automation was written. A domain without any entries is refused, so a typo does not quietly do nothing.
 
 :::{tip} Finding the config entry ID
 :class: dropdown
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the integration you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -138,6 +159,15 @@ Use this action in the {term}`developer tools <developer tools>`, in the UI sele
 action: homeassistant.enable_config_entry
 data:
   config_entry_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+Every entry of an integration:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.enable_config_entry
+data:
+  domain: hue
 ```
 
 Or multiple at once:
@@ -155,12 +185,12 @@ data:
 
 ### Disable polling for updates
 
-Disable integration polling of a single integration instance by its {term}`config entry <config entry>`.
+Disable integration polling of a single integration instance by its {term}`integration entry <integration entry>`.
 
 Some integrations frequently poll for updates. In some cases, it can be helpful to disable this temporarily. For example, in case you are not at home and want to stop polling on an integration that consumes a paid API.
 
 ```{figure} ./images/integration/disable_polling.png
-:alt: Screenshot of the Home Assistant disable polling action in the developer tools.
+:alt: Screenshot of the Home Assistant disable polling action on the Tools page.
 :align: center
 ```
 
@@ -177,9 +207,9 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
 ```
 
 ```{list-table}
@@ -200,7 +230,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the integration you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -217,12 +247,12 @@ data:
 
 ### Enable polling for updates
 
-Enable integration polling of a single integration instance by its {term}`config entry <config entry>`.
+Enable integration polling of a single integration instance by its {term}`integration entry <integration entry>`.
 
 Some integrations frequently poll for updates. In some cases, it can be helpful to enable this just temporarily. For example, in case you are not at home and want to stop polling on an integration that consumes a paid API and want to turn it back on again when you are back.
 
 ```{figure} ./images/integration/enable_polling.png
-:alt: Screenshot of the Home Assistant enable polling action in the developer tools.
+:alt: Screenshot of the Home Assistant enable polling action on the Tools page.
 :align: center
 ```
 
@@ -239,9 +269,9 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
 ```
 
 ```{list-table}
@@ -262,7 +292,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the integration you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -284,7 +314,7 @@ When Home Assistant discovers new devices or services, it will show up on the in
 It also supports ignoring all discovered devices from a specific {term}`integration <integration>`. For example, if you want to ignore all discovered devices from the `bluetooth` integration, you could do that periodically with an automation.
 
 ```{figure} ./images/integration/ignore_all_discovered.png
-:alt: Screenshot of the Home Assistant enable polling action in the developer tools.
+:alt: Screenshot of the Home Assistant ignore all discovered devices and services action on the Tools page.
 :align: center
 ```
 
@@ -301,9 +331,9 @@ It also supports ignoring all discovered devices from a specific {term}`integrat
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)
 ```
 
 ```{list-table}
@@ -335,7 +365,7 @@ data:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for these features. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

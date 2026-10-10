@@ -13,13 +13,17 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 
+from homeassistant.exceptions import HomeAssistantError
+
 from custom_components.spook.ectoplasms.lovelace.repairs.unknown_entity_references import (
     SpookRepair,
 )
 import pytest
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import issue_registry as ir
 
 
 @pytest.fixture(name="repair")
@@ -195,3 +199,580 @@ def test_dashboard_covers_custom_card_structures(repair: SpookRepair) -> None:
         ]
     }
     assert _extract(repair, config) == {"sensor.custom": "home"}
+
+
+async def test_one_unreadable_dashboard_does_not_stop_the_rest(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A dashboard that will not load must not take the inspection down.
+
+    Home Assistant turns a missing file into `ConfigNotFound`, but a dashboard
+    whose YAML does not parse raises straight out of the loader. Letting that
+    out left every dashboard after it unchecked, and the repair erroring on
+    every pass from then on.
+    """
+    hass.states.async_set("light.known", "on")
+
+    async def _will_not_load(**_kwargs: Any) -> dict[str, Any]:
+        msg = "mapping values are not allowed here"
+        raise HomeAssistantError(msg)
+
+    async def _loads_fine(**_kwargs: Any) -> dict[str, Any]:
+        return {
+            "views": [
+                {"path": "home", "cards": [{"type": "entity", "entity": "light.gone"}]}
+            ]
+        }
+
+    repair = SpookRepair(hass)
+    repair._dashboards = {  # noqa: SLF001
+        "broken": SimpleNamespace(
+            url_path="broken", config=None, async_load=_will_not_load
+        ),
+        "fine": SimpleNamespace(
+            url_path="fine", config={"title": "Fine"}, async_load=_loads_fine
+        ),
+    }
+
+    await repair.async_inspect()
+
+    assert async_issue_about(
+        issue_registry, "lovelace_unknown_entity_references_fine"
+    ), "the dashboard after the broken one was never checked"
+    assert "could not read dashboard broken" in caplog.text
+
+
+async def test_a_dashboard_added_mid_round_does_not_end_it(
+    repair: SpookRepair,
+) -> None:
+    """Test the round survives the dashboards changing while it loads one.
+
+    Loading a dashboard hands the event loop a turn, and somebody creating
+    or deleting a dashboard in that turn changed the very dictionary being
+    walked. The whole round ended in a `RuntimeError`.
+    """
+    dashboards: dict[str, Any] = {}
+
+    async def _loads_while_another_arrives(*, force: bool) -> dict[str, Any]:
+        """Load, while somebody adds a dashboard."""
+        del force
+        dashboards["new"] = SimpleNamespace(
+            url_path="new", config={"title": "New"}, async_load=_loads_fine
+        )
+        return {"title": "First"}
+
+    async def _loads_fine(*, force: bool) -> dict[str, Any]:
+        del force
+        return {"title": "Fine"}
+
+    dashboards["first"] = SimpleNamespace(
+        url_path="first",
+        config={"title": "First"},
+        async_load=_loads_while_another_arrives,
+    )
+    repair._dashboards = dashboards  # noqa: SLF001
+
+    await repair.async_inspect()
+
+
+def _dashboard_with(url_path: str | None, entity_id: str) -> SimpleNamespace:
+    """Return a stored dashboard with one card showing this entity."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {
+            "views": [
+                {"path": "home", "cards": [{"type": "entity", "entity": entity_id}]}
+            ]
+        }
+
+    return SimpleNamespace(url_path=url_path, config=None, async_load=_loads)
+
+
+async def test_the_old_default_dashboard_left_behind_is_not_read(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The default dashboard moved to an entry of its own; the old one is left.
+
+    Home Assistant keeps the old default under no name, reading a file that
+    can outlive the move. Read, it was reported as the Overview with entities
+    nobody could find on any dashboard they can open. #1593.
+    """
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        None: _dashboard_with(None, "light.from_february"),
+        "lovelace": _dashboard_with("lovelace", "light.porch"),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert {"light.from_february"} not in reported
+    assert reported == [{"light.porch"}]
+
+
+async def test_the_default_dashboard_is_still_read_before_the_move(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Without an entry called `lovelace`, the one under no name is the default."""
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {None: _dashboard_with(None, "light.porch")}  # noqa: SLF001
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert reported == [{"light.porch"}]
+
+
+def _dashboard(url_path: str, config: dict[str, Any]) -> SimpleNamespace:
+    """Return a stored dashboard with this config."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return config
+
+    return SimpleNamespace(
+        url_path=url_path, config={"title": url_path}, async_load=_loads
+    )
+
+
+async def test_areas_strategy_hides_and_orders_entities(
+    hass: HomeAssistant,
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the entities an areas dashboard hides or orders per area are checked.
+
+    The frontend stores the areas dashboard as its strategy alone, no views,
+    and keeps these under each area's `groups_options`, in `hidden` and
+    `order`. An entity removed since stays in those lists, and was never
+    reported.
+    """
+    hass.states.async_set("light.office_desk_lamp", "on")
+    captured: dict[str, Any] = {}
+
+    def async_create_issue(**kwargs: Any) -> None:
+        captured.update(kwargs)
+
+    repair._dashboards = {  # noqa: SLF001
+        "dashboard-areas": _dashboard(
+            "dashboard-areas",
+            {
+                "strategy": {
+                    "type": "areas",
+                    "areas_options": {
+                        "office": {
+                            "card_size": "small",
+                            "groups_options": {
+                                "lights": {
+                                    "hidden": ["light.office_night_light"],
+                                    "order": [
+                                        "light.office_ceiling",
+                                        "light.office_desk_lamp",
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert set(captured["references"]) == {
+        "light.office_night_light",
+        "light.office_ceiling",
+    }
+    assert captured["translation_placeholders"]["edit"] == ("/dashboard-areas/0?edit=1")
+
+
+async def test_hidden_and_order_mean_entities_only_in_groups_options(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test `hidden` and `order` are not read as entities anywhere else.
+
+    The areas and floors display hide and order areas and floors, an area's
+    own options hold no entity list outside its groups, and the same keys on
+    any other card are that card's business.
+    """
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        "dashboard-areas": _dashboard(
+            "dashboard-areas",
+            {
+                "strategy": {
+                    "type": "areas",
+                    "areas_display": {"hidden": ["light.garage"]},
+                    "floors_display": {"order": ["sensor.ground_floor"]},
+                    "areas_options": {"office": {"hidden": ["light.office_lamp"]}},
+                },
+            },
+        ),
+        "lovelace": _dashboard(
+            "lovelace",
+            {
+                "views": [
+                    {
+                        "cards": [
+                            {
+                                "type": "custom:some-card",
+                                "areas_options": {
+                                    "office": {
+                                        "groups_options": {
+                                            "lights": {"hidden": ["light.lamp"]},
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert not reported
+
+
+async def test_area_view_strategy_hides_and_orders_entities(
+    hass: HomeAssistant,
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the entities the view of a single area hides or orders are checked.
+
+    The `area` view strategy carries its `groups_options` directly, not keyed
+    by area like the areas dashboard does. An entity removed since stays in
+    those lists, and was never reported.
+    """
+    hass.states.async_set("light.office_desk_lamp", "on")
+    captured: dict[str, Any] = {}
+
+    def async_create_issue(**kwargs: Any) -> None:
+        captured.update(kwargs)
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard(
+            "lovelace",
+            {
+                "views": [
+                    {"path": "home", "cards": []},
+                    {
+                        "path": "office",
+                        "strategy": {
+                            "type": "area",
+                            "area": "office",
+                            "groups_options": {
+                                "lights": {
+                                    "hidden": ["light.office_night_light"],
+                                    "order": [
+                                        "light.office_ceiling",
+                                        "light.office_desk_lamp",
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert set(captured["references"]) == {
+        "light.office_night_light",
+        "light.office_ceiling",
+    }
+    assert captured["translation_placeholders"]["edit"] == "/lovelace/office?edit=1"
+
+
+async def test_groups_options_mean_entities_only_on_the_area_view_strategy(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test `groups_options` and its lists are not read anywhere else.
+
+    The area card says `type: area` as well, but `hidden` on it is not one
+    of these lists, and `groups_options` on any other card is that card's
+    business.
+    """
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard(
+            "lovelace",
+            {
+                "views": [
+                    {
+                        "strategy": {
+                            "type": "area",
+                            "area": "office",
+                            "hidden": ["light.office_lamp"],
+                        },
+                    },
+                    {
+                        "cards": [
+                            {
+                                "type": "custom:some-card",
+                                "groups_options": {
+                                    "lights": {"hidden": ["light.lamp"]},
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert not reported
+
+
+async def _reported_for_card(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> list[set[str]]:
+    """Inspect a dashboard holding just this card, and return what is reported."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {"views": [{"path": "home", "cards": [card]}]}
+
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace", config={"title": "Overview"}, async_load=_loads
+        )
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+    return reported
+
+
+@pytest.mark.parametrize(
+    "card",
+    [
+        {"type": "logbook", "target": {"entity_id": ["log.critical_messages"]}},
+        {"type": "logbook", "entities": ["log.critical_messages"]},
+    ],
+    ids=["target", "entities"],
+)
+async def test_a_logbook_card_on_a_made_up_entity_is_fine(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> None:
+    """Test a logbook card filtering on an ID `logbook.log` made up is not reported.
+
+    The card shows the entries filed under it; no integration has to provide
+    the entity for that.
+    """
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+@pytest.mark.parametrize(
+    "card",
+    [
+        {"type": "logbook", "target": {"entity_id": ["light.gone"]}},
+        {"type": "logbook", "entities": ["light.gone"]},
+    ],
+    ids=["target", "entities"],
+)
+async def test_a_logbook_card_on_a_removed_entity_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> None:
+    """Test a logbook card filtering on a real domain still checks the entity."""
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"light.gone"}]
+
+
+async def test_a_made_up_entity_on_another_card_is_still_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test an ID under no entity domain is still reported outside a logbook card."""
+    card = {"type": "entities", "entities": ["log.critical_messages"]}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [
+        {"log.critical_messages"}
+    ]
+
+
+async def test_a_made_up_entity_elsewhere_on_a_logbook_card_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test only the logbook card's filter is left alone, not the whole card.
+
+    A visibility condition on it is read like on any other card, so a made-up
+    ID there is still reported.
+    """
+    card = {
+        "type": "logbook",
+        "target": {"entity_id": ["log.critical_messages"]},
+        "visibility": [
+            {"condition": "state", "entity": "log.visible_when", "state": "on"}
+        ],
+    }
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"log.visible_when"}]
+
+
+@pytest.mark.parametrize(
+    "element",
+    [
+        {
+            "type": "service-button",
+            "service": "light.turn_on",
+            "service_data": {"entity_id": "light.gone"},
+        },
+        {
+            "type": "service-button",
+            "action": "light.turn_on",
+            "data": {"entity_id": ["light.gone"]},
+        },
+        {
+            "type": "action-button",
+            "action": "light.turn_on",
+            "target": {"entity_id": "light.gone"},
+        },
+    ],
+    ids=["service_data", "data", "target"],
+)
+async def test_an_entity_a_button_element_acts_on_is_checked(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, element: dict[str, Any]
+) -> None:
+    """Test the entity a picture-elements button hands its action is checked."""
+    card = {"type": "picture-elements", "image": "/local/x.png", "elements": [element]}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"light.gone"}]
+
+
+async def _issue_for_card(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> dict[str, Any]:
+    """Inspect a dashboard holding just this card, and return the issue raised."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {"views": [{"path": "home", "cards": [card]}]}
+
+    issue: dict[str, Any] = {}
+
+    def async_create_issue(**kwargs: Any) -> None:
+        issue.update(kwargs)
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace", config={"title": "Overview"}, async_load=_loads
+        )
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+    return issue
+
+
+async def test_a_missing_entity_written_with_capitals_is_reported_as_written(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test an entity ID with capitals is reported exactly as the card has it."""
+    card = {"type": "tile", "entity": "binary_sensor.Car_Charger_Dispatching"}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [
+        {"binary_sensor.Car_Charger_Dispatching"}
+    ]
+
+
+async def test_an_existing_entity_written_with_capitals_is_reported(
+    hass: HomeAssistant, repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test capitals break a card on an entity that exists, and say which one.
+
+    The frontend looks the entity up exactly as written, so the card shows it
+    as unavailable. The repair suggests the lower case one, even when the
+    capitals put it too far away for the fuzzy comparison.
+    """
+    hass.states.async_set("light.kitchen", "on")
+    card = {"type": "tile", "entity": "light.KITCHEN"}
+
+    issue = await _issue_for_card(repair, monkeypatch, card)
+
+    assert issue["references"] == {"light.KITCHEN"}
+    assert issue["translation_placeholders"]["entities"] == (
+        "- `light.KITCHEN` (did you mean `light.kitchen`?)"
+    )
+
+
+async def test_an_existing_entity_written_in_lower_case_is_fine(
+    hass: HomeAssistant, repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test the same card naming the entity as Home Assistant has it is clean."""
+    hass.states.async_set("light.kitchen", "on")
+    card = {"type": "tile", "entity": "light.kitchen"}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+@pytest.mark.parametrize(
+    "entity",
+    ["Kitchen Light", "light.Kitchen-Lamp", "This.Entity_id", "LIGHT.TURN_ON"],
+)
+async def test_capitals_on_something_that_is_no_entity_id_are_ignored(
+    hass: HomeAssistant,
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+    entity: str,
+) -> None:
+    """Test only what is an entity ID once lower cased is read.
+
+    A name, a malformed ID, a placeholder and an action are not entities that
+    went missing, whatever their case.
+    """
+    hass.services.async_register("light", "turn_on", lambda _call: None)
+    card = {"type": "tile", "entity": entity}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+async def test_a_logbook_card_on_an_entity_with_capitals_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a logbook card filter keeps an entity written with capitals.
+
+    Its domain is a real one once lower cased, so it is no made-up ID, and
+    it is reported as written like on any other card.
+    """
+    card = {"type": "logbook", "target": {"entity_id": ["LIGHT.KITCHEN"]}}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"LIGHT.KITCHEN"}]

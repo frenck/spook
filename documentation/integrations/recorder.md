@@ -19,7 +19,7 @@ The recorder {term}`integration <integration>` in {term}`Home Assistant` is resp
 
 ```{figure} ../images/integrations/recorder/example.png
 :name: example
-:alt: Screenshot of the recorder import statistics action in the developer tools.
+:alt: Screenshot of the recorder import statistics action on the Tools page.
 :align: center
 
 Spook adds an action that allows importing data into the recorder.
@@ -38,7 +38,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Manually import long-term statistics into the recorder database of Home Assistant.
 
 ```{figure} ../images/integrations/recorder/import.png
-:alt: Screenshot of the recorder import statistics action in the developer tools.
+:alt: Screenshot of the recorder import statistics action on the Tools page.
 :align: center
 ```
 
@@ -55,9 +55,9 @@ Manually import long-term statistics into the recorder database of Home Assistan
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
 ```
 
 ```{list-table}
@@ -150,9 +150,25 @@ Messing with the recorder directly is not recommended. It is very easy to break 
 
 ## Repairs
 
-Spook has no repair detections for this integration.
+While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
 
-## Uses cases
+### Orphaned long-term statistics
+
+The recorder keeps long-term statistics separately from the states it records, and it keeps them by statistic ID rather than by entity. That means they outlive the entity they were collected for. Spook compares the statistics in the database against the entities that still exist and raises a repair issue listing the ones with nothing behind them anymore.
+
+These are not harmful, but they are not free either: they take up database space, and they keep showing up in pickers and graphs long after the sensor they belonged to is gone.
+
+The repair itself offers to clear them for you. It gives you three choices:
+
+- **Clear these statistics**, which throws that history away for good.
+- **Let me do it myself**, which points you at **Settings** > {term}`Tools` > **Statistics**.
+- **Keep them, stop telling me**, which leaves them alone and stops the repair coming back.
+
+Spook looks again before it clears anything, and only removes what the list you read and that fresh look agree on. Anything that has an entity behind it again by the time you press the button is left where it is, without being named: the repair comes back for whatever is still orphaned, so nothing gets lost. If none of them still need clearing, Spook says so instead of reporting a job it did not do.
+
+A statistic has to keep looking abandoned for a quarter of an hour before Spook mentions it at all. Sensors go missing briefly all the time, when an integration reloads or while Home Assistant is still starting, and none of those are worth deleting anybody's history over.
+
+## Use cases
 
 Some use cases for the enhancements Spook provides for this integration:
 
@@ -162,7 +178,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

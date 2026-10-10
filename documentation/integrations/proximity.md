@@ -48,7 +48,7 @@ A proximity configuration allows for ignoring certain zones. Spook inspects all 
 
 While this is not a critical issue, it is a good one to clean up. To resolve the raised issue, you can edit the proximity configuration and remove the missing ignored zone. Spook will automatically remove the repair issue once the issue is fixed.
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

@@ -3,27 +3,47 @@
         "step": {
             "binary_sensor": {
                 "data": {
-                    "entity_id": "Źródłowa encja",
+                    "entity_id": "Encja źródłowa",
                     "name": "Nazwa",
                     "hide_source": "Ukryj encję źródłową"
                 },
-                "title": "Odwróć/Zaneguj 👻"
+                "title": "Odwróć 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Encja źródłowa",
+                    "hide_source": "Ukryj encję źródłową",
+                    "inverse_position": "Odwróć otwieranie, zamykanie i pozycję",
+                    "inverse_tilt": "Odwróć pochylenie",
+                    "name": "Nazwa"
+                },
+                "title": "Odwróć 👻"
             },
             "switch": {
                 "data": {
                     "name": "Nazwa",
                     "hide_source": "Ukryj encję źródłową",
-                    "entity_id": "Źródłowa encja"
+                    "entity_id": "Encja źródłowa"
                 },
-                "title": "Odwróć/Zaneguj 👻"
+                "title": "Odwróć 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Encja źródłowa",
+                    "hide_source": "Ukryj encję źródłową",
+                    "name": "Nazwa"
+                },
+                "title": "Odwróć 👻"
             },
             "user": {
                 "menu_options": {
                     "switch": "Odwróć przełącznik",
-                    "binary_sensor": "Odwróć czujnik binarny"
+                    "valve": "Odwróć zawór",
+                    "binary_sensor": "Odwróć czujnik binarny",
+                    "cover": "Odwróć osłonę"
                 },
-                "title": "Odwróć/Zaneguj 👻",
-                "description": "Ten pomocnik umożliwia odwrócenie zachowania obiektu. Na przykład odwróć otwieranie/zamykanie lub włączanie/wyłączanie czujników binarnych i przełączników."
+                "title": "Odwróć 👻",
+                "description": "Ten pomocnik pozwala odwrócić zachowanie encji. Na przykład zamienić otwarcie/zamknięcie lub włączenie/wyłączenie czujników binarnych, osłon, przełączników i zaworów."
             }
         }
     },
@@ -35,7 +55,17 @@
                     "entity_id": "Encja źródłowa",
                     "hide_source": "Ukryj encję źródłową"
                 },
-                "title": "Odwróć/Zaneguj 👻"
+                "title": "Odwróć 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Encja źródłowa",
+                    "hide_source": "Ukryj encję źródłową",
+                    "inverse_position": "Odwróć otwieranie, zamykanie i pozycję",
+                    "inverse_tilt": "Odwróć pochylenie",
+                    "name": "Nazwa"
+                },
+                "title": "Odwróć 👻"
             },
             "switch": {
                 "data": {
@@ -43,9 +73,17 @@
                     "name": "Nazwa",
                     "hide_source": "Ukryj encję źródłową"
                 },
-                "title": "Odwróć/Zaneguj 👻"
+                "title": "Odwróć 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Encja źródłowa",
+                    "hide_source": "Ukryj encję źródłową",
+                    "name": "Nazwa"
+                },
+                "title": "Odwróć 👻"
             }
         }
     },
-    "title": "Odwróć/Zaneguj 👻"
+    "title": "Odwróć 👻"
 }

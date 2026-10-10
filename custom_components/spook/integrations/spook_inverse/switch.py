@@ -4,18 +4,16 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.switch import DOMAIN, SwitchEntity
+from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import (
     ATTR_ENTITY_ID,
-    CONF_ENTITY_ID,
     SERVICE_TOGGLE,
     SERVICE_TURN_OFF,
     SERVICE_TURN_ON,
     STATE_ON,
     STATE_UNKNOWN,
 )
-from homeassistant.core import HomeAssistant, State, callback
-from homeassistant.helpers import entity_registry as er
+from homeassistant.core import HomeAssistant, State, callback, split_entity_id
 
 from .entity import InverseEntity
 
@@ -30,15 +28,17 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Initialize inverse config entry."""
-    er.async_validate_entity_id(
-        er.async_get(hass),
-        config_entry.options[CONF_ENTITY_ID],
-    )
+    # The source is resolved by the entity itself, which stays unavailable
+    # rather than failing to set up when the source is not there.
     async_add_entities([InverseSwitch(hass, config_entry)])
 
 
 class InverseSwitch(InverseEntity, SwitchEntity):
-    """Inverse switch."""
+    """Inverse switch.
+
+    Its source can be an on/off helper or a light as well, so it is told what
+    to do in its own terms: a light is turned off with the light actions.
+    """
 
     @callback
     def async_update_state(self, state: State) -> None:
@@ -51,7 +51,7 @@ class InverseSwitch(InverseEntity, SwitchEntity):
     async def async_turn_on(self, **_: Any) -> None:
         """Turn the entity on."""
         await self.hass.services.async_call(
-            DOMAIN,
+            split_entity_id(self._entity_id)[0],
             SERVICE_TURN_OFF,
             {ATTR_ENTITY_ID: self._entity_id},
             blocking=True,
@@ -61,7 +61,7 @@ class InverseSwitch(InverseEntity, SwitchEntity):
     async def async_turn_off(self, **_: Any) -> None:
         """Turn the entity off."""
         await self.hass.services.async_call(
-            DOMAIN,
+            split_entity_id(self._entity_id)[0],
             SERVICE_TURN_ON,
             {ATTR_ENTITY_ID: self._entity_id},
             blocking=True,
@@ -71,7 +71,7 @@ class InverseSwitch(InverseEntity, SwitchEntity):
     async def async_toggle(self, **_: Any) -> None:
         """Toggle the entity."""
         await self.hass.services.async_call(
-            DOMAIN,
+            split_entity_id(self._entity_id)[0],
             SERVICE_TOGGLE,
             {ATTR_ENTITY_ID: self._entity_id},
             blocking=True,

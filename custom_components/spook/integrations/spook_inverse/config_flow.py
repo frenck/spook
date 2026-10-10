@@ -19,39 +19,61 @@ from homeassistant.helpers.schema_config_entry_flow import (
     entity_selector_without_own_entities,
 )
 
-from .const import CONF_HIDE_SOURCE, DOMAIN, PLATFORMS
+from .const import (
+    CONF_HIDE_SOURCE,
+    CONF_INVERSE_POSITION,
+    CONF_INVERSE_TILT,
+    DOMAIN,
+    PLATFORMS,
+    SOURCE_DOMAINS,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping
 
 
+# A cover moves two ways, and a device can have either of them backwards
+# without the other: blinds that close when told to open, or slats that tilt
+# the wrong way on blinds that are otherwise fine.
+COVER_SCHEMA = {
+    vol.Required(CONF_INVERSE_POSITION, default=True): selector.BooleanSelector(),
+    vol.Required(CONF_INVERSE_TILT, default=False): selector.BooleanSelector(),
+}
+
+
 async def options_schema(
-    domain: str | list[str],
+    domain: str,
     handler: SchemaCommonFlowHandler,
 ) -> vol.Schema:
     """Generate options schema."""
-    return vol.Schema(
+    schema = vol.Schema(
         {
             vol.Required(CONF_ENTITY_ID): entity_selector_without_own_entities(
                 cast(SchemaOptionsFlowHandler, handler.parent_handler),
-                selector.EntitySelectorConfig(domain=domain),
+                selector.EntitySelectorConfig(domain=SOURCE_DOMAINS[domain]),
             ),
             vol.Required(CONF_HIDE_SOURCE, default=False): selector.BooleanSelector(),
         },
     )
+    if domain == Platform.COVER:
+        schema = schema.extend(COVER_SCHEMA)
+    return schema
 
 
-def config_schema(domain: str | list[str]) -> vol.Schema:
+def config_schema(domain: str) -> vol.Schema:
     """Generate config schema."""
-    return vol.Schema(
+    schema = vol.Schema(
         {
             vol.Required(CONF_NAME): selector.TextSelector(),
             vol.Required(CONF_ENTITY_ID): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain=domain),
+                selector.EntitySelectorConfig(domain=SOURCE_DOMAINS[domain]),
             ),
             vol.Required(CONF_HIDE_SOURCE, default=False): selector.BooleanSelector(),
         },
     )
+    if domain == Platform.COVER:
+        schema = schema.extend(COVER_SCHEMA)
+    return schema
 
 
 async def choose_options_step(options: dict[str, Any]) -> str:
@@ -83,9 +105,17 @@ CONFIG_FLOW = {
         config_schema(Platform.BINARY_SENSOR),
         validate_user_input=set_inverse_type(Platform.BINARY_SENSOR),
     ),
+    Platform.COVER: SchemaFlowFormStep(
+        config_schema(Platform.COVER),
+        validate_user_input=set_inverse_type(Platform.COVER),
+    ),
     Platform.SWITCH: SchemaFlowFormStep(
         config_schema(Platform.SWITCH),
         validate_user_input=set_inverse_type(Platform.SWITCH),
+    ),
+    Platform.VALVE: SchemaFlowFormStep(
+        config_schema(Platform.VALVE),
+        validate_user_input=set_inverse_type(Platform.VALVE),
     ),
 }
 
@@ -95,7 +125,9 @@ OPTIONS_FLOW = {
     Platform.BINARY_SENSOR: SchemaFlowFormStep(
         partial(options_schema, Platform.BINARY_SENSOR),
     ),
+    Platform.COVER: SchemaFlowFormStep(partial(options_schema, Platform.COVER)),
     Platform.SWITCH: SchemaFlowFormStep(partial(options_schema, Platform.SWITCH)),
+    Platform.VALVE: SchemaFlowFormStep(partial(options_schema, Platform.VALVE)),
 }
 
 
@@ -129,22 +161,32 @@ class SpookInverseConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
         hass: HomeAssistant,
         options: Mapping[str, Any],
     ) -> None:
-        """Hide or unhide the source entity as requested."""
-        hidden_by = (
-            er.RegistryEntryHider.INTEGRATION if options[CONF_HIDE_SOURCE] else None
-        )
-        _async_hide_source(hass, options[CONF_ENTITY_ID], hidden_by)
+        """Hide the source entity if requested.
+
+        Showing it again is left to the update listener, which knows what the
+        options were before, and whether this inverse was the one hiding it.
+        """
+        if options[CONF_HIDE_SOURCE]:
+            _async_hide_source(
+                hass, options[CONF_ENTITY_ID], er.RegistryEntryHider.INTEGRATION
+            )
 
 
 def _async_hide_source(
     hass: HomeAssistant,
     source_entity_id: str,
-    hidden_by: er.RegistryEntryHider | None,
+    hidden_by: er.RegistryEntryHider,
 ) -> None:
-    """Hide or unhide inverse source."""
+    """Hide inverse source.
+
+    Never over somebody's own decision: a source they hid themselves in its
+    entity settings stays theirs.
+    """
     registry = er.async_get(hass)
     if not (entity_id := er.async_resolve_entity_id(registry, source_entity_id)):
         return
-    if entity_id not in registry.entities:
+    if (entity_entry := registry.async_get(entity_id)) is None:
+        return
+    if entity_entry.hidden_by == er.RegistryEntryHider.USER:
         return
     registry.async_update_entity(entity_id, hidden_by=hidden_by)

@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.lovelace import DOMAIN
-from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
 from homeassistant.core import callback
 from homeassistant.helpers import area_registry as ar
@@ -14,6 +13,7 @@ from ....const import LOGGER
 from ....dashboard_extraction import extract_areas_from_dashboard_node
 from ....entity_filtering import async_filter_known_area_ids, async_get_all_area_ids
 from ....repairs import AbstractSpookRepair
+from ..dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
     from homeassistant.components.lovelace.dashboard import (
@@ -36,7 +36,7 @@ class SpookRepair(AbstractSpookRepair):
     inspect_on_reload = True
     automatically_clean_up_issues = True
 
-    _dashboards: dict[str, LovelaceStorage | LovelaceYAML]
+    _dashboards: dict[str | None, LovelaceStorage | LovelaceYAML]
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
@@ -49,13 +49,11 @@ class SpookRepair(AbstractSpookRepair):
 
         known_area_ids = async_get_all_area_ids(self.hass)
 
-        for dashboard in self._dashboards.values():
-            url_path = dashboard.url_path or "lovelace"
+        async for dashboard, url_path, config in async_dashboard_configs(
+            self._dashboards
+        ):
             self.possible_issue_ids.add(url_path)
-            try:
-                config = await dashboard.async_load(force=False)
-            except ConfigNotFound:
-                LOGGER.debug("Config for dashboard %s not found, skipping", url_path)
+            if config is None:
                 continue
 
             extracted_areas = self.__async_extract_areas(config)
@@ -74,6 +72,7 @@ class SpookRepair(AbstractSpookRepair):
                     title = dashboard.config.get("title", url_path)
                 self.async_create_issue(
                     issue_id=url_path,
+                    references=unknown_areas,
                     translation_placeholders={
                         "areas": "\n".join(
                             f"- `{area_id}`" for area_id in sorted(unknown_areas)
@@ -94,4 +93,14 @@ class SpookRepair(AbstractSpookRepair):
                 view_path: int | str = view.get("path") or view_index
                 for area_id in extract_areas_from_dashboard_node(view):
                     areas.setdefault(area_id, view_path)
+
+        # A dashboard run by a strategy, like the areas dashboard, has no views
+        # stored at all: only the strategy and its options. The views it makes
+        # are opened from the first one.
+        if isinstance(config, dict) and isinstance(
+            strategy := config.get("strategy"), dict
+        ):
+            for area_id in extract_areas_from_dashboard_node(strategy):
+                areas.setdefault(area_id, 0)
+
         return areas

@@ -10,13 +10,13 @@ from homeassistant.helpers import condition as condition_helper
 
 from ....platform_validation import async_filter_unknown_condition_keys
 from ....reference_extraction import extract_platform_keys_from_config
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown condition types in automations.
 
     An automation using a condition from a removed integration fails

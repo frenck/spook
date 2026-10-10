@@ -1,0 +1,63 @@
+"""Spook - Your homie."""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import voluptuous as vol
+
+from homeassistant.components.light import (
+    ATTR_RGB_COLOR,
+    ATTR_SUPPORTED_COLOR_MODES,
+    ATTR_TRANSITION,
+    DOMAIN,
+    color_supported,
+)
+from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_ON
+from homeassistant.helpers import config_validation as cv
+
+from .. import async_lights_that_are_on
+from ..adjusting import AbstractAdjustLightService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
+
+
+class SpookService(AbstractAdjustLightService):
+    """Light service that colours what is already lit.
+
+    Lights that cannot do colour are passed over rather than turned on white,
+    which is what `light.turn_on` with a colour does to them.
+    """
+
+    service = "set_color"
+    schema = cv.make_entity_service_schema(
+        {
+            vol.Required(ATTR_RGB_COLOR): vol.All(
+                vol.Length(min=3, max=3), [vol.All(vol.Coerce(int), vol.Range(0, 255))]
+            ),
+            vol.Optional(ATTR_TRANSITION): cv.positive_float,
+        }
+    )
+
+    async def async_adjust(self, entity_id: str, call: ServiceCall) -> None:
+        """Adjust the lights behind one target."""
+        lights = [
+            light
+            for light in async_lights_that_are_on(self.hass, entity_id)
+            if color_supported(light.attributes.get(ATTR_SUPPORTED_COLOR_MODES))
+        ]
+        if not lights:
+            return
+
+        data: dict[str, object] = {
+            ATTR_ENTITY_ID: [light.entity_id for light in lights]
+        }
+
+        for key in (ATTR_RGB_COLOR, ATTR_TRANSITION):
+            if key in call.data:
+                data[key] = call.data[key]
+
+        await self.hass.services.async_call(
+            DOMAIN, SERVICE_TURN_ON, data, blocking=True, context=call.context
+        )

@@ -7,14 +7,15 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.setup import async_setup_component
 from homeassistant.helpers import (
     area_registry as ar,
     entity_registry as er,
     label_registry as lr,
 )
 
+from custom_components.spook import registry_usage
 from custom_components.spook.const import DOMAIN
-from custom_components.spook.ectoplasms.homeassistant.repairs import unused_labels
 from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels import (
     SpookRepair,
 )
@@ -119,7 +120,7 @@ async def test_label_used_by_automation_is_not_reported(
     label = lr.async_get(hass).async_create("Targeted")
     freezer.tick(_AGED)
     monkeypatch.setattr(
-        unused_labels,
+        registry_usage,
         "automations_with_label",
         lambda _hass, lid: ["automation.lights"] if lid == label.label_id else [],
     )
@@ -139,7 +140,7 @@ async def test_label_used_by_script_is_not_reported(
     label = lr.async_get(hass).async_create("Targeted")
     freezer.tick(_AGED)
     monkeypatch.setattr(
-        unused_labels,
+        registry_usage,
         "scripts_with_label",
         lambda _hass, lid: ["script.lights"] if lid == label.label_id else [],
     )
@@ -192,3 +193,97 @@ async def test_fix_flow_ignore_option_dismisses_issue(
     issue = issue_registry.async_get_issue(DOMAIN, _issue_id(label.label_id))
     assert issue is not None
     assert issue.dismissed_version is not None
+
+
+async def test_a_label_only_named_in_a_repeat_is_not_reported(
+    hass: HomeAssistant,
+    label_registry: lr.LabelRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A `repeat` `for_each` list is a target of nothing.
+
+    Neither Home Assistant's own extraction nor Spook's sees it, and this
+    repair offers to delete what it finds, so being named anywhere is enough
+    to leave it alone.
+    """
+    label = label_registry.async_create("Seasonal")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "walk": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": [label.label_id],
+                                "sequence": [{"action": "light.turn_on", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(label.label_id)) is None
+
+
+async def test_a_label_nobody_mentions_at_all_is_still_reported(
+    hass: HomeAssistant,
+    label_registry: lr.LabelRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """So the check above cannot pass by never reporting anything again."""
+    forgotten = label_registry.async_create("Forgotten")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "walk": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": ["something_else"],
+                                "sequence": [{"action": "light.turn_on", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.label_id))
+
+
+async def test_a_label_put_to_use_since_is_left_alone(
+    hass: HomeAssistant,
+) -> None:
+    """Test the button does not delete a label applied to something since."""
+    label = lr.async_get(hass).async_create("Spooky")
+    flow = _flow_for(hass, label.label_id, "Spooky")
+
+    registry = er.async_get(hass)
+    entity = registry.async_get_or_create("light", "test", "lamp")
+    registry.async_update_entity(entity.entity_id, labels={label.label_id})
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert lr.async_get(hass).async_get_label(label.label_id) is not None
+    assert registry.async_get(entity.entity_id).labels == {label.label_id}

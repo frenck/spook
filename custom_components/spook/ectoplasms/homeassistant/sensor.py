@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import (
     automation,
+    counter,
+    group,
     input_boolean,
     input_button,
     input_datetime,
@@ -17,6 +19,7 @@ from homeassistant.components import (
     person,
     script,
     sun,
+    timer,
     zone,
 )
 from homeassistant.components.sensor import (
@@ -166,6 +169,16 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         value_fn=lambda hass: len(hass.states.async_entity_ids(Platform.CLIMATE)),
     ),
     HomeAssistantSpookSensorEntityDescription(
+        key=counter.DOMAIN,
+        translation_key="homeassistant_counter",
+        entity_id="sensor.counters",
+        icon="mdi:counter",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL,
+        update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
+        value_fn=lambda hass: len(hass.states.async_entity_ids(counter.DOMAIN)),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
         key=Platform.COVER,
         translation_key="homeassistant_cover",
         entity_id="sensor.covers",
@@ -236,6 +249,16 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
         value_fn=lambda hass: len(hass.states.async_entity_ids(Platform.FAN)),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
+        key=group.DOMAIN,
+        translation_key="homeassistant_group",
+        entity_id="sensor.groups",
+        icon="mdi:google-circles-communities",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL,
+        update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
+        value_fn=lambda hass: len(hass.states.async_entity_ids(group.DOMAIN)),
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.HUMIDIFIER,
@@ -513,6 +536,16 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
         value_fn=lambda hass: len(hass.states.async_entity_ids(Platform.TIME)),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
+        key=timer.DOMAIN,
+        translation_key="homeassistant_timer",
+        entity_id="sensor.timers",
+        icon="mdi:timer-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL,
+        update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
+        value_fn=lambda hass: len(hass.states.async_entity_ids(timer.DOMAIN)),
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.TODO,
