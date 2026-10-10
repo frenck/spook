@@ -2,7 +2,7 @@
 subject: Enhanced integrations
 title: Template helpers
 subtitle: Keep template helpers free of ghosts. 👻
-description: Spook inspects Template helpers and raises repair issues for references to unavailable entities and actions.
+description: Spook inspects Template helpers and raises repair issues for references to unavailable entities and actions, and attributes their entities never have.
 date: 2026-08-03T00:00:00+02:00
 ---
 
@@ -43,6 +43,18 @@ by Home Assistant, or restore the integration or script that provided it.
 Templated action names are ignored because their value is determined at runtime.
 Actions of an integration you disabled are ignored too, until you enable it again.
 Spook automatically removes the repair issue once it is fixed.
+
+### Unknown referenced attributes
+
+Spook inspects Template helpers for the attributes they use: attributes named in their templates, like `state_attr('light.kitchen', 'brightness')`, and the `attribute` of state and numeric state conditions and triggers in their actions. If a helper uses an attribute its entity does not have, Spook raises a repair issue. The repair issue lists the helper, the attribute, the entity, and what was most likely meant when Spook is near certain of it.
+
+A template reading an attribute that never shows up gets nothing, and nothing tells you. That is the ghost this catches.
+
+Many attributes only show up some of the time: a media player that is off drops most of its own, and integrations add their own that come and go. So an attribute is only reported when Spook cannot find it anywhere: not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`. An attribute or entity that is only worked out while running, from a variable for example, is not checked.
+
+Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks again when a Template helper is added, changed or removed, when an entity is added or removed, when the entity registry changes, when an integration loads, and once a day.
+
+To resolve the issue, open the linked helper and use an attribute the entity has. Spook automatically removes the repair issue once it is fixed.
 
 ## Feature requests, ideas, and support
 
