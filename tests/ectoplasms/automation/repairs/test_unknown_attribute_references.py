@@ -218,19 +218,35 @@ async def test_not_before_the_recorder_settles(
             None,
         ),
         ("{{ 'light.kitchen' | state_attr('Brightness') }}", {"state_attr": 1}),
+        (
+            (
+                "{% set is_state_attr = 1 %}"
+                "{{ 'light.kitchen' is is_state_attr('Brightness', 255) }}"
+            ),
+            None,
+        ),
+        (
+            "{{ 'light.kitchen' is is_state_attr('Brightness', 255) }}",
+            {"is_state_attr": 1},
+        ),
     ],
-    ids=["set in the template", "variable of the automation"],
+    ids=[
+        "filter, set in the template",
+        "filter, variable of the automation",
+        "test, set in the template",
+        "test, variable of the automation",
+    ],
 )
-async def test_own_name_does_not_hide_the_filter(
+async def test_own_name_does_not_hide_the_filter_or_test(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
     template: str,
     variables: dict[str, Any] | None,
 ) -> None:
-    """Test a name of its own hides the function, not the filter.
+    """Test a name of its own hides the function, not the filter or test.
 
-    Jinja looks filters up in a registry of their own, so this still calls
-    Home Assistant's `state_attr`.
+    Jinja looks filters and tests up in registries of their own, so this
+    still calls Home Assistant's `state_attr` or `is_state_attr`.
     """
     hass.states.async_set("light.kitchen", "on", {"brightness": 255})
     await async_setup_template_automation(hass, template, variables)
@@ -256,8 +272,16 @@ async def test_own_name_does_not_hide_the_filter(
             None,
         ),
         ("{{ state_attr('light.kitchen', 'Brightness') }}", {"state_attr": 1}),
+        (
+            "{{ is_state_attr('light.kitchen', 'Brightness', 255) }}",
+            {"is_state_attr": 1},
+        ),
     ],
-    ids=["macro in the template", "variable of the automation"],
+    ids=[
+        "macro in the template",
+        "variable of the automation",
+        "variable of the automation, is_state_attr",
+    ],
 )
 async def test_own_name_hides_the_function(
     hass: HomeAssistant,

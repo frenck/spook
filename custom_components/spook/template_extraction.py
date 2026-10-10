@@ -1084,8 +1084,11 @@ async def async_extract_entities_from_config(
     return entities
 
 
-# The functions, and filters, that read one attribute of one entity.
+# The functions that read one attribute of one entity. Home Assistant
+# offers `state_attr` as a filter as well, and `is_state_attr` as a test.
 _ATTRIBUTE_FUNCTIONS = frozenset({"is_state_attr", "state_attr"})
+_ATTRIBUTE_FILTER = "state_attr"
+_ATTRIBUTE_TEST = "is_state_attr"
 
 # What may follow an argument for it to be the whole argument: the end of the
 # call, or the next argument. Anything else, like `~`, makes it a piece of one.
@@ -1180,6 +1183,19 @@ def _filter_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
     ):
         return None
     return tokens[index - 2][1], tokens[index + 2][1]
+
+
+def _test_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
+    """Read `'light.x' is is_state_attr('brightness', 255)` at its name.
+
+    Also as `is not`. The value it is compared to has to follow, so the
+    attribute is a whole argument only with a comma after it.
+    """
+    if (subject := _tested_literal(tokens, index)) is None or not _shaped(
+        tokens, index + 1, ("lparen", "string", "comma")
+    ):
+        return None
+    return tokens[subject][1], tokens[index + 2][1]
 
 
 def _states_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
@@ -1281,6 +1297,30 @@ def _named_locally(expressions: list[list[_Token]]) -> set[str]:
     return {name for tokens in expressions for name in _names_defined(tokens)}
 
 
+def _attribute_pair(
+    tokens: list[_Token], index: int, named_locally: frozenset[str] | set[str]
+) -> tuple[str, str] | None:
+    """Read the attribute lookup that starts at the name at this index, if any."""
+    name = tokens[index][1]
+
+    # Filters and tests are Jinja's own registries: a name the template, or
+    # the configuration, defines does not hide one, it only hides a function.
+    # Where Home Assistant offers no such filter or test, the template does
+    # not work at all.
+    if name in _ATTRIBUTE_FUNCTIONS and _is(tokens, index - 1, "pipe"):
+        return _filter_pair(tokens, index) if name == _ATTRIBUTE_FILTER else None
+    if name in _ATTRIBUTE_FUNCTIONS and _is_test(tokens, index):
+        return _test_pair(tokens, index) if name == _ATTRIBUTE_TEST else None
+
+    if name in named_locally:
+        return None
+    if name in _ATTRIBUTE_FUNCTIONS:
+        return _function_pair(tokens, index)
+    if name == "states":
+        return _states_pair(tokens, index)
+    return None
+
+
 @lru_cache(maxsize=1024)
 def extract_attribute_pairs_from_template(
     template_str: str,
@@ -1308,23 +1348,11 @@ def extract_attribute_pairs_from_template(
 
     pairs: set[tuple[str, str]] = set()
     for tokens in expressions:
-        for index, (kind, value) in enumerate(tokens):
+        for index, (kind, _value) in enumerate(tokens):
             if kind != "name":
                 continue
 
-            # Filters are Jinja's own registry: a name the template, or the
-            # configuration, defines does not hide one, it only hides a function.
-            if value in _ATTRIBUTE_FUNCTIONS and _is(tokens, index - 1, "pipe"):
-                pair = _filter_pair(tokens, index)
-            elif value in named_locally:
-                continue
-            elif value in _ATTRIBUTE_FUNCTIONS:
-                pair = _function_pair(tokens, index)
-            elif value == "states":
-                pair = _states_pair(tokens, index)
-            else:
-                continue
-
+            pair = _attribute_pair(tokens, index, named_locally)
             if pair is not None and valid_entity_id(pair[0]):
                 pairs.add(pair)
 
@@ -1382,12 +1410,8 @@ def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     parentheses: without them, where the state ends depends on what follows
     it.
     """
-    subject = index - 2
-    if _is(tokens, index - 1, "name", "not"):
-        subject -= 1
-
     if (
-        not _shaped(tokens, subject, ("string", ("name", "is")))
+        (subject := _tested_literal(tokens, index)) is None
         or not _is(tokens, index + 1, "lparen")
         or (states := _states_argument(tokens, index + 2)) is None
     ):
@@ -1396,6 +1420,21 @@ def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     literals, end = states
     if not _is(tokens, end, "rparen"):
         return set()
+    return {(tokens[subject][1], literal) for literal in literals}
+
+
+def _tested_literal(tokens: list[_Token], index: int) -> int | None:
+    """Return where the literal is that the test at this index is about.
+
+    `'light.x' is` or `'light.x' is not` right before it, and nothing that
+    takes the literal first.
+    """
+    subject = index - 2
+    if _is(tokens, index - 1, "name", "not"):
+        subject -= 1
+
+    if not _shaped(tokens, subject, ("string", ("name", "is"))):
+        return None
 
     # Jinja glues neighbouring strings into one, so a string right before is
     # only the end of the entity ID. And a sign right before can make the
@@ -1403,8 +1442,8 @@ def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     # negation. Telling a sign from a minus between two values is not worth
     # it for this.
     if subject > 0 and tokens[subject - 1][0] in {"string", *_SIGNS}:
-        return set()
-    return {(tokens[subject][1], literal) for literal in literals}
+        return None
+    return subject
 
 
 def _is_test(tokens: list[_Token], index: int) -> bool:

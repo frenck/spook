@@ -334,6 +334,33 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
         ('{{ state_attr("light.kitchen","brightness") }}', PAIR),
         ("{{ is_state_attr('light.kitchen', 'brightness', 255) }}", PAIR),
         ("{{ 'light.kitchen' | state_attr('brightness') }}", PAIR),
+        ("{{ 'light.kitchen' is is_state_attr('brightness', 255) }}", PAIR),
+        ("{{ 'light.kitchen' is not is_state_attr('brightness', 255) }}", PAIR),
+        # The test's arguments are the attribute and the value, not a call.
+        (
+            "{{ 'light.kitchen' is is_state_attr('light.hall', 'x') }}",
+            {("light.kitchen", "light.hall")},
+        ),
+        # A name the template defines hides no filter or test.
+        (
+            "{% set state_attr = 1 %}{{ 'light.kitchen' | state_attr('brightness') }}",
+            PAIR,
+        ),
+        (
+            (
+                "{% macro is_state_attr(a, b, c) %}{% endmacro %}"
+                "{{ 'light.kitchen' is is_state_attr('brightness', 255) }}"
+            ),
+            PAIR,
+        ),
+        # Not where Home Assistant has no such filter or test.
+        ("{{ 'light.kitchen' | is_state_attr('brightness', 255) }}", set()),
+        ("{{ 'light.kitchen' is state_attr('brightness') }}", set()),
+        ("{{ 'light.kitchen' is state_attr('light.hall', 'x') }}", set()),
+        # Nor a piece of the entity or the attribute, or a signed literal.
+        ("{{ 'light.' 'light.kitchen' is is_state_attr('brightness', 1) }}", set()),
+        ("{{ -'light.kitchen' is is_state_attr('brightness', 1) }}", set()),
+        ("{{ 'light.kitchen' is is_state_attr('bright' ~ 'ness', 1) }}", set()),
         ("{{ states.light.kitchen.attributes.brightness }}", PAIR),
         ("{{ states.light.kitchen.attributes['brightness'] }}", PAIR),
         ("{{ states.light.kitchen.attributes.get('brightness', 0) }}", PAIR),
@@ -434,6 +461,9 @@ def test_attribute_pairs_in_templates(
         *shadowing_configs(
             "states", "{{ states.light.kitchen.attributes.brightness }}"
         ),
+        *shadowing_configs(
+            "is_state_attr", "{{ is_state_attr('light.kitchen', 'brightness', 255) }}"
+        ),
     ],
 )
 def test_names_the_configuration_gives_are_no_lookups(config: dict[str, Any]) -> None:
@@ -443,13 +473,21 @@ def test_names_the_configuration_gives_are_no_lookups(config: dict[str, Any]) ->
 
 @pytest.mark.parametrize(
     "config",
-    shadowing_configs("state_attr", "{{ 'light.kitchen' | state_attr('brightness') }}"),
+    [
+        *shadowing_configs(
+            "state_attr", "{{ 'light.kitchen' | state_attr('brightness') }}"
+        ),
+        *shadowing_configs(
+            "is_state_attr",
+            "{{ 'light.kitchen' is is_state_attr('brightness', 255) }}",
+        ),
+    ],
 )
 def test_names_the_configuration_gives_hide_no_filter(config: dict[str, Any]) -> None:
-    """Test a name the configuration took over still leaves the filter alone.
+    """Test a name the configuration took over still leaves a filter or test alone.
 
-    Its names are values handed to the template, and Jinja looks a filter up
-    in a registry of its own.
+    Its names are values handed to the template, and Jinja looks filters
+    and tests up in registries of their own.
     """
     assert extract_attribute_references_from_config(config).pairs == PAIR
 
