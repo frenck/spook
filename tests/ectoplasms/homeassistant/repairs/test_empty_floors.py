@@ -98,8 +98,12 @@ async def test_floor_referenced_by_automation_is_not_reported(
     freezer.tick(_AGED)
     monkeypatch.setattr(
         registry_usage,
-        "automations_with_floor",
-        lambda _hass, fid: ["automation.lights"] if fid == floor.floor_id else [],
+        "async_referencing",
+        lambda _hass, domain, _kind, fid: (
+            ["automation.lights"]
+            if (domain, fid) == ("automation", floor.floor_id)
+            else []
+        ),
     )
 
     await SpookRepair(hass).async_inspect()

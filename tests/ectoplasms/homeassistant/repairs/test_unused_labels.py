@@ -121,8 +121,12 @@ async def test_label_used_by_automation_is_not_reported(
     freezer.tick(_AGED)
     monkeypatch.setattr(
         registry_usage,
-        "automations_with_label",
-        lambda _hass, lid: ["automation.lights"] if lid == label.label_id else [],
+        "async_referencing",
+        lambda _hass, domain, _kind, lid: (
+            ["automation.lights"]
+            if (domain, lid) == ("automation", label.label_id)
+            else []
+        ),
     )
 
     await SpookRepair(hass).async_inspect()
@@ -141,8 +145,10 @@ async def test_label_used_by_script_is_not_reported(
     freezer.tick(_AGED)
     monkeypatch.setattr(
         registry_usage,
-        "scripts_with_label",
-        lambda _hass, lid: ["script.lights"] if lid == label.label_id else [],
+        "async_referencing",
+        lambda _hass, domain, _kind, lid: (
+            ["script.lights"] if (domain, lid) == ("script", label.label_id) else []
+        ),
     )
 
     await SpookRepair(hass).async_inspect()

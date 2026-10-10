@@ -30,7 +30,7 @@ async def test_script_with_unknown_area_creates_issue(
         entity_id="script.spooky",
         name="Spooky",
         unique_id="spooky",
-        script=SimpleNamespace(referenced_areas={area.id, "ghost_area"}),
+        referenced_areas={area.id, "ghost_area"},
     )
     hass.data.setdefault(DATA_INSTANCES, {})["script"] = SimpleNamespace(
         entities=[entity],

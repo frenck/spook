@@ -14,6 +14,7 @@ from ....action_extraction import (
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
+    core_references,
     harmless_entity_mentions,
     mentioned_only_in_disabled_steps,
     without_disabled_steps,
@@ -27,16 +28,6 @@ from ....template_extraction import (
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-
-
-def extract_referenced_entities_from_script(entity: script.ScriptEntity) -> set[str]:
-    """Return entity references from a script entity."""
-    try:
-        return set(entity.script.referenced_entities)
-    except TypeError as err:
-        if str(err) != "unhashable type: 'dict'":
-            raise
-        return set()
 
 
 async def extract_template_entities_from_script_entity(
@@ -123,7 +114,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
         # Get all referenced entities from the script
-        all_entities = extract_referenced_entities_from_script(entity)
+        all_entities = core_references(entity, "entities")
 
         # Home Assistant's own list leaves out entities handed over as action
         # data, like `entity: light.kitchen` in a call to another script. The

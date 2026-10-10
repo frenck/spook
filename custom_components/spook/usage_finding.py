@@ -30,9 +30,6 @@ from .ectoplasms.automation.repairs.unknown_entity_references import (
     extract_entities_from_automation_config,
 )
 from .ectoplasms.lovelace.dashboards import async_dashboard_configs
-from .ectoplasms.script.repairs.unknown_entity_references import (
-    extract_referenced_entities_from_script,
-)
 from .entity_filtering import (
     async_find_services_in_sequence,
     async_get_all_services,
@@ -45,7 +42,11 @@ from .helper_sources import (
     async_helper_sources,
     min_max_members,
 )
-from .reference_extraction import extract_targets_from_config, without_never_rendered
+from .reference_extraction import (
+    core_references,
+    extract_targets_from_config,
+    without_never_rendered,
+)
 from .repairs import INSPECTION_YIELD_INTERVAL
 from .template_extraction import async_extract_entities_from_config
 
@@ -132,7 +133,7 @@ async def _async_named_by_automation(
 
     if "entity" in wanted:
         named["entity"] = (
-            set(entity.referenced_entities)
+            core_references(entity, "entities")
             | await extract_entities_from_automation_config(
                 hass, raw_config, known_services
             )
@@ -166,7 +167,7 @@ async def _async_named_by_script(
     if "entity" in wanted:
         steps = raw_config.get("sequence") or []
         named["entity"] = (
-            (extract_referenced_entities_from_script(entity) if loaded else set())
+            core_references(entity, "entities")
             | await async_extract_entities_from_action_config(
                 hass,
                 [steps] if isinstance(steps, dict) else steps,
@@ -182,13 +183,13 @@ async def _async_named_by_script(
             loaded.sequence, include_disabled=True
         )
 
-    _add_targets(named, loaded or entity, raw_config, wanted)
+    _add_targets(named, entity, raw_config, wanted)
     return named
 
 
 def _add_targets(
     named: dict[ReferenceType, set[str]],
-    source: Any,
+    entity: Any,
     raw_config: Any,
     wanted: tuple[ReferenceType, ...],
 ) -> None:
@@ -199,15 +200,11 @@ def _add_targets(
     """
     targets = extract_targets_from_config(raw_config)
     if "area" in wanted:
-        named["area"] = set(getattr(source, "referenced_areas", ())) | targets.area_ids
+        named["area"] = core_references(entity, "areas") | targets.area_ids
     if "floor" in wanted:
-        named["floor"] = (
-            set(getattr(source, "referenced_floors", ())) | targets.floor_ids
-        )
+        named["floor"] = core_references(entity, "floors") | targets.floor_ids
     if "label" in wanted:
-        named["label"] = (
-            set(getattr(source, "referenced_labels", ())) | targets.label_ids
-        )
+        named["label"] = core_references(entity, "labels") | targets.label_ids
 
 
 def _matches(

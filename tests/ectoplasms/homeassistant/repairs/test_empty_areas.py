@@ -123,8 +123,12 @@ async def test_area_referenced_by_automation_is_not_reported(
     freezer.tick(_AGED)
     monkeypatch.setattr(
         registry_usage,
-        "automations_with_area",
-        lambda _hass, area_id: ["automation.lights"] if area_id == area.id else [],
+        "async_referencing",
+        lambda _hass, domain, _kind, area_id: (
+            ["automation.lights"]
+            if (domain, area_id) == ("automation", area.id)
+            else []
+        ),
     )
 
     await SpookRepair(hass).async_inspect()

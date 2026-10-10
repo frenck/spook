@@ -16,7 +16,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 from dataclasses import dataclass, field
 import re
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
 
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.components.script import EVENT_SCRIPT_STARTED
@@ -32,6 +32,7 @@ from homeassistant.const import (
 from homeassistant.core import callback, valid_entity_id
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
+from .const import LOGGER
 from .template_extraction import (
     KNOWN_DOMAINS,
     extract_attribute_pairs_from_template,
@@ -916,3 +917,52 @@ def async_collect_mentioned_strings(hass: HomeAssistant) -> set[str]:
                 _collect_every_string(raw_config, found)
 
     return found
+
+
+type CoreReferenceKind = Literal["areas", "devices", "entities", "floors", "labels"]
+
+
+def core_references(entity: Any, kind: CoreReferenceKind) -> set[str]:
+    """Return what Home Assistant says one automation or script references.
+
+    Home Assistant reads those off the action data too, and that data is
+    whatever somebody wrote there. An `entity_id: 42`, or a list holding a
+    mapping, makes it raise a `TypeError` instead of answering. Left alone,
+    that takes the whole round down, and every other automation or script
+    goes unchecked. So this one gets an empty list from Home Assistant, and
+    Spook's own walker still reads what it names.
+
+    A copy, because Home Assistant caches the set it hands out, and the
+    repairs add to what they get.
+    """
+    try:
+        return set(getattr(entity, f"referenced_{kind}"))
+    except TypeError as err:
+        LOGGER.debug(
+            "Home Assistant could not list the %s %s references, "
+            "Spook reads it without that list: %s",
+            kind,
+            entity.entity_id,
+            err,
+        )
+        return set()
+
+
+@callback
+def async_referencing(
+    hass: HomeAssistant, domain: str, kind: CoreReferenceKind, reference: str
+) -> list[str]:
+    """Return the automations or scripts that Home Assistant says reference this.
+
+    What `automations_with_area` and its siblings answer, asked one
+    automation or script at a time. Those ask all of them in one go, so the
+    first one Home Assistant cannot read takes the whole answer down.
+    """
+    if not (component := hass.data.get(DATA_INSTANCES, {}).get(domain)):
+        return []
+
+    return [
+        entity.entity_id
+        for entity in component.entities
+        if reference in core_references(entity, kind)
+    ]

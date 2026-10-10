@@ -109,7 +109,7 @@ class DraftError(Exception):
     """A draft that cannot be read as what it says it is."""
 
 
-class _DraftEntity:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+class _DraftEntity:
     """What the repairs read off an automation or script, made from a draft.
 
     The repairs take an entity, because that is what they find in a running
@@ -145,11 +145,34 @@ class _DraftEntity:  # pylint: disable=too-few-public-methods,too-many-instance-
         self.action_script = loaded
         self.script = loaded
 
-        self.referenced_areas = loaded.referenced_areas
-        self.referenced_devices = loaded.referenced_devices
-        self.referenced_entities = loaded.referenced_entities
-        self.referenced_floors = loaded.referenced_floors
-        self.referenced_labels = loaded.referenced_labels
+    # Read when a repair asks, not copied in up front. Home Assistant raises
+    # on some action data, and the repairs know how to carry on without it.
+    # Copied here, the draft would fail before a single repair got to look.
+
+    @property
+    def referenced_areas(self) -> set[str]:
+        """Return the areas Home Assistant says the steps reference."""
+        return self.script.referenced_areas
+
+    @property
+    def referenced_devices(self) -> set[str]:
+        """Return the devices Home Assistant says the steps reference."""
+        return self.script.referenced_devices
+
+    @property
+    def referenced_entities(self) -> set[str]:
+        """Return the entities Home Assistant says the steps reference."""
+        return self.script.referenced_entities
+
+    @property
+    def referenced_floors(self) -> set[str]:
+        """Return the floors Home Assistant says the steps reference."""
+        return self.script.referenced_floors
+
+    @property
+    def referenced_labels(self) -> set[str]:
+        """Return the labels Home Assistant says the steps reference."""
+        return self.script.referenced_labels
 
 
 async def _async_check_with_repairs(
