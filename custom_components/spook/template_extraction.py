@@ -477,9 +477,19 @@ def _is_text_argument_match(
 # The functions that look an entity up through `hass.states.get`, which tries
 # the entity ID in lower case too: `states('sensor.Pump')` reads
 # `sensor.pump`. The registry lookups (`device_id`, `area_id` and friends) do
-# not, so for those a mixed case ID is no entity at all.
+# not, so for those a mixed case ID is no entity at all. Neither does
+# `distance`, which takes an invalid entity ID for a coordinate.
 _STATE_LOOKUPS = frozenset(
-    {"expand", "has_value", "is_state", "is_state_attr", "state_attr", "states"}
+    {
+        "closest",
+        "expand",
+        "has_value",
+        "is_state",
+        "is_state_attr",
+        "state_attr",
+        "state_translated",
+        "states",
+    }
 )
 
 

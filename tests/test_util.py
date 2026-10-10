@@ -211,9 +211,12 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ state_attr( 'Sensor.Pump' , 'x') }}", {"sensor.pump"}),
         ("{{ expand('Light.Kitchen') }}", {"light.kitchen"}),
         ("{{ states.sensor.Pump_Interval.state }}", {"sensor.pump_interval"}),
+        ("{{ state_translated('Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ closest('Sensor.Phone') }}", {"sensor.phone"}),
         # A registry lookup does not, Jinja's own names never ignore case, and
         # mixed case text is just text.
         ("{{ device_id('sensor.Pump_Interval') }}", set()),
+        ("{{ distance('Sensor.Phone') }}", set()),
         ("{{ STATES('sensor.Pump') }}", set()),
         ("{{ States.sensor.Pump.state }}", set()),
         ("{{ 'Sensor.Status' }}", set()),
