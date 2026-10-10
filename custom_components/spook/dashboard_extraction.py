@@ -135,9 +135,11 @@ def _collect_bubble_card(node: dict[str, Any], entities: set[str]) -> None:
 # The areas strategies keep per-area options under `areas_options`, keyed by
 # area ID: the dashboard strategy, and the overview view it hands them to.
 # Each area's `groups_options` hides and orders entities per group, and those
-# two lists are entity IDs. `hidden` and `order` mean anything elsewhere, so
-# they are only read in exactly this spot.
+# two lists are entity IDs. The view of a single area, the `area` view
+# strategy, carries its `groups_options` directly. `hidden` and `order` mean
+# anything elsewhere, so they are only read in exactly these spots.
 _AREAS_STRATEGY_TYPES = frozenset({"areas", "areas-overview"})
+_AREA_VIEW_STRATEGY_TYPE = "area"
 _AREA_GROUP_ENTITY_KEYS = ("hidden", "order")
 
 
@@ -152,21 +154,27 @@ def _areas_options(node: dict[str, Any]) -> dict[Any, Any]:
     return areas_options
 
 
-def _collect_areas_strategy_entities(
-    areas_options: dict[Any, Any], entities: set[str]
-) -> None:
-    """Collect the entities an areas strategy hides or orders per area."""
-    for area_options in areas_options.values():
-        if not isinstance(area_options, dict):
-            continue
-        if not isinstance(groups := area_options.get("groups_options"), dict):
-            continue
+def _collect_group_entities(groups_options: Any, entities: set[str]) -> None:
+    """Collect the entities hidden or ordered in an area's groups."""
+    if not isinstance(groups_options, dict):
+        return
 
-        for group in groups.values():
-            if not isinstance(group, dict):
-                continue
-            for key in _AREA_GROUP_ENTITY_KEYS:
-                _collect_strings(group.get(key), entities)
+    for group in groups_options.values():
+        if not isinstance(group, dict):
+            continue
+        for key in _AREA_GROUP_ENTITY_KEYS:
+            _collect_strings(group.get(key), entities)
+
+
+def _collect_areas_strategy_entities(node: dict[str, Any], entities: set[str]) -> None:
+    """Collect the entities the areas strategies hide or order per area."""
+    # The area card says `type: area` too, but has no `groups_options`.
+    if node.get("type") == _AREA_VIEW_STRATEGY_TYPE:
+        _collect_group_entities(node.get("groups_options"), entities)
+
+    for area_options in _areas_options(node).values():
+        if isinstance(area_options, dict):
+            _collect_group_entities(area_options.get("groups_options"), entities)
 
 
 def _walk(node: Any, entities: set[str]) -> None:
@@ -186,7 +194,7 @@ def _walk(node: Any, entities: set[str]) -> None:
     if node.get("type") == _BUBBLE_CARD_TYPE:
         _collect_bubble_card(node, entities)
 
-    _collect_areas_strategy_entities(_areas_options(node), entities)
+    _collect_areas_strategy_entities(node, entities)
 
     for child in _worth_descending_into(node):
         _walk(child, entities)
