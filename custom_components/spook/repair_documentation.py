@@ -13,6 +13,7 @@ DOCUMENTATION_URL: Final = "https://spook.boo"
 REPAIR_DOCUMENTATION: Final = {
     "alert_unknown_entity_references": "alert#unknown-watched-entity",
     "alert_unknown_notifiers": "alert#unknown-notifiers",
+    "assist_duplicate_names": "conversation#names-assist-cannot-tell-apart",
     "automation_unknown_area_references": "automation#unknown-referenced-areas",
     "automation_unknown_attribute_references": (
         "automation#unknown-referenced-attributes"
