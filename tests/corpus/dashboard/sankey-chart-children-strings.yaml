@@ -1,11 +1,16 @@
 source: https://community.home-assistant.io/t/ha-sankey-chart-card-not-connecting-small-sized-entities/947695/3
 note: >-
-  Sankey chart: the parent rows are entity_id (read), but `children` is a list
-  of plain entity IDs under a key no walk knows, so the leaves are missed.
+  Sankey chart: the rows are entity_id (read), and `children` is a list of
+  plain entity IDs, so a leaf that has no row of its own is only named there.
   `remaining` is a pseudo row, not an entity.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
 expect:
   entities:
-    find: [sensor.house_power, sensor.dishwasher_power]
+    find: [sensor.house_power, sensor.dishwasher_power, sensor.dryer_power]
+    not_find: [sensor.oven_power]
 ---
 type: custom:sankey-chart
 show_units: true

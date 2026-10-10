@@ -1,11 +1,16 @@
 source: https://community.home-assistant.io/t/room-cleaning-not-working-xiaomi-miija-1c-dreame-mc1808-miot-integration/612376/1
 note: >-
   xiaomi-vacuum-map-card takes its map from `map_source.camera`, and
-  `calibration_source.camera: true` is a flag. The vacuum is read; the map
-  camera is missed. The map mode calls a service under a schema of its own.
+  `calibration_source.camera: true` is a flag. The vacuum is read. The map
+  mode calls a service under a schema of its own.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
 expect:
   entities:
     find: [vacuum.robot_cleaner]
+    not_find: [camera.vacuum_map]
 ---
 type: custom:xiaomi-vacuum-map-card
 entity: vacuum.robot_cleaner

@@ -3,9 +3,13 @@ note: >-
   Button card colour driven by a JavaScript state template that compares its
   own entity to a second sensor named only inside the JavaScript, with both
   quote styles. The second sensor never appears under an entity key.
+out_of_scope: >-
+  JavaScript in a custom card runs in the browser and is not read; only the
+  keys the dashboard walk knows are.
 expect:
   entities:
     find: [sensor.installed_version]
+    not_find: [sensor.latest_version]
 ---
 type: horizontal-stack
 cards:

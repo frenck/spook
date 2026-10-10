@@ -1,8 +1,15 @@
 source: https://community.home-assistant.io/t/advanced-camera-card-triggers-not-starting-live-view/986169/1
 note: >-
-  advanced-camera-card (formerly frigate-card) lists cameras by camera_entity,
-  a key no walk knows, so the cameras are missed. The frigate camera name is a
-  label for the Frigate server, not an entity.
+  advanced-camera-card (formerly frigate-card) lists cameras by
+  camera_entity. The frigate camera name is a label for the Frigate server,
+  not an entity.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+expect:
+  entities:
+    not_find: [camera.front_door, camera.backyard, front_door]
 ---
 type: custom:advanced-camera-card
 cameras:

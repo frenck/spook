@@ -205,10 +205,11 @@ class _CorpusDashboard:  # pylint: disable=too-few-public-methods
 def as_dashboard(config: dict[str, Any]) -> dict[str, Any]:
     """Return a case as a whole dashboard, whether it is one, a view or a card.
 
-    The repairs only read dashboards, view by view. A view or a card on its
-    own is put where it would sit, so it is read exactly the same way.
+    The repairs read dashboards, view by view, or the strategy at the root of
+    one that has no views stored. A view or a card on its own is put where it
+    would sit, so it is read exactly the same way.
     """
-    if "views" in config:
+    if "views" in config or isinstance(config.get("strategy"), dict):
         return config
 
     is_view = config.get("type") in _VIEW_TYPES or (

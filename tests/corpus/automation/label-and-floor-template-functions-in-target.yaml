@@ -1,11 +1,18 @@
 source: https://community.home-assistant.io/t/all-entities-in-all-areas-with-given-label/780314/2
 note: >-
   Targets built from floor_areas, area_entities and label_entities with a
-  namespace loop. The label, floor and area repairs read targets, not template
-  functions, so the IDs passed to these functions are not checked.
+  namespace loop.
+out_of_scope: >-
+  The area, floor, label and device repairs read targets and reference keys.
+  IDs handed to template functions are not read, with device_entities and
+  device_attr as the exceptions for devices.
 expect:
   services:
     find: [light.turn_off]
+  floors:
+    not_find: [outside]
+  labels:
+    not_find: [garden_lights]
 ---
 alias: Outside lights off
 triggers:

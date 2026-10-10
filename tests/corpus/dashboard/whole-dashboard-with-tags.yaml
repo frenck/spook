@@ -3,14 +3,18 @@ note: >-
   A whole dashboard in YAML mode: two views, a card pulled in with
   `!include`, an iframe whose address is a `!secret`, and picture elements.
   Tagged values load as plain text and are no reference. A markdown card's
-  template is free text: the dashboard readers only read keys that name an
-  entity, so the sensor in it is not read.
+  template names a sensor that no card key does.
+out_of_scope: >-
+  The dashboard repairs read keys that name a reference, never templates:
+  the frontend or a custom card renders those, and what they turn into is
+  not something to look up ahead of time.
 expect:
   entities:
     find: [light.garden, switch.fountain, sensor.rain_today]
     not_find:
       - "!include cards/energy.yaml"
       - "!secret camera_url"
+      - sensor.wind_speed
 ---
 title: Home
 views:

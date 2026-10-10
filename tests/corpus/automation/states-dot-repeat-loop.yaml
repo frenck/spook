@@ -2,12 +2,16 @@ source: https://community.home-assistant.io/t/foreach-if-with-value-template-can
 note: >-
   for_each over a list of switch IDs, with the loop item written as
   states.repeat.state in a template. repeat is not a domain, so no entity is
-  referenced there. The items of a for_each are data until something uses
-  them, like variables, so the switches are not read either.
+  referenced there.
+out_of_scope: >-
+  Variables and for_each items are values somebody hands over. A literal
+  under a reference key like entity_id is read; a plain string under a key
+  of somebody's own is data until a template uses it, and Spook does not
+  follow that use.
 expect:
   entities:
     find: [input_text.expected_relay_state, counter.relay_mismatch]
-    not_find: [repeat.state]
+    not_find: [repeat.state, switch.pump_shed_relay, switch.meter_box_relay]
 ---
 alias: Count relays in the expected state
 triggers:

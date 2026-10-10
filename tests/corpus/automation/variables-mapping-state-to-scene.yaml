@@ -1,11 +1,17 @@
 source: https://community.home-assistant.io/t/need-help-with-calling-input-selector-value-in-automation-wled/645732
 note: >-
   A variables mapping from input_select options to scene IDs, indexed by
-  trigger.to_state.state. Keys include None, which YAML loads as the string here
-  because it is not lowercase null.
+  trigger.to_state.state. Keys include None, which YAML loads as the string
+  here because it is not lowercase null.
+out_of_scope: >-
+  Variables and for_each items are values somebody hands over. A literal
+  under a reference key like entity_id is read; a plain string under a key
+  of somebody's own is data until a template uses it, and Spook does not
+  follow that use.
 expect:
   entities:
     find: [input_select.holiday]
+    not_find: [scene.driveway_christmas]
 ---
 alias: Holiday selector sets the scene
 description: ""

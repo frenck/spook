@@ -138,14 +138,8 @@ def _untyped_entries(reference_type: str, rule: dict[str, Any]) -> list[str]:
     return problems
 
 
-@pytest.mark.parametrize(
-    "path",
-    all_case_paths(KINDS),
-    ids=lambda path: f"{path.parent.name}/{path.stem}",
-)
-def test_case_file_is_well_formed(path: Path) -> None:
-    """Test a case file says where it comes from and asks only what exists."""
-    case = load_case(path)
+def _metadata_problems(case: Case) -> list[str]:
+    """Return what is wrong with the first document of a case, described."""
     problems: list[str] = []
 
     for key in ("source", "note"):
@@ -156,8 +150,10 @@ def test_case_file_is_well_formed(path: Path) -> None:
     if unknown_keys := set(case.metadata) - METADATA_KEYS:
         problems.append(f"unknown metadata keys: {sorted(unknown_keys)}")
 
-    expect = case.metadata.get("expect") or {}
-    if not isinstance(expect, dict):
+    # Only an absent `expect` means no rules. `expect: []`, `expect: false`
+    # or a bare `expect:` is a rule that went missing, not a choice.
+    expect = case.metadata.get("expect", {})
+    if not isinstance(expect, dict) or ("expect" in case.metadata and not expect):
         problems.append("`expect` is not a mapping of reference types")
         expect = {}
 
@@ -176,6 +172,40 @@ def test_case_file_is_well_formed(path: Path) -> None:
             continue
         problems.extend(_untyped_entries(reference_type, rule))
 
+    if "out_of_scope" in case.metadata:
+        problems.extend(_out_of_scope_problems(case.metadata["out_of_scope"], expect))
+
+    return problems
+
+
+def _out_of_scope_problems(reason: Any, expect: dict[str, Any]) -> list[str]:
+    """Return what is wrong with an `out_of_scope` mark, described.
+
+    What Spook leaves alone on purpose is pinned as not found, so the day a
+    reader starts taking it, the case has to say so.
+    """
+    problems: list[str] = []
+    if not isinstance(reason, str) or not reason.strip():
+        problems.append("`out_of_scope` is not a reason")
+    if not any(
+        isinstance(rule, dict) and rule.get("not_find") for rule in expect.values()
+    ):
+        problems.append(
+            "`out_of_scope` needs a `not_find` rule naming what is left alone"
+        )
+    return problems
+
+
+@pytest.mark.parametrize(
+    "path",
+    all_case_paths(KINDS),
+    ids=lambda path: f"{path.parent.name}/{path.stem}",
+)
+def test_case_file_is_well_formed(path: Path) -> None:
+    """Test a case file says where it comes from and asks only what exists."""
+    case = load_case(path)
+    problems = _metadata_problems(case)
+
     if not case.config:
         problems.append("the configuration document is empty")
     elif not isinstance(case.config, dict):
@@ -184,6 +214,40 @@ def test_case_file_is_well_formed(path: Path) -> None:
     assert not problems, f"{case.location}:\n" + "\n".join(
         f"- {line}" for line in problems
     )
+
+
+@pytest.mark.parametrize(
+    ("metadata", "problem"),
+    [
+        pytest.param("expect: []", "`expect` is not a mapping", id="empty list"),
+        pytest.param("expect: false", "`expect` is not a mapping", id="false"),
+        pytest.param("expect:", "`expect` is not a mapping", id="bare"),
+        pytest.param(
+            "out_of_scope: not read\nexpect:\n  entities:\n    find: [light.a]",
+            "needs a `not_find` rule",
+            id="out of scope without not_find",
+        ),
+        pytest.param(
+            "out_of_scope:\nexpect:\n  entities:\n    not_find: [light.a]",
+            "`out_of_scope` is not a reason",
+            id="out of scope without a reason",
+        ),
+    ],
+)
+def test_malformed_metadata_is_reported(
+    tmp_path: Path, metadata: str, problem: str
+) -> None:
+    """Test metadata that is there but says nothing usable does not pass."""
+    path = tmp_path / "automation" / "malformed.yaml"
+    path.parent.mkdir()
+    path.write_text(
+        f"source: here\nnote: malformed\n{metadata}\n---\nalias: Malformed\n",
+        encoding="utf-8",
+    )
+
+    problems = _metadata_problems(load_case(path))
+
+    assert any(problem in line for line in problems), problems
 
 
 def test_every_kind_has_cases() -> None:

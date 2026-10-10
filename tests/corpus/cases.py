@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 CORPUS = Path(__file__).parent
 
 #: What a case may say about itself in its first document.
-METADATA_KEYS = frozenset({"source", "note", "expect", "known_issue"})
+METADATA_KEYS = frozenset({"source", "note", "expect", "known_issue", "out_of_scope"})
 
 #: What a rule under `expect` may hold, per reference type.
 RULE_KEYS = frozenset({"find", "not_find"})

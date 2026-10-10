@@ -2,11 +2,16 @@ source: https://community.home-assistant.io/t/title-automation-cannot-see-entity
 note: >-
   for_each built by looping over every state and testing labels(), without a
   namespace so the list stays empty; then states(repeat.item).last_changed on
-  a string. The label name is compared with what labels() returns, which the
-  label repair does not read: it reads targets only.
+  a string. The label name is compared with what labels() returns.
+out_of_scope: >-
+  The area, floor, label and device repairs read targets and reference keys.
+  IDs handed to template functions are not read, with device_entities and
+  device_attr as the exceptions for devices.
 expect:
   services:
     find: [light.turn_off]
+  labels:
+    not_find: [lights]
 ---
 alias: Lights off after ten hours
 description: Turns off any light carrying the lights label that has been on for ten hours.

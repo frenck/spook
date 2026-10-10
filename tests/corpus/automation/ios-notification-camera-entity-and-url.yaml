@@ -2,7 +2,7 @@ source: https://community.home-assistant.io/t/ios-notification-uri-minimizing-ap
 note: >-
   iOS notification with a live camera attached through data.entity_id, a URI
   action button, and a camera proxy image path. The entity_id is a real
-  reference; the path names the camera too but is a URL, not read.
+  reference; the path names the camera too, as part of a URL, which is no reference.
 expect:
   entities:
     find: [camera.gate]

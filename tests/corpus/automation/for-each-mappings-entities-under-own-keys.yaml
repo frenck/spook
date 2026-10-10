@@ -2,10 +2,17 @@ source: https://community.home-assistant.io/t/do-i-have-an-error/883210/1
 note: >-
   repeat for_each over mappings that pair a sensor with the helpers that go
   with it, used as repeat.item.sensor and friends. The entities sit under keys
-  of the person's own choosing in plain strings, so no reader sees them.
+  of the person's own choosing.
+out_of_scope: >-
+  Variables and for_each items are values somebody hands over. A literal
+  under a reference key like entity_id is read; a plain string under a key
+  of somebody's own is data until a template uses it, and Spook does not
+  follow that use.
 expect:
   services:
     find: [input_text.set_value]
+  entities:
+    not_find: [sensor.hallway_illuminance, input_text.hallway_light_level]
 ---
 alias: Quantize light levels
 triggers:
