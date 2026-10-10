@@ -14,8 +14,10 @@ from ....action_extraction import (
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
+    VALUE_KEYS,
     custom_event_payload_entities,
     event_payload_keys_to_leave_alone,
+    numeric_state_threshold_entities,
     without_disabled_steps,
     without_never_rendered,
 )
@@ -108,13 +110,18 @@ async def _entities_from_reference_fields(
     hass: HomeAssistant,
     config: dict[str, Any],
     known_services: set[str],
+    *,
+    in_values: bool = False,
 ) -> set[str]:
     """Extract entities from the config keys that name a reference.
 
     ``zone`` is in here because a zone trigger and a zone condition both name
-    one, and it is read exactly like the others.
+    one, and it is read exactly like the others. So is the entity a numeric
+    state trigger or condition takes as its threshold, unless the dictionary
+    sits below a key that holds values: event data that only looks like one
+    is still event data.
     """
-    entities = set()
+    entities = set() if in_values else numeric_state_threshold_entities(config)
     for key in ("entity_id", "device_id", "zone"):
         if key in config:
             entities.update(
@@ -129,6 +136,8 @@ async def extract_entities_from_trigger_config(
     hass: HomeAssistant,
     config: dict[str, Any] | list,
     known_services: set[str] | None = None,
+    *,
+    _in_values: bool = False,
 ) -> set[str]:
     """Extract entity IDs from trigger configuration."""
     entities = set()
@@ -142,14 +151,20 @@ async def extract_entities_from_trigger_config(
     if isinstance(config, list):
         for item in config:
             entities.update(
-                await extract_entities_from_trigger_config(hass, item, known_services)
+                await extract_entities_from_trigger_config(
+                    hass, item, known_services, _in_values=_in_values
+                )
             )
         return entities
 
     if not isinstance(config, dict):
         return entities
 
-    entities.update(await _entities_from_reference_fields(hass, config, known_services))
+    entities.update(
+        await _entities_from_reference_fields(
+            hass, config, known_services, in_values=_in_values
+        )
+    )
 
     payload_keys = event_payload_keys_to_leave_alone(config)
 
@@ -160,7 +175,12 @@ async def extract_entities_from_trigger_config(
 
         if isinstance(value, (dict, list)):
             entities.update(
-                await extract_entities_from_trigger_config(hass, value, known_services)
+                await extract_entities_from_trigger_config(
+                    hass,
+                    value,
+                    known_services,
+                    _in_values=_in_values or key in VALUE_KEYS,
+                )
             )
 
     return entities
@@ -198,6 +218,8 @@ async def extract_entities_from_condition_config(
     hass: HomeAssistant,
     config: dict[str, Any] | list,
     known_services: set[str] | None = None,
+    *,
+    _in_values: bool = False,
 ) -> set[str]:
     """Extract entity IDs from condition configuration."""
     entities = set()
@@ -211,21 +233,30 @@ async def extract_entities_from_condition_config(
     if isinstance(config, list):
         for item in config:
             entities.update(
-                await extract_entities_from_condition_config(hass, item, known_services)
+                await extract_entities_from_condition_config(
+                    hass, item, known_services, _in_values=_in_values
+                )
             )
         return entities
 
     if not isinstance(config, dict):
         return entities
 
-    entities.update(await _entities_from_reference_fields(hass, config, known_services))
+    entities.update(
+        await _entities_from_reference_fields(
+            hass, config, known_services, in_values=_in_values
+        )
+    )
 
     # Extract from nested configs
-    for value in config.values():
+    for key, value in config.items():
         if isinstance(value, (dict, list)):
             entities.update(
                 await extract_entities_from_condition_config(
-                    hass, value, known_services
+                    hass,
+                    value,
+                    known_services,
+                    _in_values=_in_values or key in VALUE_KEYS,
                 )
             )
 

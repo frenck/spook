@@ -1448,3 +1448,203 @@ async def test_a_field_called_variables_elsewhere_is_not_dug_into(
     )
 
     assert await _async_unknown_in_automation(hass, config) == set()
+
+
+# The corpus case: a threshold is read from a helper, both on the trigger and
+# on a condition. The thresholds themselves are gone, the rest is there.
+_THRESHOLD_HELPERS: dict[str, Any] = {
+    "alias": "Keep minimum below maximum",
+    "triggers": [
+        {
+            "trigger": "numeric_state",
+            "entity_id": "input_number.alarm_temperature_min",
+            "above": "input_number.alarm_temperature_max",
+        }
+    ],
+    "conditions": [
+        {
+            "condition": "numeric_state",
+            "entity_id": "sensor.freezer_temperature",
+            "below": "input_number.freezer_limit",
+        }
+    ],
+    "actions": [
+        {
+            "if": [
+                {
+                    "condition": "numeric_state",
+                    "entity_id": "sensor.freezer_temperature",
+                    "above": "sensor.freezer_alarm",
+                }
+            ],
+            "then": [{"delay": 0}],
+        }
+    ],
+}
+
+
+async def test_a_missing_numeric_state_threshold_entity_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity a numeric state threshold is read from is a reference.
+
+    Home Assistant compares against its state, and with it gone the trigger
+    and the conditions fail. Its own reading only takes `entity_id`.
+    """
+    hass.states.async_set("input_number.alarm_temperature_min", "1")
+    hass.states.async_set("sensor.freezer_temperature", "-18")
+
+    assert await _async_unknown_in_automation(hass, _THRESHOLD_HELPERS) == {
+        "input_number.alarm_temperature_max",
+        "input_number.freezer_limit",
+        "sensor.freezer_alarm",
+    }
+
+
+async def test_a_numeric_state_threshold_that_is_a_number_is_no_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test a plain number as a threshold is no entity, and one that is there is fine.
+
+    Home Assistant takes the entity ID in lower case, so a mixed case one
+    reads the helper that is there.
+    """
+    hass.states.async_set("sensor.freezer_temperature", "-18")
+    hass.states.async_set("input_number.freezer_limit", "-15")
+
+    config: dict[str, Any] = {
+        "alias": "Freezer",
+        "triggers": [
+            {
+                "trigger": "numeric_state",
+                "entity_id": "sensor.freezer_temperature",
+                "above": -30,
+                "below": "input_number.Freezer_Limit",
+            }
+        ],
+        "actions": [],
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == set()
+
+
+# Shaped like a numeric state condition, yet only a value somebody hands over.
+_LOOKS_LIKE_A_THRESHOLD = {"condition": "numeric_state", "above": "sensor.label"}
+
+
+@pytest.mark.parametrize(
+    ("triggers", "actions"),
+    [
+        pytest.param(
+            [
+                {
+                    "trigger": "event",
+                    "event_type": "timer.finished",
+                    "event_data": {"entity_id": "timer.tea", **_LOOKS_LIKE_A_THRESHOLD},
+                }
+            ],
+            [],
+            id="event_data of an integration event trigger",
+        ),
+        pytest.param(
+            [
+                {
+                    "trigger": "state",
+                    "entity_id": "timer.tea",
+                    "variables": {"limit": _LOOKS_LIKE_A_THRESHOLD},
+                }
+            ],
+            [],
+            id="variables of a trigger",
+        ),
+        pytest.param(
+            [],
+            [{"event": "label_printed", "event_data": _LOOKS_LIKE_A_THRESHOLD}],
+            id="event_data of an event action",
+        ),
+        pytest.param(
+            [],
+            [
+                {
+                    "event": "label_printed",
+                    "event_data_template": _LOOKS_LIKE_A_THRESHOLD,
+                }
+            ],
+            id="event_data_template of an event action",
+        ),
+        pytest.param(
+            [],
+            [{"variables": {"limit": _LOOKS_LIKE_A_THRESHOLD}}],
+            id="variables step",
+        ),
+        pytest.param(
+            [],
+            [
+                {
+                    "action": "script.label_printer",
+                    "data": {"limit": _LOOKS_LIKE_A_THRESHOLD},
+                }
+            ],
+            id="action data",
+        ),
+        pytest.param(
+            [],
+            [
+                {
+                    "action": "script.label_printer",
+                    "data_template": {"limit": _LOOKS_LIKE_A_THRESHOLD},
+                }
+            ],
+            id="old style action data",
+        ),
+        pytest.param(
+            [],
+            [
+                {
+                    "repeat": {
+                        "for_each": [_LOOKS_LIKE_A_THRESHOLD],
+                        "sequence": [{"delay": 0}],
+                    }
+                }
+            ],
+            id="for_each items",
+        ),
+        pytest.param(
+            [],
+            [
+                {
+                    "wait_for_trigger": [
+                        {
+                            "trigger": "event",
+                            "event_type": "timer.finished",
+                            "event_data": {
+                                "entity_id": "timer.tea",
+                                **_LOOKS_LIKE_A_THRESHOLD,
+                            },
+                        }
+                    ]
+                }
+            ],
+            id="event_data of a trigger waited for",
+        ),
+    ],
+)
+async def test_a_value_shaped_like_a_threshold_is_no_reference(
+    hass: HomeAssistant, triggers: list[Any], actions: list[Any]
+) -> None:
+    """Test a value that looks like a numeric state condition is left alone.
+
+    Event data, variables, action data and the items a repeat goes over hold
+    whatever somebody put there. Only a real trigger or condition has a
+    threshold.
+    """
+    hass.states.async_set("timer.tea", "idle")
+    config: dict[str, Any] = {
+        "alias": "Labels",
+        "triggers": triggers or [{"trigger": "homeassistant", "event": "start"}],
+        "actions": actions,
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == set()
+    # Home Assistant takes the configuration, so this is one that works.
+    assert hass.states.get("automation.labels").state == "on"

@@ -506,3 +506,41 @@ async def test_a_state_change_waited_for_is_still_reported(
     assert await _unknown_in_script(hass, scripts, "remote") == {
         "light.from_the_remote"
     }
+
+
+async def test_a_missing_numeric_state_threshold_entity_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity a condition in a step compares against is a reference.
+
+    Home Assistant reads the threshold from that entity, so with it gone the
+    condition fails. A trigger waited for reads it the same way, and a plain
+    number is no entity at all.
+    """
+    hass.states.async_set("sensor.freezer_temperature", "-18")
+    scripts = {
+        "freezer": {
+            "sequence": [
+                {
+                    "condition": "numeric_state",
+                    "entity_id": "sensor.freezer_temperature",
+                    "below": "input_number.freezer_limit",
+                    "above": -30,
+                },
+                {
+                    "wait_for_trigger": [
+                        {
+                            "trigger": "numeric_state",
+                            "entity_id": "sensor.freezer_temperature",
+                            "above": "number.freezer_alarm",
+                        }
+                    ]
+                },
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "freezer") == {
+        "input_number.freezer_limit",
+        "number.freezer_alarm",
+    }
