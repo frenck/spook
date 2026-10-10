@@ -132,6 +132,43 @@ def _collect_bubble_card(node: dict[str, Any], entities: set[str]) -> None:
             _collect_strings(value, entities)
 
 
+# The areas strategies keep per-area options under `areas_options`, keyed by
+# area ID: the dashboard strategy, and the overview view it hands them to.
+# Each area's `groups_options` hides and orders entities per group, and those
+# two lists are entity IDs. `hidden` and `order` mean anything elsewhere, so
+# they are only read in exactly this spot.
+_AREAS_STRATEGY_TYPES = frozenset({"areas", "areas-overview"})
+_AREA_GROUP_ENTITY_KEYS = ("hidden", "order")
+
+
+def _areas_options(node: dict[str, Any]) -> dict[Any, Any]:
+    """Return the per-area options of an areas strategy, if this is one."""
+    if not isinstance(strategy_type := node.get("type"), str):
+        return {}
+    if strategy_type not in _AREAS_STRATEGY_TYPES:
+        return {}
+    if not isinstance(areas_options := node.get("areas_options"), dict):
+        return {}
+    return areas_options
+
+
+def _collect_areas_strategy_entities(
+    areas_options: dict[Any, Any], entities: set[str]
+) -> None:
+    """Collect the entities an areas strategy hides or orders per area."""
+    for area_options in areas_options.values():
+        if not isinstance(area_options, dict):
+            continue
+        if not isinstance(groups := area_options.get("groups_options"), dict):
+            continue
+
+        for group in groups.values():
+            if not isinstance(group, dict):
+                continue
+            for key in _AREA_GROUP_ENTITY_KEYS:
+                _collect_strings(group.get(key), entities)
+
+
 def _walk(node: Any, entities: set[str]) -> None:
     """Recursively collect entity references from a configuration node."""
     if isinstance(node, list):
@@ -148,6 +185,8 @@ def _walk(node: Any, entities: set[str]) -> None:
 
     if node.get("type") == _BUBBLE_CARD_TYPE:
         _collect_bubble_card(node, entities)
+
+    _collect_areas_strategy_entities(_areas_options(node), entities)
 
     for child in _worth_descending_into(node):
         _walk(child, entities)
@@ -223,6 +262,9 @@ def _walk_areas(node: Any, areas: set[str]) -> None:
     if isinstance(areas_display := node.get("areas_display"), dict):
         for sub_key in ("hidden", "order"):
             _collect_plain(areas_display.get(sub_key), areas)
+
+    # And keys its per-area options by area ID.
+    _collect_plain(list(_areas_options(node)), areas)
 
     for child in _worth_descending_into(node):
         _walk_areas(child, areas)

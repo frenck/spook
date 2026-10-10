@@ -220,6 +220,23 @@ def test_area_references_from_cards_and_strategy() -> None:
     }
 
 
+def test_areas_overview_view_strategy_options() -> None:
+    """Test the overview view the areas dashboard makes reads the same options."""
+    view = {
+        "strategy": {
+            "type": "areas-overview",
+            "areas_options": {
+                "office": {
+                    "groups_options": {"lights": {"hidden": ["light.office"]}},
+                },
+            },
+        },
+    }
+
+    assert extract_areas_from_dashboard_node(view) == {"office"}
+    assert extract_entities_from_dashboard_node(view) == {"light.office"}
+
+
 def test_area_extraction_ignores_unrelated_keys() -> None:
     """Test non-area keys are not collected as area references."""
     config = {"type": "entity", "entity": "sensor.x", "name": "kitchen"}
