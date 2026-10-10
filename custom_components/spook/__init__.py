@@ -160,9 +160,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     entry.async_on_unload(_note_the_unload)
 
-    async def _ghost_busters(_: Event | None = None) -> None:
+    async def _ghost_busters(started: Event | None = None) -> None:
         """Send them in, time for some ghost chasing."""
-        await repairs.async_setup()
+        # Called by the started event means Home Assistant only just came up,
+        # so the repairs take turns for their first look instead of all
+        # looking at once.
+        await repairs.async_setup(spread_first_inspections=started is not None)
 
         if unloaded:
             await repairs.async_on_unload()

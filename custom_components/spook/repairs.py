@@ -109,6 +109,12 @@ _FINGERPRINT_LENGTH = 8
 # not prune it below this.
 _MIN_MAX_MINIMUM_MEMBERS = 2
 
+# How long the first round of inspections after a start is spread over. All
+# of them looking at once, on an instance that has only just started and
+# often still has integrations adding devices, is a solid block of work at
+# the worst moment for it. #1898.
+FIRST_INSPECTIONS_SPREAD_OVER = timedelta(minutes=2)
+
 
 def _plural(items: Sized) -> str:
     """Return the plural suffix for a sized collection."""
@@ -329,7 +335,9 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
     #: Wait this long after activating before looking at all, and ignore
     #: everything that would trigger a look until then. For repairs that ask
-    #: the recorder, which has its hands full right after a start.
+    #: the recorder, which has its hands full right after a start. After a
+    #: start the repair manager hands every repair without one its own turn
+    #: instead, so they do not all look at the same moment.
     first_inspection_delay: timedelta | None = None
 
     #: Re-run the inspection when an entity appears or goes. Needed by repairs
@@ -968,8 +976,15 @@ class SpookRepairManager:
         self.issue_registry = ir.async_get(self.hass)
         LOGGER.debug("Spook repair manager initialized")
 
-    async def async_setup(self) -> None:
-        """Set up the Spook repairs."""
+    async def async_setup(self, *, spread_first_inspections: bool = False) -> None:
+        """Set up the Spook repairs.
+
+        Right after a start, the first inspections are spread out rather than
+        all run at once. Anything that happens before a repair's turn comes
+        is not looked at separately, as that first look sees how things ended
+        up anyway. On a reload or a first setup on a running instance, the
+        house is quiet and everything looks straight away, like it always did.
+        """
         LOGGER.debug("Setting up Spook repairs")
 
         modules: list[ModuleType] = []
@@ -985,21 +1000,37 @@ class SpookRepairManager:
                 modules.append(importlib.import_module(f".{module_path}", __package__))
 
         await self.hass.async_add_import_executor_job(_load_all_repair_modules)
+
+        first_inspection_delays = (
+            _first_inspection_delays(modules) if spread_first_inspections else {}
+        )
+
         await asyncio.gather(
             *(
-                create_eager_task(self._async_setup_repair_module(module))
+                create_eager_task(
+                    self._async_setup_repair_module(
+                        module, first_inspection_delays.get(module.__name__)
+                    )
+                )
                 for module in modules
             )
         )
 
-    async def _async_setup_repair_module(self, module: ModuleType) -> None:
+    async def _async_setup_repair_module(
+        self, module: ModuleType, first_inspection_delay: timedelta | None = None
+    ) -> None:
         """Set up a single repair module, isolating failures.
 
         A repair that fails to set up must not prevent the rest of Spook
         from loading.
         """
         try:
-            await self.async_activate(module.SpookRepair(self.hass))
+            repair = module.SpookRepair(self.hass)
+
+            if first_inspection_delay is not None:
+                repair.first_inspection_delay = first_inspection_delay
+
+            await self.async_activate(repair)
         # pylint: disable-next=broad-exception-caught
         except Exception:  # noqa: BLE001
             LOGGER.exception(
@@ -1050,6 +1081,35 @@ class SpookRepairManager:
                 repair.repair,
             )
             await repair.async_deactivate()
+
+
+def _takes_a_turn(repair_class: type | None) -> bool:
+    """Return whether a repair waits for a turn at its first look."""
+    return (
+        isinstance(repair_class, type)
+        and issubclass(repair_class, AbstractSpookRepair)
+        and repair_class.first_inspection_delay is None
+    )
+
+
+def _first_inspection_delays(modules: Iterable[ModuleType]) -> dict[str, timedelta]:
+    """Give every repair module its turn for a first look, evenly spread.
+
+    In order of module name, so the same repair always looks at the same
+    moment after a start, which keeps it predictable for people and tests.
+    Repairs that set their own delay keep it: they wait for the recorder,
+    which is a later moment than any of these turns.
+    """
+    taking_turns = sorted(
+        module.__name__
+        for module in modules
+        if _takes_a_turn(getattr(module, "SpookRepair", None))
+    )
+    if not taking_turns:
+        return {}
+
+    turn = FIRST_INSPECTIONS_SPREAD_OVER / len(taking_turns)
+    return {name: turn * index for index, name in enumerate(taking_turns)}
 
 
 class RestartRequiredFixFlow(RepairsFlow):

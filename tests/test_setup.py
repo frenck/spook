@@ -79,7 +79,7 @@ class _NoopSpookRepairManager:
         """Initialize the no-op repair manager."""
         self.hass = hass
 
-    async def async_setup(self) -> None:
+    async def async_setup(self, *, spread_first_inspections: bool = False) -> None:
         """Set up no repairs."""
 
     async def async_on_unload(self) -> None:
@@ -126,14 +126,16 @@ class _RecordingSpookRepairManager:
     """Repair manager that records whether it was set up."""
 
     setups = 0
+    spread: list[bool] = []
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the recording repair manager."""
         self.hass = hass
 
-    async def async_setup(self) -> None:
-        """Record that repairs were set up."""
+    async def async_setup(self, *, spread_first_inspections: bool = False) -> None:
+        """Record that repairs were set up, and whether they take turns."""
         type(self).setups += 1
+        type(self).spread.append(spread_first_inspections)
 
     async def async_on_unload(self) -> None:
         """Unload no repairs."""
@@ -743,6 +745,7 @@ async def test_repairs_are_set_up_when_loaded_after_start(
     monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
     monkeypatch.setattr(spook, "SpookRepairManager", _RecordingSpookRepairManager)
     monkeypatch.setattr(_RecordingSpookRepairManager, "setups", 0)
+    monkeypatch.setattr(_RecordingSpookRepairManager, "spread", [])
 
     hass.set_state(CoreState.running)
 
@@ -753,6 +756,9 @@ async def test_repairs_are_set_up_when_loaded_after_start(
     await hass.async_block_till_done()
 
     assert _RecordingSpookRepairManager.setups == 1
+
+    # A running house is a quiet one: no reason to make anything wait.
+    assert _RecordingSpookRepairManager.spread == [False]
 
 
 async def test_repairs_are_set_up_once_when_loaded_before_start(
@@ -773,6 +779,7 @@ async def test_repairs_are_set_up_once_when_loaded_before_start(
     monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
     monkeypatch.setattr(spook, "SpookRepairManager", _RecordingSpookRepairManager)
     monkeypatch.setattr(_RecordingSpookRepairManager, "setups", 0)
+    monkeypatch.setattr(_RecordingSpookRepairManager, "spread", [])
 
     hass.set_state(CoreState.not_running)
 
@@ -789,6 +796,9 @@ async def test_repairs_are_set_up_once_when_loaded_before_start(
     await hass.async_block_till_done()
 
     assert _RecordingSpookRepairManager.setups == 1
+
+    # Only just started, so the first looks take turns. #1898.
+    assert _RecordingSpookRepairManager.spread == [True]
 
 
 async def test_repairs_still_starting_when_spook_unloads_are_torn_down(
@@ -816,7 +826,11 @@ async def test_repairs_still_starting_when_spook_unloads_are_torn_down(
     class _SlowSpookRepairManager(_NoopSpookRepairManager):
         """Repair manager that takes its time to start."""
 
-        async def async_setup(self) -> None:
+        async def async_setup(
+            self,
+            *,
+            spread_first_inspections: bool = False,  # noqa: ARG002
+        ) -> None:
             starting.set()
             await carry_on.wait()
 

@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from homeassistant.const import EVENT_COMPONENT_LOADED
+
 from custom_components.spook import entity_filtering, entity_suggestions
 from custom_components.spook.entity_suggestions import async_describe_unknown_entities
 
@@ -212,3 +214,132 @@ async def test_an_ordinary_registry_write_keeps_the_suggestions(
     entity_registry.async_update_entity(entry.entity_id, icon="mdi:ghost")
 
     assert entity_filtering.async_get_rename_suggestion_cache(hass) is suggestions
+
+
+async def test_a_component_loading_keeps_the_suggestions(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a component loading does not throw the suggestions away.
+
+    A component loading names nothing itself. What it brings registers, which
+    has its own event, or arrives as a state only. Clearing here had every
+    suggestion in the house worked out again for each integration still
+    loading after a start. #1898.
+    """
+    hass.states.async_set("sensor.living_room_temperature", "21")
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+    calls = _count_close_matches(monkeypatch)
+
+    first = await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+    hass.bus.async_fire(EVENT_COMPONENT_LOADED, {"component": "sun"})
+    await hass.async_block_till_done()
+
+    second = await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+    assert "did you mean" in first
+    assert first == second
+    assert calls[0] == 1
+
+
+async def test_an_entity_registering_elsewhere_keeps_the_suggestions(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an entity registering only costs the suggestions of its own domain.
+
+    A suggestion is drawn from the unknown entity's own domain, so a light
+    registering cannot change what a sensor was meant to be. An integration
+    that keeps adding devices after a start used to throw away every one.
+    """
+    hass.states.async_set("sensor.living_room_temperature", "21")
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+    calls = _count_close_matches(monkeypatch)
+
+    await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur", "light.kitchn"]
+    )
+    calls[0] = 0
+
+    entity_registry.async_get_or_create(
+        "light", "demo", "kitchen", suggested_object_id="kitchen"
+    )
+
+    result = await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur", "light.kitchn"]
+    )
+
+    # The sensor was left alone, the light was looked at again and found.
+    assert calls[0] == 1
+    assert result == (
+        "- `sensor.living_room_temperatur` "
+        "(did you mean `sensor.living_room_temperature`?)\n"
+        "- `light.kitchn` (did you mean `light.kitchen`?)"
+    )
+
+
+async def test_a_suggestion_goes_with_the_entity_it_points_at(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a removed entity is not suggested any more.
+
+    Pointing somebody at an entity that is gone is the one stale answer that
+    is actually wrong, so a removal still takes its domain's suggestions.
+    """
+    entry = entity_registry.async_get_or_create(
+        "sensor",
+        "demo",
+        "living_room_temperature",
+        suggested_object_id="living_room_temperature",
+    )
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
+    assert "did you mean" in await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+    entity_registry.async_remove(entry.entity_id)
+
+    assert await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    ) == ("- `sensor.living_room_temperatur`")
+
+
+async def test_a_suggestion_follows_a_rename(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a renamed entity is suggested by its new name, never its old one."""
+    entry = entity_registry.async_get_or_create(
+        "sensor",
+        "demo",
+        "living_room_temperature",
+        suggested_object_id="living_room_temperature",
+    )
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
+    assert await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur", "sensor.lounge_temperatur"]
+    ) == (
+        "- `sensor.living_room_temperatur` "
+        "(did you mean `sensor.living_room_temperature`?)\n"
+        "- `sensor.lounge_temperatur`"
+    )
+
+    entity_registry.async_update_entity(
+        entry.entity_id, new_entity_id="sensor.lounge_temperature"
+    )
+
+    assert await async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur", "sensor.lounge_temperatur"]
+    ) == (
+        "- `sensor.living_room_temperatur`\n"
+        "- `sensor.lounge_temperatur` (did you mean `sensor.lounge_temperature`?)"
+    )

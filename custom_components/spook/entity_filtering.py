@@ -117,6 +117,26 @@ def _async_get_cache(hass: HomeAssistant) -> EntityIDsCache:
     return hass.data[DATA_ALL_ENTITY_IDS_CACHE]
 
 
+@callback
+def _forget_rename_suggestions_in(cache: EntityIDsCache, domain: str) -> None:
+    """Forget the rename suggestions for unknown entities in one domain.
+
+    A suggestion is only ever drawn from the unknown entity's own domain, so
+    an entity coming or going in another one cannot change it. A house with
+    an integration still adding sensors keeps its suggestions for lights,
+    scripts and everything else.
+    """
+    if (suggestions := cache.rename_suggestions) is None:
+        return
+
+    for entity_id in [
+        entity_id
+        for entity_id in suggestions
+        if entity_id.lower().split(".", 1)[0] == domain
+    ]:
+        del suggestions[entity_id]
+
+
 def async_setup_all_entity_ids_cache_invalidation(
     hass: HomeAssistant,
 ) -> Callable[[], None]:
@@ -171,15 +191,17 @@ def async_setup_all_entity_ids_cache_invalidation(
         an entity registered, unregistered, or renamed. Registry entries are
         written for plenty of other reasons (an icon, a category, a device
         being reassigned), and none of those change what an entity is called.
+        And then only those in its domain: a rename cannot change the domain,
+        Home Assistant refuses that.
         """
         data = event.data
-        pool_moved = data["action"] != "update" or "entity_id" in data["changes"]
+        _clear_cache()
 
-        if pool_moved:
-            _clear_cache_and_suggestions()
+        if data["action"] == "update" and "entity_id" not in data["changes"]:
             return
 
-        _clear_cache()
+        cache.deleted_entities = None
+        _forget_rename_suggestions_in(cache, data["entity_id"].split(".", 1)[0])
 
     # Listen for entity registry updates
     unsub_registry_update = hass.bus.async_listen(
@@ -189,10 +211,13 @@ def async_setup_all_entity_ids_cache_invalidation(
     unsub_hass_start = async_listen_once_tracked(
         hass, EVENT_HOMEASSISTANT_START, _clear_cache_and_suggestions
     )
-    # Listen for components loading
-    unsub_component_loaded = hass.bus.async_listen(
-        EVENT_COMPONENT_LOADED, _clear_cache_and_suggestions
-    )
+    # Listen for components loading. The suggestions are left standing: a
+    # component loading does not name anything itself. Whatever entities it
+    # brings register, which is handled above, or arrive as states only, which
+    # is handled below. Throwing them all away here had the next inspection
+    # work every one of them out again, for every integration still loading
+    # after a start. #1898.
+    unsub_component_loaded = hass.bus.async_listen(EVENT_COMPONENT_LOADED, _clear_cache)
     # Listen for state-only entities being added or removed. The suggestions
     # are left standing here: an entity arriving or leaving the state machine
     # without touching the registry is the noisiest event in the house, and a
