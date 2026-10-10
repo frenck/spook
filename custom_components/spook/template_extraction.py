@@ -494,6 +494,7 @@ _STATE_LOOKUPS = frozenset(
         "is_state",
         "is_state_attr",
         "state_attr",
+        "state_attr_translated",
         "state_translated",
         "states",
     }
@@ -504,7 +505,15 @@ _STATE_LOOKUPS = frozenset(
 # front of it, and as a test, where it is the value tested. `is_state` is no
 # filter, `states` no test.
 _STATE_LOOKUP_FILTERS = frozenset(
-    {"closest", "expand", "has_value", "state_attr", "state_translated", "states"}
+    {
+        "closest",
+        "expand",
+        "has_value",
+        "state_attr",
+        "state_attr_translated",
+        "state_translated",
+        "states",
+    }
 )
 _STATE_LOOKUP_TESTS = frozenset({"has_value", "is_state", "is_state_attr"})
 
@@ -514,9 +523,8 @@ _EXPANDING_LOOKUPS = frozenset({"closest", "expand"})
 
 # What makes a literal in front of a filter or a test only a piece of what it
 # applies to: a string right before it, which Jinja glues on, or a sign,
-# which takes the literal before the filter does. A minus between two values
-# looks the same as a sign, so that one is not read either.
-_TAKES_THE_LITERAL = frozenset({"add", "string", "sub"})
+# which takes the literal before the filter does: `-'sensor.a' | states`.
+_TAKES_THE_LITERAL = frozenset({"string"})
 # And a list right after a value is a subscript of it: `x['light.a']`.
 _TAKES_THE_LIST = _TAKES_THE_LITERAL | {
     "float",
@@ -526,6 +534,17 @@ _TAKES_THE_LIST = _TAKES_THE_LITERAL | {
     "rbracket",
     "rparen",
 }
+_SIGNS = frozenset({"add", "sub"})
+
+# What a value can end with. A `+` or `-` right after one adds or subtracts,
+# and the filter after it applies to what follows only: in
+# `10 - 'sensor.a' | states`, `states` gets the literal. Anywhere else, at the
+# start, after another operator, a bracket, a comma or a keyword, it is a sign.
+_ENDS_A_VALUE = frozenset(
+    {"float", "integer", "rbrace", "rbracket", "rparen", "string"}
+)
+# The names that are no value: what Jinja expects a value after.
+_KEYWORDS = frozenset({"and", "do", "elif", "else", "if", "in", "is", "not", "or"})
 
 # With this many arguments, `closest` takes the first two for a latitude and
 # a longitude, and only the third is looked up.
@@ -584,13 +603,25 @@ def _expanded(argument: list[_Token]) -> list[str]:
     return listed[0]
 
 
+def _is_keyword(argument: list[_Token]) -> bool:
+    """Return whether an argument is passed by keyword, or as `**` keywords."""
+    return _shaped(argument, 0, ("name", "assign")) or _is(argument, 0, "pow")
+
+
 def _is_positional(argument: list[_Token]) -> bool:
     """Return whether an argument takes one position: no keyword, no `*`."""
-    return not (
-        _shaped(argument, 0, ("name", "assign"))
-        or _is(argument, 0, "mul")
-        or _is(argument, 0, "pow")
-    )
+    return not (_is_keyword(argument) or _is(argument, 0, "mul"))
+
+
+def _expand_arguments(arguments: list[list[_Token]]) -> list[str]:
+    """Return the entity IDs `expand` looks up from its arguments.
+
+    `expand` takes no keywords; with one, the call fails before it looks up
+    anything. A `*` only adds more positions, which leaves the others be.
+    """
+    if any(_is_keyword(argument) for argument in arguments):
+        return []
+    return [entity for argument in arguments for entity in _expanded(argument)]
 
 
 def _closest_arguments(arguments: list[list[_Token]]) -> list[str]:
@@ -621,7 +652,7 @@ def _called_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
             return []
         if name == "closest":
             return _closest_arguments(arguments)
-        return [entity for argument in arguments for entity in _expanded(argument)]
+        return _expand_arguments(arguments)
 
     # Only a whole argument: `'sensor.Pump' + '_interval'` and two strings
     # side by side are pieces of one.
@@ -652,9 +683,23 @@ def _value_in_front(tokens: list[_Token], end: int, *, lists: bool) -> list[str]
     else:
         return []
 
-    if start > 0 and tokens[start - 1][0] in taken_by:
+    if start > 0 and (
+        tokens[start - 1][0] in taken_by
+        or (tokens[start - 1][0] in _SIGNS and _is_sign(tokens, start - 1))
+    ):
         return []
     return literals
+
+
+def _is_sign(tokens: list[_Token], index: int) -> bool:
+    """Return whether the `+` or `-` at this index is a sign, not a sum."""
+    if index == 0:
+        return True
+
+    kind, value = tokens[index - 1]
+    if kind == "name":
+        return value in _KEYWORDS
+    return kind not in _ENDS_A_VALUE
 
 
 def _filtered_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
@@ -670,16 +715,25 @@ def _filtered_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
     if name not in _EXPANDING_LOOKUPS:
         return _value_in_front(tokens, index - 1, lists=False)
 
-    # Without parentheses, the filter has no arguments of its own.
+    # Without parentheses, the filter has no arguments of its own. The value
+    # in front is passed with them, so a keyword, which neither takes, makes
+    # the call fail before it looks up anything.
     arguments = _call_arguments(tokens, index + 1) or []
+    if any(_is_keyword(argument) for argument in arguments):
+        return []
+
     in_front = _value_in_front(tokens, index - 1, lists=True)
     if name == "expand":
-        return in_front + [
-            entity for argument in arguments for entity in _expanded(argument)
-        ]
+        return in_front + _expand_arguments(arguments)
+    return _closest_filtered(in_front, arguments)
 
-    # As a filter, `closest` moves the value in front to the end of its
-    # arguments. Behind three or more, it is not the one looked up.
+
+def _closest_filtered(in_front: list[str], arguments: list[list[_Token]]) -> list[str]:
+    """Return what `closest` as a filter looks up.
+
+    It moves the value in front to the end of its arguments. Behind three or
+    more, that is not the one looked up.
+    """
     if len(arguments) >= _CLOSEST_WITH_COORDINATES or not all(
         _is_positional(argument) for argument in arguments
     ):
@@ -708,8 +762,8 @@ def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
     Read with Jinja's own lexer, so only a real lookup counts: inside an
     expression, not in a string or in the text around it, by the very name
     (`STATES(...)`, `my_states(...)` and `obj.states(...)` are no lookups),
-    and not a name the template defines itself. Called, as a filter or as a
-    test, wherever Home Assistant offers it as one. These are the ones Home
+    and not called by a name the template defines itself. Called, as a
+    filter or as a test, wherever Home Assistant offers it as one. These are the ones Home
     Assistant tries in lower case too.
     """
     expressions = _expressions(template_str)
@@ -721,16 +775,17 @@ def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
             if (
                 kind != "name"
                 or name not in _STATE_LOOKUPS
-                or name in local
                 or _is(tokens, index - 1, "dot")
             ):
                 continue
 
+            # Filters and tests are Jinja's own registries: a name the
+            # template defines does not hide one, it only hides a function.
             if _is(tokens, index - 1, "pipe"):
                 found.update(_filtered_lookup(tokens, index, name))
             elif _is_test(tokens, index):
                 found.update(_tested_lookup(tokens, index, name))
-            else:
+            elif name not in local:
                 found.update(_called_lookup(tokens, index, name))
     return frozenset(found)
 
@@ -1220,8 +1275,6 @@ def extract_attribute_pairs_from_template(
 
 # The function, and test, that compare the state of one entity.
 _STATE_FUNCTION = "is_state"
-
-_SIGNS = frozenset({"add", "sub"})
 
 
 def _states_argument(tokens: list[_Token], index: int) -> tuple[list[str], int] | None:

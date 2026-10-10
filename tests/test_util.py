@@ -258,6 +258,12 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ 'Sensor.Pump' | state_attr('unit') }}", {"sensor.pump"}),
         ("{{ 'Sensor.Pump' | has_value }}", {"sensor.pump"}),
         ("{{ 'Sensor.Pump' | state_translated }}", {"sensor.pump"}),
+        ("{{ 'Sensor.Pump' | state_attr_translated('mode') }}", {"sensor.pump"}),
+        ("{{ state_attr_translated('Sensor.Pump', 'mode') }}", {"sensor.pump"}),
+        (
+            "{{ 'sensor.source' | state_attr_translated('Sensor.Label') }}",
+            {"sensor.source"},
+        ),
         ("{{ 'Group.Pumps' | expand }}", {"group.pumps"}),
         ("{{ ['light.one', 'Light.Two'] | expand }}", {"light.one", "light.two"}),
         ("{{ 'Group.Kids' | closest }}", {"group.kids"}),
@@ -276,10 +282,22 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         # Nor a literal that a sign takes before the filter or test does.
         ("{{ -'Sensor.Pump' | states }}", set()),
         ("{{ -'Sensor.Pump' is has_value }}", set()),
+        ("{{ 10 * -'Sensor.Pump' | states }}", set()),
+        ("{{ not -'Sensor.Pump' is has_value }}", set()),
+        # A minus between two values is no sign: the filter gets the literal.
+        ("{{ 10 - 'Sensor.Pump' | states | float }}", {"sensor.pump"}),
+        ("{{ total - 'Sensor.Pump' | states | float }}", {"sensor.pump"}),
+        ("{{ (total) - 'Sensor.Pump' | states | float }}", {"sensor.pump"}),
+        ("{{ [] + ['Light.One'] | expand }}", {"light.one"}),
         # Nor a list that is a subscript of what is in front of it.
         ("{{ pumps['Sensor.Pump'] | expand }}", set()),
-        # Nor the name of a filter defined by the template, or in another case.
-        ("{% set states = 1 %}{{ 'Sensor.Pump' | states }}", set()),
+        # A name the template defines hides no filter or test, Jinja keeps
+        # those apart. Another case is another filter.
+        ("{% set states = 1 %}{{ 'Sensor.Pump' | states }}", {"sensor.pump"}),
+        (
+            "{% macro has_value(x) %}{% endmacro %}{{ 'Sensor.Pump' is has_value }}",
+            {"sensor.pump"},
+        ),
         ("{{ 'Sensor.Pump' | STATES }}", set()),
         # `expand` looks up every argument, and the literals in a list.
         (
@@ -305,6 +323,13 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ expand([fan, 'Switch.Fan']) }}", set()),
         ("{{ expand(['Switch.Fan'][1:]) }}", set()),
         ("{{ expand({'Switch.Fan': 1}) }}", set()),
+        # Nor a call `expand` cannot take: it takes no keywords.
+        ("{{ expand('Light.One', bad=True) }}", set()),
+        ("{{ expand('Light.One', **options) }}", set()),
+        ("{{ 'Light.One' | expand(bad=True) }}", set()),
+        ("{{ 'Light.One' | expand('Light.Two', **options) }}", set()),
+        # A `*` only adds positions, the literal is still looked up.
+        ("{{ expand('Light.One', *more) }}", {"light.one"}),
         # `closest` looks up its point and its entities, not its coordinates.
         ("{{ closest('Zone.School', 'Group.Kids') }}", {"zone.school", "group.kids"}),
         ("{{ closest('zone.home', ['Group.Kids']) }}", {"zone.home", "group.kids"}),
@@ -356,6 +381,21 @@ def test_a_glued_literal_in_front_of_a_lookup_is_not_looked_up(template: str) ->
     looked_up = template_extraction._looked_up_in_any_case(template)  # noqa: SLF001
 
     assert looked_up == frozenset()
+
+
+def test_a_literal_added_to_in_front_of_a_lookup_is_looked_up() -> None:
+    """Test a `+` between two values is no sign for the literal after it.
+
+    The filter binds tighter, so `states` gets the literal. The extraction
+    leaves a literal behind a `+` out on its own, so this asks the lookup
+    reader directly.
+    """
+    template = "{{ 10 + 'Sensor.Pump' | states | float }}"
+
+    # pylint: disable-next=protected-access
+    looked_up = template_extraction._looked_up_in_any_case(template)  # noqa: SLF001
+
+    assert looked_up == frozenset({"Sensor.Pump"})
 
 
 async def test_filter_template_entities_ignores_ignored_domains(
