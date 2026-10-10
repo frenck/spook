@@ -19,6 +19,7 @@ from typing import TYPE_CHECKING, Any
 
 from .entity_filtering import split_comma_separated_entity_ids
 from .reference_extraction import is_pattern_reference
+from .template_extraction import KNOWN_DOMAINS
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -177,6 +178,15 @@ def _collect_areas_strategy_entities(node: dict[str, Any], entities: set[str]) -
             _collect_group_entities(area_options.get("groups_options"), entities)
 
 
+# A logbook card filters entries by the entity they are filed under, and
+# `logbook.log` files them under any ID of the right shape. People make one up
+# to group their own entries, like `log.critical_messages`, and the card shows
+# them. One under no entity domain at all is left alone; a `light.kitchen` in
+# there is meant to be that light, and stays checked.
+_LOGBOOK_CARD_TYPE = "logbook"
+_LOGBOOK_FILTER_KEYS = ("entities", "target")
+
+
 def _walk(node: Any, entities: set[str]) -> None:
     """Recursively collect entity references from a configuration node."""
     if isinstance(node, list):
@@ -187,6 +197,26 @@ def _walk(node: Any, entities: set[str]) -> None:
     if not isinstance(node, dict):
         return
 
+    if node.get("type") == _LOGBOOK_CARD_TYPE:
+        # Only its filter. The rest of the card, like a visibility condition,
+        # is read as on any other card.
+        filters = {key: node[key] for key in _LOGBOOK_FILTER_KEYS if key in node}
+        found: set[str] = set()
+        _walk_node(filters, found)
+        entities.update(
+            entity_id
+            for entity_id in found
+            if entity_id.partition(".")[0] in KNOWN_DOMAINS
+        )
+        node = {
+            key: value for key, value in node.items() if key not in _LOGBOOK_FILTER_KEYS
+        }
+
+    _walk_node(node, entities)
+
+
+def _walk_node(node: dict[str, Any], entities: set[str]) -> None:
+    """Collect entity references from one dashboard node and what it holds."""
     for key in _ENTITY_REFERENCE_KEYS:
         if key in node:
             _collect_strings(node[key], entities)

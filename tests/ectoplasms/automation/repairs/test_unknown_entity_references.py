@@ -1648,3 +1648,182 @@ async def test_a_value_shaped_like_a_threshold_is_no_reference(
     assert await _async_unknown_in_automation(hass, config) == set()
     # Home Assistant takes the configuration, so this is one that works.
     assert hass.states.get("automation.labels").state == "on"
+
+
+def _logbook_automation(entity_id: str) -> dict[str, Any]:
+    """Return an automation filing a logbook entry under ``entity_id``."""
+    return {
+        "alias": "Log critical messages",
+        "triggers": [{"trigger": "homeassistant", "event": "start"}],
+        "actions": [
+            {
+                "action": "logbook.log",
+                "data": {
+                    "entity_id": entity_id,
+                    "name": "Alert",
+                    "message": "Water on the floor",
+                },
+            }
+        ],
+    }
+
+
+async def test_a_made_up_entity_to_file_a_logbook_entry_under_is_fine(
+    hass: HomeAssistant,
+) -> None:
+    """Test `logbook.log` under an ID no integration provides is not reported.
+
+    The action only checks the shape of the ID, and a logbook card filters on
+    it. Home Assistant's own reading takes it: that is the premise, so it is
+    checked here too.
+    """
+    entity = await _async_automation_entity(
+        hass, _logbook_automation("log.critical_messages")
+    )
+    assert "log.critical_messages" in entity.referenced_entities
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
+
+
+async def test_a_removed_entity_to_file_a_logbook_entry_under_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test `logbook.log` under a real domain still checks the entity."""
+    entity = await _async_automation_entity(hass, _logbook_automation("light.gone"))
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {"light.gone"}
+
+
+async def test_a_made_up_logbook_entity_also_used_as_a_target_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the same made-up ID used as a target too is still reported.
+
+    Filing a logbook entry under it is fine, turning it on is not: as a
+    target it is a reference, and a missing one.
+    """
+    config = _logbook_automation("log.critical_messages")
+    config["actions"].append(
+        {
+            "action": "homeassistant.turn_on",
+            "target": {"entity_id": "log.critical_messages"},
+        }
+    )
+    entity = await _async_automation_entity(hass, config)
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {
+        "log.critical_messages"
+    }
+
+
+async def test_a_logbook_step_in_action_data_is_no_step(
+    hass: HomeAssistant,
+) -> None:
+    """Test a `logbook.log` shaped mapping in action data exempts nothing.
+
+    It is whatever the called action takes, not a step. The same ID handed
+    over as data of a real call stays a reference.
+    """
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Relay",
+            "triggers": [{"trigger": "homeassistant", "event": "start"}],
+            "actions": [
+                {
+                    "action": "homeassistant.turn_on",
+                    "target": {"entity_id": "log.critical_messages"},
+                    "data": {
+                        "step": {
+                            "action": "logbook.log",
+                            "data": {"entity_id": "log.critical_messages"},
+                        }
+                    },
+                }
+            ],
+        },
+    )
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {
+        "log.critical_messages"
+    }
+
+
+async def test_a_made_up_entity_outside_the_logbook_is_still_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test an ID under no entity domain is still reported as a target."""
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Turn on",
+            "triggers": [{"trigger": "homeassistant", "event": "start"}],
+            "actions": [
+                {
+                    "action": "homeassistant.turn_on",
+                    "target": {"entity_id": "log.critical_messages"},
+                }
+            ],
+        },
+    )
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {
+        "log.critical_messages"
+    }
+
+
+async def test_a_logbook_entry_filed_under_the_action_name_is_fine(
+    hass: HomeAssistant,
+) -> None:
+    """Test the name of the action is no use of an entity of that name.
+
+    `logbook.log` is under no entity domain either, so filing an entry under
+    it is as harmless as under any other made-up ID.
+    """
+    entity = await _async_automation_entity(hass, _logbook_automation("logbook.log"))
+    assert "logbook.log" in entity.referenced_entities
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
+
+
+async def test_an_event_payload_and_a_logbook_entry_do_not_cancel_out(
+    hass: HomeAssistant,
+) -> None:
+    """Test two harmless mentions of the same ID together stay harmless.
+
+    Listening for somebody's own event carrying it, and filing a logbook
+    entry under it: neither is a use, so one is no use of the other either.
+    """
+    config = _logbook_automation("log.critical_messages")
+    config["triggers"] = [
+        {
+            "trigger": "event",
+            "event_type": "my_alarm",
+            "event_data": {"entity_id": "log.critical_messages"},
+        }
+    ]
+    entity = await _async_automation_entity(hass, config)
+    assert "log.critical_messages" in entity.referenced_entities
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()

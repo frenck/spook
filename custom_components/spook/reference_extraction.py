@@ -126,58 +126,101 @@ def event_payload_keys_to_leave_alone(config: dict[str, Any]) -> frozenset[str]:
     return _EVENT_PAYLOAD_KEYS
 
 
-def custom_event_payload_entities(config: Any) -> set[str]:
-    """Return the entities Home Assistant takes from somebody's own events.
+_LOGBOOK_LOG = "logbook.log"
 
-    Core's own reading takes the `entity_id` of the `event_data` of every
-    event trigger, top level or waited for in a step, whoever sends the
-    event. On somebody's own event that is whatever the sender put there, so
-    the repairs take these back out of what core says is referenced.
+
+def harmless_entity_mentions(config: Any) -> set[str]:
+    """Return the entity IDs Home Assistant lists that are no dependency.
+
+    Core's own reading takes the `entity_id` of two things that need not
+    exist, so the repairs take these back out of what it says is referenced:
+
+    - the `event_data` of somebody's own event, top level or waited for in a
+      step: whatever the sender put there;
+    - the entity a `logbook.log` step files an entry under, when it is under
+      no entity domain at all, like `log.critical_messages`: the action only
+      checks its shape. A `light.kitchen` in there is meant to be that light.
 
     Only those named nowhere else in the configuration. One that also shows
-    up as a value somewhere else, like a `scene: scene.movie` step, may be a
-    reference only core reads, and stays.
+    up as a value somewhere else, like a `scene: scene.movie` step or a
+    target, may be a reference only core reads, and stays. Both kinds are
+    collected in one go, so one does not count as a use of the other.
     """
-    payload: set[str] = set()
+    harmless: set[str] = set()
     elsewhere: set[str] = set()
-    _collect_event_payload_entities(config, payload, elsewhere, in_payload=False)
-    return payload - elsewhere
+    _collect_harmless_mentions(config, harmless, elsewhere, in_payload=False)
+    return harmless - elsewhere
 
 
-def _collect_event_payload_entities(
-    config: Any, payload: set[str], elsewhere: set[str], *, in_payload: bool
+def _is_made_up_entity(value: Any) -> bool:
+    """Return whether a value is an entity ID under no entity domain at all."""
+    return (
+        isinstance(value, str)
+        and valid_entity_id(value)
+        and value.partition(".")[0] not in KNOWN_DOMAINS
+    )
+
+
+def _collect_logbook_data(
+    data: dict[str, Any], harmless: set[str], elsewhere: set[str]
 ) -> None:
-    """Collect the entities of custom event payloads, and every other value."""
+    """Collect what a `logbook.log` step files its entry under, and the rest."""
+    for field_name, field_value in data.items():
+        if field_name == ATTR_ENTITY_ID and _is_made_up_entity(field_value):
+            harmless.add(field_value)
+        else:
+            _collect_harmless_mentions(
+                field_value, harmless, elsewhere, in_payload=True
+            )
+
+
+def _collect_event_payload(
+    config: dict[str, Any], harmless: set[str]
+) -> frozenset[str]:
+    """Collect the entity of somebody's own event, and return its payload keys."""
+    payload_keys = event_payload_keys_to_leave_alone(config)
+    if payload_keys and isinstance(event_data := config.get("event_data"), dict):
+        entity_id = event_data.get(ATTR_ENTITY_ID)
+        if isinstance(entity_id, str) and valid_entity_id(entity_id):
+            harmless.add(entity_id)
+    return payload_keys
+
+
+def _collect_harmless_mentions(
+    config: Any, harmless: set[str], elsewhere: set[str], *, in_payload: bool
+) -> None:
+    """Collect the harmless mentions in a configuration, and every other value."""
     if isinstance(config, str):
         elsewhere.add(config)
         return
     if isinstance(config, list):
         for item in config:
-            _collect_event_payload_entities(
-                item, payload, elsewhere, in_payload=in_payload
-            )
+            _collect_harmless_mentions(item, harmless, elsewhere, in_payload=in_payload)
         return
     if not isinstance(config, dict):
         return
 
-    # Action data is whatever the action takes, never a trigger, whatever
-    # its shape.
+    # Action data is whatever the action takes, never a trigger or a step,
+    # whatever its shape.
     payload_keys = (
-        frozenset() if in_payload else event_payload_keys_to_leave_alone(config)
+        frozenset() if in_payload else _collect_event_payload(config, harmless)
     )
-    if payload_keys and isinstance(event_data := config.get("event_data"), dict):
-        entity_id = event_data.get(ATTR_ENTITY_ID)
-        if isinstance(entity_id, str) and valid_entity_id(entity_id):
-            payload.add(entity_id)
-
+    is_log = (
+        not in_payload and config.get("action", config.get("service")) == _LOGBOOK_LOG
+    )
     for key, value in config.items():
-        if key not in payload_keys:
-            _collect_event_payload_entities(
-                value,
-                payload,
-                elsewhere,
-                in_payload=in_payload or key in _PAYLOAD_KEYS,
-            )
+        if key in payload_keys:
+            continue
+        if is_log and key in ("action", "service"):
+            # The name of the action is no use of an entity of that name.
+            continue
+        if is_log and key in ("data", "data_template") and isinstance(value, dict):
+            _collect_logbook_data(value, harmless, elsewhere)
+            continue
+
+        _collect_harmless_mentions(
+            value, harmless, elsewhere, in_payload=in_payload or key in _PAYLOAD_KEYS
+        )
 
 
 # The domains Home Assistant takes an entity from as the `above` or `below`
