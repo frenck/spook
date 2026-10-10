@@ -18,11 +18,15 @@ from dataclasses import dataclass, field
 import re
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
+from homeassistant.components.script import EVENT_SCRIPT_STARTED
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     CONF_ENABLED,
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
+    EVENT_STATE_CHANGED,
+    EVENT_STATE_REPORTED,
     MATCH_ALL,
 )
 from homeassistant.core import callback, valid_entity_id
@@ -68,6 +72,17 @@ _EXCLUDED_KEYS = frozenset(
 )
 
 
+# The events Home Assistant fires itself with the entity they are about in
+# `entity_id`. Not named after a domain, yet that payload means an entity.
+_EVENTS_ABOUT_AN_ENTITY = frozenset(
+    {
+        EVENT_AUTOMATION_TRIGGERED,
+        EVENT_SCRIPT_STARTED,
+        EVENT_STATE_CHANGED,
+        EVENT_STATE_REPORTED,
+    }
+)
+
 # Where an event trigger keeps what it matches on, rather than what it needs.
 _EVENT_PAYLOAD_KEYS = frozenset({"event_data", "event_data_template"})
 
@@ -82,7 +97,8 @@ def event_payload_keys_to_leave_alone(config: dict[str, Any]) -> frozenset[str]:
     that works perfectly well.
 
     Told apart by the event type: one named after a domain comes from that
-    integration, anything else is somebody's own. Only on an event trigger:
+    integration, and so do the few Home Assistant fires itself about one
+    entity, like `state_changed`. Anything else is somebody's own. Only on an event trigger:
     action data can carry an `event_type` and `event_data` of its own, and
     there they are whatever that action takes.
     """
@@ -99,6 +115,9 @@ def event_payload_keys_to_leave_alone(config: dict[str, Any]) -> frozenset[str]:
     for event_type in event_types:
         if not isinstance(event_type, str):
             continue
+
+        if event_type in _EVENTS_ABOUT_AN_ENTITY:
+            return frozenset()
 
         domain, dot, _ = event_type.partition(".")
         if dot and domain in KNOWN_DOMAINS:

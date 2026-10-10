@@ -495,3 +495,14 @@ async def test_repeat_items_are_rendered_whatever_their_keys(
     }
 
     assert await _unknown_in_script(hass, scripts, "rounds") == {"sensor.repeat_ghost"}
+
+
+async def test_a_state_change_waited_for_is_still_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity of a `state_changed` event waited for is a reference."""
+    scripts = {"remote": _waiting_for("state_changed")}
+
+    assert await _unknown_in_script(hass, scripts, "remote") == {
+        "light.from_the_remote"
+    }
