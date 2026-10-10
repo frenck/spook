@@ -483,17 +483,29 @@ _STATE_LOOKUPS = frozenset(
 )
 
 
-def _looked_up_in_any_case(match: re.Match[str]) -> bool:
+def _looked_up_in_any_case(template_str: str, match: re.Match[str]) -> bool:
     """Return whether the match is a state lookup that ignores case.
 
     Only the entity ID's case is forgiven. Jinja's own names are not:
     `STATES('sensor.x')` is no lookup at all, although the patterns match
-    it, as they match without regard to case.
+    it, as they match without regard to case. Nor is a name that only ends
+    in one, like `my_states(...)` or `obj.states(...)`, or one the template
+    defines itself.
     """
     if len(match.groups()) == _STATES_DOMAIN_ENTITY_GROUPS:
-        return match.group(0).startswith("states.")
-    function, paren, _ = match.group(0).partition("(")
-    return bool(paren) and function.strip() in _STATE_LOOKUPS
+        name = "states"
+        if not match.group(0).startswith("states."):
+            return False
+    else:
+        name, paren, _ = match.group(0).partition("(")
+        name = name.strip()
+        if not paren or name not in _STATE_LOOKUPS:
+            return False
+
+    start = match.start()
+    if start and (template_str[start - 1].isalnum() or template_str[start - 1] in "_."):
+        return False
+    return name not in _named_locally(_expressions(template_str))
 
 
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
@@ -533,7 +545,9 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 continue
 
             entity_id = _entity_id_from_template_match(match)
-            if _looked_up_in_any_case(match):
+            if not entity_id.islower() and _looked_up_in_any_case(
+                template_without_comments, match
+            ):
                 entity_id = entity_id.lower()
 
             # For each entity ID (which might be comma-separated), add all valid ones

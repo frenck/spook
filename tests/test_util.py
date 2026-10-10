@@ -217,6 +217,14 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ STATES('sensor.Pump') }}", set()),
         ("{{ States.sensor.Pump.state }}", set()),
         ("{{ 'Sensor.Status' }}", set()),
+        # Nor a name that only ends in one, or one the template defines.
+        ("{{ my_states('Sensor.Pump') }}", set()),
+        ("{{ obj.states('Sensor.Pump') }}", set()),
+        ("{{ x.states.sensor.Pump.state }}", set()),
+        (
+            "{% macro states(x) %}{% endmacro %}{{ states('Sensor.Pump') }}",
+            set(),
+        ),
     ],
 )
 def test_extract_entities_from_template_regex(
