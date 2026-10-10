@@ -1611,17 +1611,18 @@ _DEVICE_LOOKUPS = frozenset({"device_attr", "device_name", "is_device_attr"})
 _DEVICE_LOOKUP_TESTS = frozenset({"is_device_attr"})
 
 
-def _looked_up_devices(template_str: str) -> set[str]:
+def _looked_up_devices(template_str: str, shadowed: frozenset[str]) -> set[str]:
     """Return the literals a template hands a device lookup, as written.
 
     Read with Jinja's own lexer, like the state lookups: only a real call by
     the very name, not in a string or the text around it, not a method and
-    not called by a name the template defines itself. An entity ID there is
-    an entity reference, and anything else the lookup quietly turns into
-    nothing, so only a literal shaped like a registry ID is a device.
+    not called by a name the template defines itself, or the configuration
+    around it does (`shadowed`). An entity ID there is an entity reference,
+    and anything else the lookup quietly turns into nothing, so only a
+    literal shaped like a registry ID is a device.
     """
     expressions = _expressions(template_str)
-    local = _named_locally(expressions)
+    local = _named_locally(expressions) | shadowed
 
     found: set[str] = set()
     for tokens in expressions:
@@ -1636,8 +1637,8 @@ def _looked_up_devices(template_str: str) -> set[str]:
             # As a filter or a test, the value right in front of it is the
             # device. Two strings side by side are joined into one by Jinja,
             # so then that one is only a piece of it. Filters and tests are
-            # Jinja's own registries: a name the template defines does not
-            # hide one, it only hides a function.
+            # Jinja's own registries: a name the template, or the
+            # configuration, defines does not hide one, it only hides a function.
             if _is(tokens, index - 1, "pipe"):
                 value = index - 2
             elif name in _DEVICE_LOOKUP_TESTS and _is_test(tokens, index):
@@ -1659,18 +1660,29 @@ def _looked_up_devices(template_str: str) -> set[str]:
 
 
 @lru_cache(maxsize=1024)
-def _extract_device_ids_from_template(template_str: str) -> frozenset[str]:
-    """Extract device IDs referenced through the device functions in a template."""
+def _extract_device_ids_from_template(
+    template_str: str, shadowed: frozenset[str] = frozenset()
+) -> frozenset[str]:
+    """Extract device IDs referenced through the device functions in a template.
+
+    Pure in its arguments, so cached like the entity extraction.
+    """
     template_without_comments = _strip_jinja_comments(template_str)
     device_ids = set(_DEVICE_ENTITIES_PATTERN.findall(template_without_comments))
-    device_ids.update(_looked_up_devices(template_str))
+    device_ids.update(_looked_up_devices(template_str, shadowed))
 
     return frozenset(device_ids)
 
 
-def extract_device_ids_from_config(config: Any) -> set[str]:
-    """Extract device IDs referenced through the device functions in templates."""
+def extract_device_ids_from_config(
+    config: Any, shadowed: frozenset[str] = frozenset()
+) -> set[str]:
+    """Extract device IDs referenced through the device functions in templates.
+
+    A call by a name in `shadowed`, which the configuration gives its
+    templates, is not Home Assistant's lookup.
+    """
     device_ids: set[str] = set()
     for template_str in extract_template_strings_from_config(config):
-        device_ids.update(_extract_device_ids_from_template(template_str))
+        device_ids.update(_extract_device_ids_from_template(template_str, shadowed))
     return device_ids
