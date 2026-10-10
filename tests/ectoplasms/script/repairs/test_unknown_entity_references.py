@@ -254,6 +254,154 @@ async def test_a_running_variable_still_reports_what_a_parked_step_names(
     assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}
 
 
+async def test_what_only_core_reads_in_a_disabled_step_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant's own list reads keys Spook's walkers do not.
+
+    A scene step, a time condition and a zone trigger waited for. Parked,
+    none of them runs, whichever key core takes them from.
+    """
+    scripts = {
+        "evening": {
+            "sequence": [
+                {"enabled": False, "scene": "scene.xparked"},
+                {
+                    "enabled": False,
+                    "condition": "time",
+                    "after": "input_datetime.xparked_after",
+                },
+                {
+                    "enabled": False,
+                    "wait_for_trigger": [
+                        {
+                            "trigger": "zone",
+                            "entity_id": "person.xparked",
+                            "zone": "zone.xparked",
+                            "event": "enter",
+                        }
+                    ],
+                },
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == set()
+
+
+async def test_what_only_core_reads_in_a_nested_disabled_part_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """Parked is parked at any depth, for what only core reads as well."""
+    running = {"condition": "state", "entity_id": "light.fireplace_pots", "state": "on"}
+    scripts = {
+        "evening": {
+            "sequence": [
+                {
+                    "choose": [
+                        {
+                            "conditions": [
+                                {
+                                    "condition": "and",
+                                    "conditions": [
+                                        running,
+                                        {
+                                            "enabled": False,
+                                            "condition": "time",
+                                            "after": "input_datetime.xin_and",
+                                        },
+                                    ],
+                                }
+                            ],
+                            "sequence": [
+                                {"enabled": False, "scene": "scene.xin_choose"}
+                            ],
+                        }
+                    ],
+                    "default": [{"enabled": False, "scene": "scene.xin_default"}],
+                },
+                {
+                    "if": [
+                        {
+                            "condition": "not",
+                            "conditions": [
+                                running,
+                                {
+                                    "enabled": False,
+                                    "condition": "zone",
+                                    "entity_id": "person.xin_not",
+                                    "zone": "zone.xin_not",
+                                },
+                            ],
+                        }
+                    ],
+                    "then": [{"enabled": False, "scene": "scene.xin_then"}],
+                },
+                {"parallel": [{"enabled": False, "scene": "scene.xin_parallel"}]},
+                {
+                    "repeat": {
+                        "while": [
+                            {
+                                "condition": "or",
+                                "conditions": [
+                                    running,
+                                    {
+                                        "enabled": False,
+                                        "condition": "time",
+                                        "before": "input_datetime.xin_or",
+                                    },
+                                ],
+                            }
+                        ],
+                        "sequence": [{"enabled": False, "scene": "scene.xin_repeat"}],
+                    }
+                },
+                {
+                    "wait_for_trigger": [
+                        {"trigger": "state", "entity_id": "light.fireplace_pots"},
+                        {
+                            "enabled": False,
+                            "trigger": "time",
+                            "at": "input_datetime.xin_wait",
+                        },
+                    ]
+                },
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == set()
+
+
+async def test_a_step_with_a_templated_enabled_still_reports(
+    hass: HomeAssistant,
+) -> None:
+    """A template decides at run time, so the step may well run."""
+    scripts = {
+        "evening": {
+            "sequence": [{"enabled": "{{ false }}", "scene": "scene.xmaybe"}],
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == {"scene.xmaybe"}
+
+
+async def test_what_only_core_reads_is_still_reported_when_running_too(
+    hass: HomeAssistant,
+) -> None:
+    """Parked in one place and running in another, it can still break things."""
+    scripts = {
+        "evening": {
+            "sequence": [
+                {"enabled": False, "scene": "scene.xbroken"},
+                {"sequence": [{"scene": "scene.xbroken"}]},
+            ],
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == {"scene.xbroken"}
+
+
 async def test_a_blueprint_script_is_read_as_filled_in(
     hass: HomeAssistant, tmp_path: Path
 ) -> None:

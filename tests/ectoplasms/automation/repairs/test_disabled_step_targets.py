@@ -47,20 +47,26 @@ def _steps(key: str, parked: str, broken: str) -> list[dict[str, Any]]:
     ]
 
 
-async def _unknown(hass: HomeAssistant, domain: str, kind: str) -> set[str]:
+async def _unknown(
+    hass: HomeAssistant,
+    domain: str,
+    kind: str,
+    steps: list[dict[str, Any]] | None = None,
+) -> set[str]:
     """Set up a real automation or script and ask the repair about it."""
-    key, parked, broken = _KINDS[kind]
+    if steps is None:
+        steps = _steps(*_KINDS[kind])
     if domain == "automation":
         config = {
             "automation": {
                 "id": "parked",
                 "alias": "parked",
                 "triggers": [{"trigger": "event", "event_type": "go"}],
-                "actions": _steps(key, parked, broken),
+                "actions": steps,
             }
         }
     else:
-        config = {"script": {"parked": {"sequence": _steps(key, parked, broken)}}}
+        config = {"script": {"parked": {"sequence": steps}}}
 
     assert await async_setup_component(hass, domain, config)
     await hass.async_block_till_done()
@@ -83,6 +89,57 @@ async def test_only_what_a_running_step_names_is_reported(
     _key, _parked, broken = _KINDS[kind]
 
     assert await _unknown(hass, domain, kind) == {broken}
+
+
+def _event_naming(device_id: str, enabled: Any) -> dict[str, Any]:
+    """Return a step firing an event about a device.
+
+    Home Assistant's own list takes that `device_id` from the event data,
+    which Spook's own walker leaves alone as payload.
+    """
+    return {
+        "enabled": enabled,
+        "event": "xparked_event",
+        "event_data": {"device_id": device_id},
+    }
+
+
+@pytest.mark.parametrize("domain", ["automation", "script"])
+async def test_what_only_core_reads_in_a_disabled_step_is_left_out(
+    hass: HomeAssistant, domain: str
+) -> None:
+    """Parked, the event is never fired, whichever key core reads it from."""
+    _key, parked, _broken = _KINDS["device"]
+    steps = [
+        {"parallel": [{"sequence": [_event_naming(parked, enabled=False)]}]},
+        _event_naming(parked, enabled=False),
+    ]
+
+    assert await _unknown(hass, domain, "device", steps) == set()
+
+
+@pytest.mark.parametrize("domain", ["automation", "script"])
+@pytest.mark.parametrize(
+    "running",
+    [
+        pytest.param(True, id="running elsewhere"),
+        pytest.param("{{ false }}", id="templated enabled"),
+    ],
+)
+async def test_what_only_core_reads_in_a_step_that_may_run_still_reports(
+    hass: HomeAssistant, domain: str, running: Any
+) -> None:
+    """Parked in one place, it still counts where it runs or might run.
+
+    A templated `enabled` only decides at run time, so nobody knows yet.
+    """
+    _key, _parked, broken = _KINDS["device"]
+    steps = [
+        _event_naming(broken, enabled=False),
+        _event_naming(broken, enabled=running),
+    ]
+
+    assert await _unknown(hass, domain, "device", steps) == {broken}
 
 
 async def test_a_variable_that_says_enabled_false_is_not_parked(

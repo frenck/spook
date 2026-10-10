@@ -219,3 +219,190 @@ async def test_a_running_zone_condition_still_reports(hass: HomeAssistant) -> No
     }
 
     assert await _unknown_in_automation(hass, config) == {"zone.xgone"}
+
+
+async def test_what_only_core_reads_in_a_disabled_part_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant's own list reads keys Spook's walkers do not.
+
+    The `at` of a time trigger, the `after` of a time condition, a scene step
+    and a zone trigger waited for. Parked, none of them runs, whichever key
+    core takes them from.
+    """
+    config = {
+        "triggers": [
+            {
+                "enabled": False,
+                "trigger": "time",
+                "at": "input_datetime.xparked_at",
+            },
+            {"trigger": "state", "entity_id": "light.kitchen"},
+        ],
+        "conditions": [
+            {
+                "enabled": False,
+                "condition": "time",
+                "after": "input_datetime.xparked_after",
+            }
+        ],
+        "actions": [
+            {"enabled": False, "scene": "scene.xparked"},
+            {
+                "enabled": False,
+                "wait_for_trigger": [
+                    {
+                        "trigger": "zone",
+                        "entity_id": "person.xparked",
+                        "zone": "zone.xparked",
+                        "event": "enter",
+                    }
+                ],
+            },
+        ],
+    }
+
+    assert await _unknown_in_automation(hass, config) == set()
+
+
+async def test_what_only_core_reads_in_a_nested_disabled_part_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """Parked is parked at any depth, for what only core reads as well.
+
+    A step inside choose, if, parallel, repeat and a plain sequence, a
+    condition inside and, or and not, and a trigger waited for in a list.
+    """
+    config = {
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.door"}],
+        "conditions": [
+            {
+                "condition": "and",
+                "conditions": [
+                    {"condition": "state", "entity_id": "light.kitchen", "state": "on"},
+                    {
+                        "enabled": False,
+                        "condition": "time",
+                        "after": "input_datetime.xin_and",
+                    },
+                ],
+            },
+            {
+                "condition": "or",
+                "conditions": [
+                    {"condition": "state", "entity_id": "light.kitchen", "state": "on"},
+                    {
+                        "enabled": False,
+                        "condition": "time",
+                        "before": "input_datetime.xin_or",
+                    },
+                ],
+            },
+            {
+                "condition": "not",
+                "conditions": [
+                    {"condition": "state", "entity_id": "light.kitchen", "state": "on"},
+                    {
+                        "enabled": False,
+                        "condition": "time",
+                        "after": "input_datetime.xin_not",
+                    },
+                ],
+            },
+        ],
+        "actions": [
+            {
+                "choose": [
+                    {
+                        "conditions": [
+                            {
+                                "enabled": False,
+                                "condition": "time",
+                                "after": "input_datetime.xin_choose",
+                            }
+                        ],
+                        "sequence": [{"enabled": False, "scene": "scene.xin_choose"}],
+                    }
+                ],
+                "default": [{"enabled": False, "scene": "scene.xin_default"}],
+            },
+            {
+                "if": [
+                    {"condition": "state", "entity_id": "light.kitchen", "state": "on"}
+                ],
+                "then": [{"enabled": False, "scene": "scene.xin_then"}],
+                "else": [{"enabled": False, "scene": "scene.xin_else"}],
+            },
+            {"parallel": [{"enabled": False, "scene": "scene.xin_parallel"}]},
+            {
+                "repeat": {
+                    "count": 2,
+                    "sequence": [{"enabled": False, "scene": "scene.xin_repeat"}],
+                }
+            },
+            {"sequence": [{"enabled": False, "scene": "scene.xin_sequence"}]},
+            {
+                "wait_for_trigger": [
+                    {"trigger": "state", "entity_id": "light.kitchen"},
+                    {
+                        "enabled": False,
+                        "trigger": "time",
+                        "at": "input_datetime.xin_wait",
+                    },
+                ]
+            },
+        ],
+    }
+
+    assert await _unknown_in_automation(hass, config) == set()
+
+
+async def test_a_templated_enabled_is_not_known_to_be_parked(
+    hass: HomeAssistant,
+) -> None:
+    """A template decides at run time, so the step may well run.
+
+    Home Assistant takes a template for `enabled`, and until it renders
+    nobody knows. What such a part names is still reported.
+    """
+    config = {
+        "triggers": [
+            {
+                "enabled": "{{ false }}",
+                "trigger": "time",
+                "at": "input_datetime.xmaybe_at",
+            },
+            {"trigger": "state", "entity_id": "binary_sensor.door"},
+        ],
+        "actions": [{"enabled": "{{ false }}", "scene": "scene.xmaybe"}],
+    }
+
+    assert await _unknown_in_automation(hass, config) == {
+        "input_datetime.xmaybe_at",
+        "scene.xmaybe",
+    }
+
+
+async def test_what_only_core_reads_is_still_reported_when_running_too(
+    hass: HomeAssistant,
+) -> None:
+    """Parked in one place and running in another, it can still break things."""
+    config = {
+        "triggers": [
+            {
+                "enabled": False,
+                "trigger": "time",
+                "at": "input_datetime.xbroken_at",
+            },
+            {"trigger": "time", "at": "input_datetime.xbroken_at"},
+        ],
+        "actions": [
+            {"enabled": False, "scene": "scene.xbroken"},
+            {"sequence": [{"scene": "scene.xbroken"}]},
+        ],
+    }
+
+    assert await _unknown_in_automation(hass, config) == {
+        "input_datetime.xbroken_at",
+        "scene.xbroken",
+    }
