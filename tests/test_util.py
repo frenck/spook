@@ -238,6 +238,17 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
             {"sensor.pump"},
         ),
         ("{{ prefix + 'sensor.pump' }}{{ 'prefix' ~ 'sensor.pump' }}", set()),
+        # Nor in a template Jinja cannot parse, even where it lexes fine.
+        ("{{ 10 + 'sensor.pump' | states nonsense }}", set()),
+        ("{{ 'prefix' ~ 'sensor.pump' | states }}{% endif %}", set()),
+        # A parse knows Home Assistant's own tags.
+        (
+            (
+                "{% for x in y %}{% do z.append(x) %}{% break %}{% endfor %}"
+                "{{ 10 + 'sensor.pump' | states }}"
+            ),
+            {"sensor.pump"},
+        ),
         # Not in an expression, where the source around it still decides.
         ("{% raw %}{{ 10 + 'sensor.pump' | states }}{% endraw %}", set()),
         # Adding up two lookups is no gluing.

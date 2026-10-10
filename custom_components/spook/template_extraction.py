@@ -293,8 +293,15 @@ def _glued_literals(template_str: str) -> dict[int, tuple[int, bool]]:
     """Return each string literal in the template's expressions, read by Jinja.
 
     Keyed by where the literal starts, with where it ends and whether it is
-    a piece of a longer string. A template Jinja cannot read has none.
+    a piece of a longer string. A template Jinja cannot read has none: the
+    lexer takes `{{ 'sensor.pump' | states nonsense }}` just fine, only the
+    parser knows that is no template.
     """
+    try:
+        _JINJA_PARSER.parse(template_str)
+    except TemplateSyntaxError:
+        return {}
+
     lexed = _lexed(template_str)
     if lexed is None:
         return {}
@@ -425,6 +432,13 @@ _STRING_ATTRIBUTES = frozenset({"domain", "entity_id", "name", "object_id", "sta
 
 # Only ever used to lex, never to render, so autoescaping has nothing to do.
 _JINJA_LEXER = Environment(autoescape=True)
+
+# Only ever used to parse, with the tags Home Assistant adds to Jinja's own:
+# `{% do %}`, `{% break %}` and `{% continue %}`. Its other extensions only
+# add functions, filters and tests, which a parse never looks up.
+_JINJA_PARSER = Environment(
+    autoescape=True, extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"]
+)
 
 _OPENING_BRACKETS = frozenset("([{")
 
