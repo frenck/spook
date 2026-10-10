@@ -14,12 +14,19 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import ServiceRegistry, State
+from homeassistant.helpers.condition import Condition
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.helpers.trigger import Trigger
 from homeassistant.setup import async_setup_component
+from pytest_homeassistant_custom_component.common import (
+    MockModule,
+    mock_integration,
+    mock_platform,
+)
 
 from custom_components.spook.action_extraction import (
     async_extract_entities_from_action_config,
@@ -1690,6 +1697,298 @@ async def test_a_numeric_state_threshold_that_is_a_number_is_no_entity(
     }
 
     assert await _async_unknown_in_automation(hass, config) == set()
+
+
+def _brightness_trigger(threshold: dict[str, Any]) -> dict[str, Any]:
+    """Return a light brightness trigger comparing against ``threshold``."""
+    return {
+        "trigger": "light.brightness_crossed_threshold",
+        "target": {"entity_id": "light.kitchen"},
+        "options": {"threshold": threshold},
+    }
+
+
+def _brightness_condition(threshold: dict[str, Any]) -> dict[str, Any]:
+    """Return a light brightness condition comparing against ``threshold``."""
+    return {
+        "condition": "light.is_brightness",
+        "target": {"entity_id": "light.kitchen"},
+        "options": {"threshold": threshold},
+    }
+
+
+_ABOVE_A_HELPER = {"type": "above", "value": {"entity": "input_number.gone"}}
+_STARTED = {"trigger": "homeassistant", "event": "start"}
+
+
+@pytest.mark.parametrize(
+    ("triggers", "conditions", "actions"),
+    [
+        pytest.param([_brightness_trigger(_ABOVE_A_HELPER)], [], [], id="trigger"),
+        pytest.param(
+            [_STARTED], [_brightness_condition(_ABOVE_A_HELPER)], [], id="condition"
+        ),
+        pytest.param(
+            [_STARTED],
+            [
+                {
+                    "condition": "or",
+                    "conditions": [_brightness_condition(_ABOVE_A_HELPER)],
+                }
+            ],
+            [],
+            id="nested condition",
+        ),
+        pytest.param(
+            [_STARTED],
+            [],
+            [
+                {
+                    "if": [_brightness_condition(_ABOVE_A_HELPER)],
+                    "then": [{"delay": 0}],
+                }
+            ],
+            id="condition in an action",
+        ),
+        pytest.param(
+            [_STARTED],
+            [],
+            [{"wait_for_trigger": [_brightness_trigger(_ABOVE_A_HELPER)]}],
+            id="wait_for_trigger",
+        ),
+    ],
+)
+async def test_a_missing_threshold_entity_is_reported(
+    hass: HomeAssistant,
+    triggers: list[Any],
+    conditions: list[Any],
+    actions: list[Any],
+) -> None:
+    """Test the entity a new style threshold compares against is a reference.
+
+    `light.brightness_crossed_threshold` and its kind read the threshold from
+    that entity. With it gone the trigger never fires and the condition never
+    passes, and Home Assistant's own reading does not list it.
+    """
+    hass.states.async_set("light.kitchen", "on")
+    config = {
+        "alias": "Brightness",
+        "triggers": triggers,
+        "conditions": conditions,
+        "actions": actions,
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == {"input_number.gone"}
+
+
+_PERCENT = {"number": 80, "unit_of_measurement": "%"}
+
+
+@pytest.mark.parametrize(
+    ("threshold", "expected"),
+    [
+        pytest.param(
+            {"type": "below", "value": {"entity": "sensor.gone"}},
+            {"sensor.gone"},
+            id="value",
+        ),
+        pytest.param(
+            {
+                "type": "between",
+                "value_min": {"entity": "input_number.gone_min"},
+                "value_max": _PERCENT,
+            },
+            {"input_number.gone_min"},
+            id="value_min",
+        ),
+        pytest.param(
+            {
+                "type": "outside",
+                "value_min": {"number": 20, "unit_of_measurement": "%"},
+                "value_max": {"entity": "number.gone_max"},
+            },
+            {"number.gone_max"},
+            id="value_max",
+        ),
+        pytest.param(
+            {
+                "type": "above",
+                "value": {
+                    "active_choice": "entity",
+                    "entity": "input_number.Chosen",
+                    **_PERCENT,
+                },
+            },
+            {"input_number.chosen"},
+            id="active_choice entity",
+        ),
+        pytest.param(
+            {
+                "type": "above",
+                "value": {
+                    "active_choice": "number",
+                    "entity": "input_number.not_chosen",
+                    **_PERCENT,
+                },
+            },
+            set(),
+            id="active_choice number",
+        ),
+        pytest.param(
+            {"type": "above", "value": {"entity": "input_number.Limit"}},
+            set(),
+            id="an entity that is there",
+        ),
+    ],
+)
+async def test_which_threshold_entity_is_used(
+    hass: HomeAssistant, threshold: dict[str, Any], expected: set[str]
+) -> None:
+    """Test only the threshold entity Home Assistant compares against is read.
+
+    The editor keeps a number and an entity side by side, and `active_choice`
+    says which one is used. Home Assistant takes the entity ID in lower case,
+    so a mixed case one reads the helper that is there.
+    """
+    hass.states.async_set("light.kitchen", "on")
+    hass.states.async_set("input_number.limit", "50")
+    config = {
+        "alias": "Brightness",
+        "triggers": [_STARTED],
+        "conditions": [_brightness_condition(threshold)],
+        "actions": [],
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == expected
+
+
+class _AcmeTrigger(Trigger):
+    """A trigger of somebody's own, taking any options it is given."""
+
+    @classmethod
+    async def async_validate_config(
+        cls,
+        hass: HomeAssistant,  # noqa: ARG003
+        config: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Take the options as they are."""
+        return config
+
+    async def async_attach_runner(self, *_args: Any) -> Any:
+        """Never fire."""
+        return lambda: None
+
+
+class _AcmeCondition(Condition):
+    """A condition of somebody's own, taking any options it is given."""
+
+    @classmethod
+    async def async_validate_config(
+        cls,
+        hass: HomeAssistant,  # noqa: ARG003
+        config: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Take the options as they are."""
+        return config
+
+    def _async_check(self, **_kwargs: Any) -> bool:
+        """Never pass."""
+        return False
+
+
+def _mock_acme(hass: HomeAssistant) -> None:
+    """Provide an integration with triggers and conditions of its own."""
+    mock_integration(hass, MockModule("acme"))
+
+    async def _triggers(_hass: HomeAssistant) -> dict[str, type[Trigger]]:
+        return {"_": _AcmeTrigger, "level": _AcmeTrigger}
+
+    async def _conditions(_hass: HomeAssistant) -> dict[str, type[Condition]]:
+        return {"_": _AcmeCondition, "level": _AcmeCondition}
+
+    mock_platform(hass, "acme.trigger", Mock(async_get_triggers=_triggers))
+    mock_platform(hass, "acme.condition", Mock(async_get_conditions=_conditions))
+
+
+@pytest.mark.parametrize(
+    ("kind", "options", "expected"),
+    [
+        pytest.param(
+            "acme.level",
+            {"threshold": _ABOVE_A_HELPER},
+            {"input_number.gone"},
+            id="a threshold shaped the way Home Assistant takes one",
+        ),
+        pytest.param(
+            "acme.level",
+            {
+                "limit": {
+                    "type": "above",
+                    "value": {"entity": "input_number.not_a_threshold"},
+                },
+                "threshold": {"type": "above", "value": {"number": 5}},
+            },
+            set(),
+            id="another option",
+        ),
+        pytest.param(
+            "acme",
+            {"threshold": _ABOVE_A_HELPER},
+            set(),
+            id="not named after an integration",
+        ),
+        pytest.param(
+            "acme.level",
+            {"threshold": {**_ABOVE_A_HELPER, "hysteresis": 2}},
+            set(),
+            id="a threshold of another shape",
+        ),
+        pytest.param(
+            "acme.level",
+            {
+                "threshold": {
+                    "type": "above",
+                    "value": {"entity": "input_number.gone", "offset": 2},
+                }
+            },
+            set(),
+            id="an entry of another shape",
+        ),
+        pytest.param(
+            "acme.level",
+            {
+                "threshold": {
+                    "type": "above",
+                    "value_min": {"entity": "input_number.gone"},
+                }
+            },
+            set(),
+            id="an entry the type does not use",
+        ),
+    ],
+)
+async def test_only_a_threshold_shaped_like_home_assistants_is_read(
+    hass: HomeAssistant, kind: str, options: dict[str, Any], expected: set[str]
+) -> None:
+    """Test only a threshold shaped the way Home Assistant takes one is read.
+
+    An integration of somebody's own can have an option called `threshold`
+    meaning something else, or an option of another name holding an entity
+    dictionary for whatever it does.
+    """
+    _mock_acme(hass)
+    config = {
+        "alias": "Acme",
+        "triggers": [{"trigger": kind, "options": options}],
+        "conditions": [{"condition": kind, "options": options}],
+        "actions": [],
+    }
+
+    unknown = await _async_unknown_in_automation(hass, config)
+
+    # Turned down, it would never be looked at, and this would prove nothing.
+    assert hass.states.get("automation.acme").state == "on"
+    assert unknown == expected
 
 
 # Shaped like a numeric state condition, yet only a value somebody hands over.
