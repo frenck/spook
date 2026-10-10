@@ -405,3 +405,42 @@ async def test_event_fields_in_action_data_are_still_read(
     }
 
     assert await _unknown_in_script(hass, scripts, "relay") == {"light.from_the_remote"}
+
+
+async def test_a_custom_event_payload_only_core_also_reads_still_counts(
+    hass: HomeAssistant,
+) -> None:
+    """Test an entity also activated with the scene shorthand is reported.
+
+    Only Home Assistant's own reading sees the `scene:` step, so the entity
+    being named somewhere else in the configuration is what keeps it in.
+    """
+    scripts = {"remote": _waiting_for("my_remote_pressed", {"scene": "scene.movie"})}
+    scripts["remote"]["sequence"][0]["wait_for_trigger"][0]["event_data"] = {
+        "entity_id": "scene.movie"
+    }
+
+    assert await _unknown_in_script(hass, scripts, "remote") == {"scene.movie"}
+
+
+async def test_event_fields_in_old_style_action_data_are_still_read(
+    hass: HomeAssistant,
+) -> None:
+    """Test `data_template` is action data too, never an event trigger."""
+    scripts = {
+        "relay": {
+            "sequence": [
+                {
+                    "action": "script.forward",
+                    "data_template": {
+                        "trigger": "event",
+                        "event_type": "my_remote_pressed",
+                        "event_data": {"entity_id": "light.from_the_remote"},
+                    },
+                }
+            ]
+        },
+        "forward": {"sequence": []},
+    }
+
+    assert await _unknown_in_script(hass, scripts, "relay") == {"light.from_the_remote"}

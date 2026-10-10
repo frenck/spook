@@ -274,6 +274,11 @@ async def _extract_entities_from_service_data(
     return entities
 
 
+# Where an action keeps the data it hands over. `data_template` is the old
+# name, which Home Assistant still takes and merges into the data.
+_ACTION_DATA_KEYS = frozenset({"data", "data_template"})
+
+
 async def _extract_entities_from_nested_configs(
     hass: HomeAssistant,
     config: dict[str, Any],
@@ -303,8 +308,8 @@ async def _extract_entities_from_nested_configs(
                     value,
                     include_disabled=include_disabled,
                     known_services=known_services,
-                    _in_payload=in_payload or key == "data",
-                    _is_payload=key == "data",
+                    _in_payload=in_payload or key in _ACTION_DATA_KEYS,
+                    _is_payload=key in _ACTION_DATA_KEYS,
                     _service=_service,
                 )
             )

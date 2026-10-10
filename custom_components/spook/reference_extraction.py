@@ -114,27 +114,51 @@ def custom_event_payload_entities(config: Any) -> set[str]:
     event trigger, top level or waited for in a step, whoever sends the
     event. On somebody's own event that is whatever the sender put there, so
     the repairs take these back out of what core says is referenced.
+
+    Only those named nowhere else in the configuration. One that also shows
+    up as a value somewhere else, like a `scene: scene.movie` step, may be a
+    reference only core reads, and stays.
     """
-    found: set[str] = set()
+    payload: set[str] = set()
+    elsewhere: set[str] = set()
+    _collect_event_payload_entities(config, payload, elsewhere, in_payload=False)
+    return payload - elsewhere
+
+
+def _collect_event_payload_entities(
+    config: Any, payload: set[str], elsewhere: set[str], *, in_payload: bool
+) -> None:
+    """Collect the entities of custom event payloads, and every other value."""
+    if isinstance(config, str):
+        elsewhere.add(config)
+        return
     if isinstance(config, list):
         for item in config:
-            found |= custom_event_payload_entities(item)
-        return found
+            _collect_event_payload_entities(
+                item, payload, elsewhere, in_payload=in_payload
+            )
+        return
     if not isinstance(config, dict):
-        return found
-
-    payload_keys = event_payload_keys_to_leave_alone(config)
-    if payload_keys and isinstance(event_data := config.get("event_data"), dict):
-        entity_id = event_data.get(ATTR_ENTITY_ID)
-        if isinstance(entity_id, str) and valid_entity_id(entity_id):
-            found.add(entity_id)
+        return
 
     # Action data is whatever the action takes, never a trigger, whatever
     # its shape.
+    payload_keys = (
+        frozenset() if in_payload else event_payload_keys_to_leave_alone(config)
+    )
+    if payload_keys and isinstance(event_data := config.get("event_data"), dict):
+        entity_id = event_data.get(ATTR_ENTITY_ID)
+        if isinstance(entity_id, str) and valid_entity_id(entity_id):
+            payload.add(entity_id)
+
     for key, value in config.items():
-        if key not in payload_keys and key not in _PAYLOAD_KEYS:
-            found |= custom_event_payload_entities(value)
-    return found
+        if key not in payload_keys:
+            _collect_event_payload_entities(
+                value,
+                payload,
+                elsewhere,
+                in_payload=in_payload or key in _PAYLOAD_KEYS,
+            )
 
 
 @dataclass
