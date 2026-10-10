@@ -340,6 +340,31 @@ _ACTION_NAME = re.compile(r"[a-z0-9_]+\.[a-z0-9_]+")
 # action nobody runs is exactly what this repair is for.
 _CARD_OWN_ACTION_DOMAINS = {"custom:floorplan-card": "floorplan"}
 
+# The picture-elements card's button element names its action at the top
+# level, not in a tap action: under `action`, or failing that the older
+# `service`. Only on that element, since a bare `service` anywhere else is
+# whatever the card says it is. The frontend reads `action ?? service`, so only
+# a missing `action` falls through. `action-button` is the name its editor
+# gives a new one, and the frontend builds it as the same element.
+_BUTTON_ELEMENT_TYPES = frozenset({"service-button", "action-button"})
+
+
+def _collect_action(name: Any, actions: set[str], card_domain: str | None) -> None:
+    """Collect an action name, if it is one to look up."""
+    if (
+        isinstance(name, str)
+        and _ACTION_NAME.fullmatch(name)
+        and name.split(".", 1)[0] != card_domain
+    ):
+        actions.add(name)
+
+
+def _button_element_action(node: dict[str, Any]) -> Any:
+    """Return what a button element names as its action."""
+    if (name := node.get("action")) is not None:
+        return name
+    return node.get("service")
+
 
 def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) -> None:
     """Recursively collect the actions a configuration node performs.
@@ -357,6 +382,9 @@ def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) 
     if isinstance(card_type := node.get("type"), str):
         card_domain = _CARD_OWN_ACTION_DOMAINS.get(card_type, card_domain)
 
+        if card_type in _BUTTON_ELEMENT_TYPES:
+            _collect_action(_button_element_action(node), actions, card_domain)
+
     # Read off the action itself rather than the key it sits under:
     # `tap_action`, `hold_action` and the rest are the frontend's, and custom
     # cards add their own names for the same shape. Checked for a string
@@ -368,12 +396,7 @@ def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) 
         for key in _PERFORM_ACTION_KEYS:
             if (name := node.get(key)) in _JAVASCRIPT_FALSY:
                 continue
-            if (
-                isinstance(name, str)
-                and _ACTION_NAME.fullmatch(name)
-                and name.split(".", 1)[0] != card_domain
-            ):
-                actions.add(name)
+            _collect_action(name, actions, card_domain)
             break
 
     for child in _worth_descending_into(node):
