@@ -31,6 +31,7 @@ def _trigger(**extra: Any) -> dict[str, Any]:
 
 
 PAIR = {("light.kitchen", "On")}
+ON_AND_DIMMED = {("light.kitchen", "On"), ("light.kitchen", "Dimmed")}
 
 
 @pytest.mark.parametrize(
@@ -241,11 +242,29 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
         # The test form, which is what Home Assistant offers besides the call.
         ("{{ 'light.kitchen' is is_state('On') }}", PAIR),
         ("{{ 'light.kitchen' is not is_state('On') }}", PAIR),
+        # A list of states, which core's `is_state` takes as well.
+        ("{{ is_state('light.kitchen', ['On', 'Dimmed']) }}", ON_AND_DIMMED),
+        ("{{ is_state('light.kitchen', ['On',]) }}", PAIR),
+        ("{{ 'light.kitchen' is is_state(['On', 'Dimmed']) }}", ON_AND_DIMMED),
+        ("{{ 'light.kitchen' is not is_state(['On']) }}", PAIR),
         # Worked out while running, or more than one literal.
         ("{{ is_state(which, 'On') }}", set()),
         ("{{ is_state('light.kitchen', which) }}", set()),
         ("{{ is_state('light.kitchen', 'O' ~ 'n') }}", set()),
-        ("{{ is_state('light.kitchen', ['On', 'off']) }}", set()),
+        ("{{ is_state('light.kitchen', ['On', which]) }}", set()),
+        ("{{ is_state('light.kitchen', ['O' ~ 'n']) }}", set()),
+        ("{{ is_state('light.kitchen', []) }}", set()),
+        # Core only looks inside a list, so a tuple never matches.
+        ("{{ is_state('light.kitchen', ('On', 'Dimmed')) }}", set()),
+        ("{{ 'light.kitchen' is is_state(('On', 'Dimmed')) }}", set()),
+        # Something binding tighter takes part of the list.
+        ("{{ is_state('light.kitchen', ['On'] + more) }}", set()),
+        ("{{ is_state('light.kitchen', ['On', 'Dimmed'][0]) }}", set()),
+        ("{{ is_state('light.kitchen', ['On'] | reverse) }}", set()),
+        ("{{ is_state('light.kitchen', ['On'].copy()) }}", set()),
+        ("{{ 'light.kitchen' is is_state(['On'] + more) }}", set()),
+        ("{{ 'light.kitchen' is is_state ['On'] }}", set()),
+        ("{{ -'light.kitchen' is is_state(['On']) }}", set()),
         ("{{ 'light.' 'light.kitchen' is is_state('On') }}", set()),
         ("{{ 'light.kitchen' is is_state 'On' }}", set()),
         ("{{ 'light.kitchen' is is_state('O' ~ 'n') }}", set()),
@@ -265,6 +284,13 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
             ),
             set(),
         ),
+        (
+            (
+                "{% set is_state = mine %}"
+                "{{ is_state('light.kitchen', ['On', 'Dimmed']) }}"
+            ),
+            set(),
+        ),
         ("{{ is_state_attr('light.kitchen', 'mode', 'On') }}", set()),
     ],
 )
@@ -273,9 +299,6 @@ def test_state_pairs_in_templates(
 ) -> None:
     """Test only literal `is_state` pairs are read from a template."""
     assert extract_state_pairs_from_template(template) == expected
-
-
-ON_AND_DIMMED = {("light.kitchen", "On"), ("light.kitchen", "Dimmed")}
 
 
 @pytest.mark.parametrize(

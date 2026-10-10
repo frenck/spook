@@ -1022,20 +1022,60 @@ _STATE_FUNCTION = "is_state"
 _SIGNS = frozenset({"add", "sub"})
 
 
-def _test_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
+def _states_argument(tokens: list[_Token], index: int) -> tuple[list[str], int] | None:
+    """Read the states `is_state` compares to, starting at the argument.
+
+    One literal, or a list of them, which core's `is_state` takes as well.
+    Not a tuple: core only looks inside a list, so a tuple never matches.
+    Returns the literals and where the argument ends.
+    """
+    if _is(tokens, index, "string"):
+        return [tokens[index][1]], index + 1
+    if _is(tokens, index, "lbracket"):
+        return _literals_listed(tokens, index)
+    return None
+
+
+def _function_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
+    """Read `is_state('light.x', 'on')` starting at its name.
+
+    Also with a list of states, `is_state('light.x', ['on', 'off'])`.
+    """
+    if (
+        _is(tokens, index - 1, "dot")
+        or _is(tokens, index - 1, "pipe")
+        or not _shaped(tokens, index + 1, ("lparen", "string", "comma"))
+        or (states := _states_argument(tokens, index + 4)) is None
+    ):
+        return set()
+
+    literals, end = states
+    if not _ends_argument(tokens, end):
+        return set()
+    return {(tokens[index + 2][1], literal) for literal in literals}
+
+
+def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     """Read `'light.x' is is_state('on')` starting at its name.
 
-    Also as `is not`. Only with the state in parentheses: without them,
-    where the state ends depends on what follows it.
+    Also as `is not`, and with a list of states. Only with the states in
+    parentheses: without them, where the state ends depends on what follows
+    it.
     """
     subject = index - 2
     if _is(tokens, index - 1, "name", "not"):
         subject -= 1
 
-    if not _shaped(tokens, subject, ("string", ("name", "is"))) or not _shaped(
-        tokens, index + 1, ("lparen", "string", "rparen")
+    if (
+        not _shaped(tokens, subject, ("string", ("name", "is")))
+        or not _is(tokens, index + 1, "lparen")
+        or (states := _states_argument(tokens, index + 2)) is None
     ):
-        return None
+        return set()
+
+    literals, end = states
+    if not _is(tokens, end, "rparen"):
+        return set()
 
     # Jinja glues neighbouring strings into one, so a string right before is
     # only the end of the entity ID. And a sign right before can make the
@@ -1043,8 +1083,8 @@ def _test_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
     # negation. Telling a sign from a minus between two values is not worth
     # it for this.
     if subject > 0 and tokens[subject - 1][0] in {"string", *_SIGNS}:
-        return None
-    return tokens[subject][1], tokens[index + 2][1]
+        return set()
+    return {(tokens[subject][1], literal) for literal in literals}
 
 
 def _is_test(tokens: list[_Token], index: int) -> bool:
@@ -1202,7 +1242,8 @@ def extract_state_pairs_from_template(
     """Return the (entity ID, state) pairs a template compares literally.
 
     `is_state('light.x', 'on')`, and the same as a test, `'light.x' is
-    is_state('on')`; Home Assistant offers no filter for it. And a state
+    is_state('on')`; Home Assistant offers no filter for it. Both also with a
+    list of states, `is_state('light.x', ['on', 'off'])`. And a state
     compared to literals: `states('light.x') == 'on'`, `!=`, the other way
     around, or `in` a list of them, also as `states.light.x.state`.
 
@@ -1228,12 +1269,11 @@ def extract_state_pairs_from_template(
 
             found: set[tuple[str, str]] = set()
             if value == _STATE_FUNCTION:
-                pair = (
-                    _test_pair(tokens, index)
+                found = (
+                    _test_pairs(tokens, index)
                     if _is_test(tokens, index)
-                    else _function_pair(tokens, index)
+                    else _function_pairs(tokens, index)
                 )
-                found = set() if pair is None else {pair}
             elif value == _STATES:
                 found = _comparison_pairs(tokens, index)
 
