@@ -1785,3 +1785,45 @@ async def test_a_made_up_entity_outside_the_logbook_is_still_reported(
     assert await repair._async_compute_unknown_references(entity) == {
         "log.critical_messages"
     }
+
+
+async def test_a_logbook_entry_filed_under_the_action_name_is_fine(
+    hass: HomeAssistant,
+) -> None:
+    """Test the name of the action is no use of an entity of that name.
+
+    `logbook.log` is under no entity domain either, so filing an entry under
+    it is as harmless as under any other made-up ID.
+    """
+    entity = await _async_automation_entity(hass, _logbook_automation("logbook.log"))
+    assert "logbook.log" in entity.referenced_entities
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
+
+
+async def test_an_event_payload_and_a_logbook_entry_do_not_cancel_out(
+    hass: HomeAssistant,
+) -> None:
+    """Test two harmless mentions of the same ID together stay harmless.
+
+    Listening for somebody's own event carrying it, and filing a logbook
+    entry under it: neither is a use, so one is no use of the other either.
+    """
+    config = _logbook_automation("log.critical_messages")
+    config["triggers"] = [
+        {
+            "trigger": "event",
+            "event_type": "my_alarm",
+            "event_data": {"entity_id": "log.critical_messages"},
+        }
+    ]
+    entity = await _async_automation_entity(hass, config)
+    assert "log.critical_messages" in entity.referenced_entities
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()

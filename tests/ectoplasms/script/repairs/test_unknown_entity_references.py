@@ -544,3 +544,78 @@ async def test_a_missing_numeric_state_threshold_entity_is_reported(
         "input_number.freezer_limit",
         "number.freezer_alarm",
     }
+
+
+def _logging(entity_id: str, *steps: dict[str, Any]) -> dict[str, Any]:
+    """Return a script filing a logbook entry under ``entity_id``."""
+    log = {
+        "action": "logbook.log",
+        "data": {"entity_id": entity_id, "name": "Alert", "message": "Water"},
+    }
+    return {"sequence": [log, *steps]}
+
+
+async def test_a_made_up_entity_to_file_a_logbook_entry_under_is_fine(
+    hass: HomeAssistant,
+) -> None:
+    """Test `logbook.log` under an ID no integration provides is not reported.
+
+    Home Assistant's own list takes it: that is the premise, so it is checked
+    here too.
+    """
+    assert await async_setup_component(
+        hass, "script", {"script": {"alert": _logging("log.critical_messages")}}
+    )
+    await hass.async_block_till_done()
+    entity = hass.data["script"].get_entity("script.alert")
+    assert "log.critical_messages" in extract_referenced_entities_from_script(entity)
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
+
+
+async def test_a_removed_entity_to_file_a_logbook_entry_under_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test `logbook.log` under a real domain still checks the entity."""
+    scripts = {"alert": _logging("light.gone")}
+
+    assert await _unknown_in_script(hass, scripts, "alert") == {"light.gone"}
+
+
+async def test_a_made_up_logbook_entity_also_used_as_a_target_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the same made-up ID used as a target too is still reported."""
+    scripts = {
+        "alert": _logging(
+            "log.critical_messages",
+            {
+                "action": "homeassistant.turn_on",
+                "target": {"entity_id": "log.critical_messages"},
+            },
+        )
+    }
+
+    assert await _unknown_in_script(hass, scripts, "alert") == {"log.critical_messages"}
+
+
+async def test_an_event_waited_for_and_a_logbook_entry_do_not_cancel_out(
+    hass: HomeAssistant,
+) -> None:
+    """Test a waited for event payload and a logbook entry of one ID stay fine."""
+    script = _logging("light.from_the_remote")
+    script["sequence"] = [
+        _waiting_for("my_remote_pressed")["sequence"][0],
+        {
+            "action": "logbook.log",
+            "data": {"entity_id": "log.remote", "name": "x", "message": "y"},
+        },
+    ]
+    script["sequence"][0]["wait_for_trigger"][0]["event_data"] = {
+        "entity_id": "log.remote"
+    }
+
+    assert await _unknown_in_script(hass, {"remote": script}, "remote") == set()
