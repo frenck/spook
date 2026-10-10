@@ -570,10 +570,11 @@ def _text_argument_offsets(template_str: str) -> frozenset[int]:
 
     Jinja's own lexer does the reading, so quotes, escaped quotes and
     delimiters inside a string are all handled the way Jinja handles them.
-    Its tokens come back raw, whitespace and prose included, so adding up
-    their lengths gives each token's offset in the template. That only holds
-    with plain newlines, which the lexer turns every line ending into, so the
-    caller hands this a template that already has them.
+    Where each token starts comes from `_lexed`, which finds every token back
+    in the source: `{{-` and `{%-` strip whitespace from the text in front,
+    so adding up token lengths drifts. That only works with plain newlines,
+    which the lexer turns every line ending into, so the caller hands this a
+    template that already has them.
 
     Only the innermost call counts, which is the one a literal is an argument
     of: in `replace(states('sensor.a'), ...)` the literal belongs to `states`,
@@ -589,17 +590,12 @@ def _text_argument_offsets(template_str: str) -> frozenset[int]:
     open_brackets: list[_Bracket] = []
     # The last few tokens, enough to tell `x | replace(` from `x is match(`.
     significant: deque[tuple[str, str]] = deque(maxlen=3)
-    offset = 0
 
-    try:
-        tokens = list(_JINJA_LEXER.lex(template_str))
-    except TemplateSyntaxError:
+    tokens = _lexed(template_str)
+    if tokens is None:
         return frozenset()
 
-    for _lineno, kind, value in tokens:
-        token_start = offset
-        offset += len(value)
-
+    for token_start, kind, value in tokens:
         if kind == "whitespace":
             continue
 

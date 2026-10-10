@@ -207,6 +207,14 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
         "{{ states.sensor | selectattr('state', 'contains', 'light.kitchen') | list }}",
         # Parentheses that only group the needle change nothing.
         "{{ ids | select('search', ('light.kitchen')) | list }}",
+        # `{{-` and `{%-` strip the whitespace in front of them, which does
+        # not shift where the literal is.
+        "Room  {{- 1 }}{{ trigger.entity_id | replace('sensor.live', '') }}",
+        "Room  {%- if true %}{% endif %}{{ x | replace('sensor.live', '') }}",
+        "Room  {{ 1 }}{{ trigger.entity_id | replace('sensor.live', '') }}",
+        # On the right, `-}}` and `-%}` take the whitespace after them along.
+        "{{ 1 -}}  Room{{ trigger.entity_id | replace('sensor.live', '') }}",
+        "{% if true -%}  {% endif %}{{ x | replace('sensor.live', '') }}",
     ],
 )
 async def test_value_template_ignores_text_function_arguments(
@@ -251,6 +259,12 @@ async def test_value_template_ignores_text_function_arguments(
         # Plain select does not say its items are strings, and on a list
         # `contains` asks about a member.
         "{{ groups | select('contains', 'light.kitchen') | list }}",
+        # As much whitespace stripped by `{{-` as there is between the start
+        # of the reference and that of the text after it does not swap them.
+        (
+            "Room" + " " * 27 + "{{- 1 }}"
+            "{{ states('light.kitchen') | replace('on', 'aan') }}"
+        ),
     ],
 )
 async def test_value_template_keeps_references_next_to_text_functions(
@@ -1265,6 +1279,32 @@ async def test_a_template_in_action_data_still_names_entities(
     assert "sensor.washing_machine_ghost" in await _async_unknown_in_automation(
         hass, config
     )
+
+
+async def test_text_after_whitespace_control_is_no_unknown_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test text to replace is not reported after `{{-` stripped whitespace.
+
+    The whitespace `{{-` strips from the text in front is gone from Jinja's
+    tokens, but not from the template, so this is the same literal.
+    """
+    config: dict[str, Any] = {
+        "alias": "Live room",
+        "triggers": [{"trigger": "homeassistant", "event": "start"}],
+        "conditions": [
+            {
+                "condition": "template",
+                "value_template": (
+                    "{%- set room = trigger.entity_id | default('') %}\n"
+                    "  {{- room | replace('sensor.live', '') != '' }}"
+                ),
+            }
+        ],
+        "actions": [],
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == set()
 
 
 _PUMP_CHECK: dict[str, Any] = {
