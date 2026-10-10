@@ -2,9 +2,13 @@ source: https://community.home-assistant.io/t/navbar-card-easily-navigate-throug
 note: >-
   navbar-card routes: each a URL with an icon, one with a badge template
   counting something, and one that opens more-info for an entity.
+out_of_scope: >-
+  The badge is JavaScript the card runs in the browser; Spook does not read
+  JavaScript. The more-info target is a regular tap action and is read.
 expect:
   entities:
     find: [alarm_control_panel.home]
+    not_find: [light.living_room]
 ---
 type: custom:navbar-card
 routes:
