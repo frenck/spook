@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
 from homeassistant.helpers.device_registry import DeviceInfo
 
 from ...const import DOMAIN
@@ -14,6 +13,12 @@ if TYPE_CHECKING:
     from hass_nabucasa import Cloud
 
     from homeassistant.components.cloud.client import CloudClient
+
+# Spelled out rather than imported. Importing anything from the cloud
+# integration runs its package first, and that pulls in Alexa, Google
+# Assistant and camera with it, on the single import thread, at startup,
+# for a house that may not use the cloud at all. #1898.
+CLOUD_DOMAIN = "cloud"
 
 
 class HomeAssistantCloudSpookEntity(SpookEntity):

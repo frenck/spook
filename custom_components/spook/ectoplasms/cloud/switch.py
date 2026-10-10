@@ -5,12 +5,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.cloud import DOMAIN as CLOUD_DOMAIN
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.const import EntityCategory
 
 from ...entity import SpookEntityDescription
-from .entity import HomeAssistantCloudSpookEntity
+from .entity import CLOUD_DOMAIN, HomeAssistantCloudSpookEntity
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
