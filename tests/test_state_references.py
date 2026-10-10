@@ -247,6 +247,12 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
         ("{{ is_state('light.kitchen', ['On',]) }}", PAIR),
         ("{{ 'light.kitchen' is is_state(['On', 'Dimmed']) }}", ON_AND_DIMMED),
         ("{{ 'light.kitchen' is not is_state(['On']) }}", PAIR),
+        # Parentheses around one thing only group it.
+        ("{{ is_state('light.kitchen', (['On', 'Dimmed'])) }}", ON_AND_DIMMED),
+        ("{{ is_state('light.kitchen', ((['On']))) }}", PAIR),
+        ("{{ is_state('light.kitchen', ('On')) }}", PAIR),
+        ("{{ 'light.kitchen' is is_state((['On', 'Dimmed'])) }}", ON_AND_DIMMED),
+        ("{{ 'light.kitchen' is is_state(('On')) }}", PAIR),
         # Worked out while running, or more than one literal.
         ("{{ is_state(which, 'On') }}", set()),
         ("{{ is_state('light.kitchen', which) }}", set()),
@@ -257,6 +263,12 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
         # Core only looks inside a list, so a tuple never matches.
         ("{{ is_state('light.kitchen', ('On', 'Dimmed')) }}", set()),
         ("{{ 'light.kitchen' is is_state(('On', 'Dimmed')) }}", set()),
+        ("{{ is_state('light.kitchen', (['On'],)) }}", set()),
+        ("{{ is_state('light.kitchen', ('On',)) }}", set()),
+        ("{{ 'light.kitchen' is is_state((['On'],)) }}", set()),
+        ("{{ is_state('light.kitchen', (['On']) + more) }}", set()),
+        ("{{ is_state('light.kitchen', (['On'] + more)) }}", set()),
+        ("{{ is_state('light.kitchen', (['On']) }}", set()),
         # Something binding tighter takes part of the list.
         ("{{ is_state('light.kitchen', ['On'] + more) }}", set()),
         ("{{ is_state('light.kitchen', ['On', 'Dimmed'][0]) }}", set()),

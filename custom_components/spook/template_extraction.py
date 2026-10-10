@@ -1033,6 +1033,13 @@ def _states_argument(tokens: list[_Token], index: int) -> tuple[list[str], int] 
         return [tokens[index][1]], index + 1
     if _is(tokens, index, "lbracket"):
         return _literals_listed(tokens, index)
+
+    # Parentheses around one thing only group it: `(['on'])` is still the
+    # list. With a comma after it, `(['on'],)`, it is a tuple and not read.
+    if _is(tokens, index, "lparen"):
+        grouped = _states_argument(tokens, index + 1)
+        if grouped is not None and _is(tokens, grouped[1], "rparen"):
+            return grouped[0], grouped[1] + 1
     return None
 
 
