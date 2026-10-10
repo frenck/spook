@@ -82,8 +82,13 @@ def event_payload_keys_to_leave_alone(config: dict[str, Any]) -> frozenset[str]:
     that works perfectly well.
 
     Told apart by the event type: one named after a domain comes from that
-    integration, anything else is somebody's own.
+    integration, anything else is somebody's own. Only on an event trigger:
+    action data can carry an `event_type` and `event_data` of its own, and
+    there they are whatever that action takes.
     """
+    if config.get("trigger", config.get("platform")) != "event":
+        return frozenset()
+
     event_types = config.get("event_type")
     if event_types is None:
         return frozenset()
