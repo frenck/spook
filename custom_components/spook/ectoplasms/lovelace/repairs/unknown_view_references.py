@@ -32,9 +32,10 @@ _JAVASCRIPT_FALSY = (None, "", 0, False)
 _UNUSED_ENTITIES_VIEW = "hass-unused-entities"
 
 # Whatever a template or a card's own variables turn into is not known until
-# they run. Jinja, button-card's `[[[ ]]]`, decluttering-card's `[[ ]]` and
-# config-template-card's `${ }`.
-_TEMPLATE_MARKERS = ("{{", "{%", "[[", "${")
+# they run. Jinja (a comment too), button-card's `[[[ ]]]`, decluttering-card's
+# `[[ ]]` and config-template-card's `${ }`. Only the opening is asked for: a
+# half-written one is no path to judge either.
+_TEMPLATE_MARKERS = ("{{", "{%", "{#", "[[", "${")
 
 # The browser drops these from a URL, or reads them as a slash, before the
 # frontend gets to see the path. What it ends up as is the browser's call.

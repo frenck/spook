@@ -168,6 +168,32 @@ async def test_navigation_anywhere_on_a_card_is_read(
     assert _reported_paths(issue_registry) == "- `/lovelace/attic`"
 
 
+@pytest.mark.parametrize("action", ["perform-action", "call-service"])
+@pytest.mark.parametrize("payload_key", ["data", "service_data", "target"])
+async def test_navigation_in_what_an_action_is_handed_is_left_alone(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    action: str,
+    payload_key: str,
+) -> None:
+    """Test a navigate shape inside a performed action's payload is not read.
+
+    Home Assistant gets it as data for the action, and nothing navigates.
+    """
+    card = {
+        "type": "button",
+        "tap_action": {
+            "action": action,
+            "perform_action": "browser_mod.navigate",
+            payload_key: {"action": "navigate", "navigation_path": "/lovelace/attic"},
+        },
+    }
+
+    await _async_inspect(hass, _lovelace_with(card))
+
+    assert _reported_paths(issue_registry) is None
+
+
 async def test_an_area_card_with_a_tap_action_ignores_its_old_path(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
@@ -291,6 +317,7 @@ async def test_paths_the_frontend_finds_a_view_for(
         "/config/areas/dashboard",
         "/history",
         "/lovelace/{{ states('input_select.room') }}",
+        "/lovelace/{# set by a card #}attic",
         "/lovelace/[[[ return variables.room ]]]",
         "/lovelace/[[room]]",
         "/lovelace/${vars[0]}",
@@ -307,6 +334,7 @@ async def test_paths_the_frontend_finds_a_view_for(
         "config-panel",
         "history-panel",
         "jinja",
+        "jinja-comment",
         "button-card",
         "decluttering-card",
         "config-template-card",

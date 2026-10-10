@@ -477,6 +477,11 @@ _NAVIGATION_PATH_KEY = "navigation_path"
 # `tap_action`, so one that does never uses it.
 _AREA_CARD_TYPE = "area"
 
+# What a performed action hands to Home Assistant is the action's business,
+# not the dashboard's: a `navigation_path` in there navigates nowhere.
+_PERFORMED_ACTIONS = frozenset({"call-service", "perform-action"})
+_PERFORMED_ACTION_PAYLOAD_KEYS = frozenset({"data", "service_data", "target"})
+
 
 def _walk_navigation(node: Any, paths: set[str]) -> None:
     """Recursively collect where a configuration node navigates to."""
@@ -494,6 +499,13 @@ def _walk_navigation(node: Any, paths: set[str]) -> None:
     )
     if navigates and isinstance(path := node.get(_NAVIGATION_PATH_KEY), str):
         paths.add(path)
+
+    if node.get("action") in _PERFORMED_ACTIONS:
+        node = {
+            key: value
+            for key, value in node.items()
+            if key not in _PERFORMED_ACTION_PAYLOAD_KEYS
+        }
 
     for child in _worth_descending_into(node):
         _walk_navigation(child, paths)
