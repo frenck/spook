@@ -1292,10 +1292,11 @@ def extract_attribute_pairs_from_template(
     and only pairs where both are a whole string literal. An attribute built
     from pieces, like `'color_' ~ 'temp'`, or coming from a variable, is
     whatever it is at runtime, and guessing at that is how a repair ends up
-    reporting a template that works. So is a template that defines its own
-    `states` or `state_attr`: then those are not Home Assistant's. The
-    same goes for the names in `shadowed`, which the configuration around
-    the template gives a meaning of its own.
+    reporting a template that works. So is a call in a template that
+    defines its own `states` or `state_attr`: then those are not Home
+    Assistant's. The same goes for the names in `shadowed`, which the
+    configuration around the template gives a meaning of its own. Neither
+    hides the `state_attr` filter.
 
     Pure in its arguments, so cached like the entity extraction.
     """
@@ -1308,11 +1309,17 @@ def extract_attribute_pairs_from_template(
     pairs: set[tuple[str, str]] = set()
     for tokens in expressions:
         for index, (kind, value) in enumerate(tokens):
-            if kind != "name" or value in named_locally:
+            if kind != "name":
                 continue
 
-            if value in _ATTRIBUTE_FUNCTIONS:
-                pair = _function_pair(tokens, index) or _filter_pair(tokens, index)
+            # Filters are Jinja's own registry: a name the template, or the
+            # configuration, defines does not hide one, it only hides a function.
+            if value in _ATTRIBUTE_FUNCTIONS and _is(tokens, index - 1, "pipe"):
+                pair = _filter_pair(tokens, index)
+            elif value in named_locally:
+                continue
+            elif value in _ATTRIBUTE_FUNCTIONS:
+                pair = _function_pair(tokens, index)
             elif value == "states":
                 pair = _states_pair(tokens, index)
             else:
@@ -1561,10 +1568,11 @@ def extract_state_pairs_from_template(
     around, or `in` a list of them, also as `states.light.x.state`.
 
     Read like the attribute pairs: whole string literals, inside an
-    expression, and not in a template that defines its own `is_state` or
-    `states`, or sits in a configuration that does (`shadowed`). A comparison only when nothing else takes part in it: with a
-    filter, `~` or anything else in between, what is compared is something
-    else than the state.
+    expression, and not called in a template that defines its own
+    `is_state` or `states`, or sits in a configuration that does
+    (`shadowed`). Neither hides the `is_state` test. A comparison only when
+    nothing else takes part in it: with a filter, `~` or anything else in
+    between, what is compared is something else than the state.
 
     Pure in its arguments, so cached like the entity extraction.
     """
@@ -1577,16 +1585,18 @@ def extract_state_pairs_from_template(
     pairs: set[tuple[str, str]] = set()
     for tokens in expressions:
         for index, (kind, value) in enumerate(tokens):
-            if kind != "name" or value in named_locally:
+            if kind != "name":
                 continue
 
+            # Tests are Jinja's own registry: a name the template, or the
+            # configuration, defines does not hide one, it only hides a function.
             found: set[tuple[str, str]] = set()
-            if value == _STATE_FUNCTION:
-                found = (
-                    _test_pairs(tokens, index)
-                    if _is_test(tokens, index)
-                    else _function_pairs(tokens, index)
-                )
+            if value == _STATE_FUNCTION and _is_test(tokens, index):
+                found = _test_pairs(tokens, index)
+            elif value in named_locally:
+                continue
+            elif value == _STATE_FUNCTION:
+                found = _function_pairs(tokens, index)
             elif value == _STATES:
                 found = _comparison_pairs(tokens, index)
 
@@ -1606,9 +1616,9 @@ def _looked_up_devices(template_str: str) -> set[str]:
 
     Read with Jinja's own lexer, like the state lookups: only a real call by
     the very name, not in a string or the text around it, not a method and
-    not a name the template defines itself. An entity ID there is an entity
-    reference, and anything else the lookup quietly turns into nothing, so
-    only a literal shaped like a registry ID is a device.
+    not called by a name the template defines itself. An entity ID there is
+    an entity reference, and anything else the lookup quietly turns into
+    nothing, so only a literal shaped like a registry ID is a device.
     """
     expressions = _expressions(template_str)
     local = _named_locally(expressions)
@@ -1619,18 +1629,21 @@ def _looked_up_devices(template_str: str) -> set[str]:
             if (
                 kind != "name"
                 or name not in _DEVICE_LOOKUPS
-                or name in local
                 or _is(tokens, index - 1, "dot")
             ):
                 continue
 
             # As a filter or a test, the value right in front of it is the
             # device. Two strings side by side are joined into one by Jinja,
-            # so then that one is only a piece of it.
+            # so then that one is only a piece of it. Filters and tests are
+            # Jinja's own registries: a name the template defines does not
+            # hide one, it only hides a function.
             if _is(tokens, index - 1, "pipe"):
                 value = index - 2
             elif name in _DEVICE_LOOKUP_TESTS and _is_test(tokens, index):
                 value = index - (3 if _is(tokens, index - 1, "name", "not") else 2)
+            elif name in local:
+                continue
             else:
                 # Called, only a whole first argument.
                 if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(

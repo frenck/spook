@@ -112,6 +112,13 @@ async def _unknown_devices(hass: HomeAssistant, domain: str, template: str) -> s
         f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}",
         f"{{{{ '{_GHOST_DEVICE}' is not is_device_attr('model', 'x') }}}}",
         f"{{{{ device_attr ( '{_GHOST_DEVICE}' , 'model') }}}}",
+        # A name of the template's own hides the function, not the filter or
+        # the test: Jinja keeps those in registries of their own.
+        f"{{% set device_name = 1 %}}{{{{ '{_GHOST_DEVICE}' | device_name }}}}",
+        (
+            "{% macro is_device_attr(a, b, c) %}{% endmacro %}"
+            f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}"
+        ),
     ],
 )
 async def test_device_lookup_with_a_device_id_is_detected(

@@ -441,6 +441,19 @@ def test_names_the_configuration_gives_are_no_lookups(config: dict[str, Any]) ->
     assert not extract_attribute_references_from_config(config).pairs
 
 
+@pytest.mark.parametrize(
+    "config",
+    shadowing_configs("state_attr", "{{ 'light.kitchen' | state_attr('brightness') }}"),
+)
+def test_names_the_configuration_gives_hide_no_filter(config: dict[str, Any]) -> None:
+    """Test a name the configuration took over still leaves the filter alone.
+
+    Its names are values handed to the template, and Jinja looks a filter up
+    in a registry of its own.
+    """
+    assert extract_attribute_references_from_config(config).pairs == PAIR
+
+
 def test_other_names_leave_lookups_alone() -> None:
     """Test a variable by any other name does not stop a lookup being read."""
     config = {

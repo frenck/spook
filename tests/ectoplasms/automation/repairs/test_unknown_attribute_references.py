@@ -19,7 +19,7 @@ from custom_components.spook import attribute_checking
 from custom_components.spook.ectoplasms.automation.repairs.unknown_attribute_references import (
     SpookRepair,
 )
-from tests.repair_helpers import async_issue_about
+from tests.repair_helpers import async_issue_about, async_setup_template_automation
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -208,3 +208,67 @@ async def test_not_before_the_recorder_settles(
     assert async_issue_about(issue_registry, ISSUE)
 
     await repair.async_deactivate()
+
+
+@pytest.mark.parametrize(
+    ("template", "variables"),
+    [
+        (
+            "{% set state_attr = 1 %}{{ 'light.kitchen' | state_attr('Brightness') }}",
+            None,
+        ),
+        ("{{ 'light.kitchen' | state_attr('Brightness') }}", {"state_attr": 1}),
+    ],
+    ids=["set in the template", "variable of the automation"],
+)
+async def test_own_name_does_not_hide_the_filter(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    template: str,
+    variables: dict[str, Any] | None,
+) -> None:
+    """Test a name of its own hides the function, not the filter.
+
+    Jinja looks filters up in a registry of their own, so this still calls
+    Home Assistant's `state_attr`.
+    """
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_setup_template_automation(hass, template, variables)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["attributes"] == (
+        "- `Brightness` of `light.kitchen` (did you mean `brightness`?)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("template", "variables"),
+    [
+        (
+            (
+                "{% macro state_attr(a, b) %}{{ a }}{% endmacro %}"
+                "{{ state_attr('light.kitchen', 'Brightness') }}"
+            ),
+            None,
+        ),
+        ("{{ state_attr('light.kitchen', 'Brightness') }}", {"state_attr": 1}),
+    ],
+    ids=["macro in the template", "variable of the automation"],
+)
+async def test_own_name_hides_the_function(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    template: str,
+    variables: dict[str, Any] | None,
+) -> None:
+    """Test a call by a name of its own is not Home Assistant's `state_attr`."""
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_setup_template_automation(hass, template, variables)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, ISSUE) is None
