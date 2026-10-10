@@ -263,6 +263,94 @@ def numeric_state_threshold_entities(config: dict[str, Any]) -> set[str]:
     return entities
 
 
+# What Home Assistant's numeric threshold selector takes, by threshold type:
+# the entries each type compares against. `any` compares against nothing.
+_THRESHOLD_ENTRIES_BY_TYPE = {
+    "above": ("value",),
+    "below": ("value",),
+    "between": ("value_min", "value_max"),
+    "outside": ("value_min", "value_max"),
+}
+_THRESHOLD_KEYS = frozenset({"type", "value", "value_min", "value_max"})
+_THRESHOLD_ENTRY_KEYS = frozenset(
+    {"active_choice", "entity", "number", "unit_of_measurement"}
+)
+
+
+def _threshold_entry_entity(entry: Any) -> str | None:
+    """Return the entity a threshold entry compares against, if it uses one.
+
+    The editor keeps both a number and an entity around, and `active_choice`
+    says which one counts. Home Assistant drops the other before it runs.
+    Without `active_choice` it takes the number when there is one, and it
+    turns down an entry with both. Either way, the entity only counts when
+    nothing else is chosen over it.
+    """
+    if not isinstance(entry, dict) or not entry.keys() <= _THRESHOLD_ENTRY_KEYS:
+        return None
+
+    if "active_choice" in entry:
+        uses_entity = entry["active_choice"] == "entity"
+    else:
+        uses_entity = "number" not in entry
+
+    entity_id = entry.get("entity")
+    if not uses_entity or not isinstance(entity_id, str):
+        return None
+
+    entity_id = entity_id.lower()
+    return entity_id if valid_entity_id(entity_id) else None
+
+
+def numeric_threshold_entities(config: dict[str, Any]) -> set[str]:
+    """Return the entities a new style trigger or condition compares against.
+
+    `light.brightness_crossed_threshold` and its kind take their threshold
+    from `options.threshold`, and that can be an entity instead of a number.
+    Remove it and the trigger never fires, the condition never passes, and
+    Home Assistant's own reading does not list it.
+
+    Only on a trigger or condition named after an integration, and only on
+    a threshold shaped exactly the way Home Assistant's selector takes it.
+    An integration of somebody's own can call an option `threshold` and mean
+    something else by it. Any domain counts: Home Assistant reads the state
+    of whatever entity it is given, the selector only limits what the editor
+    offers.
+
+    This trusts the shape, so a walker only asks it outside `VALUE_KEYS`.
+    """
+    kind = config.get("condition", config.get("trigger", config.get("platform")))
+    if not isinstance(kind, str) or "." not in kind:
+        return set()
+
+    if not isinstance(options := config.get("options"), dict):
+        return set()
+
+    threshold = options.get("threshold")
+    if not isinstance(threshold, dict) or not threshold.keys() <= _THRESHOLD_KEYS:
+        return set()
+
+    # Checked for text first: a list or a dict cannot be looked up.
+    if not isinstance(threshold_type := threshold.get("type"), str):
+        return set()
+
+    entry_keys = _THRESHOLD_ENTRIES_BY_TYPE.get(threshold_type, ())
+    return {
+        entity_id
+        for key in entry_keys
+        if (entity_id := _threshold_entry_entity(threshold.get(key))) is not None
+    }
+
+
+def threshold_entities(config: dict[str, Any]) -> set[str]:
+    """Return the entities a trigger or condition compares against.
+
+    Both the classic numeric state one and the new style ones, read the
+    way each of them takes its threshold.
+    """
+    return numeric_state_threshold_entities(config) | numeric_threshold_entities(config)
+
+
 @dataclass
 class ExtractedTargets:
     """Target references extracted from a raw configuration."""

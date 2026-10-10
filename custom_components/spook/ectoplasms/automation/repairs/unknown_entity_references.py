@@ -20,7 +20,7 @@ from ....reference_extraction import (
     event_payload_keys_to_leave_alone,
     harmless_entity_mentions,
     mentioned_only_in_disabled_steps,
-    numeric_state_threshold_entities,
+    threshold_entities,
     without_disabled_steps,
     without_never_rendered,
 )
@@ -119,12 +119,12 @@ async def _entities_from_reference_fields(
     """Extract entities from the config keys that name a reference.
 
     ``zone`` is in here because a zone trigger and a zone condition both name
-    one, and it is read exactly like the others. So is the entity a numeric
-    state trigger or condition takes as its threshold, unless the dictionary
-    sits below a key that holds values: event data that only looks like one
-    is still event data.
+    one, and it is read exactly like the others. So is the entity a trigger
+    or condition takes as its threshold, unless the dictionary sits below a
+    key that holds values: event data that only looks like one is still event
+    data.
     """
-    entities = set() if in_values else numeric_state_threshold_entities(config)
+    entities = set() if in_values else threshold_entities(config)
     for key in ("entity_id", "device_id", "zone"):
         if key in config:
             entities.update(

@@ -19,7 +19,7 @@ from .reference_extraction import (
     VALUE_KEYS,
     event_payload_keys_to_leave_alone,
     names_given_to_templates,
-    numeric_state_threshold_entities,
+    threshold_entities,
     without_disabled_steps,
     without_never_rendered,
 )
@@ -124,7 +124,7 @@ async def async_extract_entities_from_action_config(
     # entity. Below a key that holds values, like action data, event data or
     # variables, nothing is either, whatever its shape.
     if not _in_values:
-        entities.update(numeric_state_threshold_entities(config))
+        entities.update(threshold_entities(config))
 
     # Extract entities from target configuration
     entities.update(await _extract_entities_from_target(hass, config, known_services))
