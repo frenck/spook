@@ -269,6 +269,39 @@ def test_attribute_references_left_alone(config: dict[str, Any]) -> None:
     assert not references.followed
 
 
+def test_payloads_named_like_metadata_are_still_read() -> None:
+    """Test a payload keeps a key that would be metadata elsewhere.
+
+    A calendar event has a `description`, and an action's data is rendered,
+    so the template in it is a lookup like any other.
+    """
+    references = extract_attribute_references_from_config(
+        {
+            "description": "Not rendered",
+            "actions": [
+                {
+                    "action": "calendar.create_event",
+                    "data": {
+                        "description": (
+                            "{{ state_attr('light.kitchen', 'brightness') }}"
+                        )
+                    },
+                },
+                {
+                    "variables": {
+                        "alias": "{{ state_attr('light.hall', 'brightness') }}"
+                    }
+                },
+            ],
+        }
+    )
+
+    assert references.pairs == {
+        ("light.kitchen", "brightness"),
+        ("light.hall", "brightness"),
+    }
+
+
 def test_spook_state_trigger_is_handed_back_whole() -> None:
     """Test Spook's own trigger comes back as it is, with what it follows.
 

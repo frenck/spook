@@ -373,12 +373,28 @@ def _walk_attribute_references(
 # an example template in it is documentation, not a lookup.
 _NEVER_RENDERED_KEYS = frozenset({"alias", "description", "fields"})
 
+# Keys holding what is handed on, rendered, under names of its own choosing:
+# the data of an action can have a `description` too, like a calendar event.
+_PAYLOAD_KEYS = frozenset(
+    {
+        "data",
+        "data_template",
+        "event_data",
+        "event_data_template",
+        "service_data",
+        "variables",
+    }
+)
+
 
 def _without_never_rendered(config: Any) -> Any:
-    """Return the configuration without the parts that are never rendered."""
+    """Return the configuration without the parts that are never rendered.
+
+    Payloads are kept whole, whatever their keys are called.
+    """
     if isinstance(config, dict):
         return {
-            key: _without_never_rendered(value)
+            key: value if key in _PAYLOAD_KEYS else _without_never_rendered(value)
             for key, value in config.items()
             if key not in _NEVER_RENDERED_KEYS
         }
