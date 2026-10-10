@@ -169,8 +169,18 @@ def _leaf_names(
         return
 
     for state in reference[1]:
-        if _name(state) and not _FRONTEND_ENTITY_ID.fullmatch(state):
+        if _name(state) and not _compared_with_an_entity(state):
             yield _STATES, state
+
+
+def _compared_with_an_entity(state: str) -> bool:
+    """Return whether the frontend may compare a state with an entity's state.
+
+    Only a value shaped like an entity ID, and never a number: `"1.0"` has
+    the shape, but the frontend reads it as the number it is
+    (`src/common/condition/translate.ts`), and no entity has that ID.
+    """
+    return bool(_FRONTEND_ENTITY_ID.fullmatch(state)) and not _looks_numeric(state)
 
 
 def _condition_leaves(
