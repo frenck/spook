@@ -1308,6 +1308,12 @@ _PUMP_LOOKUPS = pytest.mark.parametrize(
         "{{ 'sensor.Pump_Interval' | states }}",
         "{{ 'sensor.Pump_Interval' is has_value }}",
         "{{ expand('sensor.pump_speed', ['sensor.Pump_Interval']) | count }}",
+        "{{ expand({'sensor.Pump_Interval': 1}) | count }}",
+        "{{ {'sensor.Pump_Interval': 1} | expand | count }}",
+        "{{ [['sensor.Pump_Interval']] | expand | count }}",
+        "{{ expand({'sensor.Pump_Interval': -1}) | count }}",
+        "{{ expand({('sensor.Pump_Interval', 'sensor.pump_speed'): 1}) | count }}",
+        "{{ states(entity_id='sensor.Pump_Interval') }}",
     ],
 )
 
@@ -1358,6 +1364,28 @@ async def test_a_mixed_case_key_in_front_of_a_lookup_filter_is_no_entity(
         "{% set pumps = {'sensor.Pump_Interval': ['sensor.pump_speed']} %}"
         "{{ pumps['sensor.Pump_Interval'] | expand | count }}"
     )
+
+    assert await _async_unknown_in_automation(hass, _pump_check(template)) == set()
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "{{ expand({'sensor.pump_speed': 'sensor.Pump_Interval'}) | count }}",
+        "{{ 'sensor.Pump_Interval' | state_attr }}",
+        "{{ 'sensor.Pump_Interval' is is_state }}",
+    ],
+)
+async def test_a_mixed_case_literal_no_lookup_reads_is_no_entity(
+    hass: HomeAssistant, template: str
+) -> None:
+    """Test a mixed case literal is left alone where no lookup reads it.
+
+    `expand` looks up the keys of a mapping, not its values. And a filter or
+    a test with arguments its lookup does not take fails before it reads
+    anything.
+    """
+    hass.states.async_set("sensor.pump_speed", "1")
 
     assert await _async_unknown_in_automation(hass, _pump_check(template)) == set()
 
