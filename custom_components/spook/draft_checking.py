@@ -37,6 +37,7 @@ from .ectoplasms.automation.repairs import (
     unknown_trigger_id_references as automation_trigger_ids,
     unknown_trigger_references as automation_triggers,
 )
+from .ectoplasms.lovelace.entity_names import async_check_dashboard_draft
 from .ectoplasms.script.repairs import (
     unknown_area_references as script_areas,
     unknown_attribute_references as script_attributes,
@@ -233,15 +234,17 @@ def _check_scene(hass: HomeAssistant, config: dict[str, Any]) -> dict[str, list[
     return {"entities": sorted(unknown)} if unknown else {}
 
 
-def _check_dashboard(
+async def _async_check_dashboard(
     hass: HomeAssistant, config: dict[str, Any]
 ) -> dict[str, list[str]]:
     """Return what a draft card, view or dashboard names that does not exist.
 
     The dashboard readers take any node, so a single card is as welcome as a
-    whole dashboard. Filtered the way the dashboard repairs filter, and like
-    the repair, a core card's entity field holding something that is no
-    entity ID at all is said apart from an entity that does not exist.
+    whole dashboard. Filtered the way the dashboard repairs filter, and the
+    attributes and states held against what the entities have, like they are
+    for an automation. Like the repair, a core card's entity field holding
+    something that is no entity ID at all is said apart from an entity that
+    does not exist.
     """
     checks = {
         "entities": async_filter_known_entity_ids(
@@ -257,7 +260,10 @@ def _check_dashboard(
             hass, services=extract_actions_from_dashboard_node(config)
         ),
     }
-    return {label: sorted(found) for label, found in checks.items() if found}
+    return {
+        **{label: sorted(found) for label, found in checks.items() if found},
+        **await async_check_dashboard_draft(hass, config),
+    }
 
 
 async def async_describe_unknown_entities(
@@ -295,5 +301,5 @@ async def async_check_draft(
     if kind == "scene":
         return _check_scene(hass, config)
     if kind == "dashboard":
-        return _check_dashboard(hass, config)
+        return await _async_check_dashboard(hass, config)
     return await _async_check_with_repairs(hass, kind, config)
