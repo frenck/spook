@@ -22,6 +22,7 @@ from .entity_filtering import (
     async_get_all_entity_ids,
     async_get_all_services,
     is_device_id_shaped,
+    is_not_an_entity_id,
     split_comma_separated_entity_ids,
 )
 
@@ -1014,9 +1015,6 @@ def _called_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
             return _closest_arguments(arguments)
         return _expand_arguments(arguments)
 
-    if name == "states" and _shaped(tokens, index + 1, ("dot", "name", "dot", "name")):
-        return [f"{tokens[index + 2][1]}.{tokens[index + 4][1]}"]
-
     # Only a whole argument: `'sensor.Pump' + '_interval'` and two strings
     # side by side are pieces of one.
     arguments = _call_arguments(tokens, index + 1)
@@ -1192,21 +1190,18 @@ def _test_arguments(tokens: list[_Token], index: int) -> list[list[_Token]]:
     return []
 
 
-@lru_cache(maxsize=1024)
-def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
-    """Return the entity IDs a template looks a state up for, as written.
+def _literal_state_lookups(
+    expressions: list[list[_Token]], local: set[str] | frozenset[str]
+) -> set[tuple[str, str]]:
+    """Return each state lookup handed a literal, and the literal, as written.
 
     Read with Jinja's own lexer, so only a real lookup counts: inside an
     expression, not in a string or in the text around it, by the very name
     (`STATES(...)`, `my_states(...)` and `obj.states(...)` are no lookups),
-    and not called by a name the template defines itself. Called, as a
-    filter or as a test, wherever Home Assistant offers it as one. These are the ones Home
-    Assistant tries in lower case too.
+    and not called by a name in `local`. Called, as a filter or as a test,
+    wherever Home Assistant offers it as one.
     """
-    expressions = _expressions(template_str)
-    local = _named_locally(expressions)
-
-    found: set[str] = set()
+    found: set[tuple[str, str]] = set()
     for tokens in expressions:
         for index, (kind, name) in enumerate(tokens):
             if (
@@ -1219,12 +1214,91 @@ def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
             # Filters and tests are Jinja's own registries: a name the
             # template defines does not hide one, it only hides a function.
             if _is(tokens, index - 1, "pipe"):
-                found.update(_filtered_lookup(tokens, index, name))
+                values = _filtered_lookup(tokens, index, name)
             elif _is_test(tokens, index):
-                found.update(_tested_lookup(tokens, index, name))
+                values = _tested_lookup(tokens, index, name)
             elif name not in local:
-                found.update(_called_lookup(tokens, index, name))
-    return frozenset(found)
+                values = _called_lookup(tokens, index, name)
+            else:
+                continue
+            found.update((name, value) for value in values)
+    return found
+
+
+def _states_spelled_out(
+    expressions: list[list[_Token]], local: set[str] | frozenset[str]
+) -> set[str]:
+    """Return the entity IDs a template spells out as names, `states.light.x`.
+
+    Not after a `|` or an `is`: Jinja reads the whole dotted name there as
+    the name of a filter or a test.
+    """
+    return {
+        f"{tokens[index + 2][1]}.{tokens[index + 4][1]}"
+        for tokens in expressions
+        for index, (kind, name) in enumerate(tokens)
+        if kind == "name"
+        and name == _STATES
+        and name not in local
+        and not _is(tokens, index - 1, "dot")
+        and not _is(tokens, index - 1, "pipe")
+        and not _is_test(tokens, index)
+        and _shaped(tokens, index + 1, ("dot", "name", "dot", "name"))
+    }
+
+
+@lru_cache(maxsize=1024)
+def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
+    """Return the entity IDs a template looks a state up for, as written.
+
+    Handed to a lookup as a literal, or spelled out after `states.`, and not
+    by a name the template defines itself. These are the ones Home Assistant
+    tries in lower case too.
+    """
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions)
+
+    return frozenset(
+        {value for _name, value in _literal_state_lookups(expressions, local)}
+        | _states_spelled_out(expressions, local)
+    )
+
+
+# The lookups that take one entity ID first and do nothing else with it.
+# Handed something that is no entity ID at all, `states`, `is_state`,
+# `state_attr`, `is_state_attr` and `has_value` find nothing and say so the
+# usual way: `unknown`, `None` or `false`. The two translated ones raise an
+# error instead, which a run only shows in the log. Not `expand` and
+# `closest`: they take lists and groups as well.
+_SINGLE_ENTITY_LOOKUPS = _STATE_LOOKUPS - _EXPANDING_LOOKUPS
+
+
+@lru_cache(maxsize=1024)
+def extract_not_entity_ids_from_template(
+    template_str: str, shadowed: frozenset[str] = frozenset()
+) -> frozenset[str]:
+    """Return the literals a template looks a state up for that are no entity ID.
+
+    `states('cover.blind.current_position')` finds nothing, whatever the
+    house looks like. Only a whole literal: anything built from pieces or
+    variables is whatever it is at runtime. Not `states.cover.blind`, which
+    is names, not a literal. A call by a name in `shadowed`, which the
+    configuration gives a meaning of its own, is not Home Assistant's
+    lookup. A filter or a test is, whatever the names around it.
+
+    Pure in its arguments, so cached like the entity extraction.
+    """
+    if not is_template_string(template_str):
+        return frozenset()
+
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions) | shadowed
+
+    return frozenset(
+        value
+        for name, value in _literal_state_lookups(expressions, local)
+        if name in _SINGLE_ENTITY_LOOKUPS and is_not_an_entity_id(value)
+    )
 
 
 def _entity_id_from_template_match(match: re.Match[str]) -> str:

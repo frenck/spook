@@ -11,6 +11,7 @@ from homeassistant.helpers import entity_registry as er
 from ....action_extraction import (
     async_extract_entities_from_action_config,
     async_extract_entities_from_value,
+    extract_not_entity_ids_from_config,
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
@@ -351,9 +352,16 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
             still_named = await self._async_named_in(without_disabled_steps(raw_config))
             all_entities -= named - still_named
 
-        return await async_filter_known_entity_ids_with_templates(
+        unknown = await async_filter_known_entity_ids_with_templates(
             self.hass,
             entity_ids=all_entities,
             known_entity_ids=self._known_entity_ids,
             known_services=self._known_services,
         )
+
+        # Where an entity ID goes, something that is no entity ID at all finds
+        # nothing, whatever exists. Listed with the rest, said apart.
+        if isinstance(raw_config, dict):
+            unknown |= extract_not_entity_ids_from_config(self.hass, raw_config)
+
+        return unknown

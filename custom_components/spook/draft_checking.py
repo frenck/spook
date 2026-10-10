@@ -54,6 +54,7 @@ from .entity_filtering import (
     async_get_all_entity_ids,
     async_get_deleted_entities,
     async_get_rename_suggestion_cache,
+    is_not_an_entity_id,
 )
 from .entity_suggestions import async_warm_rename_suggestions
 from .repairs import AbstractSpookUnknownEntityNamesRepair
@@ -173,6 +174,17 @@ async def _async_check_with_repairs(
         await repair._async_setup_inspection()  # noqa: SLF001
         # pylint: disable-next=protected-access
         found = await repair._async_compute_unknown_references(draft)  # noqa: SLF001
+
+        # Like the repair says in its issue, something where an entity ID goes
+        # that is no entity ID at all is said apart from an entity that does
+        # not exist.
+        if repair.references_are_entities:
+            if not_entity_ids := {
+                value for value in found if is_not_an_entity_id(value)
+            }:
+                unknown["not_entity_ids"] = sorted(not_entity_ids)
+            found -= not_entity_ids
+
         if found:
             unknown[repair.reference_label] = sorted(found)
 
