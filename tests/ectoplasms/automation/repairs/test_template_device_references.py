@@ -128,6 +128,14 @@ async def _unknown_devices(
             "{% macro is_device_attr(a, b, c) %}{% endmacro %}"
             f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}"
         ),
+        f"{{{{ device_entities('{_GHOST_DEVICE}') }}}}",
+        f"{{{{ device_entities ( '{_GHOST_DEVICE}' ) | list }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities }}}}",
+        # Empty parentheses on a filter hand it nothing more.
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities() }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities ( ) | list }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_name() }}}}",
+        f"{{% set device_entities = 1 %}}{{{{ '{_GHOST_DEVICE}' | device_entities }}}}",
     ],
 )
 async def test_device_lookup_with_a_device_id_is_detected(
@@ -165,6 +173,27 @@ async def test_device_lookup_with_a_device_id_is_detected(
         # Only a piece of what is looked up.
         f"{{{{ device_attr('{_GHOST_DEVICE}' ~ '_x', 'name') }}}}",
         f"{{{{ 'x' '{_GHOST_DEVICE}' | device_name }}}}",
+        # The same traps for `device_entities`.
+        f"{{{{ my_device_entities('{_GHOST_DEVICE}') }}}}",
+        f"{{{{ DEVICE_ENTITIES('{_GHOST_DEVICE}') }}}}",
+        f"device_entities('{_GHOST_DEVICE}') {{{{ 1 }}}}",
+        f"{{{{ \"device_entities('{_GHOST_DEVICE}')\" }}}}",
+        f"{{% raw %}}{{{{ device_entities('{_GHOST_DEVICE}') }}}}{{% endraw %}}",
+        f"{{{{ this.device_entities('{_GHOST_DEVICE}') }}}}",
+        f"{{{{ this . device_entities('{_GHOST_DEVICE}') }}}}",
+        (
+            "{% macro device_entities(device) %}{{ device }}{% endmacro %}"
+            f"{{{{ device_entities('{_GHOST_DEVICE}') }}}}"
+        ),
+        (
+            "{% set device_entities = namespace() %}"
+            f"{{{{ device_entities('{_GHOST_DEVICE}') }}}}"
+        ),
+        f"{{{{ device_entities('{_GHOST_DEVICE}' ~ '_x') }}}}",
+        f"{{{{ 'x' '{_GHOST_DEVICE}' | device_entities }}}}",
+        # It takes the device and nothing more, so these fail.
+        f"{{{{ device_entities('{_GHOST_DEVICE}', 'x') }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities('x') }}}}",
     ],
 )
 async def test_device_lookup_without_an_unknown_device_id_is_not_read(
@@ -191,9 +220,36 @@ async def test_device_lookup_without_an_unknown_device_id_is_not_read(
 _GIVEN_NAMES = pytest.mark.parametrize(
     ("domain", "extra"),
     [
-        ("automation", {"variables": {"device_name": 1, "is_device_attr": 1}}),
-        ("script", {"variables": {"device_name": 1, "is_device_attr": 1}}),
-        ("script", {"fields": {"device_name": {}, "is_device_attr": {}}}),
+        (
+            "automation",
+            {
+                "variables": {
+                    "device_name": 1,
+                    "is_device_attr": 1,
+                    "device_entities": 1,
+                }
+            },
+        ),
+        (
+            "script",
+            {
+                "variables": {
+                    "device_name": 1,
+                    "is_device_attr": 1,
+                    "device_entities": 1,
+                }
+            },
+        ),
+        (
+            "script",
+            {
+                "fields": {
+                    "device_name": {},
+                    "is_device_attr": {},
+                    "device_entities": {},
+                }
+            },
+        ),
     ],
     ids=["automation variables", "script variables", "script fields"],
 )
@@ -207,6 +263,7 @@ async def test_device_lookup_called_by_a_name_the_configuration_gives_is_not_rea
     template = (
         f"{{{{ device_name('{_GHOST_DEVICE}') }}}}"
         f"{{{{ is_device_attr('{_GHOST_DEVICE}', 'model', 'x') }}}}"
+        f"{{{{ device_entities('{_GHOST_DEVICE}') }}}}"
     )
 
     assert await _unknown_devices(hass, domain, template, extra) == set()
@@ -218,6 +275,7 @@ async def test_device_lookup_called_by_a_name_the_configuration_gives_is_not_rea
     [
         f"{{{{ '{_GHOST_DEVICE}' | device_name }}}}",
         f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities }}}}",
     ],
 )
 async def test_device_lookup_filter_or_test_the_configuration_names_is_read(

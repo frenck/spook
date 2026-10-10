@@ -111,14 +111,6 @@ COMPILED_ENTITY_ID_TEMPLATE_PATTERNS = tuple(
 
 JINJA_COMMENT_PATTERN = re.compile(r"\{#.*?#\}", re.DOTALL)
 
-# The ``device_entities`` template function takes a device registry ID
-# directly (no name or entity resolution), so a quoted literal is
-# unambiguously a device reference.
-_DEVICE_ENTITIES_PATTERN = re.compile(
-    r"device_entities\s*\(\s*['\"]([^'\"]+)['\"]",
-    re.IGNORECASE,
-)
-
 
 def is_template_string(value: str) -> bool:
     """Check if a string looks like a Jinja2 template.
@@ -2060,19 +2052,16 @@ _DEVICE_LOOKUPS = frozenset({"device_attr", "device_name", "is_device_attr"})
 _DEVICE_LOOKUP_TESTS = frozenset({"is_device_attr"})
 
 
-def _looked_up_devices(template_str: str, shadowed: frozenset[str]) -> set[str]:
+def _looked_up_devices(expressions: list[list[_Token]], local: set[str]) -> set[str]:
     """Return the literals a template hands a device lookup, as written.
 
     Read with Jinja's own lexer, like the state lookups: only a real call by
     the very name, not in a string or the text around it, not a method and
     not called by a name the template defines itself, or the configuration
-    around it does (`shadowed`). An entity ID there is an entity reference,
+    around it does (`local`). An entity ID there is an entity reference,
     and anything else the lookup quietly turns into nothing, so only a
     literal shaped like a registry ID is a device.
     """
-    expressions = _expressions(template_str)
-    local = _named_locally(expressions) | shadowed
-
     found: set[str] = set()
     for tokens in expressions:
         for index, (kind, name) in enumerate(tokens):
@@ -2108,6 +2097,50 @@ def _looked_up_devices(template_str: str, shadowed: frozenset[str]) -> set[str]:
     return {value for value in found if is_device_id_shaped(value)}
 
 
+_DEVICE_ENTITIES = "device_entities"
+
+
+def _listed_devices(expressions: list[list[_Token]], local: set[str]) -> set[str]:
+    """Return the literals a template hands `device_entities`, as written.
+
+    It takes a device ID and nothing else, called or as a filter, so a whole
+    literal there is a device. Read like the device lookups, by the very
+    name and never a method. A name the template or the configuration
+    defines (`local`) hides the call, not the filter.
+    """
+    found: set[str] = set()
+    for tokens in expressions:
+        for index, (kind, name) in enumerate(tokens):
+            if (
+                kind != "name"
+                or name != _DEVICE_ENTITIES
+                or _is(tokens, index - 1, "dot")
+            ):
+                continue
+
+            # As a filter, the value right in front of it is the device, unless
+            # it is glued to a string before it. Empty parentheses add nothing,
+            # but handed anything more the filter fails, so that is not a
+            # working reference.
+            if _is(tokens, index - 1, "pipe"):
+                value = index - 2
+                if (
+                    (
+                        _shaped(tokens, index + 1, ("lparen", "rparen"))
+                        or not _is(tokens, index + 1, "lparen")
+                    )
+                    and _is(tokens, value, "string")
+                    and not _is(tokens, value - 1, "string")
+                ):
+                    found.add(tokens[value][1])
+            elif name not in local and _shaped(
+                tokens, index + 1, ("lparen", "string", "rparen")
+            ):
+                found.add(tokens[index + 2][1])
+
+    return found
+
+
 @lru_cache(maxsize=1024)
 def _extract_device_ids_from_template(
     template_str: str, shadowed: frozenset[str] = frozenset()
@@ -2116,11 +2149,12 @@ def _extract_device_ids_from_template(
 
     Pure in its arguments, so cached like the entity extraction.
     """
-    template_without_comments = _strip_jinja_comments(template_str)
-    device_ids = set(_DEVICE_ENTITIES_PATTERN.findall(template_without_comments))
-    device_ids.update(_looked_up_devices(template_str, shadowed))
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions) | shadowed
 
-    return frozenset(device_ids)
+    return frozenset(
+        _listed_devices(expressions, local) | _looked_up_devices(expressions, local)
+    )
 
 
 def extract_device_ids_from_config(
