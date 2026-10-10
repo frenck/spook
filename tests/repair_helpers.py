@@ -5,9 +5,10 @@ from __future__ import annotations
 
 import re
 from types import SimpleNamespace
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
 
@@ -83,3 +84,31 @@ async def async_count_scheduled_inspections(
 
     await repair.async_deactivate()
     return calls
+
+
+async def async_setup_template_automation(
+    hass: HomeAssistant, template: str, variables: dict[str, Any] | None = None
+) -> None:
+    """Set up the haunted automation with a template condition.
+
+    Optionally with variables of its own, which its templates are handed.
+    """
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "variables": variables or {},
+                    "triggers": [{"trigger": "event", "event_type": "boo"}],
+                    "conditions": [
+                        {"condition": "template", "value_template": template}
+                    ],
+                    "actions": [],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()

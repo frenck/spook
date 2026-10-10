@@ -672,8 +672,10 @@ def extract_attribute_references_from_config(config: Any) -> NamedReferences:
     An entity can be a registry ID, which is what the editor writes in some
     places; resolving those is up to the caller, which has the registry.
 
-    A template is not read for a lookup whose name the configuration gives
-    a meaning of its own, like a variable called `states`.
+    A template is not read for a lookup called by a name the configuration
+    gives a meaning of its own, like a variable called `states`. Used as a
+    filter, the lookup is still Home Assistant's: a variable does not hide
+    a filter.
     """
     pruned = without_disabled_steps(config)
     shadowed = names_given_to_templates(config)
@@ -800,8 +802,8 @@ def extract_state_references_from_config(config: Any) -> NamedReferences:
     literal `is_state`.
 
     Disabled steps, triggers and conditions are left out, and an entity can
-    be a registry ID, and a name the configuration gives a meaning of its
-    own is no lookup, all like the attribute references.
+    be a registry ID, and a call by a name the configuration gives a meaning
+    of its own is no lookup, all like the attribute references.
     """
     pruned = without_disabled_steps(config)
     shadowed = names_given_to_templates(config)

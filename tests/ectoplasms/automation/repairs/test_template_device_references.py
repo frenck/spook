@@ -67,8 +67,16 @@ async def test_template_device_entities_reference_is_detected(
     assert await repair._async_compute_unknown_references(entity) == {_GHOST_DEVICE}
 
 
-async def _unknown_devices(hass: HomeAssistant, domain: str, template: str) -> set[str]:
-    """Set up a real automation or script using a template, and ask the repair."""
+async def _unknown_devices(
+    hass: HomeAssistant,
+    domain: str,
+    template: str,
+    extra: dict[str, Any] | None = None,
+) -> set[str]:
+    """Set up a real automation or script using a template, and ask the repair.
+
+    Anything in `extra`, like variables, goes into its configuration as well.
+    """
     sequence = [
         {
             "action": "persistent_notification.create",
@@ -82,10 +90,11 @@ async def _unknown_devices(hass: HomeAssistant, domain: str, template: str) -> s
                 "alias": "lookup",
                 "triggers": [{"trigger": "event", "event_type": "go"}],
                 "actions": sequence,
+                **(extra or {}),
             }
         }
     else:
-        config = {"script": {"lookup": {"sequence": sequence}}}
+        config = {"script": {"lookup": {"sequence": sequence, **(extra or {})}}}
 
     assert await async_setup_component(hass, domain, config)
     await hass.async_block_till_done()
@@ -112,6 +121,13 @@ async def _unknown_devices(hass: HomeAssistant, domain: str, template: str) -> s
         f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}",
         f"{{{{ '{_GHOST_DEVICE}' is not is_device_attr('model', 'x') }}}}",
         f"{{{{ device_attr ( '{_GHOST_DEVICE}' , 'model') }}}}",
+        # A name of the template's own hides the function, not the filter or
+        # the test: Jinja keeps those in registries of their own.
+        f"{{% set device_name = 1 %}}{{{{ '{_GHOST_DEVICE}' | device_name }}}}",
+        (
+            "{% macro is_device_attr(a, b, c) %}{% endmacro %}"
+            f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}"
+        ),
     ],
 )
 async def test_device_lookup_with_a_device_id_is_detected(
@@ -168,3 +184,48 @@ async def test_device_lookup_without_an_unknown_device_id_is_not_read(
         await _unknown_devices(hass, domain, template.replace("KNOWN", known.id))
         == set()
     )
+
+
+# Each place a configuration gives its templates a name, as the domain it
+# goes with and what goes into its configuration.
+_GIVEN_NAMES = pytest.mark.parametrize(
+    ("domain", "extra"),
+    [
+        ("automation", {"variables": {"device_name": 1, "is_device_attr": 1}}),
+        ("script", {"variables": {"device_name": 1, "is_device_attr": 1}}),
+        ("script", {"fields": {"device_name": {}, "is_device_attr": {}}}),
+    ],
+    ids=["automation variables", "script variables", "script fields"],
+)
+
+
+@_GIVEN_NAMES
+async def test_device_lookup_called_by_a_name_the_configuration_gives_is_not_read(
+    hass: HomeAssistant, domain: str, extra: dict[str, Any]
+) -> None:
+    """A call by a name the configuration took over is not Home Assistant's."""
+    template = (
+        f"{{{{ device_name('{_GHOST_DEVICE}') }}}}"
+        f"{{{{ is_device_attr('{_GHOST_DEVICE}', 'model', 'x') }}}}"
+    )
+
+    assert await _unknown_devices(hass, domain, template, extra) == set()
+
+
+@_GIVEN_NAMES
+@pytest.mark.parametrize(
+    "template",
+    [
+        f"{{{{ '{_GHOST_DEVICE}' | device_name }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}",
+    ],
+)
+async def test_device_lookup_filter_or_test_the_configuration_names_is_read(
+    hass: HomeAssistant, domain: str, extra: dict[str, Any], template: str
+) -> None:
+    """A name the configuration gives hides no filter or test.
+
+    Its names are values handed to the template, and Jinja keeps filters
+    and tests in registries of their own.
+    """
+    assert await _unknown_devices(hass, domain, template, extra) == {_GHOST_DEVICE}

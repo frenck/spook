@@ -10,6 +10,7 @@ from homeassistant.helpers import device_registry as dr
 from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
 from ....reference_extraction import (
     extract_targets_from_config,
+    names_given_to_templates,
     only_in_disabled_steps,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
@@ -48,13 +49,15 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         if raw_config := getattr(entity, "raw_config", None):
             device_ids.update(extract_targets_from_config(raw_config).device_ids)
             # Devices referenced through the device functions in templates.
-            device_ids.update(extract_device_ids_from_config(raw_config))
+            # The variables and fields it gives its templates hide a call.
+            shadowed = names_given_to_templates(raw_config)
+            device_ids.update(extract_device_ids_from_config(raw_config, shadowed))
             # A disabled step does nothing, so what only it names is left out.
             device_ids -= only_in_disabled_steps(
                 raw_config,
                 lambda found: (
                     extract_targets_from_config(found).device_ids
-                    | extract_device_ids_from_config(found)
+                    | extract_device_ids_from_config(found, shadowed)
                 ),
             )
 

@@ -426,6 +426,19 @@ def test_names_the_configuration_gives_are_no_lookups(config: dict[str, Any]) ->
     assert not extract_state_references_from_config(config).pairs
 
 
+@pytest.mark.parametrize(
+    "config",
+    shadowing_configs("is_state", "{{ 'light.kitchen' is is_state('On') }}"),
+)
+def test_names_the_configuration_gives_hide_no_test(config: dict[str, Any]) -> None:
+    """Test a name the configuration took over still leaves the test alone.
+
+    Its names are values handed to the template, and Jinja looks a test up
+    in a registry of its own.
+    """
+    assert extract_state_references_from_config(config).pairs == PAIR
+
+
 def test_other_names_leave_lookups_alone() -> None:
     """Test a variable by any other name does not stop a lookup being read."""
     config = {

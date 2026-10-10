@@ -1447,8 +1447,11 @@ async def async_extract_entities_from_config(
     return entities
 
 
-# The functions, and filters, that read one attribute of one entity.
+# The functions that read one attribute of one entity. Home Assistant
+# offers `state_attr` as a filter as well, and `is_state_attr` as a test.
 _ATTRIBUTE_FUNCTIONS = frozenset({"is_state_attr", "state_attr"})
+_ATTRIBUTE_FILTER = "state_attr"
+_ATTRIBUTE_TEST = "is_state_attr"
 
 # What may follow an argument for it to be the whole argument: the end of the
 # call, or the next argument. Anything else, like `~`, makes it a piece of one.
@@ -1543,6 +1546,19 @@ def _filter_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
     ):
         return None
     return tokens[index - 2][1], tokens[index + 2][1]
+
+
+def _test_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
+    """Read `'light.x' is is_state_attr('brightness', 255)` at its name.
+
+    Also as `is not`. The value it is compared to has to follow, so the
+    attribute is a whole argument only with a comma after it.
+    """
+    if (subject := _tested_literal(tokens, index)) is None or not _shaped(
+        tokens, index + 1, ("lparen", "string", "comma")
+    ):
+        return None
+    return tokens[subject][1], tokens[index + 2][1]
 
 
 def _states_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
@@ -1644,6 +1660,30 @@ def _named_locally(expressions: list[list[_Token]]) -> set[str]:
     return {name for tokens in expressions for name in _names_defined(tokens)}
 
 
+def _attribute_pair(
+    tokens: list[_Token], index: int, named_locally: frozenset[str] | set[str]
+) -> tuple[str, str] | None:
+    """Read the attribute lookup that starts at the name at this index, if any."""
+    name = tokens[index][1]
+
+    # Filters and tests are Jinja's own registries: a name the template, or
+    # the configuration, defines does not hide one, it only hides a function.
+    # Where Home Assistant offers no such filter or test, the template does
+    # not work at all.
+    if name in _ATTRIBUTE_FUNCTIONS and _is(tokens, index - 1, "pipe"):
+        return _filter_pair(tokens, index) if name == _ATTRIBUTE_FILTER else None
+    if name in _ATTRIBUTE_FUNCTIONS and _is_test(tokens, index):
+        return _test_pair(tokens, index) if name == _ATTRIBUTE_TEST else None
+
+    if name in named_locally:
+        return None
+    if name in _ATTRIBUTE_FUNCTIONS:
+        return _function_pair(tokens, index)
+    if name == "states":
+        return _states_pair(tokens, index)
+    return None
+
+
 @lru_cache(maxsize=1024)
 def extract_attribute_pairs_from_template(
     template_str: str,
@@ -1655,10 +1695,11 @@ def extract_attribute_pairs_from_template(
     and only pairs where both are a whole string literal. An attribute built
     from pieces, like `'color_' ~ 'temp'`, or coming from a variable, is
     whatever it is at runtime, and guessing at that is how a repair ends up
-    reporting a template that works. So is a template that defines its own
-    `states` or `state_attr`: then those are not Home Assistant's. The
-    same goes for the names in `shadowed`, which the configuration around
-    the template gives a meaning of its own.
+    reporting a template that works. So is a call in a template that
+    defines its own `states` or `state_attr`: then those are not Home
+    Assistant's. The same goes for the names in `shadowed`, which the
+    configuration around the template gives a meaning of its own. Neither
+    hides the `state_attr` filter.
 
     Pure in its arguments, so cached like the entity extraction.
     """
@@ -1670,17 +1711,11 @@ def extract_attribute_pairs_from_template(
 
     pairs: set[tuple[str, str]] = set()
     for tokens in expressions:
-        for index, (kind, value) in enumerate(tokens):
-            if kind != "name" or value in named_locally:
+        for index, (kind, _value) in enumerate(tokens):
+            if kind != "name":
                 continue
 
-            if value in _ATTRIBUTE_FUNCTIONS:
-                pair = _function_pair(tokens, index) or _filter_pair(tokens, index)
-            elif value == "states":
-                pair = _states_pair(tokens, index)
-            else:
-                continue
-
+            pair = _attribute_pair(tokens, index, named_locally)
             if pair is not None and valid_entity_id(pair[0]):
                 pairs.add(pair)
 
@@ -1738,12 +1773,8 @@ def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     parentheses: without them, where the state ends depends on what follows
     it.
     """
-    subject = index - 2
-    if _is(tokens, index - 1, "name", "not"):
-        subject -= 1
-
     if (
-        not _shaped(tokens, subject, ("string", ("name", "is")))
+        (subject := _tested_literal(tokens, index)) is None
         or not _is(tokens, index + 1, "lparen")
         or (states := _states_argument(tokens, index + 2)) is None
     ):
@@ -1752,6 +1783,21 @@ def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     literals, end = states
     if not _is(tokens, end, "rparen"):
         return set()
+    return {(tokens[subject][1], literal) for literal in literals}
+
+
+def _tested_literal(tokens: list[_Token], index: int) -> int | None:
+    """Return where the literal is that the test at this index is about.
+
+    `'light.x' is` or `'light.x' is not` right before it, and nothing that
+    takes the literal first.
+    """
+    subject = index - 2
+    if _is(tokens, index - 1, "name", "not"):
+        subject -= 1
+
+    if not _shaped(tokens, subject, ("string", ("name", "is"))):
+        return None
 
     # Jinja glues neighbouring strings into one, so a string right before is
     # only the end of the entity ID. And a sign right before can make the
@@ -1759,8 +1805,8 @@ def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     # negation. Telling a sign from a minus between two values is not worth
     # it for this.
     if subject > 0 and tokens[subject - 1][0] in {"string", *_SIGNS}:
-        return set()
-    return {(tokens[subject][1], literal) for literal in literals}
+        return None
+    return subject
 
 
 def _is_test(tokens: list[_Token], index: int) -> bool:
@@ -1924,10 +1970,11 @@ def extract_state_pairs_from_template(
     around, or `in` a list of them, also as `states.light.x.state`.
 
     Read like the attribute pairs: whole string literals, inside an
-    expression, and not in a template that defines its own `is_state` or
-    `states`, or sits in a configuration that does (`shadowed`). A comparison only when nothing else takes part in it: with a
-    filter, `~` or anything else in between, what is compared is something
-    else than the state.
+    expression, and not called in a template that defines its own
+    `is_state` or `states`, or sits in a configuration that does
+    (`shadowed`). Neither hides the `is_state` test. A comparison only when
+    nothing else takes part in it: with a filter, `~` or anything else in
+    between, what is compared is something else than the state.
 
     Pure in its arguments, so cached like the entity extraction.
     """
@@ -1940,16 +1987,18 @@ def extract_state_pairs_from_template(
     pairs: set[tuple[str, str]] = set()
     for tokens in expressions:
         for index, (kind, value) in enumerate(tokens):
-            if kind != "name" or value in named_locally:
+            if kind != "name":
                 continue
 
+            # Tests are Jinja's own registry: a name the template, or the
+            # configuration, defines does not hide one, it only hides a function.
             found: set[tuple[str, str]] = set()
-            if value == _STATE_FUNCTION:
-                found = (
-                    _test_pairs(tokens, index)
-                    if _is_test(tokens, index)
-                    else _function_pairs(tokens, index)
-                )
+            if value == _STATE_FUNCTION and _is_test(tokens, index):
+                found = _test_pairs(tokens, index)
+            elif value in named_locally:
+                continue
+            elif value == _STATE_FUNCTION:
+                found = _function_pairs(tokens, index)
             elif value == _STATES:
                 found = _comparison_pairs(tokens, index)
 
@@ -1964,17 +2013,18 @@ _DEVICE_LOOKUPS = frozenset({"device_attr", "device_name", "is_device_attr"})
 _DEVICE_LOOKUP_TESTS = frozenset({"is_device_attr"})
 
 
-def _looked_up_devices(template_str: str) -> set[str]:
+def _looked_up_devices(template_str: str, shadowed: frozenset[str]) -> set[str]:
     """Return the literals a template hands a device lookup, as written.
 
     Read with Jinja's own lexer, like the state lookups: only a real call by
     the very name, not in a string or the text around it, not a method and
-    not a name the template defines itself. An entity ID there is an entity
-    reference, and anything else the lookup quietly turns into nothing, so
-    only a literal shaped like a registry ID is a device.
+    not called by a name the template defines itself, or the configuration
+    around it does (`shadowed`). An entity ID there is an entity reference,
+    and anything else the lookup quietly turns into nothing, so only a
+    literal shaped like a registry ID is a device.
     """
     expressions = _expressions(template_str)
-    local = _named_locally(expressions)
+    local = _named_locally(expressions) | shadowed
 
     found: set[str] = set()
     for tokens in expressions:
@@ -1982,18 +2032,21 @@ def _looked_up_devices(template_str: str) -> set[str]:
             if (
                 kind != "name"
                 or name not in _DEVICE_LOOKUPS
-                or name in local
                 or _is(tokens, index - 1, "dot")
             ):
                 continue
 
             # As a filter or a test, the value right in front of it is the
             # device. Two strings side by side are joined into one by Jinja,
-            # so then that one is only a piece of it.
+            # so then that one is only a piece of it. Filters and tests are
+            # Jinja's own registries: a name the template, or the
+            # configuration, defines does not hide one, it only hides a function.
             if _is(tokens, index - 1, "pipe"):
                 value = index - 2
             elif name in _DEVICE_LOOKUP_TESTS and _is_test(tokens, index):
                 value = index - (3 if _is(tokens, index - 1, "name", "not") else 2)
+            elif name in local:
+                continue
             else:
                 # Called, only a whole first argument.
                 if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(
@@ -2009,18 +2062,29 @@ def _looked_up_devices(template_str: str) -> set[str]:
 
 
 @lru_cache(maxsize=1024)
-def _extract_device_ids_from_template(template_str: str) -> frozenset[str]:
-    """Extract device IDs referenced through the device functions in a template."""
+def _extract_device_ids_from_template(
+    template_str: str, shadowed: frozenset[str] = frozenset()
+) -> frozenset[str]:
+    """Extract device IDs referenced through the device functions in a template.
+
+    Pure in its arguments, so cached like the entity extraction.
+    """
     template_without_comments = _strip_jinja_comments(template_str)
     device_ids = set(_DEVICE_ENTITIES_PATTERN.findall(template_without_comments))
-    device_ids.update(_looked_up_devices(template_str))
+    device_ids.update(_looked_up_devices(template_str, shadowed))
 
     return frozenset(device_ids)
 
 
-def extract_device_ids_from_config(config: Any) -> set[str]:
-    """Extract device IDs referenced through the device functions in templates."""
+def extract_device_ids_from_config(
+    config: Any, shadowed: frozenset[str] = frozenset()
+) -> set[str]:
+    """Extract device IDs referenced through the device functions in templates.
+
+    A call by a name in `shadowed`, which the configuration gives its
+    templates, is not Home Assistant's lookup.
+    """
     device_ids: set[str] = set()
     for template_str in extract_template_strings_from_config(config):
-        device_ids.update(_extract_device_ids_from_template(template_str))
+        device_ids.update(_extract_device_ids_from_template(template_str, shadowed))
     return device_ids

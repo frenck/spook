@@ -20,7 +20,7 @@ from custom_components.spook.ectoplasms.automation.repairs.unknown_state_referen
     SpookRepair,
 )
 from tests.entity_objects import give_entity_objects
-from tests.repair_helpers import async_issue_about
+from tests.repair_helpers import async_issue_about, async_setup_template_automation
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -193,28 +193,6 @@ async def test_not_before_the_recorder_settles(
     await repair.async_deactivate()
 
 
-async def _template_automation(hass: HomeAssistant, template: str) -> None:
-    """Set up an automation with a template condition."""
-    assert await async_setup_component(
-        hass,
-        "automation",
-        {
-            "automation": [
-                {
-                    "id": "haunted",
-                    "alias": "Haunted",
-                    "triggers": [{"trigger": "event", "event_type": "boo"}],
-                    "conditions": [
-                        {"condition": "template", "value_template": template}
-                    ],
-                    "actions": [],
-                }
-            ]
-        },
-    )
-    await hass.async_block_till_done()
-
-
 @pytest.mark.parametrize(
     "template",
     [
@@ -231,7 +209,7 @@ async def test_is_state_with_a_list_is_read(
     """Test each state in the list `is_state` is given is judged."""
     give_entity_objects(hass, "light.kitchen", kind=LightEntity)
     hass.states.async_set("light.kitchen", "off")
-    await _template_automation(hass, template)
+    await async_setup_template_automation(hass, template)
 
     await SpookRepair(hass).async_inspect()
 
@@ -258,7 +236,76 @@ async def test_is_state_with_a_tuple_is_left_alone(
     """Test a tuple is not read: core's `is_state` only looks inside a list."""
     give_entity_objects(hass, "light.kitchen", kind=LightEntity)
     hass.states.async_set("light.kitchen", "off")
-    await _template_automation(hass, template)
+    await async_setup_template_automation(hass, template)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, ISSUE) is None
+
+
+@pytest.mark.parametrize(
+    ("template", "variables"),
+    [
+        (
+            (
+                "{% macro is_state(a, b) %}{% endmacro %}"
+                "{{ 'light.kitchen' is is_state('On') }}"
+            ),
+            None,
+        ),
+        ("{{ 'light.kitchen' is is_state('On') }}", {"is_state": 1}),
+    ],
+    ids=["macro in the template", "variable of the automation"],
+)
+async def test_own_name_does_not_hide_the_test(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    template: str,
+    variables: dict[str, Any] | None,
+) -> None:
+    """Test a name of its own hides the function, not the test.
+
+    Jinja looks tests up in a registry of their own, so this still calls
+    Home Assistant's `is_state`.
+    """
+    give_entity_objects(hass, "light.kitchen", kind=LightEntity)
+    hass.states.async_set("light.kitchen", "off")
+    await async_setup_template_automation(hass, template, variables)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["states"] == (
+        "- `On` for `light.kitchen` (did you mean `on`?)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("template", "variables"),
+    [
+        (
+            (
+                "{% macro is_state(a, b) %}{% endmacro %}"
+                "{{ is_state('light.kitchen', 'On') }}"
+            ),
+            None,
+        ),
+        ("{{ is_state('light.kitchen', 'On') }}", {"is_state": 1}),
+    ],
+    ids=["macro in the template", "variable of the automation"],
+)
+async def test_own_name_hides_the_function(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    template: str,
+    variables: dict[str, Any] | None,
+) -> None:
+    """Test a call by a name of its own is not Home Assistant's `is_state`."""
+    give_entity_objects(hass, "light.kitchen", kind=LightEntity)
+    hass.states.async_set("light.kitchen", "off")
+    await async_setup_template_automation(hass, template, variables)
 
     await SpookRepair(hass).async_inspect()
 
