@@ -649,6 +649,8 @@ def _literal_entries(value: list[_Token]) -> list[str] | None:
     value = _ungrouped(value)
     if len(value) == 1:
         return _constant_entries(value[0])
+    if _is_signed_number(value):
+        return []
 
     if (items := _items(value)) is None:
         return None
@@ -659,6 +661,15 @@ def _literal_entries(value: list[_Token]) -> list[str] | None:
             return None
         entries += found
     return entries
+
+
+def _is_signed_number(value: list[_Token]) -> bool:
+    """Return whether a value is a number with a sign, like `-1`."""
+    if not value or value[0][0] not in _SIGNS:
+        return False
+
+    number = value[1:]
+    return len(number) == 1 and number[0][0] in _NUMBERS
 
 
 def _constant_entries(token: _Token) -> list[str] | None:
@@ -674,15 +685,51 @@ def _constant_entries(token: _Token) -> list[str] | None:
 def _item_entries(item: list[_Token], *, mapping: bool) -> list[str] | None:
     """Return the texts `expand` finds in one item of a list, tuple or mapping.
 
-    In a mapping, it iterates over the keys. A key is one literal, and only
-    a text key is looked up; the value only has to be a literal too.
+    In a mapping, it iterates over the keys, and the texts in a tuple key.
+    The value is not looked up; it only has to be a literal too.
     """
     if not mapping:
         return _literal_entries(item)
 
-    if not _is(item, 1, "colon") or _literal_entries(item[2:]) is None:
+    if (colon := _colon_of(item)) is None or _literal_entries(
+        item[colon + 1 :]
+    ) is None:
         return None
-    return _constant_entries(item[0])
+    return _key_entries(item[:colon])
+
+
+def _colon_of(item: list[_Token]) -> int | None:
+    """Return where the colon between a key and its value is."""
+    depth = 0
+    for position, (kind, _) in enumerate(item):
+        if kind in _OPENERS:
+            depth += 1
+        elif kind in _CLOSERS:
+            depth -= 1
+        elif kind == "colon" and depth == 0:
+            return position
+    return None
+
+
+def _key_entries(key: list[_Token]) -> list[str] | None:
+    """Return the texts `expand` finds in a literal mapping key.
+
+    A key must be hashable: a list or a mapping makes building the mapping
+    fail, inside a tuple too. A tuple is the only key it looks into.
+    """
+    key = _ungrouped(key)
+    if len(key) == 1 or _is_signed_number(key):
+        return _literal_entries(key)
+
+    if not _is(key, 0, "lparen") or (items := _items(key)) is None:
+        return None
+
+    entries: list[str] = []
+    for item in items:
+        if (found := _key_entries(item)) is None:
+            return None
+        entries += found
+    return entries
 
 
 def _items(value: list[_Token]) -> list[list[_Token]] | None:
@@ -765,12 +812,18 @@ def _fits(name: str, arguments: list[list[_Token]], *, in_front: int = 0) -> boo
     """
     parameters, required = _LOOKUP_PARAMETERS[name]
     positions = in_front + sum(_is_positional(argument) for argument in arguments)
-    keywords = {
+    named = [
         argument[0][1]
         for argument in arguments
         if _shaped(argument, 0, ("name", "assign"))
-    }
-    if positions > len(parameters) or not keywords <= set(parameters[positions:]):
+    ]
+    # A keyword given twice makes Jinja write a call Python cannot compile.
+    keywords = set(named)
+    if (
+        len(keywords) != len(named)
+        or positions > len(parameters)
+        or not keywords <= set(parameters[positions:])
+    ):
         return False
 
     if any(
@@ -797,7 +850,26 @@ def _called_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
     arguments = _call_arguments(tokens, index + 1)
     if not arguments or not _fits(name, arguments):
         return []
-    return _literal(arguments[0]) if _is_positional(arguments[0]) else []
+    return _literal(_entity_argument(name, arguments))
+
+
+def _entity_argument(name: str, arguments: list[list[_Token]]) -> list[_Token]:
+    """Return the argument a lookup takes the entity from.
+
+    The first position, or the keyword of its first parameter when no
+    position is given: `states(entity_id='sensor.Pump')`. Not when a `*`
+    can take that place first.
+    """
+    if _is_positional(arguments[0]):
+        return arguments[0]
+    if any(_is(argument, 0, "mul") for argument in arguments):
+        return []
+
+    entity_parameter = _LOOKUP_PARAMETERS[name][0][0]
+    for argument in arguments:
+        if _shaped(argument, 0, (("name", entity_parameter), "assign")):
+            return argument[2:]
+    return []
 
 
 def _value_in_front(tokens: list[_Token], end: int, *, lists: bool) -> list[str]:

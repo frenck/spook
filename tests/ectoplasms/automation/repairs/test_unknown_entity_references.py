@@ -1311,6 +1311,9 @@ _PUMP_LOOKUPS = pytest.mark.parametrize(
         "{{ expand({'sensor.Pump_Interval': 1}) | count }}",
         "{{ {'sensor.Pump_Interval': 1} | expand | count }}",
         "{{ [['sensor.Pump_Interval']] | expand | count }}",
+        "{{ expand({'sensor.Pump_Interval': -1}) | count }}",
+        "{{ expand({('sensor.Pump_Interval', 'sensor.pump_speed'): 1}) | count }}",
+        "{{ states(entity_id='sensor.Pump_Interval') }}",
     ],
 )
 

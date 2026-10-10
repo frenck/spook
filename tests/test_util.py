@@ -310,6 +310,19 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ),
         ("{{ states('Sensor.Pump', bad=True) }}", set()),
         ("{{ is_state('Sensor.Pump', state='on') }}", {"sensor.pump"}),
+        # The entity by its keyword is looked up the same.
+        ("{{ states(entity_id='Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ states(rounded=True, entity_id='Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ is_state(state='on', entity_id='Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ state_attr(entity_id='Sensor.Pump', name='x') }}", {"sensor.pump"}),
+        ("{{ state_attr(entity_id='Sensor.Pump') }}", set()),
+        ("{{ states(entity='Sensor.Pump') }}", set()),
+        ("{{ states(*more, entity_id='Sensor.Pump') }}", set()),
+        ("{{ states(entity_id='Sensor.' ~ pump) }}", set()),
+        # A keyword given twice is a call Python cannot compile.
+        ("{{ states('Sensor.Pump', rounded=True, rounded=False) }}", set()),
+        ("{{ 'Sensor.Pump' | state_attr(name='a', name='b') }}", set()),
+        ("{{ 'Light.Kitchen' is is_state_attr('mode', value=1, value=2) }}", set()),
         # Not where Home Assistant has no such filter or test.
         ("{{ 'Sensor.Pump' | is_state('on') }}", set()),
         ("{{ 'Sensor.Pump' is states }}", set()),
@@ -380,7 +393,25 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ expand([[fan, 'Light.One']]) }}", set()),
         ("{{ expand({'Switch.Fan': fan}) }}", set()),
         ("{{ expand({fan: 1, 'Switch.Fan': 1}) }}", set()),
-        ("{{ expand({('Switch.Fan'): 1}) }}", set()),
+        ("{{ expand({['Switch.Fan']: 1}) }}", set()),
+        ("{{ expand({('Switch.Fan', ['Light.One']): 1}) }}", set()),
+        ("{{ expand({'Switch.Fan': -fan}) }}", set()),
+        ("{{ expand({'Switch.Fan': 1 - 2}) }}", set()),
+        ("{{ expand({'Switch.Fan': --1}) }}", set()),
+        # A key is any literal Python can hash, and a tuple key is looked
+        # into. A signed number is a literal value too.
+        ("{{ expand({('Switch.Fan'): 1}) }}", {"switch.fan"}),
+        (
+            "{{ expand({('Switch.Fan', 'Light.One'): 1}) }}",
+            {"switch.fan", "light.one"},
+        ),
+        ("{{ expand({(('Switch.Fan',), 1): 1}) }}", {"switch.fan"}),
+        (
+            "{{ expand({'Switch.Fan': -1, 'Light.One': +1.5}) }}",
+            {"switch.fan", "light.one"},
+        ),
+        ("{{ expand([-1, 'Switch.Fan']) }}", {"switch.fan"}),
+        ("{{ expand({'Switch.Fan': {'a': 1}}) }}", {"switch.fan"}),
         ("{{ {'Switch.Fan': 1}['Switch.Fan'] | expand }}", set()),
         ("{{ {'Switch.Fan': 1} | states }}", set()),
         # Nor a call `expand` cannot take: it takes no keywords.
