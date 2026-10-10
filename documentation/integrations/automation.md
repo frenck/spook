@@ -235,11 +235,27 @@ Automations are inspected for the attributes they use: the `attribute` of state 
 
 A trigger waiting on an attribute that never shows up loads fine and never fires, and nothing tells you. That is the ghost this catches.
 
-Many attributes only show up some of the time: a media player that is off drops most of its own, and integrations add their own that come and go. So an attribute is only reported when Spook cannot find it anywhere: not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`. An attribute or entity that is only worked out while running, from a variable for example, is not checked.
+Many attributes only show up some of the time: a media player that is off drops most of its own, and integrations add their own that come and go. So an attribute is only reported when Spook cannot find it anywhere: not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`. An attribute or entity that is only worked out while running, from a variable for example, is not checked. Neither is a template using `states` or `state_attr` when the automation gives that name a meaning of its own, as a variable, a field or a response variable.
 
 Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks again once a reload of automations is done, when a automation is added or removed, when the entity registry changes, when an integration loads or its configuration changes, and once a day. An attribute that newly shows up on an entity is picked up the next time it looks.
 
 To resolve the raised issue, edit the automation and use an attribute the entity has. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced states
+
+Automations are inspected for the states they wait for and check: the `to`, `from`, `not_to` and `not_from` of state triggers, the `state` of state conditions, the same options of Spook's own state trigger, and in templates `is_state('light.kitchen', 'on')` and a state compared to text, like `states('light.kitchen') == 'on'`, `states.light.kitchen.state != 'off'` or `states('light.kitchen') in ['on', 'off']`. If an automation uses a state its entity is never in, like `On` for a light that is `on` or `off`, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation, the state, the entity, and what was most likely meant when Spook is near certain of it.
+
+A trigger waiting for a state that never comes loads fine and never fires, and nothing tells you. That is the ghost this catches.
+
+Only entities whose states are a fixed set are checked: the ones Home Assistant itself lists for that kind of entity (a light, a cover, a lock, an alarm panel, a media player, and so on), or the options the entity offers right now, like a select, a dropdown helper, or a sensor with a fixed list of values. A plain sensor, a number or a text can be anything, so those are not checked, and neither are persons and device trackers, whose states are zone names. Everything the entity was in counts as well: right now, and anything the recorder remembers. An entity whose state is set from outside of its integration, by a REST call or a Python script for example, is not checked either.
+
+For some kinds of entity, Home Assistant itself makes sure the state is one of the set: lights, switches, binary sensors, covers, locks, valves, climate entities, and the like. There, a state that differs from a real one in upper and lower case alone, like `On`, is always reported, and anything else outside of the set when Spook has the whole history of the entity from the recorder. For the rest, the set is what is usual rather than all that is possible: a media player made from a template can be in any state it likes, and a select, a dropdown helper or a sensor with a fixed list of values can get new options while running. Those only get a state reported that differs from a real one in case alone, and only when Spook has the whole history of the entity. The same goes for an entity that works out its state in a way of its own.
+
+A state or entity that is only worked out while running, from a variable or a template for example, is not checked. Neither is a state with an `attribute`: then the value is that attribute's. In templates, only a comparison with nothing else taking part in it is read: once a filter like `| lower`, a `~` or anything like it is in between, what is compared is no longer the state itself. A template is not read for `states`, `is_state` or `state_attr` either when the automation gives that name a meaning of its own, as a variable, a field or a response variable.
+
+Spook looks at the same moments as for unknown attributes: ten minutes after Home Assistant starts, after that again once a reload of automations is done, when an automation is added or removed, when the entity registry changes, when an integration loads or its configuration changes, and once a day.
+
+To resolve the raised issue, edit the automation and use a state the entity can be in. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown referenced devices
 

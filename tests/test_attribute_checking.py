@@ -23,7 +23,7 @@ from custom_components.spook.attribute_checking import (
     UnknownAttribute,
     async_domain_attributes,
     async_unknown_attributes,
-    suggest_attribute,
+    suggest_name,
 )
 
 if TYPE_CHECKING:
@@ -562,7 +562,7 @@ async def test_a_change_while_asking_counts(
 )
 def test_suggestion(name: str, known: set[str], expected: str) -> None:
     """Test a suggestion is made when it is near certain."""
-    assert suggest_attribute(name, known) == expected
+    assert suggest_name(name, known) == expected
 
 
 @pytest.mark.parametrize(
@@ -583,7 +583,7 @@ def test_suggestion(name: str, known: set[str], expected: str) -> None:
 )
 def test_no_suggestion(name: str, known: set[str]) -> None:
     """Test no suggestion is made when it would be a guess."""
-    assert suggest_attribute(name, known) is None
+    assert suggest_name(name, known) is None
 
 
 @pytest.mark.usefixtures("recorder_mock")

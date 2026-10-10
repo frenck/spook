@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry, MockUser
 
+from homeassistant.components.light import LightEntity
 from homeassistant.core import Context, ServiceCall
 from homeassistant.helpers import (
     entity_registry as er,
@@ -26,6 +27,7 @@ from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels impo
     SpookRepair as UnusedLabelsRepair,
 )
 import pytest
+from tests.entity_objects import give_entity_objects
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -743,6 +745,38 @@ async def test_check_references_finds_unknown_attributes_in_a_draft(
         "unknown": {
             "attributes": ["light.bedroom:Brightness (did you mean brightness?)"]
         },
+    }
+
+
+async def test_check_references_finds_unknown_states_in_a_draft(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a draft is checked for states its entities are never in.
+
+    Asked on its own like the attributes, with the same best guess.
+    """
+    give_entity_objects(hass, "light.bedroom", kind=LightEntity)
+    hass.states.async_set("light.bedroom", "off")
+
+    result = await _call(
+        hass,
+        "spook__check_references",
+        hass_admin_user,
+        kind="automation",
+        config={
+            "triggers": [
+                {"trigger": "state", "entity_id": "light.bedroom", "to": "On"}
+            ],
+            "conditions": [
+                {"condition": "state", "entity_id": "light.bedroom", "state": "off"}
+            ],
+            "actions": [],
+        },
+    )
+
+    assert result.data == {
+        "clean": False,
+        "unknown": {"states": ["light.bedroom:On (did you mean on?)"]},
     }
 
 

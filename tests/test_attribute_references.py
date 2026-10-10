@@ -12,6 +12,7 @@ from custom_components.spook.reference_extraction import (
 from custom_components.spook.template_extraction import (
     extract_attribute_pairs_from_template,
 )
+from tests.template_configs import shadowing_configs
 
 
 def _state(**extra: Any) -> dict[str, Any]:
@@ -422,3 +423,31 @@ def test_attribute_pairs_in_templates(
 ) -> None:
     """Test only literal pairs are read from a template."""
     assert extract_attribute_pairs_from_template(template) == expected
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        *shadowing_configs(
+            "state_attr", "{{ state_attr('light.kitchen', 'brightness') }}"
+        ),
+        *shadowing_configs(
+            "states", "{{ states.light.kitchen.attributes.brightness }}"
+        ),
+    ],
+)
+def test_names_the_configuration_gives_are_no_lookups(config: dict[str, Any]) -> None:
+    """Test a template is not read for a name its configuration took over."""
+    assert not extract_attribute_references_from_config(config).pairs
+
+
+def test_other_names_leave_lookups_alone() -> None:
+    """Test a variable by any other name does not stop a lookup being read."""
+    config = {
+        "variables": {"level": 1},
+        "actions": [
+            {"wait_template": "{{ state_attr('light.kitchen', 'brightness') }}"}
+        ],
+    }
+
+    assert extract_attribute_references_from_config(config).pairs == PAIR

@@ -913,6 +913,7 @@ def _named_locally(expressions: list[list[_Token]]) -> set[str]:
 @lru_cache(maxsize=1024)
 def extract_attribute_pairs_from_template(
     template_str: str,
+    shadowed: frozenset[str] = frozenset(),
 ) -> frozenset[tuple[str, str]]:
     """Return the (entity ID, attribute) pairs a template names literally.
 
@@ -921,15 +922,17 @@ def extract_attribute_pairs_from_template(
     from pieces, like `'color_' ~ 'temp'`, or coming from a variable, is
     whatever it is at runtime, and guessing at that is how a repair ends up
     reporting a template that works. So is a template that defines its own
-    `states` or `state_attr`: then those are not Home Assistant's.
+    `states` or `state_attr`: then those are not Home Assistant's. The
+    same goes for the names in `shadowed`, which the configuration around
+    the template gives a meaning of its own.
 
-    Pure in the template string, so cached like the entity extraction.
+    Pure in its arguments, so cached like the entity extraction.
     """
     if not is_template_string(template_str):
         return frozenset()
 
     expressions = _expressions(template_str)
-    named_locally = _named_locally(expressions)
+    named_locally = _named_locally(expressions) | shadowed
 
     pairs: set[tuple[str, str]] = set()
     for tokens in expressions:
@@ -946,6 +949,232 @@ def extract_attribute_pairs_from_template(
 
             if pair is not None and valid_entity_id(pair[0]):
                 pairs.add(pair)
+
+    return frozenset(pairs)
+
+
+# The function, and test, that compare the state of one entity.
+_STATE_FUNCTION = "is_state"
+
+_SIGNS = frozenset({"add", "sub"})
+
+
+def _test_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
+    """Read `'light.x' is is_state('on')` starting at its name.
+
+    Also as `is not`. Only with the state in parentheses: without them,
+    where the state ends depends on what follows it.
+    """
+    subject = index - 2
+    if _is(tokens, index - 1, "name", "not"):
+        subject -= 1
+
+    if not _shaped(tokens, subject, ("string", ("name", "is"))) or not _shaped(
+        tokens, index + 1, ("lparen", "string", "rparen")
+    ):
+        return None
+
+    # Jinja glues neighbouring strings into one, so a string right before is
+    # only the end of the entity ID. And a sign right before can make the
+    # test about the signed value: `-'light.x' is is_state('on')` tests the
+    # negation. Telling a sign from a minus between two values is not worth
+    # it for this.
+    if subject > 0 and tokens[subject - 1][0] in {"string", *_SIGNS}:
+        return None
+    return tokens[subject][1], tokens[index + 2][1]
+
+
+def _is_test(tokens: list[_Token], index: int) -> bool:
+    """Return whether the name at this index is used as a test."""
+    return _is(tokens, index - 1, "name", "is") or (
+        _is(tokens, index - 1, "name", "not") and _is(tokens, index - 2, "name", "is")
+    )
+
+
+# Comparing two things is looser than anything but `not`, `and`, `or` and
+# `if ... else` in Jinja (`parse_compare` sits right under `parse_not`), so
+# a side is whole when what is around it is one of those, or something that
+# opens or closes a part of the expression. Anything else around it, like a
+# filter, `~`, maths, a method or another comparison, takes part of it.
+_OPENS_A_SIDE = frozenset({"assign", "comma", "lbracket", "lparen"})
+_CLOSES_A_SIDE = frozenset({"comma", "rbracket", "rparen"})
+_KEYWORDS_BEFORE_A_SIDE = frozenset({"and", "elif", "else", "if", "not", "or"})
+_KEYWORDS_AFTER_A_SIDE = frozenset({"and", "else", "if", "or"})
+
+# Comparisons that hold a state to one literal.
+_EQUALITY = frozenset({"eq", "ne"})
+
+# How a list, or a tuple, of literals is closed.
+_CLOSING = {"lbracket": "rbracket", "lparen": "rparen"}
+
+# What reads the state of an entity in a template.
+_STATES = "states"
+
+
+def _side_starts(tokens: list[_Token], index: int) -> bool:
+    """Return whether a side of a comparison can start at this index."""
+    if index == 0:
+        return True
+
+    kind, value = tokens[index - 1]
+    if kind in _OPENS_A_SIDE:
+        return True
+    # `is not` makes what follows a test, not a side.
+    return (
+        kind == "name"
+        and value in _KEYWORDS_BEFORE_A_SIDE
+        and not (value == "not" and _is(tokens, index - 2, "name", "is"))
+    )
+
+
+def _side_ends(tokens: list[_Token], index: int) -> bool:
+    """Return whether a side of a comparison can end right before this index."""
+    if index == len(tokens):
+        return True
+
+    kind, value = tokens[index]
+    return kind in _CLOSES_A_SIDE or (
+        kind == "name" and value in _KEYWORDS_AFTER_A_SIDE
+    )
+
+
+def _state_lookup(tokens: list[_Token], index: int) -> tuple[str, int] | None:
+    """Read `states('light.x')` or `states.light.x.state` starting at `states`.
+
+    Returns the entity ID and where the lookup ends. Only with nothing more
+    in the call: `states('light.x', rounded=True)` is the state made pretty.
+    """
+    if _shaped(tokens, index + 1, ("lparen", "string", "rparen")):
+        return tokens[index + 2][1], index + 4
+
+    if _shaped(
+        tokens, index + 1, ("dot", "name", "dot", "name", "dot", ("name", "state"))
+    ):
+        return f"{tokens[index + 2][1]}.{tokens[index + 4][1]}", index + 7
+
+    return None
+
+
+def _literals_listed(tokens: list[_Token], index: int) -> tuple[list[str], int] | None:
+    """Read `['on', 'off']` or `('on', 'off')` starting at its bracket.
+
+    Returns the literals and where the list ends. Parentheses around a
+    single literal, without a comma, are no tuple but the text itself, and
+    `in` a text looks for a piece of it.
+    """
+    if index >= len(tokens) or (closing := _CLOSING.get(tokens[index][0])) is None:
+        return None
+
+    literals: list[str] = []
+    commas = 0
+    position = index + 1
+    while _is(tokens, position, "string"):
+        literals.append(tokens[position][1])
+        position += 1
+        if not _is(tokens, position, "comma"):
+            break
+        commas += 1
+        position += 1
+
+    if not _is(tokens, position, closing) or (closing == "rparen" and not commas):
+        return None
+    return literals, position + 1
+
+
+def _compared_after(tokens: list[_Token], index: int) -> tuple[list[str], int] | None:
+    """Read what a state is compared to, starting right after the lookup.
+
+    `== 'on'`, `!= 'on'`, and `in` or `not in` a list of literals. Returns
+    the literals and where the comparison ends.
+    """
+    if index < len(tokens) and tokens[index][0] in _EQUALITY:
+        if _is(tokens, index + 1, "string"):
+            return [tokens[index + 1][1]], index + 2
+        return None
+
+    if _is(tokens, index, "name", "not"):
+        index += 1
+    if not _is(tokens, index, "name", "in"):
+        return None
+    return _literals_listed(tokens, index + 1)
+
+
+def _comparison_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
+    """Read a state compared to literals, the lookup starting at `states`.
+
+    The lookup first, `states('light.x') == 'on'`, or the literal first,
+    `'on' == states('light.x')`, which only goes for `==` and `!=`: a text
+    `in` a state looks for a piece of it.
+    """
+    if (lookup := _state_lookup(tokens, index)) is None:
+        return set()
+    entity_id, after = lookup
+
+    if (
+        _side_starts(tokens, index)
+        and (compared := _compared_after(tokens, after)) is not None
+    ):
+        literals, end = compared
+        if _side_ends(tokens, end):
+            return {(entity_id, literal) for literal in literals}
+
+    literal = index - 2
+    if (
+        _is(tokens, literal, "string")
+        and index - 1 >= 0
+        and tokens[index - 1][0] in _EQUALITY
+        and _side_starts(tokens, literal)
+        and _side_ends(tokens, after)
+    ):
+        return {(entity_id, tokens[literal][1])}
+
+    return set()
+
+
+@lru_cache(maxsize=1024)
+def extract_state_pairs_from_template(
+    template_str: str,
+    shadowed: frozenset[str] = frozenset(),
+) -> frozenset[tuple[str, str]]:
+    """Return the (entity ID, state) pairs a template compares literally.
+
+    `is_state('light.x', 'on')`, and the same as a test, `'light.x' is
+    is_state('on')`; Home Assistant offers no filter for it. And a state
+    compared to literals: `states('light.x') == 'on'`, `!=`, the other way
+    around, or `in` a list of them, also as `states.light.x.state`.
+
+    Read like the attribute pairs: whole string literals, inside an
+    expression, and not in a template that defines its own `is_state` or
+    `states`, or sits in a configuration that does (`shadowed`). A comparison only when nothing else takes part in it: with a
+    filter, `~` or anything else in between, what is compared is something
+    else than the state.
+
+    Pure in its arguments, so cached like the entity extraction.
+    """
+    if not is_template_string(template_str):
+        return frozenset()
+
+    expressions = _expressions(template_str)
+    named_locally = _named_locally(expressions) | shadowed
+
+    pairs: set[tuple[str, str]] = set()
+    for tokens in expressions:
+        for index, (kind, value) in enumerate(tokens):
+            if kind != "name" or value in named_locally:
+                continue
+
+            found: set[tuple[str, str]] = set()
+            if value == _STATE_FUNCTION:
+                pair = (
+                    _test_pair(tokens, index)
+                    if _is_test(tokens, index)
+                    else _function_pair(tokens, index)
+                )
+                found = set() if pair is None else {pair}
+            elif value == _STATES:
+                found = _comparison_pairs(tokens, index)
+
+            pairs.update(pair for pair in found if valid_entity_id(pair[0]))
 
     return frozenset(pairs)
 

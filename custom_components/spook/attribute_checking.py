@@ -125,12 +125,15 @@ class UnknownAttribute:
 
 
 @dataclass(frozen=True, slots=True)
-class _Answer:
-    """What the recorder said about an entity, beyond the keys it showed."""
+class HistoryAnswer:
+    """What the recorder said about an entity, beyond what it showed.
+
+    Shared with the state checks, which ask the recorder the same way.
+    """
 
     # Whether the entity's whole history was read, so absence means
     # something. False when it was never recorded, has more than is read, or
-    # has states whose attributes the recorder did not keep.
+    # has states the recorder did not keep whole.
     complete: bool
     # When the whole history was read, and when anything was read last.
     asked_at: datetime
@@ -149,7 +152,7 @@ class _Knowledge:
     # only: an attribute that went away again, or was purged from history,
     # was still real, and is never asked about again.
     seen: set[str] = field(default_factory=set)
-    answer: _Answer | None = None
+    answer: HistoryAnswer | None = None
 
     def see(self, keys: Iterable[str]) -> None:
         """Note keys the entity shows right now.
@@ -245,14 +248,14 @@ def _one_edit_apart(name: str, other: str) -> bool:
     return shorter[index:] == longer[index + 1 :]
 
 
-def suggest_attribute(name: str, known: Iterable[str]) -> str | None:
+def suggest_name(name: str, known: Iterable[str]) -> str | None:
     """Return what somebody most likely meant, but only when it is near certain.
 
     The same name up to case and separators: `Brightness`, `color temp` and
     `colorTemp` are `brightness` and `color_temp`. Otherwise one edit away,
-    for names of five characters or more, and only when exactly one attribute
-    qualifies. Anything vaguer is a guess, and a wrong suggestion is worse
-    than none.
+    for names of five characters or more, and only when exactly one known
+    name qualifies. Attributes and states alike. Anything vaguer is a guess,
+    and a wrong suggestion is worse than none.
     """
     known = set(known)
 
@@ -273,7 +276,7 @@ def suggest_attribute(name: str, known: Iterable[str]) -> str | None:
     return close.pop() if len(close) == 1 else None
 
 
-def _metadata_ids(
+def recorder_metadata_ids(
     session: Session, entity_ids: list[str], max_bind_vars: int
 ) -> dict[int, str]:
     """Return the recorder's metadata ID of each entity it has a history of."""
@@ -351,7 +354,7 @@ def _read_recorded_attribute_keys(
     entities_by_set: dict[int, list[str]] = defaultdict(list)
 
     with session_scope(hass=hass, read_only=True) as session:
-        metadata_ids = _metadata_ids(
+        metadata_ids = recorder_metadata_ids(
             session, list(since_by_entity), instance.max_bind_vars
         )
         for metadata_id, entity_id in metadata_ids.items():
@@ -403,7 +406,7 @@ def _knowledge(hass: HomeAssistant, entity_id: str) -> _Knowledge:
 
 
 async def _async_ask_the_recorder(
-    hass: HomeAssistant, previous_answers: dict[str, _Answer | None]
+    hass: HomeAssistant, previous_answers: dict[str, HistoryAnswer | None]
 ) -> None:
     """Ask the recorder about these entities, in one go, and remember it.
 
@@ -441,7 +444,7 @@ async def _async_ask_the_recorder(
         # answer is about, not news that makes it stale.
         knowledge.seen |= keys
         if previous is None:
-            knowledge.answer = _Answer(
+            knowledge.answer = HistoryAnswer(
                 complete=complete, asked_at=started, read_until=started
             )
         # Only added to the answer it continues. One dropped meanwhile,
@@ -452,7 +455,21 @@ async def _async_ask_the_recorder(
             )
 
 
-def _recorder_can_answer(hass: HomeAssistant) -> bool:
+def answers_to_continue(
+    answers: Mapping[str, HistoryAnswer | None], now: datetime
+) -> dict[str, HistoryAnswer | None]:
+    """Return the answer each entity's next read continues, in entity order.
+
+    None means all of its history is read: there is no answer yet, or the
+    one there is has gone stale.
+    """
+    return {
+        entity_id: answer if answer is not None and answer.holds(now) else None
+        for entity_id, answer in sorted(answers.items())
+    }
+
+
+def recorder_can_answer(hass: HomeAssistant) -> bool:
     """Return whether there is a recorder to ask, and it is not busy migrating."""
     return DATA_INSTANCE in hass.data and not async_migration_in_progress(hass)
 
@@ -535,19 +552,14 @@ async def async_unknown_attributes(
             for entity_id, look in suspects.items()
             if _worth_asking_about(hass, entity_id, look)
         }
-        if _recorder_can_answer(hass)
+        if recorder_can_answer(hass)
         else set()
     )
     now = dt_util.utcnow()
-    if to_ask := {
-        entity_id: (
-            answer
-            if (answer := _knowledge(hass, entity_id).answer) is not None
-            and answer.holds(now)
-            else None
-        )
-        for entity_id in sorted(with_history)
-    }:
+    if to_ask := answers_to_continue(
+        {entity_id: _knowledge(hass, entity_id).answer for entity_id in with_history},
+        now,
+    ):
         await _async_ask_the_recorder(hass, to_ask)
         now = dt_util.utcnow()
 
@@ -582,7 +594,7 @@ async def _async_findings(
             UnknownAttribute(
                 entity_id=entity_id,
                 attribute=attribute,
-                suggestion=suggest_attribute(attribute, look.known),
+                suggestion=suggest_name(attribute, look.known),
             )
             for attribute in look.unknown
             if (
