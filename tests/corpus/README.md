@@ -81,11 +81,20 @@ reference it reads. Three types are taken one step earlier:
 - `attributes` and `states`: the pairs the repair would ask the recorder about,
   as `entity_id: value`.
 
+And one is said apart from the rest:
+
+- `not_entity_ids`: what an entity repair reports that is no entity ID at all,
+  like `cover.blind.current_position`. The issue lists those after the
+  entities that do not exist, saying what they are, and so does the result:
+  they are under `not_entity_ids`, not `entities`.
+
 Automations and scripts are set up through Home Assistant itself, so `loaded`
 says whether Home Assistant would load it at all. When it would not, only the
 trigger and condition readers look at it, as in a real house. The integration
-itself is loaded, so its own actions, like `script.turn_on`, are never
-reported.
+itself is loaded, and so is Home Assistant's core integration, as in every
+house. Their own actions, like `script.turn_on` and `homeassistant.turn_on`,
+are never reported, and they check the data they are handed like they do in
+a house.
 
 A dashboard case that is a view or a card is put in a dashboard first, since
 the repairs only read dashboards, view by view. One with a `strategy` at its

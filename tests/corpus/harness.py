@@ -8,7 +8,8 @@ tags arrive as the opaque strings the case loader made of them, never
 resolved.
 
 The house is empty: no entities, areas, devices, services or anything else,
-apart from the integration being read, whose own actions therefore exist.
+apart from Home Assistant's own core integration, which every house has, and
+the integration being read. Their own actions therefore exist.
 That turns every repair's "what is unknown here" into "everything it would
 report if nothing existed", which is every reference it reads, after the
 filtering it does to tell a reference from something that only looks like
@@ -19,6 +20,11 @@ one. Three types cannot be asked that way, and are taken one step earlier:
 - attributes and states: what an entity has comes from history, which an
   empty house does not have, so these are the pairs the repair would ask the
   recorder about.
+
+The entity repairs report what is no entity ID at all, like
+`cover.blind.current_position`, together with the entities that do not
+exist, and the issue says them apart. So does the result: those are under
+`not_entity_ids`, the rest under `entities`.
 """
 
 from __future__ import annotations
@@ -26,20 +32,24 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
-from homeassistant.components import automation, script
+from homeassistant.components import automation, homeassistant, script
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook.dashboard_extraction import (
+    extract_not_entity_ids_from_dashboard_node,
+)
 from custom_components.spook.draft_checking import DRAFT_REPAIRS
 from custom_components.spook.ectoplasms.lovelace.repairs import (
     unknown_area_references as dashboard_areas,
     unknown_entity_references as dashboard_entities,
     unknown_service_references as dashboard_services,
 )
+from custom_components.spook.entity_filtering import is_not_an_entity_id
 from custom_components.spook.repairs import AbstractSpookUnknownEntityNamesRepair
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
     from types import ModuleType
 
     from homeassistant.core import HomeAssistant
@@ -76,12 +86,38 @@ def _reference_label(module: ModuleType) -> str:
     return module.SpookRepair.reference_label
 
 
+# Where the result lists what is no entity ID, said apart from `entities`.
+NOT_ENTITY_IDS = "not_entity_ids"
+
+
 def reference_types(kind: str) -> frozenset[str]:
     """Return the reference types the harness reports for a kind."""
     if kind == "dashboard":
-        return frozenset(DASHBOARD_REPAIRS)
-    repairs = AUTOMATION_REPAIRS if kind == "automation" else SCRIPT_REPAIRS
-    return frozenset(_reference_label(module) for module in repairs)
+        labels = set(DASHBOARD_REPAIRS)
+    else:
+        repairs = AUTOMATION_REPAIRS if kind == "automation" else SCRIPT_REPAIRS
+        labels = {_reference_label(module) for module in repairs}
+
+    return frozenset({*labels, NOT_ENTITY_IDS})
+
+
+def _say_apart(result: dict[str, Any], is_no_entity_id: Callable[[str], bool]) -> None:
+    """Move what is no entity ID from `entities` to its own list in a result.
+
+    By the same rule the issue uses to say them apart.
+    """
+    reported = result["entities"]
+    result["entities"] = [value for value in reported if not is_no_entity_id(value)]
+    result[NOT_ENTITY_IDS] = [value for value in reported if is_no_entity_id(value)]
+
+
+async def _async_setup_house(hass: HomeAssistant) -> None:
+    """Set up what every house has before anything is read.
+
+    Home Assistant's core integration is always there, so its actions, like
+    `homeassistant.turn_on`, exist and check what they are handed.
+    """
+    assert await async_setup_component(hass, homeassistant.DOMAIN, {})
 
 
 async def _every_key(_hass: HomeAssistant, keys: Iterable[str]) -> set[str]:
@@ -128,6 +164,8 @@ async def async_load_component_entity(
     find in a running house: validated, with its own idea of what it
     references, and unavailable when Home Assistant would not load it.
     """
+    await _async_setup_house(hass)
+
     if domain == automation.DOMAIN:
         component_config: Any = [config]
     else:
@@ -170,6 +208,8 @@ async def async_component_references(
             continue
 
         result[label] = await _async_round_findings(repair, module)
+
+    _say_apart(result, is_not_an_entity_id)
 
     # A loaded automation has its triggers attached, and a time trigger
     # leaves a timer behind that fails the test once it is over.
@@ -226,7 +266,9 @@ async def async_dashboard_references(
     hass: HomeAssistant, config: dict[str, Any]
 ) -> dict[str, Any]:
     """Return what the dashboard repairs read in a dashboard, view or card."""
-    dashboard = _CorpusDashboard(as_dashboard(config))
+    await _async_setup_house(hass)
+    dashboard_config = as_dashboard(config)
+    dashboard = _CorpusDashboard(dashboard_config)
 
     result: dict[str, Any] = {}
     for label, module in DASHBOARD_REPAIRS.items():
@@ -235,5 +277,10 @@ async def async_dashboard_references(
         # pylint: disable-next=protected-access
         repair._dashboards = {dashboard.url_path: dashboard}  # noqa: SLF001
         result[label] = await _async_round_findings(repair, module)
+
+    # The dashboard issue says apart what its own reader finds, not whatever
+    # looks like no entity ID, so that reader decides here too.
+    not_entity_ids = extract_not_entity_ids_from_dashboard_node(dashboard_config)
+    _say_apart(result, lambda value: value in not_entity_ids)
 
     return result

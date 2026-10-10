@@ -2,7 +2,8 @@ source: https://community.home-assistant.io/t/repeat-counter-in-automation/71500
 note: >-
   The sensor exposes schedule_list but the automation asks for schedules_list, so it
   gets None. The variable is called list, shadowing the Jinja builtin, and is indexed
-  with repeat.index.
+  with repeat.index. homeassistant.turn_off is a core action, which every house
+  has.
 expect:
   entities:
     find: [sensor.schedule_entities]
@@ -10,7 +11,7 @@ expect:
     find:
       - sensor.schedule_entities: schedules_list
   services:
-    find: [homeassistant.turn_off]
+    not_find: [homeassistant.turn_off]
 ---
 alias: Turn off all schedules
 triggers:
