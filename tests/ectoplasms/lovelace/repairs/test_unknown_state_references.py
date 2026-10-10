@@ -656,3 +656,23 @@ async def test_draft_card_is_checked_for_states(hass: HomeAssistant) -> None:
     )
 
     assert found == {"states": ["light.kitchen:On (did you mean on?)"]}
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_a_number_shaped_like_an_entity_id_is_still_a_state(
+    hass: HomeAssistant, issue_registry: ir.IssueRegistry
+) -> None:
+    """Test `"1.0"` is judged: the frontend reads it as a number, not an entity.
+
+    It has the shape of an entity ID, but the frontend only looks a value up
+    as an entity when it is no number.
+    """
+    await _recorded_kitchen_light(hass)
+
+    found = await _states_found(
+        hass,
+        issue_registry,
+        _visible_when(condition="state", entity="light.kitchen", state="1.0"),
+    )
+
+    assert found == "- `1.0` for `light.kitchen`"
