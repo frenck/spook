@@ -48,7 +48,7 @@ from .core_compat import async_get_child_device_ids, async_get_device_entries
 from .listeners import async_listen_once_tracked
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Mapping, Sequence
+    from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 
     from homeassistant.core import Event, HomeAssistant
 
@@ -727,6 +727,27 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
     return [entity_id]
 
 
+def _steps_to_scan(
+    sequence: Sequence[dict[str, Any]], *, include_disabled: bool
+) -> Iterator[dict[str, Any]]:
+    """Yield the steps of a sequence that a scan should look at, in order.
+
+    A bare condition ends the sequence when it is false, so the steps after it
+    only run conditionally: multi-integration blueprints gate each
+    integration's actions this way. A repair cares about what runs and stops
+    there; a search for where an action is named keeps going.
+    """
+    for step in sequence:
+        if include_disabled:
+            yield step
+            continue
+        if step.get(CONF_ENABLED) is False:
+            continue
+        if cv.determine_script_action(step) == cv.SCRIPT_ACTION_CHECK_CONDITION:
+            return
+        yield step
+
+
 @callback
 def async_find_services_in_sequence(  # noqa: C901
     sequence: Sequence[dict[str, Any]],
@@ -740,10 +761,7 @@ def async_find_services_in_sequence(  # noqa: C901
     named cares about the step somebody may switch back on.
     """
     called_services: set[str] = set()
-    for step in sequence:
-        if step.get(CONF_ENABLED) is False and not include_disabled:
-            continue
-
+    for step in _steps_to_scan(sequence, include_disabled=include_disabled):
         action = cv.determine_script_action(step)
 
         if action == cv.SCRIPT_ACTION_CALL_SERVICE:
