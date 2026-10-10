@@ -323,10 +323,14 @@ def only_in_disabled_steps(config: Any, extract: Callable[[Any], set[str]]) -> s
 # extracting trigger and condition platform keys. Service data can hold
 # keys like ``platform`` or ``condition`` (a weather condition, for
 # example), and blueprint inputs are free-form.
+# The items a repeat goes over are data, rendered and handed to the steps as
+# `repeat.item`, whatever their keys are called: a `condition` in there is
+# somebody's own field, not a condition.
 _PLATFORM_KEY_EXCLUDED_KEYS = _EXCLUDED_KEYS | frozenset(
     {
         "data",
         "data_template",
+        "for_each",
         "service_data",
         "use_blueprint",
     },
