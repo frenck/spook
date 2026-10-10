@@ -22,7 +22,11 @@ from homeassistant.const import CONF_ENABLED, ENTITY_MATCH_ALL, ENTITY_MATCH_NON
 from homeassistant.core import callback
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
-from .template_extraction import is_template_string
+from .template_extraction import (
+    extract_attribute_pairs_from_template,
+    extract_template_strings_from_config,
+    is_template_string,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -260,6 +264,136 @@ def extract_platform_keys_from_config(config: Any) -> ExtractedPlatformKeys:
     found = ExtractedPlatformKeys()
     _walk_platform_keys(config, found)
     return found
+
+
+# Triggers and conditions with an `attribute:` that names an attribute of the
+# entities they watch. Numeric state is in here too: same field, same meaning.
+_ATTRIBUTE_PLATFORMS = frozenset({"numeric_state", "state"})
+
+# Spook's own state trigger keeps its attribute under `options`.
+_SPOOK_STATE_CHANGED = "spook.state_changed"
+
+
+def _literal_entity_ids(value: Any) -> list[str]:
+    """Return the entity IDs, or registry IDs, written out in a config value."""
+    if isinstance(value, str):
+        values = value.split(",")
+    elif isinstance(value, list):
+        values = [item for item in value if isinstance(item, str)]
+    else:
+        return []
+
+    return [
+        item.strip()
+        for item in values
+        if item.strip()
+        and item.strip() not in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
+        and not is_template_string(item)
+    ]
+
+
+@dataclass(frozen=True, slots=True)
+class AttributeReferences:
+    """The attributes a configuration names, and of which entities."""
+
+    # Written out: the entity, or a registry ID, and the attribute.
+    pairs: frozenset[tuple[str, str]]
+    # Spook's own state triggers, and the attribute each follows. Which
+    # entities that is depends on the house as it is right now, so it is
+    # left to the caller to resolve, the way the trigger does.
+    followed: tuple[tuple[dict[str, Any], str], ...]
+
+
+def _attribute_reference(config: dict[str, Any]) -> tuple[Any, Any] | None:
+    """Return the entity IDs and attribute a trigger or condition watches."""
+    # `trigger` is also the list of triggers itself, in old style configs.
+    condition = config.get("condition")
+    trigger = config.get("trigger") or config.get("platform")
+    if not isinstance(condition, str):
+        condition = None
+    if not isinstance(trigger, str) or "condition" in config:
+        trigger = None
+
+    if _ATTRIBUTE_PLATFORMS.intersection((condition, trigger)):
+        return config.get("entity_id"), config.get("attribute")
+
+    return None
+
+
+def _followed_attribute(config: dict[str, Any]) -> str | None:
+    """Return the attribute a Spook state trigger follows, if it is one."""
+    trigger = config.get("trigger") or config.get("platform")
+    if trigger != _SPOOK_STATE_CHANGED or "condition" in config:
+        return None
+
+    options = config.get("options")
+    attribute = options.get("attribute") if isinstance(options, dict) else None
+    return attribute if _is_literal_attribute(attribute) else None
+
+
+def _is_literal_attribute(attribute: Any) -> bool:
+    """Return whether an attribute is written out, rather than worked out."""
+    return (
+        isinstance(attribute, str)
+        and bool(attribute)
+        and not is_template_string(attribute)
+    )
+
+
+def _walk_attribute_references(
+    config: Any,
+    found: set[tuple[str, str]],
+    followed: list[tuple[dict[str, Any], str]],
+) -> None:
+    """Recursively collect the attributes triggers and conditions watch."""
+    if isinstance(config, list):
+        for item in config:
+            _walk_attribute_references(item, found, followed)
+        return
+
+    if not isinstance(config, dict):
+        return
+
+    if (reference := _attribute_reference(config)) is not None:
+        entity_ids, attribute = reference
+        if _is_literal_attribute(attribute):
+            found.update(
+                (entity_id, attribute) for entity_id in _literal_entity_ids(entity_ids)
+            )
+    elif (attribute := _followed_attribute(config)) is not None:
+        followed.append((config, attribute))
+
+    for key, value in config.items():
+        if key in _PLATFORM_KEY_EXCLUDED_KEYS:
+            continue
+        _walk_attribute_references(value, found, followed)
+
+
+def extract_attribute_references_from_config(config: Any) -> AttributeReferences:
+    """Return the attributes a raw configuration names, and of which entities.
+
+    The `attribute:` of every state and numeric state trigger and condition,
+    wherever it nests (`and`, `or`, `not`, `choose`, `if`, `repeat`,
+    `wait_for_trigger`, condition steps), and the literal pairs in every
+    template. Each entity of a list makes a pair of its own. Spook's own
+    state trigger is handed back as it is, with the attribute it follows.
+
+    Disabled steps, triggers and conditions are left out: they do nothing,
+    so nothing they name can break anything.
+
+    An entity can be a registry ID, which is what the editor writes in some
+    places; resolving those is up to the caller, which has the registry.
+    """
+    pruned = without_disabled_steps(config)
+
+    found: set[tuple[str, str]] = set()
+    followed: list[tuple[dict[str, Any], str]] = []
+    _walk_attribute_references(pruned, found, followed)
+
+    for template in extract_template_strings_from_config(pruned):
+        found.update(extract_attribute_pairs_from_template(template))
+
+    return AttributeReferences(pairs=frozenset(found), followed=tuple(followed))
 
 
 # Only automations and scripts carry a raw configuration worth reading here.

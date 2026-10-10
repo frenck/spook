@@ -55,6 +55,18 @@ Spook found an issue with a script that is using a non-existing area.
 
 To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown referenced attributes
+
+Scripts are inspected for the attributes they use: the `attribute` of state and numeric state triggers and conditions, the attribute Spook's own state trigger follows, and attributes named in templates, like `state_attr('light.kitchen', 'brightness')`. If a script uses an attribute its entity does not have, Spook will raise a repair issue. The repairs issue raised will contain the name of the script, the attribute, the entity, and what was most likely meant when Spook is near certain of it.
+
+A trigger waiting on an attribute that never shows up loads fine and never fires, and nothing tells you. That is the ghost this catches.
+
+Many attributes only show up some of the time: a media player that is off drops most of its own, and integrations add their own that come and go. So an attribute is only reported when Spook cannot find it anywhere: not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`. An attribute or entity that is only worked out while running, from a variable for example, is not checked.
+
+Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks whenever automations, scripts or entities change, and once a day.
+
+To resolve the raised issue, edit the script and use an attribute the entity has. Spook will automatically remove the repair issue once the issue is fixed.
+
 ### Unknown referenced devices
 
 Scripts are inspected for the use of devices. If a script is using a device that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the device that is referenced but not found.

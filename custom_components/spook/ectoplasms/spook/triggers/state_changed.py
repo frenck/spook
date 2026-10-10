@@ -400,6 +400,22 @@ class _Settings:
     behavior: str
     timing: _Timing
 
+    @classmethod
+    def from_options(cls, options: dict[str, Any]) -> _Settings:
+        """Build the settings from validated options."""
+        return cls(
+            rules=_Rules.from_options(options),
+            include=_EntityFilter.from_options(options),
+            exclude=_EntityFilter.from_options(options, prefix="exclude_"),
+            exclude_target=options.get(CONF_EXCLUDE_TARGET),
+            behavior=options[CONF_BEHAVIOR],
+            timing=_Timing(
+                duration=options.get(CONF_FOR),
+                blip_tolerance=options.get(CONF_BLIP_TOLERANCE),
+                delay=options.get(CONF_DELAY),
+            ),
+        )
+
 
 # Everything here is called by the base class or by an event, so there is
 # nothing public to count.
@@ -429,6 +445,11 @@ class _StateWatcher(StateChangeWatcher):
         self._waiting: dict[str, _Waiting] = {}
         self._picking = not target_selection.has_any_target
         super().__init__(hass, target_selection, entity_filter=self._wanted)
+
+    @callback
+    def watched(self) -> set[str]:
+        """Return the entities this watches right now, without watching them."""
+        return self._referenced_entities()
 
     @callback
     def _wanted(self, entity_ids: set[str]) -> set[str]:
@@ -782,6 +803,31 @@ class _StateWatcher(StateChangeWatcher):
         self._states.clear()
 
 
+@callback
+def async_watched_entity_ids(hass: HomeAssistant, config: ConfigType) -> set[str]:
+    """Return the entities a trigger configured like this would watch now.
+
+    For Spook's repairs, which need to know without attaching it. Validated
+    and resolved the way the trigger itself does it, target, include lists
+    and exclusions alike, so the two cannot drift apart. A configuration the
+    trigger would refuse watches nothing.
+    """
+    try:
+        validated = _TRIGGER_SCHEMA(
+            {key: config[key] for key in (CONF_TARGET, CONF_OPTIONS) if key in config}
+        )
+    except vol.Invalid:
+        return set()
+
+    watcher = _StateWatcher(
+        hass,
+        TargetSelection(validated.get(CONF_TARGET) or {}),
+        _Settings.from_options(validated[CONF_OPTIONS]),
+        lambda *_: None,
+    )
+    return watcher.watched()
+
+
 class SpookTrigger(Trigger):
     """Spook's state trigger.
 
@@ -819,19 +865,7 @@ class SpookTrigger(Trigger):
         did_not_trigger: TriggerNotTriggeredReporter | None = None,  # noqa: ARG002
     ) -> CALLBACK_TYPE:
         """Attach the trigger to an action runner."""
-        options = self._options
-        settings = _Settings(
-            rules=_Rules.from_options(options),
-            include=_EntityFilter.from_options(options),
-            exclude=_EntityFilter.from_options(options, prefix="exclude_"),
-            exclude_target=options.get(CONF_EXCLUDE_TARGET),
-            behavior=options[CONF_BEHAVIOR],
-            timing=_Timing(
-                duration=options.get(CONF_FOR),
-                blip_tolerance=options.get(CONF_BLIP_TOLERANCE),
-                delay=options.get(CONF_DELAY),
-            ),
-        )
+        settings = _Settings.from_options(self._options)
         timing = settings.timing
         pending_delays: set[CALLBACK_TYPE] = set()
 

@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 import asyncio
 from contextlib import suppress
 from dataclasses import dataclass, field
+from datetime import timedelta
 import hashlib
 import importlib
 from pathlib import Path
@@ -39,13 +40,15 @@ from homeassistant.helpers import (
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES
-from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.helpers.event import async_call_later, async_track_time_interval
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
+from .attribute_checking import UnknownAttribute, async_unknown_attributes
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
+from .ectoplasms.spook.triggers.state_changed import async_watched_entity_ids
 from .energy_preferences import (
     async_unknown_energy_entities,
     energy_preferences_without,
@@ -65,14 +68,18 @@ from .helper_sources import (
     async_unknown_helper_sources,
     async_unknown_min_max_members,
 )
-from .reference_extraction import async_collect_mentioned_strings
+from .reference_extraction import (
+    AttributeReferences,
+    async_collect_mentioned_strings,
+    extract_attribute_references_from_config,
+)
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
 from .repair_documentation import repair_documentation_url
 from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Iterable, Mapping, Sized
-    from datetime import datetime, timedelta
+    from datetime import datetime
     from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
@@ -318,6 +325,11 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     #: time alone (e.g. something going stale), not in response to an event.
     inspect_interval: timedelta | None = None
 
+    #: Wait this long after activating before looking at all, and ignore
+    #: everything that would trigger a look until then. For repairs that ask
+    #: the recorder, which has its hands full right after a start.
+    first_inspection_delay: timedelta | None = None
+
     #: Re-run the inspection when an entity appears or goes. Needed by repairs
     #: about entity references, as plenty of entities never touch the entity
     #: registry: one set by a script or a template without a unique ID arrives
@@ -334,11 +346,12 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         super().__init__(hass)
         self._event_subs = set()
         self.possible_issue_ids = set()
+        self._waiting_for_first_inspection = False
 
     async def _async_inspect_with_cleanup(self) -> None:
         """Run an inspection and clean up issues that are no longer valid."""
-        # Don't inspect if we are stopping
-        if self.hass.is_stopping:
+        # Don't inspect if we are stopping, or should not look yet
+        if self.hass.is_stopping or self._waiting_for_first_inspection:
             return
 
         if not self.automatically_clean_up_issues:
@@ -396,8 +409,22 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             function=self._async_inspect_with_cleanup,
         )
 
-        # Spook says: Bounce!
-        await self.inspect_debouncer.async_call()
+        if self.first_inspection_delay is None:
+            # Spook says: Bounce!
+            await self.inspect_debouncer.async_call()
+        else:
+            self._waiting_for_first_inspection = True
+
+            @callback
+            def _async_first_inspection(_: datetime) -> None:
+                self._waiting_for_first_inspection = False
+                self.inspect_debouncer.async_schedule_call()
+
+            self._event_subs.add(
+                async_call_later(
+                    self.hass, self.first_inspection_delay, _async_first_inspection
+                )
+            )
 
         async def _async_call_inspect_debouncer(_: Event) -> None:
             # Trigger an inspection when an event is received from the event bus.
@@ -654,6 +681,189 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
                 self.reference_label.capitalize(),
                 ", ".join(sorted_unknown),
             )
+
+
+def _finding_reference(finding: UnknownAttribute) -> str:
+    """Return how an unknown attribute is written down in an issue's findings."""
+    return f"{finding.entity_id}:{finding.attribute}"
+
+
+class AbstractSpookUnknownAttributesRepair(
+    AbstractSpookEntityComponentUnknownReferencesRepair, ABC
+):
+    """Base for repairs about attributes an entity never had.
+
+    A trigger or condition waiting on such an attribute loads fine and never
+    fires, and says nothing about it. Which attributes an entity has is only
+    known at runtime, and the last place to look is the recorder, so this
+    does not look right at the start, when the recorder has its hands full.
+    After that it looks whenever one of its own entities is added or removed,
+    which is how a reload that changed something ends, on the usual events,
+    and once a day for what changes with time alone: history being written.
+
+    The whole round's references are worked out up front, so the recorder is
+    asked once per round rather than once per automation.
+    """
+
+    reference_label = "attributes"
+    first_inspection_delay = timedelta(minutes=10)
+    inspect_interval = timedelta(days=1)
+
+    _unknown_by_owner: dict[str, set[str]]
+    _unknown_by_reference: dict[str, UnknownAttribute]
+    _inspected_configs: dict[str, Any]
+    _named: dict[str, tuple[Any, AttributeReferences]]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._named = {}
+        self._inspected_configs = {}
+        self._unknown_by_owner = {}
+        self._unknown_by_reference = {}
+
+    async def async_activate(self) -> None:
+        """Look again once one of its own entities was added or removed.
+
+        A reload removes what changed and adds it back once it is done, so
+        that is when there is something new to look at. The reload service
+        being called is too early: nothing has been reloaded yet.
+        """
+        await super().async_activate()
+
+        prefix = f"{self.domain}."
+
+        @callback
+        def _own_entity_added_or_removed(event_data: Mapping[str, Any]) -> bool:
+            """Return whether one of this domain's entities appeared or went."""
+            return event_data["entity_id"].startswith(prefix) and (
+                event_data.get("old_state") is None
+                or event_data.get("new_state") is None
+            )
+
+        @callback
+        def _look_again(_: Event) -> None:
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _look_again,
+                event_filter=_own_entity_added_or_removed,
+            )
+        )
+
+    def _named_in(self, entity: Any, config: dict[str, Any]) -> set[tuple[str, str]]:
+        """Return the (entity ID, attribute) pairs a configuration names.
+
+        Read once per configuration, remembered against the configuration
+        itself: a reload hands over a new one.
+        """
+        named = self._named.get(entity.entity_id)
+        if named is None or named[0] is not config:
+            named = (config, extract_attribute_references_from_config(config))
+        self._named[entity.entity_id] = named
+        references = named[1]
+
+        # Resolved every round rather than remembered: what a registry ID
+        # stands for moves when the entity is renamed, and what Spook's own
+        # trigger watches moves with the registry. That one is asked of the
+        # trigger itself, so it is exactly what the trigger would watch.
+        pairs = {
+            (entity_id, attribute)
+            for reference, attribute in references.pairs
+            if (
+                entity_id := er.async_resolve_entity_id(self.entity_registry, reference)
+            )
+        }
+        for trigger_config, attribute in references.followed:
+            pairs.update(
+                (entity_id, attribute)
+                for entity_id in async_watched_entity_ids(self.hass, trigger_config)
+            )
+        return pairs
+
+    def _is_inspected(self, entity: Any) -> bool:
+        """Return whether the round looks at this entity, the way the base does."""
+        unavailable_class = self.unavailable_entity_class
+        # pylint: disable-next=isinstance-second-argument-not-valid-type
+        if unavailable_class is not None and isinstance(entity, unavailable_class):
+            return False
+        return self._should_inspect_entity(entity)
+
+    async def _async_setup_inspection(self) -> None:
+        """Work out every unknown attribute of the round, in one go."""
+        entities = list(self.hass.data[DATA_INSTANCES][self.domain].entities)
+
+        configs: dict[str, Any] = {}
+        named: dict[str, set[tuple[str, str]]] = {}
+        for entity in entities:
+            # Reading a configuration is CPU-bound, and one can be big: the
+            # event loop gets a turn after each.
+            await asyncio.sleep(0)
+
+            config = getattr(entity, "raw_config", None)
+            if not isinstance(config, dict) or not self._is_inspected(entity):
+                continue
+
+            configs[entity.entity_id] = config
+            named[entity.entity_id] = self._named_in(entity, config)
+
+        # Whatever is gone or not looked at this round is forgotten.
+        self._named = {
+            entity_id: remembered
+            for entity_id, remembered in self._named.items()
+            if entity_id in named
+        }
+
+        unknown = await async_unknown_attributes(
+            self.hass, {pair for pairs in named.values() for pair in pairs}
+        )
+        by_pair = {
+            (finding.entity_id, finding.attribute): finding for finding in unknown
+        }
+
+        self._inspected_configs = configs
+        self._unknown_by_reference = {
+            _finding_reference(finding): finding for finding in unknown
+        }
+        self._unknown_by_owner = {
+            owner: {
+                _finding_reference(by_pair[pair]) for pair in pairs & by_pair.keys()
+            }
+            for owner, pairs in named.items()
+        }
+
+    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+        """Return the unknown attributes this entity names.
+
+        Only for the very configuration they were worked out from, on the
+        entity that is there now. One that was reloaded while the recorder
+        was being asked, or while this round went by, may say something else
+        entirely, and the next round looks at that.
+        """
+        current = self.hass.data[DATA_INSTANCES][self.domain].get_entity(
+            entity.entity_id
+        )
+        if (
+            current is not entity
+            or self._inspected_configs.get(entity.entity_id) is None
+            or getattr(entity, "raw_config", None)
+            is not self._inspected_configs[entity.entity_id]
+        ):
+            return set()
+        return self._unknown_by_owner.get(entity.entity_id, set())
+
+    def _format_references(self, references: list[str]) -> str:
+        """Return the list of attributes, each with its entity and best guess."""
+        lines = []
+        for reference in references:
+            finding = self._unknown_by_reference[reference]
+            line = f"- `{finding.attribute}` of `{finding.entity_id}`"
+            if finding.suggestion is not None:
+                line += f" (did you mean `{finding.suggestion}`?)"
+            lines.append(line)
+        return "\n".join(lines)
 
 
 class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):

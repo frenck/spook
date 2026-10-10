@@ -859,6 +859,10 @@
       "title": "Unknown notifiers used by alert: {alert}",
       "description": "Spook has found a ghost in your alerts 👻\n\nThe alert {alert} (`{entity_id}`) notifies through the following actions, which are unknown to Home Assistant:\n\n{notifiers}\n\nThe alert still fires and still does its rounds, but these notifications go nowhere. Home Assistant logs that only at the moment the alert fires, which is a poor moment to find out nobody is listening.\n\nTo fix this error, edit the `notifiers:` list of this alert in your configuration and remove or correct these entries.\n\nSpook 👻 Your homie."
     },
+    "automation_unknown_attribute_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA trigger or condition waiting on an attribute that never shows up never fires, and does not tell you so. A template reading one gets nothing. To fix this, [edit the automation]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",
+      "title": "Unknown attributes used in: {automation}"
+    },
     "automation_unknown_area_references": {
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
       "title": "Unknown areas used in: {automation}"
@@ -1120,6 +1124,10 @@
     "scene_unknown_entity_references": {
       "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities used in: {scene}"
+    },
+    "script_unknown_attribute_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA trigger or condition waiting on an attribute that never shows up never fires, and does not tell you so. A template reading one gets nothing. To fix this, [edit the script]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",
+      "title": "Unknown attributes used in: {script}"
     },
     "script_unknown_area_references": {
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
