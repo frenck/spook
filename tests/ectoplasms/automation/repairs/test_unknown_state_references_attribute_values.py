@@ -195,6 +195,26 @@ async def test_yaml_boolean_is_reported(
 
 
 @pytest.mark.usefixtures("recorder_mock")
+async def test_suggestion_is_quoted_when_yaml_would_not_keep_it_text(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a quoted `Off` gets `"off"` suggested, quotes and all.
+
+    Copied as `off` without quotes, YAML makes it false, which never matches
+    either.
+    """
+    await _climate(hass, {"hvac_action": "idle"})
+    await _automation(hass, triggers=[_attribute_trigger("hvac_action", to="Off")])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `hvac_action` of `climate.living_room`: `Off` (did you mean `"off"`?)'
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
 async def test_yaml_number_is_reported_against_options(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
@@ -609,6 +629,6 @@ async def test_value_keeps_its_type_in_the_issue(
     await SpookRepair(hass).async_inspect()
 
     assert _found(issue_registry) == (
-        "- `preset_mode` of `climate.living_room`: `True` (did you mean `true`?)\n"
+        '- `preset_mode` of `climate.living_room`: `True` (did you mean `"true"`?)\n'
         '- `preset_mode` of `climate.living_room`: `true` (did you mean `"true"`?)'
     )

@@ -485,15 +485,16 @@ def _written_as(value: Value, known: set[Value]) -> set[str]:
     }
 
 
-def _suggestion(value: Value, written_as: set[str]) -> str | None:
+def _suggestion(written_as: set[str]) -> str | None:
     """Return what was most likely meant, when there is only one."""
     if len(written_as) != 1:
         return None
 
     meant = next(iter(written_as))
-    # In quotes for a value YAML did not leave as text: without them, YAML
-    # makes the same mistake again.
-    return meant if isinstance(value, str) else f'"{meant}"'
+    # In quotes whenever YAML would not leave the meant text as text: without
+    # them, YAML makes the same mistake again. `Off` in quotes is text, but
+    # the `off` it was meant to be is not, unquoted.
+    return meant if isinstance(_yaml_reads(meant), str) else f'"{meant}"'
 
 
 async def async_unknown_attribute_values(
@@ -585,7 +586,7 @@ async def _async_findings(
                         entity_id=entity_id,
                         attribute=attribute,
                         value=asked_value.value,
-                        suggestion=_suggestion(asked_value.value, written_as),
+                        suggestion=_suggestion(written_as),
                     )
                 )
 
