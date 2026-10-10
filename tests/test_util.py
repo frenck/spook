@@ -220,6 +220,15 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         # Nor a lookup written in a string, or in the text around expressions.
         ("{{ \"states('Sensor.Pump')\" }}", set()),
         ("text states('Sensor.Pump') {{ 1 }}", set()),
+        # Nor the argument of a filter or a test, which is not the entity.
+        ("{{ 'sensor.source' | state_attr('sensor.Label') }}", {"sensor.source"}),
+        ("{{ 'sensor.source' is is_state('Sensor.Ready') }}", {"sensor.source"}),
+        # Nor a piece of an argument.
+        ("{{ states('sensor.Pump' + '_interval') }}", set()),
+        ("{{ states('sensor.Pump' '_interval') }}", set()),
+        # Nor a call through something, with or without spaces.
+        ("{{ obj . states('Sensor.Absent') }}", set()),
+        ("{% raw %}{{ states('Sensor.Example') }}{% endraw %}", set()),
         # Nor a name that only ends in one, or one the template defines.
         ("{{ my_states('Sensor.Pump') }}", set()),
         ("{{ obj.states('Sensor.Pump') }}", set()),

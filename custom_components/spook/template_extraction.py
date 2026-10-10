@@ -506,7 +506,15 @@ def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
                 or _is(tokens, index - 1, "dot")
             ):
                 continue
-            if _shaped(tokens, index + 1, ("lparen", "string")):
+            # As a filter or a test, the first argument is not the entity: the
+            # value in front of it is.
+            if _is(tokens, index - 1, "pipe") or _is_test(tokens, index):
+                continue
+            # Only a whole argument: `'sensor.Pump' + '_interval'` and two
+            # strings side by side are pieces of one.
+            if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(
+                tokens, index + 3
+            ):
                 found.add(tokens[index + 2][1])
             elif name == "states" and _shaped(
                 tokens, index + 1, ("dot", "name", "dot", "name")
