@@ -854,6 +854,22 @@ class AbstractSpookUnknownAttributesRepair(
             return set()
         return self._unknown_by_owner.get(entity.entity_id, set())
 
+    async def async_check_draft(self, draft: Any) -> list[str]:
+        """Return the unknown attributes a draft names, each with its best guess.
+
+        A draft is in no round: it is not among the entities a round goes by,
+        so it is asked about on its own, with the same readers.
+        """
+        unknown = await async_unknown_attributes(
+            self.hass, self._named_in(draft, draft.raw_config)
+        )
+        return sorted(
+            f"{_finding_reference(finding)} (did you mean {finding.suggestion}?)"
+            if finding.suggestion is not None
+            else _finding_reference(finding)
+            for finding in unknown
+        )
+
     def _format_references(self, references: list[str]) -> str:
         """Return the list of attributes, each with its entity and best guess."""
         lines = []

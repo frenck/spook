@@ -25,6 +25,7 @@ from .dashboard_extraction import (
 )
 from .ectoplasms.automation.repairs import (
     unknown_area_references as automation_areas,
+    unknown_attribute_references as automation_attributes,
     unknown_condition_references as automation_conditions,
     unknown_device_references as automation_devices,
     unknown_entity_references as automation_entities,
@@ -35,6 +36,7 @@ from .ectoplasms.automation.repairs import (
 )
 from .ectoplasms.script.repairs import (
     unknown_area_references as script_areas,
+    unknown_attribute_references as script_attributes,
     unknown_condition_references as script_conditions,
     unknown_device_references as script_devices,
     unknown_entity_references as script_entities,
@@ -52,6 +54,7 @@ from .entity_filtering import (
     async_get_rename_suggestion_cache,
 )
 from .entity_suggestions import async_warm_rename_suggestions
+from .repairs import AbstractSpookUnknownAttributesRepair
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -71,6 +74,7 @@ DRAFT_KINDS: tuple[DraftKind, ...] = ("automation", "script", "scene", "dashboar
 DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
     automation.DOMAIN: (
         automation_areas,
+        automation_attributes,
         automation_conditions,
         automation_devices,
         automation_entities,
@@ -81,6 +85,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
     ),
     script.DOMAIN: (
         script_areas,
+        script_attributes,
         script_conditions,
         script_devices,
         script_entities,
@@ -150,6 +155,13 @@ async def _async_check_with_repairs(
         repair: AbstractSpookEntityComponentUnknownReferencesRepair = (
             module.SpookRepair(hass)
         )
+        # The attribute repairs work out a whole round in one go, from the
+        # entities a round goes by, and a draft is not one of them.
+        if isinstance(repair, AbstractSpookUnknownAttributesRepair):
+            if found_attributes := await repair.async_check_draft(draft):
+                unknown[repair.reference_label] = found_attributes
+            continue
+
         # The two hooks a repair runs on every entity in a round, in the
         # order it runs them. Protected, as they are not meant to be called
         # from outside a round; this is the one round that has no house.

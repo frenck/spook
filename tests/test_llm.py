@@ -710,6 +710,42 @@ async def test_check_references_finds_the_ghosts_in_a_draft(
     assert unknown["areas"] == ["attic"]
 
 
+async def test_check_references_finds_unknown_attributes_in_a_draft(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a draft is checked for attributes its entities never have.
+
+    A draft is in no round of the repairs, so it is asked about on its own,
+    and gets the same best guess the repair would give.
+    """
+    hass.states.async_set("light.bedroom", "on", {"brightness": 255})
+
+    result = await _call(
+        hass,
+        "spook__check_references",
+        hass_admin_user,
+        kind="script",
+        config={
+            "sequence": [
+                {
+                    "condition": "state",
+                    "entity_id": "light.bedroom",
+                    "attribute": "Brightness",
+                    "state": 255,
+                },
+                {"wait_template": "{{ state_attr('light.bedroom', 'brightness') }}"},
+            ]
+        },
+    )
+
+    assert result.data == {
+        "clean": False,
+        "unknown": {
+            "attributes": ["light.bedroom:Brightness (did you mean brightness?)"]
+        },
+    }
+
+
 async def test_check_references_on_a_clean_draft(
     hass: HomeAssistant,
     hass_admin_user: MockUser,
