@@ -713,6 +713,243 @@ async def async_extract_entities_from_config(
     return entities
 
 
+# The functions, and filters, that read one attribute of one entity.
+_ATTRIBUTE_FUNCTIONS = frozenset({"is_state_attr", "state_attr"})
+
+# What may follow an argument for it to be the whole argument: the end of the
+# call, or the next argument. Anything else, like `~`, makes it a piece of one.
+_ARGUMENT_ENDS = frozenset({"comma", "rparen"})
+
+# What reading the attributes as a mapping can mean other than an attribute.
+# Jinja finds the method before it looks for a key: `.attributes.items` is
+# the method, called or not.
+_MAPPING_METHODS = frozenset(name for name in dir(dict) if not name.startswith("_"))
+
+# What comes right after a parameter of a macro or call block: the next one,
+# the end of them, or its default.
+_PARAMETER_ENDS = frozenset({"assign", "comma", "rparen"})
+
+# Where an expression starts and ends; everything else is template text.
+_EXPRESSION_STARTS = frozenset({"block_begin", "variable_begin"})
+_EXPRESSION_ENDS = frozenset({"block_end", "variable_end"})
+
+type _Token = tuple[str, str]
+
+
+def _expressions(template_str: str) -> list[list[_Token]]:
+    """Return the tokens of each expression in a template, read by Jinja.
+
+    Template text around the expressions, comments and whitespace are not in
+    them. A template Jinja cannot read has none.
+    """
+    expressions: list[list[_Token]] = []
+    current: list[_Token] | None = None
+    try:
+        for token in _JINJA_LEXER.lexer.tokenize(template_str):
+            if token.type in _EXPRESSION_STARTS:
+                current = []
+            elif token.type in _EXPRESSION_ENDS:
+                if current:
+                    expressions.append(current)
+                current = None
+            elif current is not None:
+                current.append((token.type, token.value))
+    except TemplateSyntaxError:
+        return []
+
+    return expressions
+
+
+def _is(tokens: list[_Token], index: int, kind: str, value: str | None = None) -> bool:
+    """Return whether the token at this index is of this kind, and value."""
+    if not 0 <= index < len(tokens):
+        return False
+    token_kind, token_value = tokens[index]
+    return token_kind == kind and (value is None or token_value == value)
+
+
+def _shaped(
+    tokens: list[_Token], start: int, shape: tuple[str | tuple[str, str], ...]
+) -> bool:
+    """Return whether the tokens from here on have this shape.
+
+    Each part is a token kind, or a kind and the value it must have.
+    """
+    return all(
+        _is(tokens, start + offset, *(part if isinstance(part, tuple) else (part,)))
+        for offset, part in enumerate(shape)
+    )
+
+
+def _ends_argument(tokens: list[_Token], index: int) -> bool:
+    """Return whether the token at this index ends an argument."""
+    return index < len(tokens) and tokens[index][0] in _ARGUMENT_ENDS
+
+
+def _function_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
+    """Read `state_attr('light.x', 'brightness')` starting at its name."""
+    if (
+        _is(tokens, index - 1, "dot")
+        or _is(tokens, index - 1, "pipe")
+        or not _shaped(tokens, index + 1, ("lparen", "string", "comma", "string"))
+        or not _ends_argument(tokens, index + 5)
+    ):
+        return None
+    return tokens[index + 2][1], tokens[index + 4][1]
+
+
+def _filter_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
+    """Read `'light.x' | state_attr('brightness')` starting at its name."""
+    if (
+        not _is(tokens, index - 1, "pipe")
+        or not _is(tokens, index - 2, "string")
+        or not _is(tokens, index + 1, "lparen")
+        or not _is(tokens, index + 2, "string")
+        or not _ends_argument(tokens, index + 3)
+    ):
+        return None
+    return tokens[index - 2][1], tokens[index + 2][1]
+
+
+def _states_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
+    """Read `states.light.x.attributes...` starting at `states`.
+
+    The attribute as a name, `['brightness']` or `.get('brightness')`. A
+    method on the attributes, like `.items()`, is not an attribute.
+    """
+    if _is(tokens, index - 1, "dot") or not _shaped(
+        tokens, index + 1, ("dot", "name", "dot", "name", "dot", ("name", "attributes"))
+    ):
+        return None
+
+    if (attribute := _attribute_after(tokens, index + 7)) is None:
+        return None
+    return f"{tokens[index + 2][1]}.{tokens[index + 4][1]}", attribute
+
+
+def _attribute_after(tokens: list[_Token], after: int) -> str | None:
+    """Read the attribute that follows `.attributes`, if it is a literal one."""
+    if _is(tokens, after, "lbracket"):
+        if _is(tokens, after + 1, "string") and _is(tokens, after + 2, "rbracket"):
+            return tokens[after + 1][1]
+        return None
+
+    if not _is(tokens, after, "dot") or not _is(tokens, after + 1, "name"):
+        return None
+
+    name = tokens[after + 1][1]
+    if not _is(tokens, after + 2, "lparen"):
+        return None if name in _MAPPING_METHODS else name
+
+    if (
+        name == "get"
+        and _is(tokens, after + 3, "string")
+        and _ends_argument(tokens, after + 4)
+    ):
+        return tokens[after + 3][1]
+
+    return None
+
+
+def _names_defined(tokens: list[_Token]) -> set[str]:
+    """Return the names one expression gives a meaning, like `{% set x = 1 %}`.
+
+    Generous where it is cheap to be: a keyword argument counts as well.
+    Taking a name for a local one only means a lookup that is not checked;
+    missing one means a finding about a template that works.
+    """
+    statement = tokens[0][1] if _is(tokens, 0, "name") else None
+    names = [
+        (index, value) for index, (kind, value) in enumerate(tokens) if kind == "name"
+    ]
+
+    if statement == "for":
+        # `{% for key, value in ... %}`: everything up to the `in`.
+        loop_names: set[str] = set()
+        for _index, value in names[1:]:
+            if value == "in":
+                break
+            loop_names.add(value)
+        return loop_names
+
+    if statement in {"import", "from"}:
+        # `{% import 'x' as name %}`, `{% from 'x' import a, b as c %}`.
+        return {
+            value
+            for index, value in names
+            if _is(tokens, index - 1, "name", "as")
+            or _is(tokens, index - 1, "name", "import")
+            or _is(tokens, index - 1, "comma")
+        }
+
+    if statement == "set" and not any(kind == "assign" for kind, _value in tokens):
+        # `{% set name %}...{% endset %}`.
+        return {value for _index, value in names[1:]}
+
+    defined = {
+        value
+        for index, value in names
+        # `{% set a, b = ... %}`, `{% with a = ... %}`, and the keywords.
+        if _is(tokens, index + 1, "assign")
+        or (statement == "set" and _is(tokens, index + 1, "comma"))
+    }
+    if statement in {"macro", "call"}:
+        # `{% macro name(a, b=1) %}`, `{% call(a) other() %}`: the name, and
+        # whatever is followed by what ends a parameter.
+        defined.update(
+            value
+            for index, value in names
+            if index == 1
+            or (index + 1 < len(tokens) and tokens[index + 1][0] in _PARAMETER_ENDS)
+        )
+    return defined
+
+
+def _named_locally(expressions: list[list[_Token]]) -> set[str]:
+    """Return every name a template gives a meaning of its own, anywhere in it."""
+    return {name for tokens in expressions for name in _names_defined(tokens)}
+
+
+@lru_cache(maxsize=1024)
+def extract_attribute_pairs_from_template(
+    template_str: str,
+) -> frozenset[tuple[str, str]]:
+    """Return the (entity ID, attribute) pairs a template names literally.
+
+    Read by Jinja's own lexer, so only what is inside an expression counts,
+    and only pairs where both are a whole string literal. An attribute built
+    from pieces, like `'color_' ~ 'temp'`, or coming from a variable, is
+    whatever it is at runtime, and guessing at that is how a repair ends up
+    reporting a template that works. So is a template that defines its own
+    `states` or `state_attr`: then those are not Home Assistant's.
+
+    Pure in the template string, so cached like the entity extraction.
+    """
+    if not is_template_string(template_str):
+        return frozenset()
+
+    expressions = _expressions(template_str)
+    named_locally = _named_locally(expressions)
+
+    pairs: set[tuple[str, str]] = set()
+    for tokens in expressions:
+        for index, (kind, value) in enumerate(tokens):
+            if kind != "name" or value in named_locally:
+                continue
+
+            if value in _ATTRIBUTE_FUNCTIONS:
+                pair = _function_pair(tokens, index) or _filter_pair(tokens, index)
+            elif value == "states":
+                pair = _states_pair(tokens, index)
+            else:
+                continue
+
+            if pair is not None and valid_entity_id(pair[0]):
+                pairs.add(pair)
+
+    return frozenset(pairs)
+
+
 @lru_cache(maxsize=1024)
 def _extract_device_ids_from_template(template_str: str) -> frozenset[str]:
     """Extract device IDs referenced via ``device_entities`` in a template."""
