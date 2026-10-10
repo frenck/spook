@@ -275,7 +275,7 @@ def _offered(domain: str, state: State) -> set[str]:
     return {option for option in options if isinstance(option, str)}
 
 
-def _entity_object(hass: HomeAssistant, entity_id: str) -> object | None:
+def entity_object(hass: HomeAssistant, entity_id: str) -> object | None:
     """Return the entity its domain holds, if it is one and not just a state.
 
     Anything can set a state: a REST call, a Python script, a statestream.
@@ -430,7 +430,7 @@ async def _async_look(
     What it is in and offers is noted first, so it counts from then on, also
     once it is gone again.
     """
-    if (entity := _entity_object(hass, entity_id)) is None:
+    if (entity := entity_object(hass, entity_id)) is None:
         return None
     if (state := hass.states.get(entity_id)) is None:
         return None

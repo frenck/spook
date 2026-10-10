@@ -291,7 +291,7 @@ def recorder_metadata_ids(
     return found
 
 
-def _newest_attribute_sets(
+def newest_attribute_sets(
     session: Session, metadata_id: int, since: float | None
 ) -> tuple[list[int], bool]:
     """Return an entity's newest distinct attribute sets, and if that is all.
@@ -358,7 +358,7 @@ def _read_recorded_attribute_keys(
             session, list(since_by_entity), instance.max_bind_vars
         )
         for metadata_id, entity_id in metadata_ids.items():
-            attribute_ids, complete = _newest_attribute_sets(
+            attribute_ids, complete = newest_attribute_sets(
                 session, metadata_id, since_by_entity[entity_id]
             )
             keys_by_entity[entity_id] = set()
@@ -474,7 +474,7 @@ def recorder_can_answer(hass: HomeAssistant) -> bool:
     return DATA_INSTANCE in hass.data and not async_migration_in_progress(hass)
 
 
-def _history_can_tell(state: State, attribute: str) -> bool:
+def history_can_tell(state: State, attribute: str) -> bool:
     """Return whether the recorder would have kept this attribute of the entity."""
     unrecorded = _unrecorded(state)
     return MATCH_ALL not in unrecorded and attribute not in unrecorded
@@ -513,7 +513,7 @@ async def _async_look(
 def _worth_asking_about(hass: HomeAssistant, entity_id: str, look: _Look) -> bool:
     """Return whether the recorder can say anything about what is unknown."""
     return any(
-        _history_can_tell(look.state, attribute) for attribute in look.unknown
+        history_can_tell(look.state, attribute) for attribute in look.unknown
     ) and is_entity_recorded(hass, entity_id)
 
 
@@ -605,7 +605,7 @@ async def _async_findings(
                 attribute.casefold() in folded
                 and attribute not in _unrecorded(look.state)
             )
-            or (history_is_whole and _history_can_tell(look.state, attribute))
+            or (history_is_whole and history_can_tell(look.state, attribute))
         )
 
     return found
