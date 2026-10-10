@@ -474,6 +474,65 @@ def _is_text_argument_match(
     return match.span(1)[0] - 1 in text_argument_offsets
 
 
+# The functions that look an entity up through `hass.states.get`, which tries
+# the entity ID in lower case too: `states('sensor.Pump')` reads
+# `sensor.pump`. The registry lookups (`device_id`, `area_id` and friends) do
+# not, so for those a mixed case ID is no entity at all. Neither does
+# `distance`, which takes an invalid entity ID for a coordinate.
+_STATE_LOOKUPS = frozenset(
+    {
+        "closest",
+        "expand",
+        "has_value",
+        "is_state",
+        "is_state_attr",
+        "state_attr",
+        "state_translated",
+        "states",
+    }
+)
+
+
+@lru_cache(maxsize=1024)
+def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
+    """Return the entity IDs a template looks a state up for, as written.
+
+    Read with Jinja's own lexer, so only a real call counts: inside an
+    expression, not in a string or in the text around it, by the very name
+    (`STATES(...)`, `my_states(...)` and `obj.states(...)` are no lookups),
+    and not a name the template defines itself. These are the ones Home
+    Assistant tries in lower case too.
+    """
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions)
+
+    found: set[str] = set()
+    for tokens in expressions:
+        for index, (kind, name) in enumerate(tokens):
+            if (
+                kind != "name"
+                or name not in _STATE_LOOKUPS
+                or name in local
+                or _is(tokens, index - 1, "dot")
+            ):
+                continue
+            # As a filter or a test, the first argument is not the entity: the
+            # value in front of it is.
+            if _is(tokens, index - 1, "pipe") or _is_test(tokens, index):
+                continue
+            # Only a whole argument: `'sensor.Pump' + '_interval'` and two
+            # strings side by side are pieces of one.
+            if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(
+                tokens, index + 3
+            ):
+                found.add(tokens[index + 2][1])
+            elif name == "states" and _shaped(
+                tokens, index + 1, ("dot", "name", "dot", "name")
+            ):
+                found.add(f"{tokens[index + 2][1]}.{tokens[index + 4][1]}")
+    return frozenset(found)
+
+
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
     """Return the entity ID captured by a template regex match."""
     groups = match.groups()
@@ -511,6 +570,10 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 continue
 
             entity_id = _entity_id_from_template_match(match)
+            if not entity_id.islower() and entity_id in _looked_up_in_any_case(
+                template_without_comments
+            ):
+                entity_id = entity_id.lower()
 
             # For each entity ID (which might be comma-separated), add all valid ones
             for individual_id in split_comma_separated_entity_ids(entity_id):

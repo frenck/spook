@@ -1265,3 +1265,38 @@ async def test_a_template_in_action_data_still_names_entities(
     assert "sensor.washing_machine_ghost" in await _async_unknown_in_automation(
         hass, config
     )
+
+
+_PUMP_CHECK: dict[str, Any] = {
+    "alias": "Pump",
+    "triggers": [{"trigger": "homeassistant", "event": "start"}],
+    "conditions": [
+        {
+            "condition": "template",
+            "value_template": "{{ states('sensor.Pump_Interval') }}",
+        }
+    ],
+    "actions": [],
+}
+
+
+async def test_a_mixed_case_lookup_of_a_missing_entity_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state lookup in mixed case is checked, as the entity it reads.
+
+    Home Assistant tries the lower case entity ID for a state lookup, so this
+    template reads `sensor.pump_interval`, and that one is gone.
+    """
+    assert await _async_unknown_in_automation(hass, _PUMP_CHECK) == {
+        "sensor.pump_interval"
+    }
+
+
+async def test_a_mixed_case_lookup_of_an_existing_entity_is_fine(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state lookup in mixed case of an entity that is there is clean."""
+    hass.states.async_set("sensor.pump_interval", "30")
+
+    assert await _async_unknown_in_automation(hass, _PUMP_CHECK) == set()

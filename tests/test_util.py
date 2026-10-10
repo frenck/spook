@@ -204,6 +204,44 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ states('unknown_domain.foo') }}", set()),
         ("{{ states('light.') }}", set()),
         ("{{ 'light.turn_on' }}", set()),
+        # A state lookup tries the entity ID in lower case too, so a mixed
+        # case one names the lower case entity.
+        ("{{ states('sensor.Pump_Interval') }}", {"sensor.pump_interval"}),
+        ("{{ is_state('Light.Kitchen', 'on') }}", {"light.kitchen"}),
+        ("{{ state_attr( 'Sensor.Pump' , 'x') }}", {"sensor.pump"}),
+        ("{{ expand('Light.Kitchen') }}", {"light.kitchen"}),
+        ("{{ states.sensor.Pump_Interval.state }}", {"sensor.pump_interval"}),
+        ("{{ state_translated('Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ has_value('Sensor.Pump') }}", {"sensor.pump"}),
+        ("{{ is_state_attr('Light.Kitchen', 'mode', 'x') }}", {"light.kitchen"}),
+        ("{{ closest('Sensor.Phone') }}", {"sensor.phone"}),
+        # A registry lookup does not, Jinja's own names never ignore case, and
+        # mixed case text is just text.
+        ("{{ device_id('sensor.Pump_Interval') }}", set()),
+        ("{{ distance('Sensor.Phone') }}", set()),
+        ("{{ STATES('sensor.Pump') }}", set()),
+        ("{{ States.sensor.Pump.state }}", set()),
+        ("{{ 'Sensor.Status' }}", set()),
+        # Nor a lookup written in a string, or in the text around expressions.
+        ("{{ \"states('Sensor.Pump')\" }}", set()),
+        ("text states('Sensor.Pump') {{ 1 }}", set()),
+        # Nor the argument of a filter or a test, which is not the entity.
+        ("{{ 'sensor.source' | state_attr('sensor.Label') }}", {"sensor.source"}),
+        ("{{ 'sensor.source' is is_state('Sensor.Ready') }}", {"sensor.source"}),
+        # Nor a piece of an argument.
+        ("{{ states('sensor.Pump' + '_interval') }}", set()),
+        ("{{ states('sensor.Pump' '_interval') }}", set()),
+        # Nor a call through something, with or without spaces.
+        ("{{ obj . states('Sensor.Absent') }}", set()),
+        ("{% raw %}{{ states('Sensor.Example') }}{% endraw %}", set()),
+        # Nor a name that only ends in one, or one the template defines.
+        ("{{ my_states('Sensor.Pump') }}", set()),
+        ("{{ obj.states('Sensor.Pump') }}", set()),
+        ("{{ x.states.sensor.Pump.state }}", set()),
+        (
+            "{% macro states(x) %}{% endmacro %}{{ states('Sensor.Pump') }}",
+            set(),
+        ),
     ],
 )
 def test_extract_entities_from_template_regex(
