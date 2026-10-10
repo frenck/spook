@@ -1300,3 +1300,37 @@ async def test_a_mixed_case_lookup_of_an_existing_entity_is_fine(
     hass.states.async_set("sensor.pump_interval", "30")
 
     assert await _async_unknown_in_automation(hass, _PUMP_CHECK) == set()
+
+
+@pytest.mark.parametrize(
+    "event_type",
+    ["state_changed", "state_reported", "automation_triggered", "script_started"],
+)
+async def test_a_payload_home_assistant_fires_about_an_entity_is_reported(
+    hass: HomeAssistant, event_type: str
+) -> None:
+    """Test the entity in an event Home Assistant fires about it is a reference.
+
+    These are not named after a domain, but Home Assistant puts the entity
+    they are about in `entity_id`. Waiting for one of a missing entity never
+    fires.
+    """
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Watch",
+            "triggers": [
+                {
+                    "trigger": "event",
+                    "event_type": event_type,
+                    "event_data": {"entity_id": "light.gone"},
+                }
+            ],
+            "actions": [],
+        },
+    )
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {"light.gone"}
