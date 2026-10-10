@@ -541,6 +541,32 @@ async def test_a_change_while_asking_counts(
     assert recorder_remembers_only_a
 
 
+@pytest.mark.usefixtures("recorder_mock")
+async def test_passing_through_while_asking_is_not_judged(
+    hass: HomeAssistant,
+    recorder_remembers_only_a: list[list[str]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an entity that changed while the recorder was asked is not judged.
+
+    It showed `x` and dropped it again while the recorder was being asked,
+    which may not have written that down yet. Its history is not whole for
+    this round.
+    """
+    hass.states.async_set("sensor.one", "1", {"a": 1})
+    asking = attribute_checking._async_ask_the_recorder  # noqa: SLF001
+
+    async def _passes_through(hass: HomeAssistant, entity_ids: list[str]) -> None:
+        await asking(hass, entity_ids)
+        hass.states.async_set("sensor.one", "1", {"a": 1, "x": 1})
+        hass.states.async_set("sensor.one", "1", {"a": 1})
+
+    monkeypatch.setattr(attribute_checking, "_async_ask_the_recorder", _passes_through)
+
+    assert not await async_unknown_attributes(hass, {("sensor.one", "x")})
+    assert recorder_remembers_only_a
+
+
 # Did you mean.
 
 

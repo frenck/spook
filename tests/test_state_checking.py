@@ -665,6 +665,30 @@ async def test_a_change_while_asking_counts(
 
 
 @pytest.mark.usefixtures("recorder_mock")
+async def test_a_change_while_asking_leaves_the_history_short(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test an entity that changed while the recorder was asked is not judged.
+
+    What it passed through may not be written down yet, so its history is
+    not whole for this round, and only what needs no history is reported.
+    """
+    await _record(hass, "light.tv", "on")
+    asking = state_checking._async_ask_the_recorder  # noqa: SLF001
+
+    async def _passes_through(hass: HomeAssistant, entity_ids: object) -> None:
+        await asking(hass, entity_ids)
+        hass.states.async_set("light.tv", "off")
+        hass.states.async_set("light.tv", "on")
+
+    monkeypatch.setattr(state_checking, "_async_ask_the_recorder", _passes_through)
+
+    assert await async_unknown_states(
+        hass, {("light.tv", "dimmed"), ("light.tv", "On")}
+    ) == {UnknownState("light.tv", "On", "on")}
+
+
+@pytest.mark.usefixtures("recorder_mock")
 async def test_seen_once_is_known_for_good(
     hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
 ) -> None:

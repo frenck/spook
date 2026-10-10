@@ -415,6 +415,7 @@ async def _async_ask_the_recorder(
 class _Look:
     """One look at an entity: what it can be, and what it was asked to be."""
 
+    state: State
     known: set[str]
     unknown: set[str]
     # Whether core writes nothing outside of what is known.
@@ -454,6 +455,7 @@ async def _async_look(
 
     known = {*_ALWAYS_VALID, *(fixed or ()), *knowledge.offered, *knowledge.seen}
     return _Look(
+        state=state,
         known=known,
         unknown=states - known,
         kept=_set_is_kept(domain, entity),
@@ -524,11 +526,15 @@ async def _async_findings(
             continue
 
         answer = _knowledge(hass, entity_id).answer
+        # An entity that changed while the recorder was asked may have passed
+        # through something the recorder has not written yet. Its history is
+        # not whole this round; the next one reads what came since.
         history_is_whole = (
             entity_id in with_history
             and answer is not None
             and answer.holds(now)
             and answer.complete
+            and look.state.last_updated == before.state.last_updated
         )
         folded = {candidate.casefold() for candidate in look.known}
         for state in look.unknown:
