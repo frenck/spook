@@ -181,8 +181,21 @@ def _metadata_problems(case: Case) -> list[str]:
             continue
         problems.extend(_untyped_entries(reference_type, rule))
 
+    problems.extend(_mark_problems(case, expect))
+    return problems
+
+
+def _mark_problems(case: Case, expect: dict[str, Any]) -> list[str]:
+    """Return what is wrong with how a case marks what goes unread, described.
+
+    A note saying something is not read needs a mark, and a mark lifts that
+    check, so it has to give a reason.
+    """
+    problems: list[str] = []
     if "out_of_scope" in case.metadata:
         problems.extend(_out_of_scope_problems(case.metadata["out_of_scope"], expect))
+    if "known_issue" in case.metadata and not _is_reason(case.metadata["known_issue"]):
+        problems.append("`known_issue` is not a reason")
 
     note = " ".join(str(case.metadata.get("note", "")).split())
     marked = {"known_issue", "out_of_scope"} & case.metadata.keys()
@@ -191,8 +204,12 @@ def _metadata_problems(case: Case) -> list[str]:
             f"the note says something goes unread ({said.group(0)!r}); mark it "
             "with `known_issue` or `out_of_scope`, or say it plainer"
         )
-
     return problems
+
+
+def _is_reason(value: Any) -> bool:
+    """Return whether a mark gives a reason, rather than being empty or a flag."""
+    return isinstance(value, str) and bool(value.strip())
 
 
 def _out_of_scope_problems(reason: Any, expect: dict[str, Any]) -> list[str]:
@@ -202,7 +219,7 @@ def _out_of_scope_problems(reason: Any, expect: dict[str, Any]) -> list[str]:
     reader starts taking it, the case has to say so.
     """
     problems: list[str] = []
-    if not isinstance(reason, str) or not reason.strip():
+    if not _is_reason(reason):
         problems.append("`out_of_scope` is not a reason")
     if not any(
         isinstance(rule, dict) and rule.get("not_find") for rule in expect.values()
@@ -248,6 +265,14 @@ def test_case_file_is_well_formed(path: Path) -> None:
             "out_of_scope:\nexpect:\n  entities:\n    not_find: [light.a]",
             "`out_of_scope` is not a reason",
             id="out of scope without a reason",
+        ),
+        pytest.param(
+            "known_issue:", "`known_issue` is not a reason", id="bare known issue"
+        ),
+        pytest.param(
+            "known_issue: false",
+            "`known_issue` is not a reason",
+            id="known issue as a flag",
         ),
     ],
 )
