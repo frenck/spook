@@ -271,6 +271,19 @@ async def _extract_entities_from_service_data(
                         hass, value, known_services=known_services
                     )
                 )
+
+            # script.turn_on hands the script its fields under `variables`,
+            # where calling the script by name takes them as the data itself.
+            # Either way they become the same script variables, so read them
+            # the same way.
+            variables = data_value.get("variables")
+            if service == "script.turn_on" and isinstance(variables, dict):
+                for value in variables.values():
+                    entities.update(
+                        await async_extract_entities_from_value(
+                            hass, value, known_services=known_services
+                        )
+                    )
     return entities
 
 

@@ -1368,3 +1368,81 @@ async def test_a_literal_glued_to_more_with_plus_is_no_entity(
     await repair._async_setup_inspection()
 
     assert await repair._async_compute_unknown_references(entity) == set()
+
+
+def _log_location(action: dict[str, Any]) -> dict[str, Any]:
+    """Return an automation that hands a sensor to a script in one action."""
+    return {
+        "alias": "Log location",
+        "triggers": [{"trigger": "homeassistant", "event": "start"}],
+        "actions": [action],
+    }
+
+
+async def test_a_script_field_handed_over_by_turn_on_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test an entity in the variables script.turn_on hands over is read.
+
+    Home Assistant gives those to the script exactly like the data of a
+    direct call to it, so a missing entity in there is just as broken.
+    """
+    hass.states.async_set("script.google_location", "off")
+
+    config = _log_location(
+        {
+            "action": "script.turn_on",
+            "target": {"entity_id": "script.google_location"},
+            "data": {
+                "variables": {
+                    "worksheet": "LocationLog",
+                    "sensor": "sensor.member_one_address",
+                }
+            },
+        }
+    )
+
+    assert await _async_unknown_in_automation(hass, config) == {
+        "sensor.member_one_address"
+    }
+
+
+async def test_a_script_field_handed_over_directly_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the same field in the data of a direct call to the script."""
+    hass.states.async_set("script.google_location", "off")
+
+    config = _log_location(
+        {
+            "action": "script.google_location",
+            "data": {
+                "worksheet": "LocationLog",
+                "sensor": "sensor.member_one_address",
+            },
+        }
+    )
+
+    assert await _async_unknown_in_automation(hass, config) == {
+        "sensor.member_one_address"
+    }
+
+
+async def test_a_field_called_variables_elsewhere_is_not_dug_into(
+    hass: HomeAssistant,
+) -> None:
+    """Test only script.turn_on gets its variables read a level deeper.
+
+    For a direct call, `variables` is just a field of the script, and what
+    is nested in a field is the script's business.
+    """
+    hass.states.async_set("script.google_location", "off")
+
+    config = _log_location(
+        {
+            "action": "script.google_location",
+            "data": {"variables": {"sensor": "sensor.member_one_address"}},
+        }
+    )
+
+    assert await _async_unknown_in_automation(hass, config) == set()
