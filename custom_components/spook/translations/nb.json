@@ -1,18 +1,25 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Jepp... eh... nei. OK, takk, snakkes!",
-            "enabled_existing": "Den eksisterende Spook-oppføringen er aktivert.",
-            "enable_failed": "Den eksisterende Spook-oppføringen kunne ikke aktiveres."
+            "already_spooked": "Spook spøker allerede her 👻\n\nEtt spøkelse per hus er nok. Du finner Spook under [Enheter og tjenester](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook er våken igjen 👻\n\nGi den et øyeblikk til å se seg rundt. Alt den finner vises under [Reparasjoner](/config/repairs).",
+            "enable_failed": "Spook ville ikke våkne 👻\n\nPrøv å slå den på igjen selv under [Enheter og tjenester](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook fortsetter å sove 👻\n\nSavner du den? Du kan vekke den når som helst under [Enheter og tjenester](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook svever rundt 👻\n\nGi den et øyeblikk til å se seg rundt. Alt den finner vises under [Reparasjoner](/config/repairs).\n\nDe ekstra handlingene, utløserne og betingelsene venter på deg i redigeringsprogrammene for automasjoner og skript. Nysgjerrig på hva Spook ellers kan gjøre? [Dokumentasjonen]({documentation_url}) har alt.\n\nLikte du Spook? 👻 En ⭐ på [GitHub]({repository_url}) lar andre vite at Spook faktisk er ganske bra. [Å sponse Frenck]({sponsor_url}) holder dette spøkelset mett. Og hans gratis [nyhetsbrev]({newsletter_url}) hver fjortende dag holder ditt indre spøkelse mett."
         },
         "step": {
             "user": {
-                "description": "Har du lest readme? Har du lest lisensen? Er du helt sikker?"
+                "title": "Bø! Møt Spook, kompisen din 👻",
+                "description": "Spook svever rundt i Home Assistant på jakt etter spøkelser: referanser til ting som ikke finnes lenger, og rester ingen har ryddet opp etter. Alt den finner rapporteres under Reparasjoner.\n\nDen utvider også hva automasjonene og skriptene dine kan gjøre, med ekstra handlinger, utløsere, betingelser og hjelpere, for enda kraftigere automasjoner.\n\nVarsel: Spook er ikke en del av Home Assistant. Det er en egendefinert integrasjon som rekker inn på steder den aldri ble invitert til. Hvis noe rart skjer, mistenk Spook først, og [si fra til oss]({issue_tracker_url}).\n\nKlar for å bli spøkt?"
             },
             "already_configured": {
-                "description": "Spook er allerede konfigurert, men den eksisterende oppføringen er deaktivert. Vil du aktivere den?",
+                "title": "Spook sover 👻",
+                "description": "Spook er allerede satt opp, men noen har slått den av. Vil du vekke den?",
                 "menu_options": {
-                    "enable_existing": "Aktiver eksisterende oppføring"
+                    "enable_existing": "Vekk Spook",
+                    "keep_sleeping": "La den sove"
                 }
             }
         }
