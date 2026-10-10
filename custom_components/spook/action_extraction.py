@@ -9,6 +9,7 @@ from homeassistant.const import CONF_ENABLED
 
 from .const import LOGGER
 from .entity_filtering import NEVER_AN_ENTITY_PREFIXES, async_get_all_services
+from .reference_extraction import event_payload_keys_to_leave_alone
 from .template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_template_string,
@@ -282,9 +283,16 @@ async def _extract_entities_from_nested_configs(
     in_payload: bool = False,
     _service: str | None = None,
 ) -> set[str]:
-    """Extract entities from nested configurations."""
+    """Extract entities from nested configurations.
+
+    The payload of somebody's own event waited for in a step is left alone:
+    it is whatever the sender puts there, not something this one needs.
+    """
     entities = set()
+    payload_keys = event_payload_keys_to_leave_alone(config)
     for key, value in config.items():
+        if key in payload_keys:
+            continue
         if isinstance(value, (dict, list)):
             entities.update(
                 await async_extract_entities_from_action_config(

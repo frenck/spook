@@ -19,6 +19,7 @@ import re
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.const import (
+    ATTR_ENTITY_ID,
     CONF_ENABLED,
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
@@ -28,6 +29,7 @@ from homeassistant.core import callback, valid_entity_id
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .template_extraction import (
+    KNOWN_DOMAINS,
     extract_attribute_pairs_from_template,
     extract_state_pairs_from_template,
     extract_template_strings_from_config,
@@ -64,6 +66,68 @@ _EXCLUDED_KEYS = frozenset(
         "trigger_variables",
     },
 )
+
+
+# Where an event trigger keeps what it matches on, rather than what it needs.
+_EVENT_PAYLOAD_KEYS = frozenset({"event_data", "event_data_template"})
+
+
+def event_payload_keys_to_leave_alone(config: dict[str, Any]) -> frozenset[str]:
+    """Return the event payload keys that hold data rather than references.
+
+    An `entity_id` inside `event_data` is a reference when the event comes
+    from an integration that means it that way, `timer.finished` being the
+    usual one. On somebody's own event it is whatever the sender put there,
+    and reporting that as a missing entity is a repair about an automation
+    that works perfectly well.
+
+    Told apart by the event type: one named after a domain comes from that
+    integration, anything else is somebody's own.
+    """
+    event_types = config.get("event_type")
+    if event_types is None:
+        return frozenset()
+
+    if isinstance(event_types, str):
+        event_types = [event_types]
+
+    for event_type in event_types:
+        if not isinstance(event_type, str):
+            continue
+
+        domain, dot, _ = event_type.partition(".")
+        if dot and domain in KNOWN_DOMAINS:
+            return frozenset()
+
+    return _EVENT_PAYLOAD_KEYS
+
+
+def custom_event_payload_entities(config: Any) -> set[str]:
+    """Return the entities Home Assistant takes from somebody's own events.
+
+    Core's own reading takes the `entity_id` of the `event_data` of every
+    event trigger, top level or waited for in a step, whoever sends the
+    event. On somebody's own event that is whatever the sender put there, so
+    the repairs take these back out of what core says is referenced.
+    """
+    found: set[str] = set()
+    if isinstance(config, list):
+        for item in config:
+            found |= custom_event_payload_entities(item)
+        return found
+    if not isinstance(config, dict):
+        return found
+
+    payload_keys = event_payload_keys_to_leave_alone(config)
+    if payload_keys and isinstance(event_data := config.get("event_data"), dict):
+        entity_id = event_data.get(ATTR_ENTITY_ID)
+        if isinstance(entity_id, str) and valid_entity_id(entity_id):
+            found.add(entity_id)
+
+    for key, value in config.items():
+        if key not in payload_keys:
+            found |= custom_event_payload_entities(value)
+    return found
 
 
 @dataclass

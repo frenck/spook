@@ -313,3 +313,68 @@ async def test_a_template_in_a_disabled_step_is_left_out(hass: HomeAssistant) ->
     }
 
     assert await _unknown_in_script(hass, scripts, "evening") == set()
+
+
+def _waiting_for(event_type: str, *steps: dict[str, Any]) -> dict[str, Any]:
+    """Return a script waiting for an event carrying `light.from_the_remote`."""
+    wait = {
+        "wait_for_trigger": [
+            {
+                "trigger": "event",
+                "event_type": event_type,
+                "event_data": {"entity_id": "light.from_the_remote"},
+            }
+        ]
+    }
+    return {"sequence": [wait, *steps]}
+
+
+async def test_a_custom_event_payload_is_no_unknown_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity in somebody's own event waited for is not reported.
+
+    Home Assistant's own list takes it from any event trigger, also one
+    waited for in a step: that is the premise, so it is checked here too.
+    """
+    assert await async_setup_component(
+        hass, "script", {"script": {"remote": _waiting_for("my_remote_pressed")}}
+    )
+    await hass.async_block_till_done()
+    entity = hass.data["script"].get_entity("script.remote")
+    assert "light.from_the_remote" in extract_referenced_entities_from_script(entity)
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
+
+
+async def test_a_custom_event_payload_named_elsewhere_still_counts(
+    hass: HomeAssistant,
+) -> None:
+    """Test an entity in the payload that is also used for real is reported."""
+    scripts = {
+        "remote": _waiting_for(
+            "my_remote_pressed",
+            {
+                "action": "light.turn_on",
+                "target": {"entity_id": "light.from_the_remote"},
+            },
+        )
+    }
+
+    assert await _unknown_in_script(hass, scripts, "remote") == {
+        "light.from_the_remote"
+    }
+
+
+async def test_an_integration_event_payload_is_still_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity in an integration's own event still is a reference."""
+    scripts = {"remote": _waiting_for("timer.finished")}
+
+    assert await _unknown_in_script(hass, scripts, "remote") == {
+        "light.from_the_remote"
+    }
