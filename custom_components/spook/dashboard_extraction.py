@@ -464,3 +464,43 @@ def extract_actions_from_dashboard_node(node: Any) -> set[str]:
     actions: set[str] = set()
     _walk_actions(node, actions)
     return actions
+
+
+# A navigate action sends the browser to its `navigation_path`. Read off the
+# action itself, like the actions above, so `tap_action`, `hold_action` and
+# whatever a custom card calls the same shape are all covered.
+_NAVIGATE_ACTION = "navigate"
+_NAVIGATION_PATH_KEY = "navigation_path"
+
+# The area card still takes a `navigation_path` of its own, from before it had
+# a tap action. The frontend only turns it into one when the card has no
+# `tap_action`, so one that does never uses it.
+_AREA_CARD_TYPE = "area"
+
+
+def _walk_navigation(node: Any, paths: set[str]) -> None:
+    """Recursively collect where a configuration node navigates to."""
+    if isinstance(node, list):
+        for item in node:
+            _walk_navigation(item, paths)
+        return
+
+    if not isinstance(node, dict):
+        return
+
+    navigates = node.get("action") == _NAVIGATE_ACTION or (
+        node.get("type") == _AREA_CARD_TYPE
+        and node.get("tap_action") in _JAVASCRIPT_FALSY
+    )
+    if navigates and isinstance(path := node.get(_NAVIGATION_PATH_KEY), str):
+        paths.add(path)
+
+    for child in _worth_descending_into(node):
+        _walk_navigation(child, paths)
+
+
+def extract_navigation_paths_from_dashboard_node(node: Any) -> set[str]:
+    """Return the paths navigated to anywhere in a dashboard node."""
+    paths: set[str] = set()
+    _walk_navigation(node, paths)
+    return paths
