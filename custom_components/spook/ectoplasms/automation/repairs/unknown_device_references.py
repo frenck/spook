@@ -92,7 +92,7 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
                     entity.raw_config.get("triggers")
                 )
             )
-            # Devices referenced via device_entities() in templates.
+            # Devices referenced through the device functions in templates.
             device_ids.update(extract_device_ids_from_config(entity.raw_config))
             # A disabled step does nothing, so what only it names is left out.
             device_ids -= only_in_disabled_steps(

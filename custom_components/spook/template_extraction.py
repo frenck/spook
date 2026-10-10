@@ -21,6 +21,7 @@ from .entity_filtering import (
     async_drop_existing_action_names,
     async_get_all_entity_ids,
     async_get_all_services,
+    is_device_id_shaped,
     split_comma_separated_entity_ids,
 )
 
@@ -116,6 +117,21 @@ JINJA_COMMENT_PATTERN = re.compile(r"\{#.*?#\}", re.DOTALL)
 _DEVICE_ENTITIES_PATTERN = re.compile(
     r"device_entities\s*\(\s*['\"]([^'\"]+)['\"]",
     re.IGNORECASE,
+)
+
+# ``device_attr``, ``is_device_attr`` and ``device_name`` take a device ID or
+# an entity ID, called directly, as a filter or (``is_device_attr``) as a
+# test. An entity ID there is an entity reference, and anything else they
+# quietly turn into nothing, so only a literal shaped like a registry ID is
+# taken as a device.
+_DEVICE_LOOKUP_PATTERNS = (
+    re.compile(
+        r"(?<![\w.])(?:is_)?device_(?:attr|name)\s*\(\s*['\"]([^'\"]+)['\"]",
+    ),
+    re.compile(
+        r"['\"]([^'\"]+)['\"]\s*(?:\|\s*device_(?:attr|name)"
+        r"|is\s+(?:not\s+)?is_device_attr)\b",
+    ),
 )
 
 
@@ -1244,13 +1260,21 @@ def extract_state_pairs_from_template(
 
 @lru_cache(maxsize=1024)
 def _extract_device_ids_from_template(template_str: str) -> frozenset[str]:
-    """Extract device IDs referenced via ``device_entities`` in a template."""
+    """Extract device IDs referenced through the device functions in a template."""
     template_without_comments = _strip_jinja_comments(template_str)
-    return frozenset(_DEVICE_ENTITIES_PATTERN.findall(template_without_comments))
+    device_ids = set(_DEVICE_ENTITIES_PATTERN.findall(template_without_comments))
+    for pattern in _DEVICE_LOOKUP_PATTERNS:
+        device_ids.update(
+            found
+            for found in pattern.findall(template_without_comments)
+            if is_device_id_shaped(found)
+        )
+
+    return frozenset(device_ids)
 
 
 def extract_device_ids_from_config(config: Any) -> set[str]:
-    """Extract device IDs referenced via ``device_entities`` in templates."""
+    """Extract device IDs referenced through the device functions in templates."""
     device_ids: set[str] = set()
     for template_str in extract_template_strings_from_config(config):
         device_ids.update(_extract_device_ids_from_template(template_str))

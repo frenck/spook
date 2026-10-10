@@ -47,7 +47,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         # references nested in some step types, like repeat sequences.
         if raw_config := getattr(entity, "raw_config", None):
             device_ids.update(extract_targets_from_config(raw_config).device_ids)
-            # Devices referenced via device_entities() in templates.
+            # Devices referenced through the device functions in templates.
             device_ids.update(extract_device_ids_from_config(raw_config))
             # A disabled step does nothing, so what only it names is left out.
             device_ids -= only_in_disabled_steps(
