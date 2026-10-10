@@ -180,6 +180,12 @@ def _strip_jinja_comments(template_str: str) -> str:
     return JINJA_COMMENT_PATTERN.sub("", template_str)
 
 
+# What glues a string to the one next to it in Jinja: `~`, `+` on two
+# strings, and nothing at all between two literals, which Jinja joins into
+# one. `'sensor.room' + suffix` is the start of an entity ID, not one.
+_GLUE = ("~", "+", "'", '"')
+
+
 def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> bool:
     """Return if a quoted entity ID literal is part of a concatenated string."""
     groups = match.groups()
@@ -195,7 +201,7 @@ def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> 
 
     before_literal = before_entity[:-1].rstrip()
     after_literal = after_entity[1:].lstrip()
-    return before_literal.endswith("~") or after_literal.startswith("~")
+    return before_literal.endswith(_GLUE) or after_literal.startswith(_GLUE)
 
 
 def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:

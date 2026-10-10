@@ -1334,3 +1334,37 @@ async def test_a_payload_home_assistant_fires_about_an_entity_is_reported(
     await repair._async_setup_inspection()
 
     assert await repair._async_compute_unknown_references(entity) == {"light.gone"}
+
+
+async def test_a_literal_glued_to_more_with_plus_is_no_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test `'sensor.room' + suffix` is the start of an entity ID, not one.
+
+    Jinja glues two strings with `+` as well as with `~`. The automation
+    reads `sensor.room_bedroom_temperature`, never `sensor.room`.
+    """
+    hass.states.async_set("sensor.room_bedroom_temperature", "21")
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Report",
+            "triggers": [{"trigger": "homeassistant", "event": "start"}],
+            "actions": [
+                {
+                    "action": "notify.notify",
+                    "data": {
+                        "message": (
+                            "{% set suffix = '_bedroom_temperature' %}"
+                            "{{ states('sensor.room' + suffix) }}"
+                        )
+                    },
+                }
+            ],
+        },
+    )
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()

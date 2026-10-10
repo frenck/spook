@@ -201,6 +201,16 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
             {"light.kitchen"},
         ),
         ("{{ 'light.' ~ room }}", set()),
+        # Glued to more with `+`, or to a literal right next to it.
+        ("{{ states('sensor.room' + suffix) }}", set()),
+        ("{{ states(prefix + 'sensor.room') }}", set()),
+        ("{{ states('sensor.room' '_bedroom') }}", set()),
+        # Adding up two lookups is no gluing.
+        (
+            "{{ states('sensor.a') | float + states('sensor.b') | float }}",
+            {"sensor.a", "sensor.b"},
+        ),
+        ("{{ ['light.a'] + ['light.b'] }}", {"light.a", "light.b"}),
         ("{{ states('unknown_domain.foo') }}", set()),
         ("{{ states('light.') }}", set()),
         ("{{ 'light.turn_on' }}", set()),
