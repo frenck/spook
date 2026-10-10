@@ -9,10 +9,7 @@ from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
-from homeassistant.components.automation import (
-    CONF_STOP_ACTIONS,
-    DOMAIN as AUTOMATION_DOMAIN,
-)
+from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     EVENT_HOMEASSISTANT_STARTED,
@@ -41,6 +38,11 @@ if TYPE_CHECKING:
 
     from homeassistant.core import CALLBACK_TYPE, Context, Event, HomeAssistant
     from homeassistant.helpers.event import EventStateChangedData
+
+# The field of `automation.turn_off` that keeps running actions running.
+# Spelled out rather than imported: it is part of the action, and Home
+# Assistant moves the constant between its own modules. #1875.
+CONF_STOP_ACTIONS = "stop_actions"
 
 DATA_TIMED_STATES: HassKey[TimedStates] = HassKey("spook_timed_states")
 
