@@ -354,6 +354,12 @@ def test_state_pairs_in_templates(
         ("{{ states('light.kitchen') == 'On'[0] }}", set()),
         ("{{ states('light.kitchen') is string == 'On' }}", set()),
         ("{{ x is not states('light.kitchen') == 'On' }}", set()),
+        # After a `|` or an `is`, the dotted name is a filter or test name.
+        ("{{ 'x' | states.light.kitchen.state == 'On' }}", set()),
+        ("{{ 'On' == 'x' | states.light.kitchen.state }}", set()),
+        ("{{ 'x' is states.light.kitchen.state == 'On' }}", set()),
+        ("{{ 'x' is not states.light.kitchen.state == 'On' }}", set()),
+        ("{{ x is defined and states.light.kitchen.state == 'On' }}", PAIR),
         # Chained, or another comparison right next to it.
         ("{{ states('light.kitchen') == 'On' == x }}", set()),
         ("{{ x == 'On' == states('light.kitchen') }}", set()),
