@@ -63,7 +63,7 @@ A trigger waiting on an attribute that never shows up loads fine and never fires
 
 Many attributes only show up some of the time: a media player that is off drops most of its own, and integrations add their own that come and go. So an attribute is only reported when Spook cannot find it anywhere: not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`. An attribute or entity that is only worked out while running, from a variable for example, is not checked.
 
-Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks whenever automations, scripts or entities change, and once a day.
+Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks again once a reload of scripts is done, when a script is added or removed, when the entity registry changes, when an integration loads or its configuration changes, and once a day. An attribute that newly shows up on an entity is picked up the next time it looks.
 
 To resolve the raised issue, edit the script and use an attribute the entity has. Spook will automatically remove the repair issue once the issue is fixed.
 

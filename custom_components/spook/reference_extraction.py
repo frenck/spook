@@ -369,13 +369,31 @@ def _walk_attribute_references(
         _walk_attribute_references(value, found, followed)
 
 
+# Keys whose text Home Assistant shows but never renders. A description with
+# an example template in it is documentation, not a lookup.
+_NEVER_RENDERED_KEYS = frozenset({"alias", "description", "fields"})
+
+
+def _without_never_rendered(config: Any) -> Any:
+    """Return the configuration without the parts that are never rendered."""
+    if isinstance(config, dict):
+        return {
+            key: _without_never_rendered(value)
+            for key, value in config.items()
+            if key not in _NEVER_RENDERED_KEYS
+        }
+    if isinstance(config, list):
+        return [_without_never_rendered(item) for item in config]
+    return config
+
+
 def extract_attribute_references_from_config(config: Any) -> AttributeReferences:
     """Return the attributes a raw configuration names, and of which entities.
 
     The `attribute:` of every state and numeric state trigger and condition,
     wherever it nests (`and`, `or`, `not`, `choose`, `if`, `repeat`,
     `wait_for_trigger`, condition steps), and the literal pairs in every
-    template. Each entity of a list makes a pair of its own. Spook's own
+    template that is rendered. Each entity of a list makes a pair of its own. Spook's own
     state trigger is handed back as it is, with the attribute it follows.
 
     Disabled steps, triggers and conditions are left out: they do nothing,
@@ -390,7 +408,9 @@ def extract_attribute_references_from_config(config: Any) -> AttributeReferences
     followed: list[tuple[dict[str, Any], str]] = []
     _walk_attribute_references(pruned, found, followed)
 
-    for template in extract_template_strings_from_config(pruned):
+    for template in extract_template_strings_from_config(
+        _without_never_rendered(pruned)
+    ):
         found.update(extract_attribute_pairs_from_template(template))
 
     return AttributeReferences(pairs=frozenset(found), followed=tuple(followed))

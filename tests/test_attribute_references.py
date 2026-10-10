@@ -236,6 +236,30 @@ def test_every_entity_of_a_list_is_a_pair() -> None:
             },
             id="event data",
         ),
+        pytest.param(
+            {
+                "alias": "{{ state_attr('light.kitchen', 'Brightness') }}",
+                "description": "Uses {{ state_attr('light.kitchen', 'Brightness') }}",
+                "actions": [
+                    {
+                        "alias": "{{ state_attr('light.kitchen', 'Brightness') }}",
+                        "delay": 1,
+                    }
+                ],
+            },
+            id="names and descriptions",
+        ),
+        pytest.param(
+            {
+                "fields": {
+                    "level": {
+                        "example": "{{ state_attr('light.kitchen', 'Brightness') }}"
+                    }
+                },
+                "sequence": [],
+            },
+            id="script fields",
+        ),
     ],
 )
 def test_attribute_references_left_alone(config: dict[str, Any]) -> None:
