@@ -84,6 +84,25 @@ To resolve the raised issue, edit the dashboard and remove or replace the action
 - An action that is a template, like the JavaScript templates of button-card, is not checked. What it ends up performing cannot be known without running it.
   :::
 
+### Unknown views
+
+Dashboards are inspected for where they navigate to: a tap, hold or double tap action set to navigate, the navigation path of an area card, and the back button of a subview. When that is a view of a dashboard that does not have it, Spook raises a repair issue naming the dashboard that navigates there and the paths that lead nowhere.
+
+The frontend does not tell you when a view is missing. It opens the first view of that dashboard instead, with the address still showing the view you asked for. This usually happens when a view was renamed, moved to another dashboard, or removed.
+
+A view is found by its path, or by its number counting from 0, the same way the frontend finds it. So `/lovelace/kitchen` needs a view with the path `kitchen`, and `/lovelace/2` needs a third view, or one with the path `2`.
+
+To resolve the raised issue, edit the dashboard and point these to a view that exists. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only a path to a view of a dashboard you made in the UI is checked. A YAML dashboard can pull its views in from other files, and the views of a dashboard run by a strategy, like the areas dashboard, are only made when it opens. Spook cannot see all of those views, so it does not judge them.
+- Paths to anything that is not a dashboard, like `/config`, `/history` or an add-on, are not checked.
+- A relative path, or a `#` on its own like the pop-ups of Bubble Card, depends on where you are when you tap it, and is not checked. A `#` after a view is fine: the view it is on is checked.
+- A path that is a template, or uses a card's own variables, is not checked. Where it ends up cannot be known without running it.
+  :::
+
 ### Missing dashboard resources
 
 Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks the ones it can: a resource served from `/local/` or `/hacsfiles/` maps to a file on disk, so Spook can see whether that file is there. If it is not, it will raise a repair issue listing the resources in question.

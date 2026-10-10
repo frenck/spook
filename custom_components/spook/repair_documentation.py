@@ -37,6 +37,7 @@ REPAIR_DOCUMENTATION: Final = {
     "lovelace_unknown_area_references": "lovelace#unknown-referenced-areas",
     "lovelace_unknown_entity_references": "lovelace#unknown-referenced-entities",
     "lovelace_unknown_service_references": "lovelace#unknown-actions",
+    "lovelace_unknown_view_references": "lovelace#unknown-views",
     "min_max_unknown_sources": "homeassistant#unknown-min-max-helper-members",
     "notify_unknown_group_members": "notify#unknown-group-members",
     "orphaned_statistics": "recorder#orphaned-long-term-statistics",
