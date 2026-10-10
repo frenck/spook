@@ -206,7 +206,9 @@ def _walk(node: Any, entities: set[str]) -> None:
         entities.update(
             entity_id
             for entity_id in found
-            if entity_id.partition(".")[0] in KNOWN_DOMAINS
+            # Any case: one with capitals is still meant as that entity, and
+            # the dashboard repair reports how it is written.
+            if entity_id.partition(".")[0].lower() in KNOWN_DOMAINS
         )
         node = {
             key: value for key, value in node.items() if key not in _LOGBOOK_FILTER_KEYS

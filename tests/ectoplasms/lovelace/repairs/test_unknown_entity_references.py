@@ -763,3 +763,16 @@ async def test_capitals_on_something_that_is_no_entity_id_are_ignored(
     card = {"type": "tile", "entity": entity}
 
     assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+async def test_a_logbook_card_on_an_entity_with_capitals_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a logbook card filter keeps an entity written with capitals.
+
+    Its domain is a real one once lower cased, so it is no made-up ID, and
+    it is reported as written like on any other card.
+    """
+    card = {"type": "logbook", "target": {"entity_id": ["LIGHT.KITCHEN"]}}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"LIGHT.KITCHEN"}]
