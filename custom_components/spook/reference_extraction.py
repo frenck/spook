@@ -18,12 +18,18 @@ from dataclasses import dataclass, field
 import re
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.const import CONF_ENABLED, ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
-from homeassistant.core import callback
+from homeassistant.const import (
+    CONF_ENABLED,
+    ENTITY_MATCH_ALL,
+    ENTITY_MATCH_NONE,
+    MATCH_ALL,
+)
+from homeassistant.core import callback, valid_entity_id
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .template_extraction import (
     extract_attribute_pairs_from_template,
+    extract_state_pairs_from_template,
     extract_template_strings_from_config,
     is_template_string,
 )
@@ -293,14 +299,14 @@ def _literal_entity_ids(value: Any) -> list[str]:
 
 
 @dataclass(frozen=True, slots=True)
-class AttributeReferences:
-    """The attributes a configuration names, and of which entities."""
+class NamedReferences:
+    """The attributes, or states, a configuration names, and of which entities."""
 
-    # Written out: the entity, or a registry ID, and the attribute.
+    # Written out: the entity, or a registry ID, and the attribute or state.
     pairs: frozenset[tuple[str, str]]
-    # Spook's own state triggers, and the attribute each follows. Which
-    # entities that is depends on the house as it is right now, so it is
-    # left to the caller to resolve, the way the trigger does.
+    # Spook's own state triggers, and the attribute or state each names.
+    # Which entities that is depends on the house as it is right now, so it
+    # is left to the caller to resolve, the way the trigger does.
     followed: tuple[tuple[dict[str, Any], str], ...]
 
 
@@ -403,7 +409,47 @@ def _without_never_rendered(config: Any) -> Any:
     return config
 
 
-def extract_attribute_references_from_config(config: Any) -> AttributeReferences:
+# Where a configuration names what its templates get to see. Each of them
+# is handed to every template as a variable, and a variable goes before
+# what Home Assistant offers under that name: `variables` of the whole
+# thing, of a trigger, or of a step, the variables only the triggers see,
+# and what a step stores its response in.
+_VARIABLE_BLOCKS = frozenset({"trigger_variables", "variables"})
+_RESPONSE_VARIABLE = "response_variable"
+
+
+def names_given_to_templates(config: Any) -> frozenset[str]:
+    """Return every name a configuration gives its templates.
+
+    Its variables wherever they are set, what steps store a response in,
+    and for a script the fields it is called with. Taken from all of it,
+    disabled steps too and wherever it nests: a name taken for a variable
+    that is not one only means a lookup that is not checked.
+    """
+    names: set[str] = set()
+    if isinstance(config, dict) and isinstance(fields := config.get("fields"), dict):
+        names.update(name for name in fields if isinstance(name, str))
+
+    def _walk(node: Any) -> None:
+        if isinstance(node, list):
+            for item in node:
+                _walk(item)
+            return
+        if not isinstance(node, dict):
+            return
+
+        for key, value in node.items():
+            if key in _VARIABLE_BLOCKS and isinstance(value, dict):
+                names.update(name for name in value if isinstance(name, str))
+            elif key == _RESPONSE_VARIABLE and isinstance(value, str):
+                names.add(value)
+            _walk(value)
+
+    _walk(config)
+    return frozenset(names)
+
+
+def extract_attribute_references_from_config(config: Any) -> NamedReferences:
     """Return the attributes a raw configuration names, and of which entities.
 
     The `attribute:` of every state and numeric state trigger and condition,
@@ -417,8 +463,12 @@ def extract_attribute_references_from_config(config: Any) -> AttributeReferences
 
     An entity can be a registry ID, which is what the editor writes in some
     places; resolving those is up to the caller, which has the registry.
+
+    A template is not read for a lookup whose name the configuration gives
+    a meaning of its own, like a variable called `states`.
     """
     pruned = without_disabled_steps(config)
+    shadowed = names_given_to_templates(config)
 
     found: set[tuple[str, str]] = set()
     followed: list[tuple[dict[str, Any], str]] = []
@@ -427,9 +477,137 @@ def extract_attribute_references_from_config(config: Any) -> AttributeReferences
     for template in extract_template_strings_from_config(
         _without_never_rendered(pruned)
     ):
-        found.update(extract_attribute_pairs_from_template(template))
+        found.update(extract_attribute_pairs_from_template(template, shadowed))
 
-    return AttributeReferences(pairs=frozenset(found), followed=tuple(followed))
+    return NamedReferences(pairs=frozenset(found), followed=tuple(followed))
+
+
+# Where a state trigger, and Spook's own, names the states it waits for.
+_STATE_TRIGGER_KEYS = ("from", "not_from", "to", "not_to")
+
+
+def _literal_states(value: Any, *, in_condition: bool = False) -> list[str]:
+    """Return the states written out in a config value, one or a list.
+
+    Only text: Home Assistant refuses anything else, like a `to: on` that
+    YAML read as true, so such a trigger never loads to wait for anything.
+    `*` is any state. A state condition compares a state shaped like an
+    input helper's entity ID with that helper's state instead, which is not
+    something written out. Core spells that as `input_` and a few domains;
+    any of them is left alone here, so a new one cannot slip through.
+    """
+    values = value if isinstance(value, list) else [value]
+    return [
+        item
+        for item in values
+        if isinstance(item, str)
+        and item
+        and item != MATCH_ALL
+        and not is_template_string(item)
+        and not (in_condition and valid_entity_id(item) and item.startswith("input_"))
+    ]
+
+
+def _state_reference(config: dict[str, Any]) -> tuple[Any, list[str]] | None:
+    """Return the entity IDs and states a state trigger or condition names.
+
+    Only when it is about the state itself: with an `attribute:`, the values
+    are that attribute's, which is another check.
+    """
+    if "attribute" in config:
+        return None
+
+    if config.get("condition") == "state":
+        return config.get("entity_id"), _literal_states(
+            config.get("state"), in_condition=True
+        )
+
+    trigger = config.get("trigger") or config.get("platform")
+    if trigger == "state" and "condition" not in config:
+        return config.get("entity_id"), [
+            state
+            for key in _STATE_TRIGGER_KEYS
+            for state in _literal_states(config.get(key))
+        ]
+
+    return None
+
+
+def _followed_states(config: dict[str, Any]) -> list[str]:
+    """Return the states a Spook state trigger names, if it is one.
+
+    Following an attribute, its `to` and `from` are that attribute's values.
+    """
+    trigger = config.get("trigger") or config.get("platform")
+    if trigger != _SPOOK_STATE_CHANGED or "condition" in config:
+        return []
+
+    options = config.get("options")
+    if not isinstance(options, dict) or "attribute" in options:
+        return []
+    return [
+        state
+        for key in _STATE_TRIGGER_KEYS
+        for state in _literal_states(options.get(key))
+    ]
+
+
+def _walk_state_references(
+    config: Any,
+    found: set[tuple[str, str]],
+    followed: list[tuple[dict[str, Any], str]],
+) -> None:
+    """Recursively collect the states triggers and conditions wait for."""
+    if isinstance(config, list):
+        for item in config:
+            _walk_state_references(item, found, followed)
+        return
+
+    if not isinstance(config, dict):
+        return
+
+    if (reference := _state_reference(config)) is not None:
+        entity_ids, states = reference
+        found.update(
+            (entity_id, state)
+            for entity_id in _literal_entity_ids(entity_ids)
+            for state in states
+        )
+    else:
+        followed.extend((config, state) for state in _followed_states(config))
+
+    for key, value in config.items():
+        if key in _PLATFORM_KEY_EXCLUDED_KEYS:
+            continue
+        _walk_state_references(value, found, followed)
+
+
+def extract_state_references_from_config(config: Any) -> NamedReferences:
+    """Return the states a raw configuration names, and of which entities.
+
+    The `to`, `from`, `not_to` and `not_from` of every state trigger and the
+    `state` of every state condition, wherever they nest, as long as they
+    are about the state rather than an attribute. Spook's own state trigger
+    is handed back as it is, with each state it names. In templates, only a
+    literal `is_state`.
+
+    Disabled steps, triggers and conditions are left out, and an entity can
+    be a registry ID, and a name the configuration gives a meaning of its
+    own is no lookup, all like the attribute references.
+    """
+    pruned = without_disabled_steps(config)
+    shadowed = names_given_to_templates(config)
+
+    found: set[tuple[str, str]] = set()
+    followed: list[tuple[dict[str, Any], str]] = []
+    _walk_state_references(pruned, found, followed)
+
+    for template in extract_template_strings_from_config(
+        _without_never_rendered(pruned)
+    ):
+        found.update(extract_state_pairs_from_template(template, shadowed))
+
+    return NamedReferences(pairs=frozenset(found), followed=tuple(followed))
 
 
 # Only automations and scripts carry a raw configuration worth reading here.

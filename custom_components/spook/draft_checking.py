@@ -32,6 +32,7 @@ from .ectoplasms.automation.repairs import (
     unknown_floor_references as automation_floors,
     unknown_label_references as automation_labels,
     unknown_service_references as automation_services,
+    unknown_state_references as automation_states,
     unknown_trigger_references as automation_triggers,
 )
 from .ectoplasms.script.repairs import (
@@ -43,6 +44,7 @@ from .ectoplasms.script.repairs import (
     unknown_floor_references as script_floors,
     unknown_label_references as script_labels,
     unknown_service_references as script_services,
+    unknown_state_references as script_states,
     unknown_trigger_references as script_triggers,
 )
 from .entity_filtering import (
@@ -54,7 +56,7 @@ from .entity_filtering import (
     async_get_rename_suggestion_cache,
 )
 from .entity_suggestions import async_warm_rename_suggestions
-from .repairs import AbstractSpookUnknownAttributesRepair
+from .repairs import AbstractSpookUnknownEntityNamesRepair
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -81,6 +83,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         automation_floors,
         automation_labels,
         automation_services,
+        automation_states,
         automation_triggers,
     ),
     script.DOMAIN: (
@@ -92,6 +95,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         script_floors,
         script_labels,
         script_services,
+        script_states,
         script_triggers,
     ),
 }
@@ -155,11 +159,11 @@ async def _async_check_with_repairs(
         repair: AbstractSpookEntityComponentUnknownReferencesRepair = (
             module.SpookRepair(hass)
         )
-        # The attribute repairs work out a whole round in one go, from the
-        # entities a round goes by, and a draft is not one of them.
-        if isinstance(repair, AbstractSpookUnknownAttributesRepair):
-            if found_attributes := await repair.async_check_draft(draft):
-                unknown[repair.reference_label] = found_attributes
+        # The attribute and state repairs work out a whole round in one go,
+        # from the entities a round goes by, and a draft is not one of them.
+        if isinstance(repair, AbstractSpookUnknownEntityNamesRepair):
+            if found_names := await repair.async_check_draft(draft):
+                unknown[repair.reference_label] = found_names
             continue
 
         # The two hooks a repair runs on every entity in a round, in the

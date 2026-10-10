@@ -891,6 +891,10 @@
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
       "title": "Unknown actions used in: {automation}"
     },
+    "automation_unknown_state_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation waits for, or checks, the following states, which their entities are never in. Not as something that kind of entity can be, not among the options the entity offers, and not anywhere in what the recorder remembers of them:\n\n{states}\n\n\n\nA trigger waiting for a state that never comes never fires, a condition checking for one never passes, and neither tells you so. States are case-sensitive: `On` is not `on`. To fix this, [edit the automation]({edit}) and use a state the entity can be in.\n\nSpook 👻 Your homie.",
+      "title": "Unknown states used in: {automation}"
+    },
     "automation_unknown_trigger_references": {
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the automation]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",
       "title": "Unknown triggers used in: {automation}"
@@ -1156,6 +1160,10 @@
     "script_unknown_service_references": {
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
       "title": "Unknown actions used in: {script}"
+    },
+    "script_unknown_state_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script waits for, or checks, the following states, which their entities are never in. Not as something that kind of entity can be, not among the options the entity offers, and not anywhere in what the recorder remembers of them:\n\n{states}\n\n\n\nA trigger waiting for a state that never comes never fires, a condition checking for one never passes, and neither tells you so. States are case-sensitive: `On` is not `on`. To fix this, [edit the script]({edit}) and use a state the entity can be in.\n\nSpook 👻 Your homie.",
+      "title": "Unknown states used in: {script}"
     },
     "script_unknown_trigger_references": {
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the script]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",

@@ -44,7 +44,7 @@ from homeassistant.helpers.event import async_call_later, async_track_time_inter
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
-from .attribute_checking import UnknownAttribute, async_unknown_attributes
+from .attribute_checking import async_unknown_attributes
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
@@ -69,12 +69,14 @@ from .helper_sources import (
     async_unknown_min_max_members,
 )
 from .reference_extraction import (
-    AttributeReferences,
+    NamedReferences,
     async_collect_mentioned_strings,
     extract_attribute_references_from_config,
+    extract_state_references_from_config,
 )
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
 from .repair_documentation import repair_documentation_url
+from .state_checking import async_unknown_states
 from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
@@ -683,36 +685,47 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
             )
 
 
-def _finding_reference(finding: UnknownAttribute) -> str:
-    """Return how an unknown attribute is written down in an issue's findings."""
-    return f"{finding.entity_id}:{finding.attribute}"
+def _finding_reference(entity_id: str, name: str) -> str:
+    """Return how an unknown attribute or state is written down in an issue."""
+    return f"{entity_id}:{name}"
 
 
-class AbstractSpookUnknownAttributesRepair(
+@dataclass(frozen=True, slots=True)
+class _UnknownName:
+    """Something an entity never has, named in an automation or script."""
+
+    entity_id: str
+    name: str
+    suggestion: str | None
+
+
+class AbstractSpookUnknownEntityNamesRepair(
     AbstractSpookEntityComponentUnknownReferencesRepair, ABC
 ):
-    """Base for repairs about attributes an entity never had.
+    """Base for repairs about what an entity never has: an attribute, a state.
 
-    A trigger or condition waiting on such an attribute loads fine and never
-    fires, and says nothing about it. Which attributes an entity has is only
-    known at runtime, and the last place to look is the recorder, so this
-    does not look right at the start, when the recorder has its hands full.
-    After that it looks whenever one of its own entities is added or removed,
-    which is how a reload that changed something ends, on the usual events,
-    and once a day for what changes with time alone: history being written.
+    A trigger or condition waiting on one loads fine and never fires, and
+    says nothing about it. What an entity has is only known at runtime, and
+    the last place to look is the recorder, so this does not look right at
+    the start, when the recorder has its hands full. After that it looks
+    whenever one of its own entities is added or removed, which is how a
+    reload that changed something ends, on the usual events, and once a day
+    for what changes with time alone: history being written.
 
     The whole round's references are worked out up front, so the recorder is
     asked once per round rather than once per automation.
     """
 
-    reference_label = "attributes"
     first_inspection_delay = timedelta(minutes=10)
     inspect_interval = timedelta(days=1)
 
+    #: How one finding reads in the issue, with ``{name}`` and ``{entity_id}``.
+    finding_line: str
+
     _unknown_by_owner: dict[str, set[str]]
-    _unknown_by_reference: dict[str, UnknownAttribute]
+    _unknown_by_reference: dict[str, _UnknownName]
     _inspected_configs: dict[str, Any]
-    _named: dict[str, tuple[Any, AttributeReferences]]
+    _named: dict[str, tuple[Any, NamedReferences]]
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
@@ -721,6 +734,14 @@ class AbstractSpookUnknownAttributesRepair(
         self._inspected_configs = {}
         self._unknown_by_owner = {}
         self._unknown_by_reference = {}
+
+    @abstractmethod
+    def _references_in(self, config: dict[str, Any]) -> NamedReferences:
+        """Return what a configuration names, and of which entities."""
+
+    @abstractmethod
+    async def _async_unknown(self, pairs: set[tuple[str, str]]) -> set[_UnknownName]:
+        """Return the (entity ID, name) pairs the entity never has."""
 
     async def async_activate(self) -> None:
         """Look again once one of its own entities was added or removed.
@@ -754,14 +775,14 @@ class AbstractSpookUnknownAttributesRepair(
         )
 
     def _named_in(self, entity: Any, config: dict[str, Any]) -> set[tuple[str, str]]:
-        """Return the (entity ID, attribute) pairs a configuration names.
+        """Return the (entity ID, name) pairs a configuration names.
 
         Read once per configuration, remembered against the configuration
         itself: a reload hands over a new one.
         """
         named = self._named.get(entity.entity_id)
         if named is None or named[0] is not config:
-            named = (config, extract_attribute_references_from_config(config))
+            named = (config, self._references_in(config))
         self._named[entity.entity_id] = named
         references = named[1]
 
@@ -770,15 +791,15 @@ class AbstractSpookUnknownAttributesRepair(
         # trigger watches moves with the registry. That one is asked of the
         # trigger itself, so it is exactly what the trigger would watch.
         pairs = {
-            (entity_id, attribute)
-            for reference, attribute in references.pairs
+            (entity_id, name)
+            for reference, name in references.pairs
             if (
                 entity_id := er.async_resolve_entity_id(self.entity_registry, reference)
             )
         }
-        for trigger_config, attribute in references.followed:
+        for trigger_config, name in references.followed:
             pairs.update(
-                (entity_id, attribute)
+                (entity_id, name)
                 for entity_id in async_watched_entity_ids(self.hass, trigger_config)
             )
         return pairs
@@ -792,7 +813,7 @@ class AbstractSpookUnknownAttributesRepair(
         return self._should_inspect_entity(entity)
 
     async def _async_setup_inspection(self) -> None:
-        """Work out every unknown attribute of the round, in one go."""
+        """Work out everything unknown of the round, in one go."""
         entities = list(self.hass.data[DATA_INSTANCES][self.domain].entities)
 
         configs: dict[str, Any] = {}
@@ -816,28 +837,24 @@ class AbstractSpookUnknownAttributesRepair(
             if entity_id in named
         }
 
-        unknown = await async_unknown_attributes(
-            self.hass, {pair for pairs in named.values() for pair in pairs}
+        unknown = await self._async_unknown(
+            {pair for pairs in named.values() for pair in pairs}
         )
-        by_pair = {
-            (finding.entity_id, finding.attribute): finding for finding in unknown
-        }
+        by_pair = {(finding.entity_id, finding.name): finding for finding in unknown}
 
         self._inspected_configs = configs
         self._unknown_by_reference = {
-            _finding_reference(finding): finding for finding in unknown
+            _finding_reference(*pair): finding for pair, finding in by_pair.items()
         }
         self._unknown_by_owner = {
-            owner: {
-                _finding_reference(by_pair[pair]) for pair in pairs & by_pair.keys()
-            }
+            owner: {_finding_reference(*pair) for pair in pairs & by_pair.keys()}
             for owner, pairs in named.items()
         }
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
-        """Return the unknown attributes this entity names.
+        """Return what this entity names that its entities never have.
 
-        Only for the very configuration they were worked out from, on the
+        Only for the very configuration it was worked out from, on the
         entity that is there now. One that was reloaded while the recorder
         was being asked, or while this round went by, may say something else
         entirely, and the next round looks at that.
@@ -855,31 +872,73 @@ class AbstractSpookUnknownAttributesRepair(
         return self._unknown_by_owner.get(entity.entity_id, set())
 
     async def async_check_draft(self, draft: Any) -> list[str]:
-        """Return the unknown attributes a draft names, each with its best guess.
+        """Return what a draft names that is unknown, each with its best guess.
 
         A draft is in no round: it is not among the entities a round goes by,
         so it is asked about on its own, with the same readers.
         """
-        unknown = await async_unknown_attributes(
-            self.hass, self._named_in(draft, draft.raw_config)
-        )
-        return sorted(
-            f"{_finding_reference(finding)} (did you mean {finding.suggestion}?)"
-            if finding.suggestion is not None
-            else _finding_reference(finding)
-            for finding in unknown
-        )
+        unknown = await self._async_unknown(self._named_in(draft, draft.raw_config))
+
+        found = []
+        for finding in unknown:
+            line = _finding_reference(finding.entity_id, finding.name)
+            if finding.suggestion is not None:
+                line += f" (did you mean {finding.suggestion}?)"
+            found.append(line)
+        return sorted(found)
 
     def _format_references(self, references: list[str]) -> str:
-        """Return the list of attributes, each with its entity and best guess."""
+        """Return the list of findings, each with its entity and best guess."""
         lines = []
         for reference in references:
             finding = self._unknown_by_reference[reference]
-            line = f"- `{finding.attribute}` of `{finding.entity_id}`"
+            line = self.finding_line.format(
+                name=finding.name, entity_id=finding.entity_id
+            )
             if finding.suggestion is not None:
                 line += f" (did you mean `{finding.suggestion}`?)"
             lines.append(line)
         return "\n".join(lines)
+
+
+class AbstractSpookUnknownAttributesRepair(AbstractSpookUnknownEntityNamesRepair, ABC):
+    """Base for repairs about attributes an entity never had."""
+
+    reference_label = "attributes"
+    finding_line = "- `{name}` of `{entity_id}`"
+
+    def _references_in(self, config: dict[str, Any]) -> NamedReferences:
+        """Return the attributes a configuration names, and of which entities."""
+        return extract_attribute_references_from_config(config)
+
+    async def _async_unknown(self, pairs: set[tuple[str, str]]) -> set[_UnknownName]:
+        """Return the (entity ID, attribute) pairs the entity never had."""
+        return {
+            _UnknownName(finding.entity_id, finding.attribute, finding.suggestion)
+            for finding in await async_unknown_attributes(self.hass, pairs)
+        }
+
+
+class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, ABC):
+    """Base for repairs about states an entity is never in.
+
+    Only for entities whose states are a fixed set; `state_checking` says
+    which those are.
+    """
+
+    reference_label = "states"
+    finding_line = "- `{name}` for `{entity_id}`"
+
+    def _references_in(self, config: dict[str, Any]) -> NamedReferences:
+        """Return the states a configuration names, and of which entities."""
+        return extract_state_references_from_config(config)
+
+    async def _async_unknown(self, pairs: set[tuple[str, str]]) -> set[_UnknownName]:
+        """Return the (entity ID, state) pairs the entity is never in."""
+        return {
+            _UnknownName(finding.entity_id, finding.state, finding.suggestion)
+            for finding in await async_unknown_states(self.hass, pairs)
+        }
 
 
 class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):
