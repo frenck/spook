@@ -339,8 +339,7 @@ def _is_not_an_entity_id(value: str) -> bool:
         not value.strip()
         or valid_entity_id(lower_cased)
         or lower_cased in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
-        or lower_cased.startswith(NEVER_AN_ENTITY_PREFIXES)
-        or value.startswith(IGNORED_ENTITY_DOMAINS)
+        or lower_cased.startswith((*NEVER_AN_ENTITY_PREFIXES, *IGNORED_ENTITY_DOMAINS))
         or value in _CARD_PLACEHOLDERS
         or is_pattern_reference(value)
         or any(mark in value for mark in _FILLED_IN_LATER)

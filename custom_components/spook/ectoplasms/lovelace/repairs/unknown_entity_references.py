@@ -78,6 +78,29 @@ async def _async_describe(
     return "\n".join(line for line in lines if line)
 
 
+def _first_view_with(
+    config: Any, unknown_entities: set[str], not_entity_ids: set[str]
+) -> int | str:
+    """Return the path of the first view holding something reported.
+
+    Each view is asked with the walk that reported it: the same malformed
+    value may sit on a custom card on an earlier view, which only the entity
+    walk reads, and that view would be the wrong one to open.
+    """
+    views = config.get("views") if isinstance(config, dict) else None
+    for view_index, view in enumerate(views if isinstance(views, list) else []):
+        if not isinstance(view, dict):
+            continue
+
+        if unknown_entities & extract_entities_from_dashboard_node(
+            view
+        ) or not_entity_ids & extract_not_entity_ids_from_dashboard_node(view):
+            return view.get("path") or view_index
+
+    # A strategy dashboard has no views stored; its views open from the first.
+    return 0
+
+
 class SpookRepair(AbstractSpookRepair):
     """Spook repair tries to find unknown referenced entity in dashboards."""
 
@@ -123,16 +146,8 @@ class SpookRepair(AbstractSpookRepair):
                 known_entity_ids=known_entity_ids,
             ) | _async_miscased_entity_ids(self.hass, extracted_entities)
             if unknown_entities or not_entity_ids:
-                # Get the view path of the first unknown entity (by view order).
-                # Both walks read the same fields today; should they ever
-                # drift apart, the first view beats a crashed inspection.
-                first_view_path = next(
-                    (
-                        path
-                        for entity_id, path in extracted_entities.items()
-                        if entity_id in unknown_entities or entity_id in not_entity_ids
-                    ),
-                    0,
+                first_view_path = _first_view_with(
+                    config, unknown_entities, not_entity_ids
                 )
                 title = "Overview"
                 if dashboard.config:

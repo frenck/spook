@@ -891,6 +891,49 @@ async def test_no_entity_id_in_a_view_badge_is_reported(
     assert reported == [{"sensor.outside.temperature", "sensor.inside temperature"}]
 
 
+async def test_the_edit_link_opens_the_view_with_the_core_card(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test the edit link skips a view where only a custom card has the value.
+
+    The entity walk reads the custom card too, so the first view it sees the
+    value on is not the one the issue is about.
+    """
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {
+            "views": [
+                {
+                    "path": "custom",
+                    "cards": [
+                        {
+                            "type": "custom:x-card",
+                            "entity": "cover.bedroom_blind.current_position",
+                        }
+                    ],
+                },
+                {"path": "home", "cards": [_FORUM_CARD]},
+            ]
+        }
+
+    edits: list[str] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        edits.append(kwargs["translation_placeholders"]["edit"])
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace", config={"title": "Overview"}, async_load=_loads
+        )
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert edits == ["/lovelace/home?edit=1"]
+
+
 async def test_the_same_value_on_a_custom_card_is_not_reported(
     repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -922,6 +965,7 @@ async def test_the_same_value_on_a_custom_card_is_not_reported(
         "",
         "   ",
         "group.living room",
+        "GROUP.living room",
     ],
 )
 async def test_what_the_dashboard_walk_lets_go_is_not_reported(
