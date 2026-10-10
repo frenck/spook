@@ -479,11 +479,14 @@ def without_never_rendered(config: Any) -> Any:
     """Return the configuration without the parts that are never rendered.
 
     Payloads are kept whole, whatever their keys are called: the data of an
-    action can have a `description` too, like a calendar event.
+    action can have a `description` too, like a calendar event. So are the
+    items a repeat goes over, which are rendered as a whole.
     """
     if isinstance(config, dict):
         return {
-            key: value if key in _PAYLOAD_KEYS else without_never_rendered(value)
+            key: value
+            if key in _PAYLOAD_KEYS or key == "for_each"
+            else without_never_rendered(value)
             for key, value in config.items()
             if key not in _NEVER_RENDERED_KEYS
         }

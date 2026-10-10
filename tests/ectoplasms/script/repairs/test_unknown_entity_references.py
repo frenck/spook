@@ -469,3 +469,29 @@ async def test_a_field_example_names_no_entity(hass: HomeAssistant) -> None:
     }
 
     assert await _unknown_in_script(hass, scripts, "announce") == set()
+
+
+async def test_repeat_items_are_rendered_whatever_their_keys(
+    hass: HomeAssistant,
+) -> None:
+    """Test the items a repeat goes over are read, also a `description` there.
+
+    Home Assistant renders each item as a whole, so it is no name or
+    description of the script, whatever its keys are called.
+    """
+    scripts = {
+        "rounds": {
+            "sequence": [
+                {
+                    "repeat": {
+                        "for_each": [
+                            {"description": "{{ states('sensor.repeat_ghost') }}"}
+                        ],
+                        "sequence": [{"delay": 0}],
+                    }
+                }
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "rounds") == {"sensor.repeat_ghost"}
