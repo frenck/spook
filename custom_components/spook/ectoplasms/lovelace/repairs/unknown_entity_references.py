@@ -109,4 +109,14 @@ class SpookRepair(AbstractSpookRepair):
                 view_path: int | str = view.get("path") or view_index
                 for entity_id in extract_entities_from_dashboard_node(view):
                     entities.setdefault(entity_id, view_path)
+
+        # A dashboard run by a strategy, like the areas dashboard, has no views
+        # stored at all: only the strategy and its options. The views it makes
+        # are opened from the first one.
+        if isinstance(config, dict) and isinstance(
+            strategy := config.get("strategy"), dict
+        ):
+            for entity_id in extract_entities_from_dashboard_node(strategy):
+                entities.setdefault(entity_id, 0)
+
         return entities

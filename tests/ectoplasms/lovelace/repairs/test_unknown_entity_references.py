@@ -334,3 +334,226 @@ async def test_the_default_dashboard_is_still_read_before_the_move(
     await repair.async_inspect()
 
     assert reported == [{"light.porch"}]
+
+
+def _dashboard(url_path: str, config: dict[str, Any]) -> SimpleNamespace:
+    """Return a stored dashboard with this config."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return config
+
+    return SimpleNamespace(
+        url_path=url_path, config={"title": url_path}, async_load=_loads
+    )
+
+
+async def test_areas_strategy_hides_and_orders_entities(
+    hass: HomeAssistant,
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the entities an areas dashboard hides or orders per area are checked.
+
+    The frontend stores the areas dashboard as its strategy alone, no views,
+    and keeps these under each area's `groups_options`, in `hidden` and
+    `order`. An entity removed since stays in those lists, and was never
+    reported.
+    """
+    hass.states.async_set("light.office_desk_lamp", "on")
+    captured: dict[str, Any] = {}
+
+    def async_create_issue(**kwargs: Any) -> None:
+        captured.update(kwargs)
+
+    repair._dashboards = {  # noqa: SLF001
+        "dashboard-areas": _dashboard(
+            "dashboard-areas",
+            {
+                "strategy": {
+                    "type": "areas",
+                    "areas_options": {
+                        "office": {
+                            "card_size": "small",
+                            "groups_options": {
+                                "lights": {
+                                    "hidden": ["light.office_night_light"],
+                                    "order": [
+                                        "light.office_ceiling",
+                                        "light.office_desk_lamp",
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert set(captured["references"]) == {
+        "light.office_night_light",
+        "light.office_ceiling",
+    }
+    assert captured["translation_placeholders"]["edit"] == ("/dashboard-areas/0?edit=1")
+
+
+async def test_hidden_and_order_mean_entities_only_in_groups_options(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test `hidden` and `order` are not read as entities anywhere else.
+
+    The areas and floors display hide and order areas and floors, an area's
+    own options hold no entity list outside its groups, and the same keys on
+    any other card are that card's business.
+    """
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        "dashboard-areas": _dashboard(
+            "dashboard-areas",
+            {
+                "strategy": {
+                    "type": "areas",
+                    "areas_display": {"hidden": ["light.garage"]},
+                    "floors_display": {"order": ["sensor.ground_floor"]},
+                    "areas_options": {"office": {"hidden": ["light.office_lamp"]}},
+                },
+            },
+        ),
+        "lovelace": _dashboard(
+            "lovelace",
+            {
+                "views": [
+                    {
+                        "cards": [
+                            {
+                                "type": "custom:some-card",
+                                "areas_options": {
+                                    "office": {
+                                        "groups_options": {
+                                            "lights": {"hidden": ["light.lamp"]},
+                                        },
+                                    },
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert not reported
+
+
+async def test_area_view_strategy_hides_and_orders_entities(
+    hass: HomeAssistant,
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the entities the view of a single area hides or orders are checked.
+
+    The `area` view strategy carries its `groups_options` directly, not keyed
+    by area like the areas dashboard does. An entity removed since stays in
+    those lists, and was never reported.
+    """
+    hass.states.async_set("light.office_desk_lamp", "on")
+    captured: dict[str, Any] = {}
+
+    def async_create_issue(**kwargs: Any) -> None:
+        captured.update(kwargs)
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard(
+            "lovelace",
+            {
+                "views": [
+                    {"path": "home", "cards": []},
+                    {
+                        "path": "office",
+                        "strategy": {
+                            "type": "area",
+                            "area": "office",
+                            "groups_options": {
+                                "lights": {
+                                    "hidden": ["light.office_night_light"],
+                                    "order": [
+                                        "light.office_ceiling",
+                                        "light.office_desk_lamp",
+                                    ],
+                                },
+                            },
+                        },
+                    },
+                ],
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert set(captured["references"]) == {
+        "light.office_night_light",
+        "light.office_ceiling",
+    }
+    assert captured["translation_placeholders"]["edit"] == "/lovelace/office?edit=1"
+
+
+async def test_groups_options_mean_entities_only_on_the_area_view_strategy(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test `groups_options` and its lists are not read anywhere else.
+
+    The area card says `type: area` as well, but `hidden` on it is not one
+    of these lists, and `groups_options` on any other card is that card's
+    business.
+    """
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard(
+            "lovelace",
+            {
+                "views": [
+                    {
+                        "strategy": {
+                            "type": "area",
+                            "area": "office",
+                            "hidden": ["light.office_lamp"],
+                        },
+                    },
+                    {
+                        "cards": [
+                            {
+                                "type": "custom:some-card",
+                                "groups_options": {
+                                    "lights": {"hidden": ["light.lamp"]},
+                                },
+                            },
+                        ],
+                    },
+                ],
+            },
+        ),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert not reported
