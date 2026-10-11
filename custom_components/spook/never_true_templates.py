@@ -48,8 +48,9 @@ class TemplateRole(StrEnum):
 
     # `helpers/script.py` `_async_step_wait_template`: first checked like a
     # condition, then watched by `async_track_template`, which takes what a
-    # trigger takes. A template without any Jinja is never watched, as it
-    # never changes, so for that one only the condition check counts.
+    # trigger takes, but only when its render changes from false to true. A
+    # template that always renders the same text never changes, so for that
+    # one only the condition check counts.
     WAIT = "wait"
 
 
@@ -260,6 +261,10 @@ def never_passes(hass: HomeAssistant, role: TemplateRole, template_str: str) -> 
         return False
 
     if (outputs := _combined(list(pieces))) is not None:
+        # A wait that can only ever print one thing never changes once it
+        # has been checked, so its watch never fires.
+        if role is TemplateRole.WAIT and len(outputs) == 1:
+            role = TemplateRole.CONDITION
         return all(_passes(hass, role, output) is False for output in outputs)
 
     if role is TemplateRole.CONDITION:

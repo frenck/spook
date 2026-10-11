@@ -312,6 +312,9 @@ async def test_a_trigger_without_jinja_that_reads_as_true_is_left_alone(
         # Without Jinja, a wait is only checked like a condition, once.
         ("on", {"on"}),
         (QUOTED, {QUOTED}),
+        # Jinja that always prints the same text never changes either.
+        ("{{ 'on' }}", {"{{ 'on' }}"}),
+        ("{{ 'true' }}", None),
         # With Jinja, a wait takes `on` once its template changes.
         (ON_OR_OFF, None),
         ("true", None),
