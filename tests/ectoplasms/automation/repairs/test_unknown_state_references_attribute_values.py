@@ -832,8 +832,49 @@ async def test_spook_trigger_yaml_boolean_is_no_slip(
     slip. Spook's trigger takes it as the text `False`, which is no slip in
     case of `off`.
     """
-    await _climate(hass, {"hvac_action": "idle"})
-    await _automation(hass, triggers=[_spook_trigger(to=[False])])
+    await _climate(hass, {"preset_modes": ["off", "eco"], "preset_mode": "eco"})
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_boolean_in_another_case_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `false` is reported against a mode `false`.
+
+    Spook's trigger makes the text `False` of it, which the mode `false`
+    never is. Shown the way it was written, without quotes.
+    """
+    await _climate(hass, {"preset_modes": ["false", "eco"], "preset_mode": "eco"})
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `preset_mode` of `climate.living_room`: `false` (did you mean `"false"`?)'
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_number_is_the_same_text(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `2` is fine against a fan mode `"2"`.
+
+    Spook's trigger makes the text `2` of it, exactly the mode.
+    """
+    await _climate(hass, {"fan_modes": ["1", "2"], "fan_mode": "1"})
+    await _automation(hass, triggers=[_spook_trigger(attribute="fan_mode", to=[2])])
 
     await SpookRepair(hass).async_inspect()
 

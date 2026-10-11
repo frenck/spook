@@ -938,9 +938,10 @@ def _followed_states(config: dict[str, Any]) -> list[str | AttributeValue]:
     """Return the states a Spook state trigger names, if it is one.
 
     Following an attribute, its `to` and `from` are that attribute's values.
-    The trigger compares those as text, with the attribute made text, so
-    only what was written as text is taken: a `to: off` YAML made false is
-    the text `False` to the trigger, which is no slip in case.
+    The trigger makes text of those, and of the attribute, and compares
+    that. So a boolean or a number counts too, as the text it becomes: a
+    `to: false` YAML made a boolean waits for `False`, a slip in case of
+    `false`. A `to: off` is `False` as well, which is no slip of `off`.
     """
     trigger = config.get("trigger") or config.get("platform")
     if trigger != _SPOOK_STATE_CHANGED or "condition" in config:
@@ -950,18 +951,21 @@ def _followed_states(config: dict[str, Any]) -> list[str | AttributeValue]:
     if not isinstance(options, dict):
         return []
 
-    states = [
-        state
-        for key in _STATE_TRIGGER_KEYS
-        for state in _literal_states(options.get(key))
-    ]
     if "attribute" not in options:
-        return [*states]
+        return [
+            state
+            for key in _STATE_TRIGGER_KEYS
+            for state in _literal_states(options.get(key))
+        ]
 
     attribute = options["attribute"]
     if not _is_literal_attribute(attribute):
         return []
-    return [AttributeValue(attribute, state, as_text=True) for state in states]
+    return [
+        AttributeValue(attribute, value, as_text=True)
+        for key in _STATE_TRIGGER_KEYS
+        for value in _literal_attribute_values(options.get(key))
+    ]
 
 
 def _walk_state_references(

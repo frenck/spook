@@ -480,10 +480,21 @@ async def _async_look(
             asked_value
             for asked_value in asked
             if asked_value.attribute in known
-            and asked_value.value
+            and _compared(asked_value)
             not in _compared_with(asked_value, known[asked_value.attribute])
         },
     )
+
+
+def _compared(asked: AttributeValue) -> Value:
+    """Return the asked value the way it is compared.
+
+    As it is, or as text for Spook's own trigger, which makes text of what
+    YAML read: a `to: false` without quotes waits for the text `False`.
+    """
+    if asked.as_text:
+        return str(asked.value)
+    return asked.value
 
 
 def _compared_with(asked: AttributeValue, known: set[Value]) -> set[Value]:
@@ -513,7 +524,7 @@ def _written_as(asked: AttributeValue, known: set[Value]) -> set[str]:
     Text in another case, or text that YAML read as a boolean or a number
     because it had no quotes. A number is never a slip of another number.
     """
-    value = asked.value
+    value = _compared(asked)
     texts = {
         candidate
         for candidate in _compared_with(asked, known)

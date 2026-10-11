@@ -306,9 +306,9 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
 def test_spook_state_trigger_following_an_attribute_names_its_values() -> None:
     """Test Spook's own trigger following an attribute names values of it.
 
-    Compared as text, the way the trigger compares them. Only what was
-    written as text: the trigger makes `False` of a `to: off`, which is
-    no slip in case of anything.
+    Compared as text, the way the trigger compares them. A boolean or a
+    number is kept as YAML read it: the checker makes the same text of it
+    the trigger does, and shows it the way it was written.
     """
     following = {
         "trigger": "spook.state_changed",
@@ -324,6 +324,8 @@ def test_spook_state_trigger_following_an_attribute_names_its_values() -> None:
 
     assert {name for _config, name in references.followed} == {
         AttributeValue("hvac_action", "Heating", as_text=True),
+        AttributeValue("hvac_action", value=False, as_text=True),
+        AttributeValue("hvac_action", 2, as_text=True),
         AttributeValue("hvac_action", "Idle", as_text=True),
     }
     assert all(config == following for config, _name in references.followed)
