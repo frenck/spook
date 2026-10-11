@@ -18,6 +18,8 @@ from homeassistant.components import automation, script
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.script import Script
 
+from .action_extraction import ActionDescriptionsUnavailableError
+from .const import LOGGER
 from .dashboard_extraction import (
     extract_actions_from_dashboard_node,
     extract_areas_from_dashboard_node,
@@ -201,8 +203,15 @@ async def _async_check_with_repairs(
         # The two hooks a repair runs on every entity in a round, in the
         # order it runs them. Protected, as they are not meant to be called
         # from outside a round; this is the one round that has no house.
-        # pylint: disable-next=protected-access
-        await repair._async_setup_inspection()  # noqa: SLF001
+        # Reading what every action takes can fail. That should cost this
+        # one check only, not the rest of the draft.
+        try:
+            # pylint: disable-next=protected-access
+            await repair._async_setup_inspection()  # noqa: SLF001
+        except ActionDescriptionsUnavailableError as exc:
+            LOGGER.debug("Skipped %s on a draft: %s", repair.repair, exc.__cause__)
+            continue
+
         # pylint: disable-next=protected-access
         found = await repair._async_compute_unknown_references(draft)  # noqa: SLF001
 

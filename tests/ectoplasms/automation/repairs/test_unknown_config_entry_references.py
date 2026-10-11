@@ -12,6 +12,9 @@ from homeassistant.helpers.service import async_set_service_schema
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.spook.action_extraction import (
+    ActionDescriptionsUnavailableError,
+)
 from custom_components.spook.draft_checking import async_check_draft
 from custom_components.spook.ectoplasms.automation.repairs.unknown_config_entry_references import (
     SpookRepair as AutomationSpookRepair,
@@ -391,6 +394,31 @@ async def test_the_issue_goes_once_the_entry_exists(hass: HomeAssistant) -> None
     MockConfigEntry(domain="duckdns", entry_id=_GHOST).add_to_hass(hass)
     await repair._async_inspect_with_cleanup()
     assert async_issue_about(ir.async_get(hass), issue_id) is None
+
+
+@pytest.mark.usefixtures("entries")
+async def test_an_issue_stays_when_the_actions_cannot_be_read(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Not knowing what the actions take is no reason to drop an issue."""
+    await _async_set_up(hass, "automation", [_set_txt(_GHOST)])
+    repair = AutomationSpookRepair(hass)
+    issue_id = f"{repair.repair}_automation.lookup"
+
+    await repair._async_inspect_with_cleanup()
+    assert async_issue_about(ir.async_get(hass), issue_id) is not None
+
+    async def _broken(_hass: HomeAssistant) -> dict[str, Any]:
+        message = "No module named 'hassil'"
+        raise ModuleNotFoundError(message)
+
+    monkeypatch.setattr(
+        "custom_components.spook.action_extraction.async_get_all_descriptions",
+        _broken,
+    )
+    with pytest.raises(ActionDescriptionsUnavailableError):
+        await repair._async_inspect_with_cleanup()
+    assert async_issue_about(ir.async_get(hass), issue_id) is not None
 
 
 @pytest.mark.parametrize("repair_class", [AutomationSpookRepair, ScriptSpookRepair])

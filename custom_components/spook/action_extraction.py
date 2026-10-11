@@ -638,6 +638,10 @@ _CONFIG_ENTRY_SELECTOR = "config_entry"
 type ConfigEntryFields = dict[str, dict[str, str | None]]
 
 
+class ActionDescriptionsUnavailableError(Exception):
+    """What the actions take could not be read, so nothing can be judged."""
+
+
 def _collect_config_entry_fields(fields: Any, found: dict[str, str | None]) -> None:
     """Collect the fields of an action description that take a config entry."""
     if not isinstance(fields, dict):
@@ -676,13 +680,14 @@ async def async_get_config_entry_fields(hass: HomeAssistant) -> ConfigEntryField
     """
     # Home Assistant reads every services.yaml for this, and checks what each
     # one filters on by importing that integration. Whatever goes wrong in
-    # there should cost this check only, not every repair checking a draft.
+    # there is raised as one error the callers can tell apart. Never an empty
+    # answer: that reads as "no action takes a config entry", and the repair
+    # would clean up every issue it raised before.
     try:
         descriptions = await async_get_all_descriptions(hass)
-    # pylint: disable-next=broad-exception-caught
-    except Exception as exc:  # noqa: BLE001
-        LOGGER.debug("Failed to read what the actions take: %s", exc)
-        return {}
+    except Exception as exc:
+        message = "Failed to read what the actions take"
+        raise ActionDescriptionsUnavailableError(message) from exc
 
     fields: ConfigEntryFields = {}
     for domain, services in descriptions.items():
