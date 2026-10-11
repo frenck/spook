@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Uživatel přidán",
             "description": "Spustí se, když někdo dostane přihlášení do Home Assistanta. Uživatelé, které Home Assistant vytváří pro vlastní integrace, se nepočítají."
+        },
+        "state_changed": {
+            "name": "Spouštěč stavu od Spooka",
+            "description": "Spustí se, když entita změní stav, pro všechno, co pokrývá cíl: entity, zařízení, oblasti, patra a štítky. Zužte to podle domény, integrace nebo třídy zařízení, nebo nechte cíl prázdný a nechte je vybrat entity ze všeho. Něco zase vylučte a rozhodněte, jak dlouho musí změna vydržet, než se počítá.",
+            "fields": {
+                "domain": {
+                    "name": "Domény",
+                    "description": "Jen entity těchto domén, například binary_sensor nebo cover. Bez cíle je vybírá ze všeho."
+                },
+                "integration": {
+                    "name": "Integrace",
+                    "description": "Jen entity poskytované těmito integracemi, například zha nebo hue. Bez cíle je vybírá ze všeho."
+                },
+                "config_entry": {
+                    "name": "Položka integrace",
+                    "description": "Jen entity této položky integrace. Bez cíle je vybírá ze všeho."
+                },
+                "device_class": {
+                    "name": "Třídy zařízení",
+                    "description": "Jen entity těchto tříd zařízení, například door nebo window. Bez cíle je vybírá ze všeho."
+                },
+                "exclude_target": {
+                    "name": "Vyloučit",
+                    "description": "Entity, zařízení, oblasti, patra nebo štítky, které se mají vyloučit. Vyloučí se všechno v nich, i diagnostické entity."
+                },
+                "exclude_domain": {
+                    "name": "Vyloučit domény",
+                    "description": "Vyloučí entity těchto domén. Když ve Vyloučit nic není, platí to pro všechno, co pokrývá cíl."
+                },
+                "exclude_integration": {
+                    "name": "Vyloučit integrace",
+                    "description": "Vyloučí entity poskytované těmito integracemi."
+                },
+                "exclude_config_entry": {
+                    "name": "Vyloučit položku integrace",
+                    "description": "Vyloučí entity této položky integrace."
+                },
+                "exclude_device_class": {
+                    "name": "Vyloučit třídy zařízení",
+                    "description": "Vyloučí entity těchto tříd zařízení."
+                },
+                "attribute": {
+                    "name": "Atribut",
+                    "description": "Sledovat tento atribut místo stavu."
+                },
+                "delay": {
+                    "description": "Před spuštěním počká takto dlouho, ať se mezitím stane cokoli. Jako zpoždění na začátku akcí.",
+                    "name": "Zpoždění"
+                },
+                "from": {
+                    "name": "Z",
+                    "description": "Jen změny, které vycházejí z jednoho z těchto stavů."
+                },
+                "not_from": {
+                    "name": "Ne z",
+                    "description": "Jen změny, které nevycházejí z žádného z těchto stavů."
+                },
+                "to": {
+                    "name": "Na",
+                    "description": "Jen změny, které vedou do jednoho z těchto stavů."
+                },
+                "not_to": {
+                    "name": "Ne na",
+                    "description": "Jen změny, které nevedou do žádného z těchto stavů."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignorovat nedostupné a neznámé",
+                    "description": "Vynechá změny ze stavu nebo do stavu nedostupné a neznámé, aby restart nebo restart routeru nespustil všechno. Vypněte, chcete-li je použít v Z nebo Na."
+                },
+                "attribute_changes": {
+                    "name": "Počítat změny atributů",
+                    "description": "Spustí se i tehdy, když se změnil jen atribut a stav zůstal stejný. Při sledování atributu nedělá nic."
+                },
+                "behavior": {
+                    "name": "Chování",
+                    "description": "Spustí se pro každou entitu, pro první z cíle, která se tam dostane, nebo jakmile tam jsou všechny. První a všechny vyžadují Na nebo Ne na. Dokud se nedostupné a neznámé ignorují, entity v těchto stavech se nepočítají."
+                },
+                "for": {
+                    "name": "Po dobu",
+                    "description": "Spustí se, až když nový stav vydrží takto dlouho. Jakákoli jiná změna mezitím to zruší."
+                },
+                "blip_tolerance": {
+                    "name": "Tolerance výpadků",
+                    "description": "Během čekání Po dobu přechod do stavu nedostupné nebo neznámé a návrat do původního stavu během této doby nespustí čekání znovu od začátku. Funguje jen spolu s Po dobu."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Dolů",
                 "top": "Nahoru"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Pondělí",
+                "tuesday": "Úterý",
+                "wednesday": "Středa",
+                "thursday": "Čtvrtek",
+                "friday": "Pátek",
+                "saturday": "Sobota",
+                "sunday": "Neděle"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Doba trvání",
                     "description": "Jak dlouho po posledním běhu čekat, než bude tato podmínka znovu splněna."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Entita je dostupná",
+            "description": "Splněno, když se s entitou dá mluvit: cokoli kromě nedostupné nebo neznámé. Pro reproduktor nebo chytrou zásuvku, které nemají vždy napájení.",
+            "fields": {
+                "behavior": {
+                    "name": "Chování",
+                    "description": "Zda stačí, když je dostupná kterákoli z entit, nebo musí být všechny."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Tuto zónu nelze upravit: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Hodnota {amount} nesedí k {entity_id}, která se mění po krocích {step}. Použijte násobek {step}, nebo hodnotu vynechte a posuňte se o jeden krok."
+        },
+        "area_cannot_update": {
+            "message": "Oblast {area_id} nelze takto změnit: {error}."
+        },
+        "area_name_taken": {
+            "message": "Název {name} už používá oblast {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Na oblasti {area_id} není co aktualizovat: zadejte alespoň jedno z {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Na zařízení {device_id} není co aktualizovat: zadejte alespoň jedno z {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Název {name} už používá patro {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Na patře {floor_id} není co aktualizovat: zadejte alespoň jedno z {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Tyto časové bloky pro {entity_id} nefungují: {error}. Nic nebylo změněno."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} je plán z vaší konfigurace YAML, který Spook nemůže změnit. Upravte ho místo toho ve své konfiguraci."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Od chvíle, kdy se Spook díval, jsou tyto senzory zpět, nebo nastavení teď ukazuje jinam. Proto nebylo nic vymazáno. Spook se podívá znovu sám a tuto opravu aktualizuje."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist je nedokáže rozlišit: {name}",
+            "description": "Spook našel ducha ve vašich hlasových asistentech 👻\n\nNásledující entity jsou zpřístupněné pro Assist a všechny odpovídají na jméno {name}:\n\n{entities}\n\nKdyž jsou jména stejná, Assist je rozlišuje jen podle oblasti: té, kterou řeknete, nebo té, ve které je váš hlasový satelit. Některé z nich sdílejí oblast nebo nemají oblast vůbec, takže je Assist podle tohoto jména nedokáže odkudkoli vybrat. Požadavek na {name} pak selže a nic neřekne, které entity překážejí.\n\nChcete-li to opravit, dejte každé z nich vlastní jméno nebo alias, nebo je přesuňte do různých oblastí. Aliasy entity a to, zda ji Assist vůbec vidí, změníte v části [Zpřístupněné entity](/config/voice-assistants/expose). Oblasti se nastavují na [stránce Oblasti](/config/areas/dashboard).\n\nSpook 👻 Váš kámoš."
+        },
+        "automation_unknown_attribute_references": {
+            "title": "Neznámé atributy použité v: {automation}",
+            "description": "Spook našel ducha ve vašich automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace používá následující atributy, které jejich entity nemají. Ani teď, ani jako něco, co takový druh entity nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{attributes}\n\n\n\nSpouštěč nebo podmínka, která čeká na atribut, jenž se nikdy neobjeví, se nikdy nespustí a nic vám neřekne. Šablona, která ho čte, nedostane nic. Chcete-li to opravit, [upravte automatizaci]({edit}) a použijte atribut, který entita má.\n\nSpook 👻 Váš kámoš."
+        },
+        "automation_unknown_state_references": {
+            "title": "Neznámé stavy použité v: {automation}",
+            "description": "Spook našel ducha ve vašich automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace čeká na následující stavy nebo je kontroluje, ve kterých jejich entity nikdy nejsou. Ani jako něco, čím takový druh entity může být, ani mezi možnostmi, které entita nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{states}\n\n\n\nSpouštěč, který čeká na stav, jenž nikdy nepřijde, se nikdy nespustí, podmínka, která ho kontroluje, není nikdy splněna, a ani jedno vám nic neřekne. Ve stavech záleží na velikosti písmen: `On` není `on`. Chcete-li to opravit, [upravte automatizaci]({edit}) a použijte stav, ve kterém entita může být.\n\nSpook 👻 Váš kámoš."
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Neznámá ID spouštěčů použitá v: {automation}",
+            "description": "Spook našel ducha ve vašich automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace kontroluje následující ID spouštěčů, která nemá žádný z jejích vlastních spouštěčů:\n\n{trigger_ids}\n\n\n\nKontrola ID, které žádný spouštěč nepředá, dopadne vždy stejně: podmínka spouštěče, která se na něj ptá, není nikdy splněna, takže část, kterou hlídá, se nikdy neprovede, a nic vám to neřekne. V ID spouštěčů záleží na velikosti písmen a spouštěč bez vlastního ID vystupuje pod svou pozicí v seznamu, počítáno od `0`. Chcete-li to opravit, [upravte automatizaci]({edit}) a použijte ID jednoho z jejích spouštěčů, nebo dejte spouštěči ID, na které se automatizace ptá.\n\nSpook 👻 Váš kámoš."
+        },
+        "lovelace_unknown_attribute_references": {
+            "title": "Neznámé atributy použité v ovládacím panelu: {dashboard}",
+            "description": "Spook našel ducha ve vašich ovládacích panelech 👻\n\nZatímco poletoval kolem, Spook narazil na následující ovládací panel:\n\n[{dashboard}]({edit})\n\nTento ovládací panel zobrazuje nebo kontroluje následující atributy, které jejich entity nemají. Ani teď, ani jako něco, co takový druh entity nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{attributes}\n\n\n\nKarta, která zobrazuje atribut, jenž se nikdy neobjeví, zůstane prázdná, a podmínka viditelnosti nebo filtr, který ho kontroluje, není nikdy splněn. Ani jedno vám nic neřekne. Chcete-li to opravit, [upravte ovládací panel]({edit}) a použijte atribut, který entita má.\n\nSpook 👻 Váš kámoš."
+        },
+        "lovelace_unknown_state_references": {
+            "title": "Neznámé stavy použité v ovládacím panelu: {dashboard}",
+            "description": "Spook našel ducha ve vašich ovládacích panelech 👻\n\nZatímco poletoval kolem, Spook narazil na následující ovládací panel:\n\n[{dashboard}]({edit})\n\nTento ovládací panel kontroluje následující stavy, ve kterých jejich entity nikdy nejsou. Ani jako něco, čím takový druh entity může být, ani mezi možnostmi, které entita nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{states}\n\n\n\nPodmínka viditelnosti nebo filtr, který kontroluje stav, jenž nikdy nepřijde, není nikdy splněn, a obrázek nastavený pro takový stav se nikdy nezobrazí. Nic z toho vám nic neřekne. Ve stavech záleží na velikosti písmen: `On` není `on`. Chcete-li to opravit, [upravte ovládací panel]({edit}) a použijte stav, ve kterém entita může být.\n\nSpook 👻 Váš kámoš."
+        },
+        "lovelace_unknown_view_references": {
+            "title": "Neznámá zobrazení, na která vede ovládací panel: {dashboard}",
+            "description": "Spook našel ducha ve vašich ovládacích panelech 👻\n\nZatímco poletoval kolem, Spook narazil na následující ovládací panel:\n\n[{dashboard}]({edit})\n\nTento ovládací panel vede na následující zobrazení, která neexistují:\n\n{paths}\n\n\n\nTlačítko nebo karta, která vede na jedno z nich, místo toho otevře první zobrazení tohoto ovládacího panelu, a nic neřekne. To se často stává, když bylo zobrazení přejmenováno, přesunuto nebo odstraněno. Chcete-li tuto chybu opravit, [upravte ovládací panel]({edit}) a nasměrujte je na zobrazení, které existuje.\n\nSpook 👻 Váš kámoš."
+        },
+        "script_unknown_attribute_references": {
+            "title": "Neznámé atributy použité v: {script}",
+            "description": "Spook našel ducha ve vašich skriptech 👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript používá následující atributy, které jejich entity nemají. Ani teď, ani jako něco, co takový druh entity nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{attributes}\n\n\n\nSpouštěč nebo podmínka, která čeká na atribut, jenž se nikdy neobjeví, se nikdy nespustí a nic vám neřekne. Šablona, která ho čte, nedostane nic. Chcete-li to opravit, [upravte skript]({edit}) a použijte atribut, který entita má.\n\nSpook 👻 Váš kámoš."
+        },
+        "script_unknown_state_references": {
+            "title": "Neznámé stavy použité v: {script}",
+            "description": "Spook našel ducha ve vašich skriptech 👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript čeká na následující stavy nebo je kontroluje, ve kterých jejich entity nikdy nejsou. Ani jako něco, čím takový druh entity může být, ani mezi možnostmi, které entita nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{states}\n\n\n\nSpouštěč, který čeká na stav, jenž nikdy nepřijde, se nikdy nespustí, podmínka, která ho kontroluje, není nikdy splněna, a ani jedno vám nic neřekne. Ve stavech záleží na velikosti písmen: `On` není `on`. Chcete-li to opravit, [upravte skript]({edit}) a použijte stav, ve kterém entita může být.\n\nSpook 👻 Váš kámoš."
+        },
+        "template_unknown_attribute_references": {
+            "title": "Neznámé atributy použité v pomocníkovi šablony: {helper}",
+            "description": "Spook našel ducha ve vašich pomocnících šablon 👻\n\nZatímco poletoval kolem, Spook narazil na následujícího pomocníka šablony:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTento pomocník šablony používá následující atributy, které jejich entity nemají. Ani teď, ani jako něco, co takový druh entity nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{attributes}\n\n\n\nŠablona, která čte atribut, jenž se nikdy neobjeví, nedostane nic, a podmínka v jedné z jeho akcí, která na něj čeká, není nikdy splněna. Ani jedno vám nic neřekne. Chcete-li to opravit, [upravte pomocníka šablony]({edit}) a použijte atribut, který entita má.\n\nSpook 👻 Váš kámoš."
+        },
+        "automation_never_true_templates": {
+            "title": "Šablony, které nikdy nemohou být splněny, v: {automation}",
+            "description": "Spook našel ducha ve vašich automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace má následující šablony, které nikdy nemohou být splněny, ať se ve vašem domě stane cokoli:\n\n{templates}\n\n\n\nPodmínka šablony je splněna jen tehdy, když vykreslí `true`, a totéž platí pro `wait_template`, pokud se později nezmění na něco, co se čte jako pravda. Spouštěč šablony se spustí, když se jeho šablona změní na něco, co se čte jako pravda, například `true`, `on`, `yes` nebo `1`. Tyto šablony kvůli tomu, jak jsou napsané, vždy vykreslí něco jiného. Obvyklé příčiny:\n\n- Uvozovky kolem šablony. Blok `>-` je bere jako text, takže skončí ve výsledku.\n- Žádné oddělovače šablony, takže se text vezme tak, jak je.\n- YAML vložený do pole šablony.\n- Komentář YAML `#` uvnitř Jinja, který Jinja vypíše jako text.\n- Podmínka, která vykreslí `on` místo `true`.\n\nNic vám to neřekne: podmínka není nikdy splněna, čekání skončí jen vypršením časového limitu a spouštěč se nikdy nespustí. Chcete-li to opravit, [upravte automatizaci]({edit}) a zařiďte, aby šablona vykreslila `true`, když má být splněna.\n\nSpook 👻 Váš kámoš."
+        },
+        "script_never_true_templates": {
+            "title": "Šablony, které nikdy nemohou být splněny, v: {script}",
+            "description": "Spook našel ducha ve vašich skriptech 👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript má následující šablony, které nikdy nemohou být splněny, ať se ve vašem domě stane cokoli:\n\n{templates}\n\n\n\nPodmínka šablony je splněna jen tehdy, když vykreslí `true`, a totéž platí pro `wait_template`, pokud se později nezmění na něco, co se čte jako pravda. Spouštěč šablony ve `wait_for_trigger` se spustí, když se jeho šablona změní na něco, co se čte jako pravda, například `true`, `on`, `yes` nebo `1`. Tyto šablony kvůli tomu, jak jsou napsané, vždy vykreslí něco jiného. Obvyklé příčiny:\n\n- Uvozovky kolem šablony. Blok `>-` je bere jako text, takže skončí ve výsledku.\n- Žádné oddělovače šablony, takže se text vezme tak, jak je.\n- YAML vložený do pole šablony.\n- Komentář YAML `#` uvnitř Jinja, který Jinja vypíše jako text.\n- Podmínka, která vykreslí `on` místo `true`.\n\nNic vám to neřekne: podmínka není nikdy splněna a čekání skončí jen vypršením časového limitu. Chcete-li to opravit, [upravte skript]({edit}) a zařiďte, aby šablona vykreslila `true`, když má být splněna.\n\nSpook 👻 Váš kámoš."
+        },
+        "automation_unknown_config_entry_references": {
+            "title": "Neznámé položky integrace použité v: {automation}",
+            "description": "Spook našel ducha ve vašich automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace předává svým akcím následující položky integrace, které Home Assistant nezná, nebo patří k jiné integraci, než o jakou akce žádá:\n\n{config_entries}\n\nHome Assistant je při spuštění kroku odmítne. Obvykle se to stane poté, co byla integrace odebrána a znovu přidána: dostala novou položku integrace s novým ID.\n\nChcete-li tuto chybu opravit, [upravte automatizaci]({edit}) a v těchto akcích znovu vyberte položku integrace.\n\nSpook 👻 Váš kámoš."
+        },
+        "script_unknown_config_entry_references": {
+            "title": "Neznámé položky integrace použité v: {script}",
+            "description": "Spook našel ducha ve vašich skriptech 👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript předává svým akcím následující položky integrace, které Home Assistant nezná, nebo patří k jiné integraci, než o jakou akce žádá:\n\n{config_entries}\n\nHome Assistant je při spuštění kroku odmítne. Obvykle se to stane poté, co byla integrace odebrána a znovu přidána: dostala novou položku integrace s novým ID.\n\nChcete-li tuto chybu opravit, [upravte skript]({edit}) a v těchto akcích znovu vyberte položku integrace.\n\nSpook 👻 Váš kámoš."
+        },
+        "automation_unknown_icons": {
+            "title": "Neznámé ikony použité v: {automation}",
+            "description": "Spook našel ducha ve vašich automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace předává následující ikony, které neexistují v Material Design Icons dodávaných s Home Assistantem:\n\n{icons}\n\n\n\nKaždá z nich se zobrazí jako prázdné místo, bez jediného slova. To se často stává, když byla ikona překlepnuta, přejmenována nebo odstraněna, nebo vybrána z novější verze Material Design Icons, než jakou má Home Assistant. Chcete-li tuto chybu opravit, [upravte automatizaci]({edit}) a nahraďte je ikonami, které existují.\n\nSpook 👻 Váš kámoš."
+        },
+        "script_unknown_icons": {
+            "title": "Neznámé ikony použité v: {script}",
+            "description": "Spook našel ducha ve vašich skriptech 👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript používá nebo předává následující ikony, které neexistují v Material Design Icons dodávaných s Home Assistantem:\n\n{icons}\n\n\n\nKaždá z nich se zobrazí jako prázdné místo, bez jediného slova. To se často stává, když byla ikona překlepnuta, přejmenována nebo odstraněna, nebo vybrána z novější verze Material Design Icons, než jakou má Home Assistant. Chcete-li tuto chybu opravit, [upravte skript]({edit}) a nahraďte je ikonami, které existují.\n\nSpook 👻 Váš kámoš."
+        },
+        "lovelace_unknown_icons": {
+            "title": "Neznámé ikony použité v ovládacím panelu: {dashboard}",
+            "description": "Spook našel ducha ve vašich ovládacích panelech 👻\n\nZatímco poletoval kolem, Spook narazil na následující ovládací panel:\n\n[{dashboard}]({edit})\n\nTento ovládací panel používá následující ikony, které neexistují v Material Design Icons dodávaných s Home Assistantem (verze {version}):\n\n{icons}\n\n\n\nKaždá z nich se zobrazí jako prázdné místo, bez jediného slova. To se často stává, když byla ikona překlepnuta, přejmenována nebo odstraněna, nebo vybrána z novější verze Material Design Icons, než jakou má Home Assistant. Chcete-li tuto chybu opravit, [upravte ovládací panel]({edit}) a nahraďte je ikonami, které existují. Ikona ovládacího panelu v postranním panelu se mění v nastavení vašich ovládacích panelů.\n\nSpook 👻 Váš kámoš."
+        },
+        "automation_unknown_user_references": {
+            "title": "Odstranění uživatelé uvedení v: {automation}",
+            "description": "Spook našel ducha ve vašich automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace uvádí následující uživatele, kteří už neexistují:\n\n{users}\n\n\n\nHome Assistant nikdy nepřidělí stejné ID uživatele dvakrát, takže tito uživatelé byli odstraněni. Spouštěč, který čeká na jednoho z nich, se pro ně nikdy nespustí, a šablona, která se s jedním z nich porovnává, se nikdy neshoduje, a nic vám to neřekne. Chcete-li to opravit, [upravte automatizaci]({edit}) a použijte ID uživatele, který existuje, nebo kontrolu odstraňte.\n\nSpook 👻 Váš kámoš."
+        },
+        "script_unknown_user_references": {
+            "title": "Odstranění uživatelé uvedení v: {script}",
+            "description": "Spook našel ducha ve vašich skriptech 👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript uvádí následující uživatele, kteří už neexistují:\n\n{users}\n\n\n\nHome Assistant nikdy nepřidělí stejné ID uživatele dvakrát, takže tito uživatelé byli odstraněni. Šablona, která se s jedním z nich porovnává, se nikdy neshoduje, a spouštěč, který čeká na jednoho z nich, se pro ně nikdy nespustí, a nic vám to neřekne. Chcete-li to opravit, [upravte skript]({edit}) a použijte ID uživatele, který existuje, nebo kontrolu odstraňte.\n\nSpook 👻 Váš kámoš."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Odstranění uživatelé uvedení v ovládacím panelu: {dashboard}",
+            "description": "Spook našel ducha ve vašich ovládacích panelech 👻\n\nZatímco poletoval kolem, Spook narazil na následující ovládací panel:\n\n[{dashboard}]({edit})\n\nTento ovládací panel uvádí následující uživatele, kteří už neexistují:\n\n{users}\n\n\n\nHome Assistant nikdy nepřidělí stejné ID uživatele dvakrát, takže tito uživatelé byli odstraněni. Karta, odznak, sekce nebo zobrazení, které se ukazují jen jim, se teď neukazují nikomu, a nic vám to neřekne. Výjimka z potvrzení pro ně už nic nedělá. Chcete-li to opravit, [upravte ovládací panel]({edit}) a vyberte uživatele, kteří to mají vidět, nebo podmínku odstraňte.\n\nSpook 👻 Váš kámoš."
+        },
+        "lovelace_unknown_theme_references": {
+            "title": "Neznámé motivy použité v ovládacím panelu: {dashboard}",
+            "description": "Spook našel ducha ve vašich ovládacích panelech 👻\n\nZatímco poletoval kolem, Spook narazil na následující ovládací panel:\n\n[{dashboard}]({edit})\n\nTento ovládací panel používá následující motivy, které neexistují:\n\n{themes}\n\n\n\nKarta, sekce nebo zobrazení s jedním z těchto motivů dostane místo toho výchozí vzhled, a nic neřekne. To se často stává, když byl motiv přejmenován nebo odstraněn. Chcete-li tuto chybu opravit, [upravte ovládací panel]({edit}) a vyberte motiv, který existuje, nebo motiv přidejte zpět.\n\nSpook 👻 Váš kámoš."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "title": "Neznámé atributy použité v entitě šablony: {name}",
+            "description": "Spook našel ducha ve vašich entitách šablon 👻\n\nZatímco poletoval kolem, Spook narazil na následující entitu šablony:\n\n{name} (`{entity_id}`)\n\nTato entita šablony používá následující atributy, které jejich entity nemají. Ani teď, ani jako něco, co takový druh entity nabízí, ani nikde v tom, co si o nich pamatuje rekordér:\n\n{attributes}\n\n\n\nŠablona, která čte atribut, jenž se nikdy neobjeví, nedostane nic, a spouštěč nebo podmínka, která na něj čeká, se nikdy nespustí ani není splněna. Nic z toho vám nic neřekne.\n\nTato entita šablony je nastavená ve vaší konfiguraci YAML. Chcete-li to opravit, upravte ji v sekci `template:` své konfigurace, použijte atribut, který entita má, a znovu načtěte své entity šablon.\n\nSpook 👻 Váš kámoš."
+        },
+        "template_unknown_entity_references_yaml": {
+            "title": "Neznámé entity použité v entitě šablony: {name}",
+            "description": "Spook našel ducha ve vašich entitách šablon 👻\n\nZatímco poletoval kolem, Spook narazil na následující entitu šablony:\n\n{name} (`{entity_id}`)\n\nJejí konfigurace odkazuje na následující entity, které Home Assistant nezná:\n\n{entities}\n\n\n\nTo se často stává, když byla entita přejmenována nebo odstraněna. Šablona, která ji čte, nedostane nic, a spouštěč, který na ni čeká, se nikdy nespustí.\n\nTato entita šablony je nastavená ve vaší konfiguraci YAML. Chcete-li tuto chybu opravit, upravte ji v sekci `template:` své konfigurace, odkazujte na existující entity a znovu načtěte své entity šablon.\n\nSpook 👻 Váš kámoš."
+        },
+        "template_unknown_service_references_yaml": {
+            "title": "Neznámé akce použité v entitě šablony: {name}",
+            "description": "Spook našel ducha ve vašich entitách šablon 👻\n\nZatímco poletoval kolem, Spook narazil na následující entitu šablony:\n\n{name} (`{entity_id}`)\n\nOdkazuje na následující akce, které Home Assistant nezná:\n\n{services}\n\n\n\nTo se často stává, když byl odebrán poskytovatel akce, nebo byl skript přejmenován či smazán.\n\nTato entita šablony je nastavená ve vaší konfiguraci YAML. Chcete-li tuto chybu opravit, upravte ji v sekci `template:` své konfigurace, použijte existující akce a znovu načtěte své entity šablon.\n\nSpook 👻 Váš kámoš."
+        },
+        "unknown_icons": {
+            "title": "Neznámé ikony ve vašem nastavení",
+            "description": "Spook našel ducha ve vašem nastavení 👻\n\nNásledující ikony neexistují v Material Design Icons dodávaných s Home Assistantem (verze {version}):\n\n{icons}\n\n\n\nKaždá z nich se zobrazí jako prázdné místo, bez jediného slova. To se často stává, když byla ikona překlepnuta, přejmenována nebo odstraněna, nebo vybrána z novější verze Material Design Icons, než jakou má Home Assistant. Chcete-li tuto chybu opravit, dejte každé z nich ikonu, která existuje: entitě, pomocníkovi nebo zóně v jejich nastavení, oblasti, patru nebo štítku v nastavení oblastí, štítků a zón, kategorii tam, kde se používá, a položkám v `customize:` ve vaší konfiguraci.\n\nSpook 👻 Váš kámoš."
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Poloha",
                     "description": "Přesunout ji na začátek nebo konec seznamu. Zadejte toto, nebo položku, za kterou se má zařadit."
+                }
+            }
+        },
+        "homeassistant_update_area": {
+            "name": "Aktualizovat oblast",
+            "description": "Za běhu aktualizuje existující oblast. Cokoli vynecháte, si ponechá svou dosavadní hodnotu. Aliasy a štítky nahradí ty, které oblast má. Patro, ikonu, obrázek a senzory lze vymazat nastavením na null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti",
+                    "description": "ID oblasti, která se má aktualizovat."
+                },
+                "name": {
+                    "name": "Název",
+                    "description": "Nový název oblasti."
+                },
+                "aliases": {
+                    "name": "Aliasy",
+                    "description": "Aliasy oblasti. Nahradí ty, které má, a prázdný seznam je odstraní všechny."
+                },
+                "floor_id": {
+                    "name": "ID patra",
+                    "description": "ID patra, na kterém oblast je."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nová ikona oblasti."
+                },
+                "picture": {
+                    "name": "Obrázek",
+                    "description": "URL nebo cesta k obrázku oblasti."
+                },
+                "labels": {
+                    "name": "Štítky",
+                    "description": "ID štítků oblasti. Nahradí ty, které má, a prázdný seznam je odstraní všechny."
+                },
+                "temperature_entity_id": {
+                    "name": "Senzor teploty",
+                    "description": "Senzor, který měří teplotu v oblasti."
+                },
+                "humidity_entity_id": {
+                    "name": "Senzor vlhkosti",
+                    "description": "Senzor, který měří vlhkost v oblasti."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Aktualizovat zařízení",
+            "description": "Za běhu aktualizuje existující zařízení. Cokoli vynecháte, si ponechá svou dosavadní hodnotu. Štítky nahradí ty, které zařízení má. Název a oblast lze vymazat nastavením na null, čímž zařízení dostane zpět název, který mu dala jeho integrace.",
+            "fields": {
+                "device_id": {
+                    "name": "ID zařízení",
+                    "description": "ID zařízení, které se má aktualizovat. Výběr zařízení v Home Assistantu zakázaná zařízení nezobrazuje, jejich ID zadejte v režimu YAML."
+                },
+                "name_by_user": {
+                    "name": "Název",
+                    "description": "Nový název zařízení."
+                },
+                "area_id": {
+                    "name": "ID oblasti",
+                    "description": "ID oblasti, ve které zařízení je."
+                },
+                "labels": {
+                    "name": "Štítky",
+                    "description": "ID štítků zařízení. Nahradí ty, které má, a prázdný seznam je odstraní všechny."
+                },
+                "disabled_by": {
+                    "name": "Zakázáno kým",
+                    "description": "Nastavte na user, chcete-li zařízení zakázat, nebo na null, chcete-li ho znovu povolit. Funguje to stejně jako akce pro zakázání a povolení zařízení."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Aktualizovat patro",
+            "description": "Za běhu aktualizuje existující patro. Cokoli vynecháte, si ponechá svou dosavadní hodnotu. Aliasy nahradí ty, které patro má. Ikonu a úroveň lze vymazat nastavením na null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID patra",
+                    "description": "ID patra, které se má aktualizovat."
+                },
+                "name": {
+                    "name": "Název",
+                    "description": "Nový název patra."
+                },
+                "aliases": {
+                    "name": "Aliasy",
+                    "description": "Aliasy patra. Nahradí ty, které má, a prázdný seznam je odstraní všechny."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nová ikona patra."
+                },
+                "level": {
+                    "name": "Úroveň",
+                    "description": "Úroveň, na které se patro ve vašem domě nachází."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Vytvořit plán",
+            "description": "Vytvoří za běhu nového pomocníka plánu, který je zapnutý během časových bloků zadaných pro každý den v týdnu. Vrátí ID entity nového plánu.",
+            "fields": {
+                "name": {
+                    "name": "Název",
+                    "description": "Název nového plánu."
+                },
+                "schedule_id": {
+                    "name": "ID entity plánu",
+                    "description": "ID entity nového plánu. Předpona schedule. se přidá automaticky. Pokud se nezadá, ID entity se vygeneruje podle názvu."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona nového plánu."
+                },
+                "monday": {
+                    "name": "Pondělí",
+                    "description": "Kdy je plán v pondělí zapnutý: seznam časových bloků, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Když se vynechá, je celý den vypnutý."
+                },
+                "tuesday": {
+                    "name": "Úterý",
+                    "description": "Kdy je plán v úterý zapnutý: seznam časových bloků, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Když se vynechá, je celý den vypnutý."
+                },
+                "wednesday": {
+                    "name": "Středa",
+                    "description": "Kdy je plán ve středu zapnutý: seznam časových bloků, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Když se vynechá, je celý den vypnutý."
+                },
+                "thursday": {
+                    "name": "Čtvrtek",
+                    "description": "Kdy je plán ve čtvrtek zapnutý: seznam časových bloků, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Když se vynechá, je celý den vypnutý."
+                },
+                "friday": {
+                    "name": "Pátek",
+                    "description": "Kdy je plán v pátek zapnutý: seznam časových bloků, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Když se vynechá, je celý den vypnutý."
+                },
+                "saturday": {
+                    "name": "Sobota",
+                    "description": "Kdy je plán v sobotu zapnutý: seznam časových bloků, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Když se vynechá, je celý den vypnutý."
+                },
+                "sunday": {
+                    "name": "Neděle",
+                    "description": "Kdy je plán v neděli zapnutý: seznam časových bloků, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Když se vynechá, je celý den vypnutý."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Smazat plán",
+            "description": "Smaže pomocníky plánu vytvořené v uživatelském rozhraní. Plány nastavené v YAML Spook smazat nemůže.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entity",
+                    "description": "Plán nebo plány, které se mají smazat."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Nastavit časové bloky dne",
+            "description": "Nahradí časové bloky jednoho nebo více dnů v pomocníkovi plánu vytvořeném v uživatelském rozhraní. Plány nastavené v YAML Spook změnit nemůže.",
+            "fields": {
+                "day": {
+                    "name": "Den",
+                    "description": "Den nebo dny v týdnu, pro které se mají nastavit časové bloky."
+                },
+                "blocks": {
+                    "name": "Časové bloky",
+                    "description": "Časové bloky, během kterých je plán v tyto dny zapnutý, každý s časem od a do a volitelnými daty, která zobrazuje jako atributy, když je zapnutý. Nahradí bloky, které tyto dny měly. Prázdný seznam nechá dny vypnuté celý den."
                 }
             }
         }
