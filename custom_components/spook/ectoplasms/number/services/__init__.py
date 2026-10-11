@@ -2,14 +2,48 @@
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING
 
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 
 from ....const import DOMAIN
 
 if TYPE_CHECKING:
     from homeassistant.components.number import NumberEntity
+    from homeassistant.core import ServiceCall
+
+# Steps are floats, so every comparison against a step boundary needs slack.
+_FLOAT_TOLERANCE = 1e-9
+
+
+def step_amount(entity: NumberEntity, call: ServiceCall) -> float:
+    """Return the requested amount, checked against the entity's step.
+
+    Refused with a validation error, the one kind the frontend shows the
+    message of when it runs an action. Anything else, a `ValueError` too,
+    only reaches it as "Unknown error".
+    """
+    step = entity.step or 1
+    amount = call.data.get("amount", step)
+    remainder = amount % step
+    # Float modulo wraps around just short of the step, 0.3 % 0.1 is
+    # 0.09999999999999998, so a remainder against either end is a clean multiple.
+    if not (
+        math.isclose(remainder, 0, rel_tol=0, abs_tol=_FLOAT_TOLERANCE)
+        or math.isclose(remainder, step, rel_tol=0, abs_tol=_FLOAT_TOLERANCE)
+    ):
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="amount_not_a_multiple_of_step",
+            translation_placeholders={
+                "amount": str(amount),
+                "entity_id": entity.entity_id,
+                "step": str(step),
+            },
+        )
+
+    return amount
 
 
 def shown_value_as_float(entity: NumberEntity) -> float:

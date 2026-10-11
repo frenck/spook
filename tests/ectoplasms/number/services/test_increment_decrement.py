@@ -3,20 +3,35 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from re import escape
 
 import pytest
-from homeassistant.components.number import NumberDeviceClass, NumberEntity
-from homeassistant.const import UnitOfTemperature
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.components.number import NumberDeviceClass, NumberEntity, NumberMode
+from homeassistant.config_entries import ConfigEntry, ConfigFlow
+from homeassistant.const import Platform, UnitOfElectricCurrent, UnitOfTemperature
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
+from homeassistant.setup import async_setup_component
 from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    MockModule,
+    MockPlatform,
+    mock_config_flow,
+    mock_integration,
+    mock_platform,
+)
 
 from custom_components.spook.ectoplasms.number.services import (
     async_set_shown_value,
     decrement,
     increment,
 )
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+    from pytest_homeassistant_custom_component.typing import WebSocketGenerator
 
 
 pytestmark = pytest.mark.usefixtures("spook_translations")
@@ -81,9 +96,10 @@ async def test_number_services_raise_readable_error_for_invalid_amount(
     call = SimpleNamespace(data={"amount": 0.2})
 
     with pytest.raises(
-        ValueError,
+        ServiceValidationError,
         match=escape(
-            "Amount 0.2 not valid for number.test, it needs to be a multiple of 0.5"
+            "Amount 0.2 does not fit number.test, which moves in steps of 0.5. "
+            "Use a multiple of 0.5, or leave the amount out to move one step"
         ),
     ):
         await service_cls(hass).async_handle_service(entity, call)
@@ -102,7 +118,7 @@ async def test_number_services_reject_near_multiples_of_large_steps(
     entity.step = 1_000_000_000
     call = SimpleNamespace(data={"amount": 999_999_999})
 
-    with pytest.raises(ValueError, match="needs to be a multiple of"):
+    with pytest.raises(ServiceValidationError, match="Use a multiple of"):
         await service_cls(hass).async_handle_service(entity, call)
 
 
@@ -190,3 +206,135 @@ async def test_a_shown_value_just_past_a_limit_lands_on_it(hass: Any) -> None:
     await async_set_shown_value(entity, 86.01)
 
     assert entity.native_value == entity.native_max_value
+
+
+class _ChargeCurrent(NumberEntity):
+    """A charger's charge current, set in steps of six amps."""
+
+    _attr_should_poll = False
+    _attr_name = "Charge current"
+    _attr_unique_id = "charge_current"
+    _attr_device_class = NumberDeviceClass.CURRENT
+    _attr_native_unit_of_measurement = UnitOfElectricCurrent.AMPERE
+    _attr_mode = NumberMode.BOX
+    _attr_native_min_value = 6
+    _attr_native_max_value = 32
+    _attr_native_step = 6
+    _attr_native_value = 12
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Keep what was set."""
+        self._attr_native_value = value
+        self.async_write_ha_state()
+
+
+async def _setup_charger(hass: HomeAssistant) -> None:
+    """Set up an integration with a charge current number, and both actions."""
+    assert await async_setup_component(hass, "homeassistant", {})
+
+    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+        await hass.config_entries.async_forward_entry_setups(entry, [Platform.NUMBER])
+        return True
+
+    async def _setup_platform(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+        add: AddConfigEntryEntitiesCallback,
+    ) -> None:
+        add([_ChargeCurrent()])
+
+    mock_integration(hass, MockModule("fake", async_setup_entry=_setup_entry))
+    mock_platform(hass, "fake.config_flow")
+    platform = MockPlatform(async_setup_entry=_setup_platform)
+    # Locked, like most integrations that talk to a device.
+    platform.PARALLEL_UPDATES = 1  # type: ignore[attr-defined]
+    mock_platform(hass, "fake.number", platform)
+
+    class _Flow(ConfigFlow, domain="fake"):
+        """A config flow that does nothing."""
+
+    with mock_config_flow("fake", _Flow):
+        entry = MockConfigEntry(domain="fake")
+        entry.add_to_hass(hass)
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+
+    increment.SpookService(hass).async_register()
+    decrement.SpookService(hass).async_register()
+
+
+async def _run_from_the_frontend(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    service: str,
+    data: dict[str, Any],
+) -> dict[str, Any]:
+    """Run the action the way the frontend does, and return the answer."""
+    client = await hass_ws_client(hass)
+    await client.send_json_auto_id(
+        {
+            "type": "execute_script",
+            "sequence": [
+                {
+                    "action": f"number.{service}",
+                    "metadata": {},
+                    "data": data,
+                    "target": {"entity_id": "number.charge_current"},
+                }
+            ],
+        }
+    )
+    return await client.receive_json()
+
+
+@pytest.mark.parametrize("service", ["increment", "decrement"])
+async def test_an_amount_off_the_step_says_why_in_the_frontend(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    service: str,
+) -> None:
+    """Test the frontend shows why an amount is refused, not "Unknown error".
+
+    The frontend runs an action through `execute_script`, which only passes
+    the message on for a validation error. Anything else, like the
+    `ValueError` this raised before, comes out as "Unknown error".
+    """
+    await _setup_charger(hass)
+
+    response = await _run_from_the_frontend(
+        hass, hass_ws_client, service, {"amount": 1}
+    )
+
+    assert not response["success"]
+    assert response["error"]["code"] == "service_validation_error"
+    assert response["error"]["message"] == (
+        "Amount 1.0 does not fit number.charge_current, which moves in steps "
+        "of 6. Use a multiple of 6, or leave the amount out to move one step"
+    )
+    assert hass.states.get("number.charge_current").state == "12"
+
+
+@pytest.mark.parametrize(
+    ("service", "data", "expected"),
+    [
+        ("increment", {}, 18),
+        ("increment", {"amount": 12}, 24),
+        ("decrement", {}, 6),
+        # Stops at the minimum rather than going past it.
+        ("decrement", {"amount": 12}, 6),
+    ],
+)
+async def test_a_charger_steps_from_the_frontend(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    service: str,
+    data: dict[str, Any],
+    expected: float,
+) -> None:
+    """Test stepping a real number from the frontend, on a locked platform."""
+    await _setup_charger(hass)
+
+    response = await _run_from_the_frontend(hass, hass_ws_client, service, data)
+
+    assert response["success"], response
+    assert float(hass.states.get("number.charge_current").state) == expected
