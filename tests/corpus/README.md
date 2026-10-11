@@ -86,6 +86,18 @@ reference it reads. Three types are taken one step earlier:
   are not the same value to an attribute. In an `expect` rule that is
   `climate.hall[hvac_action]: '"heating"'`.
 
+Two say what their repair judges from the text alone, the same in any house:
+
+- `templates`: templates that can never pass, written down as they are.
+- `icons`: `mdi:` icons the frontend does not have. Those are held against
+  the list of icons the installed frontend ships, and the tests run without
+  a frontend installed, so this is always empty. Dashboards leave it out.
+
+Dashboards also say which `themes` their cards and views put on, and which
+`users` they show something to. The house has no themes and no users, so
+every one named is reported. Automations and scripts list `users` the same
+way: the users event triggers wait for and templates compare an ID with.
+
 And one is said apart from the rest:
 
 - `not_entity_ids`: what an entity repair reports that is no entity ID at all,
@@ -131,7 +143,9 @@ purpose, and a case showing one says so with `out_of_scope`:
   template card's `area`);
 - templates and JavaScript on dashboards, which the frontend or a card
   renders;
-- IDs handed to template functions, apart from the device ones Spook reads;
+- IDs handed to template functions, apart from the device lookups and the
+  area, floor and label lookups with the ID written out in them, like
+  `area_entities('kitchen')`;
 - plain values in variables and `for_each` items under keys of somebody's
   own, which are data until a template uses them.
 

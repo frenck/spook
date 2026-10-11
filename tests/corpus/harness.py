@@ -37,6 +37,7 @@ from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from homeassistant.components import automation, homeassistant, script
+from homeassistant.components.frontend import DATA_THEMES
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.setup import async_setup_component
 
@@ -50,6 +51,8 @@ from custom_components.spook.ectoplasms.lovelace.repairs import (
     unknown_entity_references as dashboard_entities,
     unknown_service_references as dashboard_services,
     unknown_state_references as dashboard_states,
+    unknown_theme_references as dashboard_themes,
+    unknown_user_references as dashboard_users,
 )
 from custom_components.spook.entity_filtering import is_not_an_entity_id
 from custom_components.spook.reference_extraction import AttributeValue
@@ -69,11 +72,17 @@ AUTOMATION_REPAIRS = DRAFT_REPAIRS[automation.DOMAIN]
 SCRIPT_REPAIRS = DRAFT_REPAIRS[script.DOMAIN]
 
 # The repairs reading dashboards for references. The resource repairs read
-# the resource list, not a dashboard, so they are not in here.
+# the resource list, not a dashboard, so they are not in here. Neither is the
+# icon repair: it holds icons against the list the installed frontend ships,
+# and the test environment has no frontend installed, so it never judges one.
+# Nor the view repair: it only trusts the views of a stored dashboard that
+# has its own panel in the frontend, which the stand-in below is not.
 DASHBOARD_REPAIRS: dict[str, ModuleType] = {
     "entities": dashboard_entities,
     "areas": dashboard_areas,
     "services": dashboard_services,
+    "themes": dashboard_themes,
+    "users": dashboard_users,
 }
 
 # The repairs reading dashboards for what their entities never have. Like
@@ -293,6 +302,11 @@ async def async_dashboard_references(
 ) -> dict[str, Any]:
     """Return what the dashboard repairs read in a dashboard, view or card."""
     await _async_setup_house(hass)
+    # The frontend keeps the themes there are here. It is not set up in the
+    # corpus, and an empty house has no themes anyway; without the list, the
+    # theme repair has nothing to hold a dashboard against and reads nothing.
+    hass.data[DATA_THEMES] = {}
+
     dashboard_config = as_dashboard(config)
     dashboard = _CorpusDashboard(dashboard_config)
 

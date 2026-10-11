@@ -4,9 +4,10 @@ note: >-
   namespace so the list stays empty; then states(repeat.item).last_changed on
   a string. The label name is compared with what labels() returns.
 out_of_scope: >-
-  The area, floor, label and device repairs read targets and reference keys.
-  IDs handed to template functions are not read, with device_entities and
-  device_attr as the exceptions for devices.
+  The area, floor and label repairs read targets, reference keys and the
+  IDs written out in their own lookups, like area_entities('kitchen'). An
+  ID worked out while running, or handed to any other template function, is
+  not read; device_entities and device_attr are the exceptions for devices.
 expect:
   services:
     find: [light.turn_off]

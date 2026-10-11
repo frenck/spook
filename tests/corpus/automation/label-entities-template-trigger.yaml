@@ -2,11 +2,8 @@ source: https://community.home-assistant.io/t/automation-triggered-by-any-entity
 note: >-
   Replacing a hand kept list of entities in an unknown/unavailable state
   trigger by a template trigger over label_entities with reject has_value.
-  Both forms kept.
-out_of_scope: >-
-  The area, floor, label and device repairs read targets and reference keys.
-  IDs handed to template functions are not read, with device_entities and
-  device_attr as the exceptions for devices.
+  Both forms kept. The label is written out in label_entities, so it is a
+  reference.
 expect:
   entities:
     find: [sensor.freezer_temperature, switch.aquarium_pump]
@@ -14,7 +11,7 @@ expect:
     find:
       - sensor.freezer_temperature: unavailable
   labels:
-    not_find: [critical]
+    find: [critical]
 ---
 alias: Critical device offline
 triggers:
