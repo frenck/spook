@@ -20,6 +20,7 @@ from custom_components.spook import attribute_value_checking
 from custom_components.spook.attribute_value_checking import (
     DATA_ATTRIBUTE_VALUE_KNOWLEDGE,
     UnknownAttributeValue,
+    as_yaml,
     async_fixed_values,
     async_unknown_attribute_values,
 )
@@ -245,3 +246,30 @@ async def test_read_keeps_what_compares(hass: HomeAssistant) -> None:
             True,
         )
     }
+
+
+@pytest.mark.parametrize(
+    ("value", "written"),
+    [
+        (False, "false"),
+        (0, "0"),
+        (1.0, "1.0"),
+        (1e20, "1.0e+20"),
+        ("heating", "heating"),
+        ("Heating", "Heating"),
+        ("off", '"off"'),
+        ("null", '"null"'),
+        ("1.0", '"1.0"'),
+        ("a: b", '"a: b"'),
+        ("- x", '"- x"'),
+        ("#x", '"#x"'),
+        ("", '""'),
+    ],
+)
+def test_as_yaml_reads_back_as_the_same_value(value: Any, written: str) -> None:
+    """Test a value is written so YAML reads it back with its type and value.
+
+    `1e+20` is text to YAML, `null` is nothing and `a: b` a mapping, so those
+    need writing differently than they print.
+    """
+    assert as_yaml(value) == written

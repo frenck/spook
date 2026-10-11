@@ -511,13 +511,28 @@ def _written_as(value: Value, known: set[Value]) -> set[str]:
 def as_yaml(value: Value) -> str:
     """Return a value the way it is written in YAML, to be read back as it is.
 
-    Text goes in quotes whenever YAML would not leave it text: `Off` in
-    quotes is text, but unquoted it is a boolean. A boolean or a number is
-    written the way YAML writes it, so `false` and `"false"` read apart.
+    Text goes in quotes whenever YAML would not read it back as that same
+    text: `Off` unquoted is a boolean, `null` is nothing, and `a: b` is a
+    mapping. A boolean or a number is written the way YAML writes it, so
+    `false` and `"false"` read apart, and `1e+20` (which YAML takes for text)
+    comes out as `1.0e+20`.
     """
     if not isinstance(value, str):
-        return json.dumps(value)
-    return value if isinstance(_yaml_reads(value), str) else f'"{value}"'
+        # One scalar per document: the dumper ends it with a `...` line.
+        return yaml.safe_dump(value).split("\n", 1)[0]
+    if _reads_back_as(value, value):
+        return value
+    # JSON's double quoted text is valid YAML, and the style the issue uses.
+    return json.dumps(value)
+
+
+def _reads_back_as(text: str, value: Value) -> bool:
+    """Return whether YAML reads unquoted text back as exactly this value."""
+    try:
+        read = yaml.safe_load(text)
+    except yaml.YAMLError:
+        return False
+    return type(read) is type(value) and read == value
 
 
 def _suggestion(written_as: set[str]) -> str | None:
