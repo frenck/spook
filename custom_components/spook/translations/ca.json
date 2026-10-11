@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Usuari afegit",
             "description": "Es dispara quan algú rep un accés a Home Assistant. Els usuaris que Home Assistant crea per a les seves pròpies integracions queden fora."
+        },
+        "state_changed": {
+            "name": "Disparador d'estat de Spook",
+            "description": "Es dispara quan una entitat canvia d'estat, per a tot el que cobreix un objectiu: entitats, dispositius, àrees, plantes i etiquetes. Acota-ho per domini, integració o classe de dispositiu, o deixa l'objectiu buit i deixa que aquests triïn les entitats d'entre totes. Exclou-ne coses de nou, i decideix quanta estona ha d'aguantar un canvi abans que compti.",
+            "fields": {
+                "domain": {
+                    "name": "Dominis",
+                    "description": "Només entitats d'aquests dominis, com binary_sensor o cover. Sense objectiu, les tria d'entre totes."
+                },
+                "integration": {
+                    "name": "Integracions",
+                    "description": "Només entitats proporcionades per aquestes integracions, com zha o hue. Sense objectiu, les tria d'entre totes."
+                },
+                "config_entry": {
+                    "name": "Entrada d'integració",
+                    "description": "Només entitats d'aquesta entrada d'integració. Sense objectiu, les tria d'entre totes."
+                },
+                "device_class": {
+                    "name": "Classes de dispositiu",
+                    "description": "Només entitats d'aquestes classes de dispositiu, com door o window. Sense objectiu, les tria d'entre totes."
+                },
+                "exclude_target": {
+                    "name": "Exclou",
+                    "description": "Entitats, dispositius, àrees, plantes o etiquetes a excloure. Tot el que contenen queda exclòs, també les entitats de diagnòstic."
+                },
+                "exclude_domain": {
+                    "name": "Exclou dominis",
+                    "description": "Exclou les entitats d'aquests dominis. Si Exclou està buit, s'aplica a tot el que cobreix l'objectiu."
+                },
+                "exclude_integration": {
+                    "name": "Exclou integracions",
+                    "description": "Exclou les entitats proporcionades per aquestes integracions."
+                },
+                "exclude_config_entry": {
+                    "name": "Exclou l'entrada d'integració",
+                    "description": "Exclou les entitats d'aquesta entrada d'integració."
+                },
+                "exclude_device_class": {
+                    "name": "Exclou classes de dispositiu",
+                    "description": "Exclou les entitats d'aquestes classes de dispositiu."
+                },
+                "attribute": {
+                    "name": "Atribut",
+                    "description": "Segueix aquest atribut en lloc de l'estat."
+                },
+                "from": {
+                    "name": "Des de",
+                    "description": "Només canvis que venen d'un d'aquests estats."
+                },
+                "not_from": {
+                    "name": "No des de",
+                    "description": "Només canvis que no venen d'un d'aquests estats."
+                },
+                "to": {
+                    "name": "A",
+                    "description": "Només canvis que van a un d'aquests estats."
+                },
+                "not_to": {
+                    "name": "No a",
+                    "description": "Només canvis que no van a un d'aquests estats."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignora no disponible i desconegut",
+                    "description": "Deixa fora els canvis des de o cap a no disponible i desconegut, perquè un reinici o el reinici d'un encaminador no faci disparar-ho tot. Desactiva-ho per fer-los servir a Des de o A."
+                },
+                "attribute_changes": {
+                    "name": "Compta els canvis d'atribut",
+                    "description": "Es dispara també quan només ha canviat un atribut i l'estat s'ha quedat igual. No fa res mentre se segueix un atribut."
+                },
+                "behavior": {
+                    "name": "Comportament",
+                    "description": "Es dispara per a cada entitat, per a la primera de l'objectiu que hi arriba, o un cop hi són totes. Primera i totes necessiten A o No a. Mentre s'ignoren no disponible i desconegut, les entitats en aquests estats no hi participen."
+                },
+                "for": {
+                    "name": "Durant",
+                    "description": "Només es dispara un cop el nou estat s'ha mantingut durant aquesta estona. Qualsevol altre canvi entremig ho anul·la."
+                },
+                "blip_tolerance": {
+                    "name": "Tolerància a parpellejos",
+                    "description": "Mentre s'espera el temps de Durant, passar a no disponible o desconegut i tornar com estava dins d'aquest temps no torna a començar l'espera. Només funciona juntament amb Durant."
+                },
+                "delay": {
+                    "name": "Retard",
+                    "description": "Espera aquesta estona abans de disparar-se, passi el que passi entremig. Com un retard al començament de les accions."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Al final",
                 "top": "Al principi"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Dilluns",
+                "tuesday": "Dimarts",
+                "wednesday": "Dimecres",
+                "thursday": "Dijous",
+                "friday": "Divendres",
+                "saturday": "Dissabte",
+                "sunday": "Diumenge"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Durada",
                     "description": "Quanta estona esperar després de l'última execució abans que aquesta condició es torni a complir."
+                }
+            }
+        },
+        "is_available": {
+            "name": "L'entitat està disponible",
+            "description": "Es compleix quan una entitat hi és per parlar-hi: qualsevol cosa menys no disponible o desconegut. Per a un altaveu o un endoll intel·ligent que no sempre té corrent.",
+            "fields": {
+                "behavior": {
+                    "name": "Comportament",
+                    "description": "Si n'hi ha prou que hi sigui qualsevol de les entitats, o hi han de ser totes."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Aquesta zona no és editable: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "La quantitat {amount} no encaixa amb {entity_id}, que es mou en passos de {step}. Fes servir un múltiple de {step}, o deixa fora la quantitat per moure un pas."
+        },
+        "area_cannot_update": {
+            "message": "L'àrea {area_id} no es pot canviar així: {error}."
+        },
+        "area_name_taken": {
+            "message": "El nom {name} ja el fa servir l'àrea {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "No hi ha res a actualitzar a l'àrea {area_id}: indica com a mínim un de {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "No hi ha res a actualitzar al dispositiu {device_id}: indica com a mínim un de {fields}."
+        },
+        "floor_name_taken": {
+            "message": "El nom {name} ja el fa servir la planta {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "No hi ha res a actualitzar a la planta {floor_id}: indica com a mínim un de {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Aquestes franges horàries no funcionen per a {entity_id}: {error}. No s'ha canviat res."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} és un horari de la teva configuració YAML, que Spook no pot canviar. Edita'l a la teva configuració."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Aquests sensors han tornat, o la configuració ara apunta a un altre lloc, des que Spook va mirar. Així que no s'ha esborrat res. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist no els distingeix: {name}",
+            "description": "Spook ha trobat un fantasma als teus assistents de veu 👻\n\nLes entitats següents estan exposades a Assist, i totes responen al nom {name}:\n\n{entities}\n\nQuan els noms són iguals, Assist només les distingeix per l'àrea: la que anomenes, o aquella on és el teu satèl·lit de veu. Algunes d'aquestes comparteixen àrea, o no en tenen cap, així que Assist no les pot identificar per aquest nom des d'enlloc. Demanar {name} llavors falla, i res no diu quines entitats hi fan nosa.\n\nPer corregir-ho, dona a cadascuna un nom o àlies propi, o mou-les a àrees diferents. Pots canviar els àlies d'una entitat, i si Assist la veu o no, a [Entitats exposades](/config/voice-assistants/expose). Les àrees es defineixen a la [pàgina d'Àrees](/config/areas/dashboard).\n\nSpook 👻 El teu col·lega."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització fa servir els atributs següents, que les seves entitats no tenen. Ni ara mateix, ni com a cosa que aquest tipus d'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{attributes}\n\n\n\nUn disparador o condició que espera un atribut que no apareix mai no es dispara mai, i no t'ho diu. Una plantilla que en llegeix un no obté res. Per corregir-ho, [edita l'automatització]({edit}) i fes servir un atribut que l'entitat tingui.\n\nSpook 👻 El teu col·lega.",
+            "title": "Atributs desconeguts utilitzats a: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització espera o comprova els estats següents, en què les seves entitats no estan mai. Ni com a cosa que aquest tipus d'entitat pot ser, ni entre les opcions que l'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{states}\n\n\n\nUn disparador que espera un estat que no arriba mai no es dispara mai, una condició que en comprova un no es compleix mai, i cap dels dos t'ho diu. Els estats distingeixen majúscules i minúscules: `On` no és `on`. Per corregir-ho, [edita l'automatització]({edit}) i fes servir un estat en què l'entitat pugui estar.\n\nSpook 👻 El teu col·lega.",
+            "title": "Estats desconeguts utilitzats a: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització comprova els ID de disparador següents, que cap dels seus propis disparadors té:\n\n{trigger_ids}\n\n\n\nUna comprovació d'un ID que cap disparador no lliura sempre surt igual: una condició de disparador que el demana no es compleix mai, així que la part que protegeix no s'executa mai, i res no t'ho diu. Els ID de disparador distingeixen majúscules i minúscules, i un disparador sense ID propi es coneix per la seva posició a la llista, comptant des de `0`. Per corregir-ho, [edita l'automatització]({edit}) i fes servir l'ID d'un dels seus disparadors, o dona al disparador l'ID que l'automatització demana.\n\nSpook 👻 El teu col·lega.",
+            "title": "ID de disparador desconeguts utilitzats a: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n[{dashboard}]({edit})\n\nAquest panell mostra o comprova els atributs següents, que les seves entitats no tenen. Ni ara mateix, ni com a cosa que aquest tipus d'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{attributes}\n\n\n\nUna targeta que mostra un atribut que no apareix mai es queda buida, i una condició de visibilitat o un filtre que en comprova un no es compleix mai. Cap dels dos t'ho diu. Per corregir-ho, [edita el panell]({edit}) i fes servir un atribut que l'entitat tingui.\n\nSpook 👻 El teu col·lega.",
+            "title": "Atributs desconeguts utilitzats al panell: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n[{dashboard}]({edit})\n\nAquest panell comprova els estats següents, en què les seves entitats no estan mai. Ni com a cosa que aquest tipus d'entitat pot ser, ni entre les opcions que l'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{states}\n\n\n\nUna condició de visibilitat o un filtre que comprova un estat que no arriba mai no es compleix mai, i una imatge definida per a un no es mostra mai. Cap d'ells t'ho diu. Els estats distingeixen majúscules i minúscules: `On` no és `on`. Per corregir-ho, [edita el panell]({edit}) i fes servir un estat en què l'entitat pugui estar.\n\nSpook 👻 El teu col·lega.",
+            "title": "Estats desconeguts utilitzats al panell: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n[{dashboard}]({edit})\n\nAquest panell navega a les vistes següents, que no existeixen:\n\n{paths}\n\n\n\nUn botó o una targeta que navega a una d'aquestes obre la primera vista d'aquell panell, sense dir-ho. Això passa sovint quan s'ha canviat el nom d'una vista, s'ha mogut o s'ha eliminat. Per corregir aquest error, [edita el panell]({edit}) i fes que apuntin a una vista que existeixi.\n\nSpook 👻 El teu col·lega.",
+            "title": "Vistes desconegudes a què navega el panell: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script fa servir els atributs següents, que les seves entitats no tenen. Ni ara mateix, ni com a cosa que aquest tipus d'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{attributes}\n\n\n\nUn disparador o condició que espera un atribut que no apareix mai no es dispara mai, i no t'ho diu. Una plantilla que en llegeix un no obté res. Per corregir-ho, [edita l'script]({edit}) i fes servir un atribut que l'entitat tingui.\n\nSpook 👻 El teu col·lega.",
+            "title": "Atributs desconeguts utilitzats a: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script espera o comprova els estats següents, en què les seves entitats no estan mai. Ni com a cosa que aquest tipus d'entitat pot ser, ni entre les opcions que l'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{states}\n\n\n\nUn disparador que espera un estat que no arriba mai no es dispara mai, una condició que en comprova un no es compleix mai, i cap dels dos t'ho diu. Els estats distingeixen majúscules i minúscules: `On` no és `on`. Per corregir-ho, [edita l'script]({edit}) i fes servir un estat en què l'entitat pugui estar.\n\nSpook 👻 El teu col·lega.",
+            "title": "Estats desconeguts utilitzats a: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook ha trobat un fantasma als teus ajudants de plantilla 👻\n\nMentre voletejava, Spook s'ha creuat amb l'ajudant de plantilla següent:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nAquest ajudant de plantilla fa servir els atributs següents, que les seves entitats no tenen. Ni ara mateix, ni com a cosa que aquest tipus d'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{attributes}\n\n\n\nUna plantilla que llegeix un atribut que no apareix mai no obté res, i una condició en una de les seves accions que n'espera un no es compleix mai. Cap de les dues t'ho diu. Per corregir-ho, [edita l'ajudant de plantilla]({edit}) i fes servir un atribut que l'entitat tingui.\n\nSpook 👻 El teu col·lega.",
+            "title": "Atributs desconeguts utilitzats a l'ajudant de plantilla: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització té les plantilles següents, que no es poden complir mai, passi el que passi a casa teva:\n\n{templates}\n\n\n\nUna condició de plantilla només es compleix quan renderitza `true`, i un `wait_template` també, tret que més endavant canviï a alguna cosa que es llegeixi com a certa. Un disparador de plantilla es dispara quan la seva plantilla passa a ser alguna cosa que es llegeix com a certa, com `true`, `on`, `yes` o `1`. Aquestes plantilles sempre renderitzen una altra cosa, per com estan escrites. Les causes habituals:\n\n- Cometes al voltant de la plantilla. Un bloc `>-` les pren com a text, així que acaben al resultat.\n- Cap delimitador de plantilla, així que el text es pren tal com és.\n- YAML enganxat al camp de la plantilla.\n- Un comentari YAML `#` dins del Jinja, que Jinja imprimeix com a text.\n- Una condició que renderitza `on` en lloc de `true`.\n\nRes no t'ho diu: la condició no es compleix mai, l'espera només acaba pel temps d'espera, i el disparador no es dispara mai. Per corregir-ho, [edita l'automatització]({edit}) i fes que la plantilla renderitzi `true` quan s'hagi de complir.\n\nSpook 👻 El teu col·lega.",
+            "title": "Plantilles que no es poden complir mai a: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització lliura a les seves accions les entrades d'integració següents, que Home Assistant no coneix, o que pertanyen a una integració diferent de la que demana l'acció:\n\n{config_entries}\n\nHome Assistant les rebutja quan s'executa el pas. Això sol passar després d'eliminar una integració i tornar-la a afegir: ha rebut una entrada d'integració nova, amb un ID nou.\n\nPer corregir aquest error, [edita l'automatització]({edit}) i torna a triar l'entrada d'integració en aquestes accions.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entrades d'integració desconegudes utilitzades a: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització assigna les icones següents, que no existeixen a les Material Design Icons que porta Home Assistant:\n\n{icons}\n\n\n\nCadascuna d'aquestes es mostra com un espai buit, sense dir res. Això passa sovint quan una icona s'ha escrit malament, s'ha canviat de nom o s'ha eliminat, o s'ha triat d'una versió de Material Design Icons més nova que la que porta Home Assistant. Per corregir aquest error, [edita l'automatització]({edit}) i substitueix-les per icones que existeixin.\n\nSpook 👻 El teu col·lega.",
+            "title": "Icones desconegudes utilitzades a: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització esmenta els usuaris següents, que ja no existeixen:\n\n{users}\n\n\n\nHome Assistant no dona mai dues vegades el mateix ID d'usuari, així que aquests usuaris s'han eliminat. Un disparador que espera un d'ells no es dispara mai per a ells, i una plantilla que compara amb un d'ells no coincideix mai, sense dir-ho. Per corregir-ho, [edita l'automatització]({edit}) i fes servir l'ID d'un usuari que existeixi, o treu la comprovació.\n\nSpook 👻 El teu col·lega.",
+            "title": "Usuaris eliminats esmentats a: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n[{dashboard}]({edit})\n\nAquest panell fa servir les icones següents, que no existeixen a les Material Design Icons que porta Home Assistant (versió {version}):\n\n{icons}\n\n\n\nCadascuna d'aquestes es mostra com un espai buit, sense dir res. Això passa sovint quan una icona s'ha escrit malament, s'ha canviat de nom o s'ha eliminat, o s'ha triat d'una versió de Material Design Icons més nova que la que porta Home Assistant. Per corregir aquest error, [edita el panell]({edit}) i substitueix-les per icones que existeixin. La icona del panell a la barra lateral es canvia a la configuració dels teus panells.\n\nSpook 👻 El teu col·lega.",
+            "title": "Icones desconegudes utilitzades al panell: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n[{dashboard}]({edit})\n\nAquest panell esmenta els usuaris següents, que ja no existeixen:\n\n{users}\n\n\n\nHome Assistant no dona mai dues vegades el mateix ID d'usuari, així que aquests usuaris s'han eliminat. Una targeta, insígnia, secció o vista que només es mostrava a ells ara no es mostra a ningú, sense dir-ho. Una exempció d'una confirmació per a ells ja no fa res. Per corregir-ho, [edita el panell]({edit}) i tria els usuaris que l'han de veure, o treu la condició.\n\nSpook 👻 El teu col·lega.",
+            "title": "Usuaris eliminats esmentats al panell: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n[{dashboard}]({edit})\n\nAquest panell fa servir els temes següents, que no existeixen:\n\n{themes}\n\n\n\nUna targeta, secció o vista amb un d'aquests temes rep l'aspecte per defecte, sense dir-ho. Això passa sovint quan s'ha canviat el nom d'un tema o s'ha eliminat. Per corregir aquest error, [edita el panell]({edit}) i tria un tema que existeixi, o torna a afegir el tema.\n\nSpook 👻 El teu col·lega.",
+            "title": "Temes desconeguts utilitzats al panell: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script té les plantilles següents, que no es poden complir mai, passi el que passi a casa teva:\n\n{templates}\n\n\n\nUna condició de plantilla només es compleix quan renderitza `true`, i un `wait_template` també, tret que més endavant canviï a alguna cosa que es llegeixi com a certa. Un disparador de plantilla dins d'un `wait_for_trigger` es dispara quan la seva plantilla passa a ser alguna cosa que es llegeix com a certa, com `true`, `on`, `yes` o `1`. Aquestes plantilles sempre renderitzen una altra cosa, per com estan escrites. Les causes habituals:\n\n- Cometes al voltant de la plantilla. Un bloc `>-` les pren com a text, així que acaben al resultat.\n- Cap delimitador de plantilla, així que el text es pren tal com és.\n- YAML enganxat al camp de la plantilla.\n- Un comentari YAML `#` dins del Jinja, que Jinja imprimeix com a text.\n- Una condició que renderitza `on` en lloc de `true`.\n\nRes no t'ho diu: la condició no es compleix mai, i l'espera només acaba pel temps d'espera. Per corregir-ho, [edita l'script]({edit}) i fes que la plantilla renderitzi `true` quan s'hagi de complir.\n\nSpook 👻 El teu col·lega.",
+            "title": "Plantilles que no es poden complir mai a: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script lliura a les seves accions les entrades d'integració següents, que Home Assistant no coneix, o que pertanyen a una integració diferent de la que demana l'acció:\n\n{config_entries}\n\nHome Assistant les rebutja quan s'executa el pas. Això sol passar després d'eliminar una integració i tornar-la a afegir: ha rebut una entrada d'integració nova, amb un ID nou.\n\nPer corregir aquest error, [edita l'script]({edit}) i torna a triar l'entrada d'integració en aquestes accions.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entrades d'integració desconegudes utilitzades a: {script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script fa servir o assigna les icones següents, que no existeixen a les Material Design Icons que porta Home Assistant:\n\n{icons}\n\n\n\nCadascuna d'aquestes es mostra com un espai buit, sense dir res. Això passa sovint quan una icona s'ha escrit malament, s'ha canviat de nom o s'ha eliminat, o s'ha triat d'una versió de Material Design Icons més nova que la que porta Home Assistant. Per corregir aquest error, [edita l'script]({edit}) i substitueix-les per icones que existeixin.\n\nSpook 👻 El teu col·lega.",
+            "title": "Icones desconegudes utilitzades a: {script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script esmenta els usuaris següents, que ja no existeixen:\n\n{users}\n\n\n\nHome Assistant no dona mai dues vegades el mateix ID d'usuari, així que aquests usuaris s'han eliminat. Una plantilla que compara amb un d'ells no coincideix mai, i un disparador que espera un d'ells no es dispara mai per a ells, sense dir-ho. Per corregir-ho, [edita l'script]({edit}) i fes servir l'ID d'un usuari que existeixi, o treu la comprovació.\n\nSpook 👻 El teu col·lega.",
+            "title": "Usuaris eliminats esmentats a: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook ha trobat un fantasma a les teves entitats de plantilla 👻\n\nMentre voletejava, Spook s'ha creuat amb l'entitat de plantilla següent:\n\n{name} (`{entity_id}`)\n\nAquesta entitat de plantilla fa servir els atributs següents, que les seves entitats no tenen. Ni ara mateix, ni com a cosa que aquest tipus d'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{attributes}\n\n\n\nUna plantilla que llegeix un atribut que no apareix mai no obté res, i un disparador o condició que n'espera un no es dispara ni es compleix mai. Cap d'ells t'ho diu.\n\nAquesta entitat de plantilla està configurada a la teva configuració YAML. Per corregir-ho, edita-la a la secció `template:` de la teva configuració, fes servir un atribut que l'entitat tingui, i torna a carregar les teves entitats de plantilla.\n\nSpook 👻 El teu col·lega.",
+            "title": "Atributs desconeguts utilitzats a l'entitat de plantilla: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook ha trobat un fantasma a les teves entitats de plantilla 👻\n\nMentre voletejava, Spook s'ha creuat amb l'entitat de plantilla següent:\n\n{name} (`{entity_id}`)\n\nFa referència a les accions següents, que Home Assistant no coneix:\n\n{services}\n\n\n\nAixò passa sovint quan s'ha eliminat el proveïdor d'una acció, o s'ha canviat el nom d'un script o s'ha esborrat.\n\nAquesta entitat de plantilla està configurada a la teva configuració YAML. Per corregir aquest error, edita-la a la secció `template:` de la teva configuració, fes servir accions que existeixin, i torna a carregar les teves entitats de plantilla.\n\nSpook 👻 El teu col·lega.",
+            "title": "Accions desconegudes utilitzades a l'entitat de plantilla: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook ha trobat un fantasma a la teva configuració 👻\n\nLes icones següents no existeixen a les Material Design Icons que porta Home Assistant (versió {version}):\n\n{icons}\n\n\n\nCadascuna d'aquestes es mostra com un espai buit, sense dir res. Això passa sovint quan una icona s'ha escrit malament, s'ha canviat de nom o s'ha eliminat, o s'ha triat d'una versió de Material Design Icons més nova que la que porta Home Assistant. Per corregir aquest error, dona a cadascuna d'aquestes una icona que existeixi: una entitat, ajudant o zona a la seva configuració, una àrea, planta o etiqueta a la configuració de les teves àrees, etiquetes i zones, una categoria allà on es fa servir, i `customize:` a la teva configuració.\n\nSpook 👻 El teu col·lega.",
+            "title": "Icones desconegudes a la teva configuració"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook ha trobat un fantasma a les teves entitats de plantilla 👻\n\nMentre voletejava, Spook s'ha creuat amb l'entitat de plantilla següent:\n\n{name} (`{entity_id}`)\n\nLa seva configuració fa referència a les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\n\n\nAixò passa sovint quan s'ha canviat el nom d'una entitat o s'ha eliminat. Una plantilla que en llegeix una no obté res, i un disparador que n'espera una no es dispara mai.\n\nAquesta entitat de plantilla està configurada a la teva configuració YAML. Per corregir aquest error, edita-la a la secció `template:` de la teva configuració, fes referència a entitats que existeixin, i torna a carregar les teves entitats de plantilla.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades a l'entitat de plantilla: {name}"
         }
     },
     "system_health": {
@@ -2998,6 +3232,170 @@
                     "description": "Mou-lo al principi o al final de la llista. Indica això o un element després del qual posar-lo."
                 }
             }
+        },
+        "homeassistant_update_area": {
+            "description": "Actualitza una àrea existent sobre la marxa. El que no indiquis conserva el valor que ja tenia. Els àlies i les etiquetes substitueixen els que té l'àrea. La planta, la icona, la imatge i els sensors es poden esborrar posant-los a null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID de l'àrea",
+                    "description": "L'ID de l'àrea a actualitzar."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "Nou nom de l'àrea."
+                },
+                "aliases": {
+                    "name": "Àlies",
+                    "description": "Els àlies de l'àrea. Substitueix els que té, una llista buida els treu tots."
+                },
+                "floor_id": {
+                    "name": "ID de la planta",
+                    "description": "L'ID de la planta on es troba l'àrea."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Nova icona a utilitzar per a l'àrea."
+                },
+                "picture": {
+                    "name": "Imatge",
+                    "description": "L'URL o el camí d'una imatge per a l'àrea."
+                },
+                "labels": {
+                    "name": "Etiquetes",
+                    "description": "Els ID de les etiquetes de l'àrea. Substitueix les que té, una llista buida les treu totes."
+                },
+                "temperature_entity_id": {
+                    "name": "Sensor de temperatura",
+                    "description": "El sensor que mesura la temperatura de l'àrea."
+                },
+                "humidity_entity_id": {
+                    "name": "Sensor d'humitat",
+                    "description": "El sensor que mesura la humitat de l'àrea."
+                }
+            },
+            "name": "Actualitza una àrea"
+        },
+        "homeassistant_update_device": {
+            "name": "Actualitza un dispositiu",
+            "description": "Actualitza un dispositiu existent sobre la marxa. El que no indiquis conserva el valor que ja tenia. Les etiquetes substitueixen les que té el dispositiu. El nom i l'àrea es poden esborrar posant-los a null, cosa que torna al dispositiu el nom que li va donar la seva integració.",
+            "fields": {
+                "device_id": {
+                    "name": "ID del dispositiu",
+                    "description": "L'ID del dispositiu a actualitzar. El selector de dispositius de Home Assistant no mostra els dispositius desactivats; fes servir el mode YAML per indicar-ne l'ID."
+                },
+                "name_by_user": {
+                    "name": "Nom",
+                    "description": "Nou nom del dispositiu."
+                },
+                "area_id": {
+                    "name": "ID de l'àrea",
+                    "description": "L'ID de l'àrea on es troba el dispositiu."
+                },
+                "labels": {
+                    "name": "Etiquetes",
+                    "description": "Els ID de les etiquetes del dispositiu. Substitueix les que té, una llista buida les treu totes."
+                },
+                "disabled_by": {
+                    "name": "Desactivat per",
+                    "description": "Posa-ho a user per desactivar el dispositiu, o a null per tornar-lo a activar. Funciona com les accions de desactivar i activar un dispositiu."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Actualitza una planta",
+            "description": "Actualitza una planta existent sobre la marxa. El que no indiquis conserva el valor que ja tenia. Els àlies substitueixen els que té la planta. La icona i el nivell es poden esborrar posant-los a null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID de la planta",
+                    "description": "L'ID de la planta a actualitzar."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "Nou nom de la planta."
+                },
+                "aliases": {
+                    "name": "Àlies",
+                    "description": "Els àlies de la planta. Substitueix els que té, una llista buida els treu tots."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Nova icona a utilitzar per a la planta."
+                },
+                "level": {
+                    "name": "Nivell",
+                    "description": "El nivell on es troba la planta a casa teva."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Crea un horari",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom del nou horari."
+                },
+                "schedule_id": {
+                    "name": "ID d'entitat de l'horari",
+                    "description": "L'ID d'entitat del nou horari. El prefix schedule. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona del nou horari."
+                },
+                "monday": {
+                    "name": "Dilluns",
+                    "description": "Quan està actiu l'horari els dilluns: una llista de franges horàries, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Si no s'indica, està inactiu tot el dia."
+                },
+                "tuesday": {
+                    "name": "Dimarts",
+                    "description": "Quan està actiu l'horari els dimarts: una llista de franges horàries, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Si no s'indica, està inactiu tot el dia."
+                },
+                "wednesday": {
+                    "name": "Dimecres",
+                    "description": "Quan està actiu l'horari els dimecres: una llista de franges horàries, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Si no s'indica, està inactiu tot el dia."
+                },
+                "thursday": {
+                    "name": "Dijous",
+                    "description": "Quan està actiu l'horari els dijous: una llista de franges horàries, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Si no s'indica, està inactiu tot el dia."
+                },
+                "saturday": {
+                    "name": "Dissabte",
+                    "description": "Quan està actiu l'horari els dissabtes: una llista de franges horàries, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Si no s'indica, està inactiu tot el dia."
+                },
+                "sunday": {
+                    "name": "Diumenge",
+                    "description": "Quan està actiu l'horari els diumenges: una llista de franges horàries, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Si no s'indica, està inactiu tot el dia."
+                },
+                "friday": {
+                    "name": "Divendres",
+                    "description": "Quan està actiu l'horari els divendres: una llista de franges horàries, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Si no s'indica, està inactiu tot el dia."
+                }
+            },
+            "description": "Crea un ajudant d'horari nou sobre la marxa, actiu durant les franges horàries indicades per a cada dia de la setmana. Retorna l'ID d'entitat del nou horari."
+        },
+        "schedule_delete": {
+            "name": "Elimina un horari",
+            "description": "Elimina ajudants d'horari creats a la interfície. Spook no pot eliminar els horaris configurats en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'horari o horaris a eliminar."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "description": "Substitueix les franges horàries d'un o més dies d'un ajudant d'horari creat a la interfície. Spook no pot canviar els horaris configurats en YAML.",
+            "fields": {
+                "day": {
+                    "name": "Dia",
+                    "description": "El dia o dies de la setmana dels quals definir les franges horàries."
+                },
+                "blocks": {
+                    "description": "Les franges horàries en què l'horari està actiu aquests dies, cadascuna amb una hora d'inici i una de final, i dades opcionals que mostra com a atributs mentre està actiu. Substitueixen les franges que tenien els dies. Una llista buida deixa els dies inactius tot el dia.",
+                    "name": "Franges horàries"
+                }
+            },
+            "name": "Defineix les franges horàries d'un dia"
         }
     }
 }
