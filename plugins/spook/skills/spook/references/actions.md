@@ -751,6 +751,24 @@ Data:
 
 Documentation: https://spook.boo/entities#unhide-an-entity
 
+### `homeassistant.update_area`: Update an area
+
+Updates an existing area on the fly. Anything you leave out keeps the value it already has. Aliases and labels replace the ones the area has. The floor, icon, picture and sensors can be cleared by setting them to null.
+
+Data:
+
+- `area_id` (required, area): The ID of the area to update.
+- `name` (optional, text): New name for the area.
+- `aliases` (optional, object): The aliases for the area. Replaces the ones it has, an empty list removes them all.
+- `floor_id` (optional, floor): The ID of the floor the area is on.
+- `icon` (optional, icon): New icon to use for the area.
+- `picture` (optional, text): The URL or path of a picture for the area.
+- `labels` (optional, label, one or a list): The IDs of the labels for the area. Replaces the ones it has, an empty list removes them all.
+- `temperature_entity_id` (optional, entity): The sensor that measures the temperature in the area.
+- `humidity_entity_id` (optional, entity): The sensor that measures the humidity in the area.
+
+Documentation: https://spook.boo/areas#update-an-area
+
 ### `homeassistant.update_category`: Update a category
 
 Updates an existing category on the fly. Anything you leave out keeps the value it already has. The icon can be cleared by setting it to null.

@@ -666,8 +666,17 @@
     "amount_not_a_multiple_of_step": {
       "message": "Amount {amount} does not fit {entity_id}, which moves in steps of {step}. Use a multiple of {step}, or leave the amount out to move one step."
     },
+    "area_cannot_update": {
+      "message": "Area {area_id} cannot be changed like that: {error}."
+    },
+    "area_name_taken": {
+      "message": "The name {name} is already taken by area {area_id}."
+    },
     "area_not_found": {
       "message": "Area {area_id} not found."
+    },
+    "area_nothing_to_update": {
+      "message": "Nothing to update on area {area_id}: give at least one of {fields}."
     },
     "blueprint_backup_failed": {
       "message": "Could not put a copy of {path} aside: {error}. Nothing has been written."
@@ -1653,6 +1662,48 @@
         "aliases": {
           "name": "Aliases",
           "description": "A list of aliases for the area. This is useful if you want to use the area in a different language or different nickname."
+        }
+      }
+    },
+    "homeassistant_update_area": {
+      "name": "Update an area",
+      "description": "Updates an existing area on the fly. Anything you leave out keeps the value it already has. Aliases and labels replace the ones the area has. The floor, icon, picture and sensors can be cleared by setting them to null.",
+      "fields": {
+        "area_id": {
+          "name": "Area ID",
+          "description": "The ID of the area to update."
+        },
+        "name": {
+          "name": "Name",
+          "description": "New name for the area."
+        },
+        "aliases": {
+          "name": "Aliases",
+          "description": "The aliases for the area. Replaces the ones it has, an empty list removes them all."
+        },
+        "floor_id": {
+          "name": "Floor ID",
+          "description": "The ID of the floor the area is on."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "New icon to use for the area."
+        },
+        "picture": {
+          "name": "Picture",
+          "description": "The URL or path of a picture for the area."
+        },
+        "labels": {
+          "name": "Labels",
+          "description": "The IDs of the labels for the area. Replaces the ones it has, an empty list removes them all."
+        },
+        "temperature_entity_id": {
+          "name": "Temperature sensor",
+          "description": "The sensor that measures the temperature in the area."
+        },
+        "humidity_entity_id": {
+          "name": "Humidity sensor",
+          "description": "The sensor that measures the humidity in the area."
         }
       }
     },
