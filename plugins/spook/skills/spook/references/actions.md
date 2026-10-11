@@ -815,7 +815,7 @@ Data:
 
 - `floor_id` (required, floor): The ID of the floor to update.
 - `name` (optional, text): New name for the floor.
-- `aliases` (optional, object): The aliases for the floor. Replaces the ones it has, an empty list removes them all.
+- `aliases` (optional, text, one or a list): The aliases for the floor. Replaces the ones it has, an empty list removes them all.
 - `icon` (optional, icon): New icon to use for the floor.
 - `level` (optional, number): The level the floor is on in your home.
 
