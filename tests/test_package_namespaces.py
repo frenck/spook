@@ -40,10 +40,14 @@ def _globals_read(table: symtable.SymbolTable) -> set[str]:
 
 
 def _submodules_imported_on_purpose(tree: ast.Module) -> set[str]:
-    """Return the submodules the package imports itself, under their own name."""
+    """Return the submodules the package imports itself, under their own name.
+
+    Only at the top of the module: an import inside a function still binds the
+    submodule on the package, and a global read of that name breaks all the same.
+    """
     return {
         alias.name
-        for node in ast.walk(tree)
+        for node in tree.body
         if isinstance(node, ast.ImportFrom) and node.level == 1 and not node.module
         for alias in node.names
         if alias.asname is None
@@ -77,3 +81,12 @@ def test_no_package_reads_a_name_its_submodules_take_over(init_file: Path) -> No
         "which a submodule replaces once it is imported. Move the code into "
         "a sibling module, like stepping.py"
     )
+
+
+def test_an_import_inside_a_function_is_no_exemption() -> None:
+    """Test only a module level `from . import x` counts as meaning the module."""
+    tree = ast.parse(
+        "from . import kept\n\ndef helper():\n    from . import max\n    return max\n"
+    )
+
+    assert _submodules_imported_on_purpose(tree) == {"kept"}
