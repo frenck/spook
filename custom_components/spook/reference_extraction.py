@@ -979,8 +979,7 @@ def _followed_states(config: dict[str, Any]) -> list[str | AttributeValue]:
     Following an attribute, its `to` and `from` are that attribute's values.
     The trigger makes text of those, and of the attribute, and compares
     that. So a boolean or a number counts too, as the text it becomes: a
-    `to: false` YAML made a boolean waits for `False`, a slip in case of
-    `false`. A `to: off` is `False` as well, which is no slip of `off`.
+    `to: off` YAML made a boolean waits for `False`, never the mode `off`.
     """
     trigger = config.get("trigger") or config.get("platform")
     if trigger != _SPOOK_STATE_CHANGED or "condition" in config:

@@ -211,11 +211,11 @@ async def test_spook_trigger_attribute_value_is_reported(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
 ) -> None:
-    """Test a script waiting on Spook's trigger for a value in another case.
+    """Test a script waiting on Spook's trigger for values that never match.
 
     The trigger compares as text, so `Heating` is never the `heating` the
-    thermostat writes. An unquoted `off` is the text `False` to it, which
-    is no slip in case, so that one is not reported.
+    thermostat writes. An unquoted `off` is the text `False` to it, never
+    the `off` core lists for the hvac action, so that one is reported too.
     """
     give_entity_objects(hass, "climate.living_room", kind=ClimateEntity)
     hass.states.async_set("climate.living_room", "heat", {"hvac_action": "idle"})
@@ -253,5 +253,6 @@ async def test_spook_trigger_attribute_value_is_reported(
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["states"] == (
-        "- `hvac_action` of `climate.living_room`: `Heating` (did you mean `heating`?)"
+        "- `hvac_action` of `climate.living_room`: `Heating` (did you mean `heating`?)\n"
+        '- `hvac_action` of `climate.living_room`: `false` (did you mean `"off"`?)'
     )

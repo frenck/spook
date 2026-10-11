@@ -18,7 +18,9 @@ the whole history agrees it never was that value. Case, like `Heating` for
 boolean.
 
 Spook's own state trigger makes text of the attribute and compares that
-with its values, which are text too. There, only case is a slip.
+with its values, which are text too. So a value YAML read as a boolean or
+a number is a slip there too: `off` becomes the text `False`, which a
+mode `off` never is.
 """
 
 from __future__ import annotations
@@ -523,8 +525,12 @@ def _written_as(asked: AttributeValue, known: set[Value]) -> set[str]:
 
     Text in another case, or text that YAML read as a boolean or a number
     because it had no quotes. A number is never a slip of another number.
+
+    Judged by what YAML read, also for Spook's own trigger. It makes the
+    text `False` of an unquoted `off`, which never matches, but what was
+    meant is the text `off`, not `False` in another case.
     """
-    value = _compared(asked)
+    value = asked.value
     texts = {
         candidate
         for candidate in _compared_with(asked, known)

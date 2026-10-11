@@ -723,7 +723,8 @@ async def test_text_yaml_would_not_keep_is_shown_in_quotes(
 
 
 # Spook's own state trigger, following an attribute. It makes text of the
-# attribute and compares that with its values, so only case is a slip.
+# attribute and compares that with its values, so a slip is one in case, or
+# a value YAML read as a boolean or a number that was meant as text.
 
 
 def _spook_trigger(**options: Any) -> dict[str, Any]:
@@ -822,20 +823,125 @@ async def test_spook_trigger_draft_check_names_the_attribute(
 
 
 @pytest.mark.usefixtures("recorder_mock")
-async def test_spook_trigger_yaml_boolean_is_no_slip(
+async def test_spook_trigger_yaml_boolean_is_reported(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
 ) -> None:
-    """Test an unquoted `off` is not reported for Spook's trigger.
+    """Test an unquoted `off` is reported for Spook's trigger.
 
-    Home Assistant's own trigger waits for the boolean then, which is a
-    slip. Spook's trigger takes it as the text `False`, which is no slip in
-    case of `off`.
+    YAML reads it as false, of which the trigger makes the text `False`.
+    The mode is `off`, so it never fires. Shown the way it was written.
     """
     await _climate(hass, {"preset_modes": ["off", "eco"], "preset_mode": "eco"})
     await _automation(
         hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
     )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `preset_mode` of `climate.living_room`: `false` (did you mean `"off"`?)'
+    )
+
+
+@pytest.mark.parametrize("mode", ["on", "yes"])
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_true_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    mode: str,
+) -> None:
+    """Test an unquoted `on` or `yes`, which YAML reads as true, is reported.
+
+    The trigger waits for the text `True`, which the mode never is.
+    """
+    await _climate(hass, {"preset_modes": [mode], "preset_mode": mode})
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[True])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        f'- `preset_mode` of `climate.living_room`: `true` (did you mean `"{mode}"`?)'
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_boolean_with_two_candidates_has_no_guess(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted boolean both `off` and `no` could have been is reported.
+
+    YAML reads both as false, so there is no telling which one was meant.
+    """
+    await _climate(hass, {"preset_modes": ["off", "no"], "preset_mode": "off"})
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        "- `preset_mode` of `climate.living_room`: `false`"
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_boolean_in_history_is_fine(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `off` is fine once the attribute was the boolean false.
+
+    The trigger makes `False` of both, and that matches.
+    """
+    await _climate(
+        hass,
+        {"preset_modes": ["off", "eco"], "preset_mode": False},
+        {"preset_modes": ["off", "eco"], "preset_mode": "eco"},
+    )
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None
+
+
+async def test_spook_trigger_yaml_boolean_needs_a_recorder(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `off` needs the whole history to be reported too."""
+    give_entity_objects(hass, CLIMATE, kind=ClimateEntity)
+    hass.states.async_set(
+        CLIMATE, "heat", {"preset_modes": ["off", "eco"], "preset_mode": "eco"}
+    )
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_decimal_is_no_slip_of_a_whole_number(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `1.0` is not reported against a fan mode `"1"`.
+
+    The trigger waits for the text `1.0`, which never matches `1`. But YAML
+    reads `1` as a whole number, and a number is never taken for a slip of
+    another number: there is no telling `1.0` was meant as `1`.
+    """
+    await _climate(hass, {"fan_modes": ["1", "2"], "fan_mode": "2"})
+    await _automation(hass, triggers=[_spook_trigger(attribute="fan_mode", to=[1.0])])
 
     await SpookRepair(hass).async_inspect()
 
