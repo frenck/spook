@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Użytkownik dodany",
             "description": "Uruchamia się, gdy ktoś dostaje login do Home Assistant. Użytkownicy tworzeni przez Home Assistant na potrzeby jego własnych integracji są pomijani."
+        },
+        "state_changed": {
+            "name": "Wyzwalacz stanu od Spooka",
+            "description": "Uruchamia się, gdy encja zmienia stan, dla wszystkiego, co obejmuje cel: encji, urządzeń, obszarów, pięter i etykiet. Zawęź to według domeny, integracji lub klasy urządzenia albo zostaw cel pusty i pozwól im wybrać encje spośród wszystkich. Wyklucz coś z powrotem i zdecyduj, jak długo zmiana musi się utrzymać, zanim się liczy.",
+            "fields": {
+                "domain": {
+                    "name": "Domeny",
+                    "description": "Tylko encje z tych domen, na przykład binary_sensor lub cover. Bez celu wybiera je spośród wszystkich."
+                },
+                "integration": {
+                    "name": "Integracje",
+                    "description": "Tylko encje dostarczane przez te integracje, na przykład zha lub hue. Bez celu wybiera je spośród wszystkich."
+                },
+                "config_entry": {
+                    "name": "Wpis integracji",
+                    "description": "Tylko encje z tego wpisu integracji. Bez celu wybiera je spośród wszystkich."
+                },
+                "device_class": {
+                    "name": "Klasy urządzeń",
+                    "description": "Tylko encje tych klas urządzeń, na przykład door lub window. Bez celu wybiera je spośród wszystkich."
+                },
+                "exclude_target": {
+                    "name": "Wyklucz",
+                    "description": "Encje, urządzenia, obszary, piętra lub etykiety do wykluczenia. Wszystko w nich jest wykluczane, także encje diagnostyczne."
+                },
+                "exclude_domain": {
+                    "name": "Wyklucz domeny",
+                    "description": "Wyklucza encje z tych domen. Gdy w Wyklucz nic nie ma, dotyczy to wszystkiego, co obejmuje cel."
+                },
+                "exclude_integration": {
+                    "name": "Wyklucz integracje",
+                    "description": "Wyklucza encje dostarczane przez te integracje."
+                },
+                "exclude_config_entry": {
+                    "name": "Wyklucz wpis integracji",
+                    "description": "Wyklucza encje z tego wpisu integracji."
+                },
+                "exclude_device_class": {
+                    "name": "Wyklucz klasy urządzeń",
+                    "description": "Wyklucza encje tych klas urządzeń."
+                },
+                "attribute": {
+                    "name": "Atrybut",
+                    "description": "Śledź ten atrybut zamiast stanu."
+                },
+                "from": {
+                    "name": "Z",
+                    "description": "Tylko zmiany wychodzące z jednego z tych stanów."
+                },
+                "not_from": {
+                    "name": "Nie z",
+                    "description": "Tylko zmiany niewychodzące z żadnego z tych stanów."
+                },
+                "to": {
+                    "name": "Na",
+                    "description": "Tylko zmiany prowadzące do jednego z tych stanów."
+                },
+                "not_to": {
+                    "name": "Nie na",
+                    "description": "Tylko zmiany nieprowadzące do żadnego z tych stanów."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignoruj niedostępny i nieznany",
+                    "description": "Pomija zmiany ze stanu lub do stanu niedostępny i nieznany, aby ponowne uruchomienie albo restart routera nie uruchamiały wyzwalacza dla wszystkiego. Wyłącz, aby używać ich w Z lub Na."
+                },
+                "attribute_changes": {
+                    "name": "Licz zmiany atrybutów",
+                    "description": "Uruchamia się także wtedy, gdy zmienił się tylko atrybut, a stan pozostał ten sam. Nic nie robi, gdy śledzony jest atrybut."
+                },
+                "behavior": {
+                    "name": "Zachowanie",
+                    "description": "Uruchamia się dla każdej encji, dla pierwszej z celu, która tam dotrze, albo gdy wszystkie tam są. Pierwsza i wszystkie wymagają Na lub Nie na. Gdy niedostępny i nieznany są ignorowane, encje w tych stanach nie biorą udziału."
+                },
+                "for": {
+                    "name": "Przez",
+                    "description": "Uruchamia się dopiero, gdy nowy stan utrzyma się tak długo. Każda inna zmiana w międzyczasie to odwołuje."
+                },
+                "blip_tolerance": {
+                    "name": "Tolerancja mignięć",
+                    "description": "Podczas odczekiwania Przez przejście w stan niedostępny lub nieznany i powrót do poprzedniego stanu w tym czasie nie zaczyna odliczania od nowa. Działa tylko razem z Przez."
+                },
+                "delay": {
+                    "name": "Opóźnienie",
+                    "description": "Czeka tak długo przed uruchomieniem, cokolwiek wydarzy się w międzyczasie. Jak opóźnienie na początku akcji."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Na dół",
                 "top": "Na górę"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Poniedziałek",
+                "tuesday": "Wtorek",
+                "wednesday": "Środa",
+                "thursday": "Czwartek",
+                "friday": "Piątek",
+                "saturday": "Sobota",
+                "sunday": "Niedziela"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Czas trwania",
                     "description": "Jak długo czekać po ostatnim uruchomieniu, zanim ten warunek znów będzie spełniony."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Encja jest dostępna",
+            "description": "Spełniony, gdy z encją da się porozmawiać: wszystko oprócz niedostępny lub nieznany. Dla głośnika lub inteligentnej wtyczki, które nie zawsze mają zasilanie.",
+            "fields": {
+                "behavior": {
+                    "name": "Zachowanie",
+                    "description": "Czy wystarczy, że dowolna z encji jest dostępna, czy muszą być wszystkie."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Ta strefa nie jest edytowalna: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Wartość {amount} nie pasuje do {entity_id}, gdzie krok wynosi {step}. Użyj wielokrotności {step} albo pomiń wartość, aby przesunąć o jeden krok."
+        },
+        "area_cannot_update": {
+            "message": "Obszaru {area_id} nie można tak zmienić: {error}."
+        },
+        "area_name_taken": {
+            "message": "Nazwa {name} jest już zajęta przez obszar {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Nie ma czego aktualizować w obszarze {area_id}: podaj co najmniej jedno z {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Nie ma czego aktualizować w urządzeniu {device_id}: podaj co najmniej jedno z {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Nazwa {name} jest już zajęta przez piętro {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Nie ma czego aktualizować w piętrze {floor_id}: podaj co najmniej jedno z {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Te przedziały czasu nie działają dla {entity_id}: {error}. Nic nie zostało zmienione."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} to harmonogram z Twojej konfiguracji YAML, którego Spook nie może zmienić. Zamiast tego edytuj go w swojej konfiguracji."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Te sensory wróciły albo ustawienia wskazują teraz gdzie indziej od czasu, gdy Spook sprawdzał. Dlatego nic nie zostało wyczyszczone. Spook sprawdzi to ponownie sam i zaktualizuje ten problem."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist nie potrafi ich odróżnić: {name}",
+            "description": "Spook znalazł ducha w Twoich asystentach głosowych 👻\n\nNastępujące encje są udostępnione dla Assist i wszystkie odpowiadają na nazwę {name}:\n\n{entities}\n\nGdy nazwy są takie same, Assist odróżnia je tylko po obszarze: tym, który podasz, albo tym, w którym jest Twój satelita głosowy. Niektóre z nich dzielą obszar albo nie mają go wcale, więc Assist nie może ich wskazać po tej nazwie z żadnego miejsca. Prośba o {name} kończy się wtedy niepowodzeniem i nic nie mówi, które encje przeszkadzają.\n\nAby to naprawić, nadaj każdej z nich własną nazwę lub alias albo przenieś je do różnych obszarów. Aliasy encji, a także to, czy Assist w ogóle ją widzi, zmienisz w [Udostępnionych encjach](/config/voice-assistants/expose). Obszary ustawia się na [stronie Obszary](/config/areas/dashboard).\n\nSpook 👻 Twój ziomek."
+        },
+        "automation_unknown_attribute_references": {
+            "title": "Nieznane atrybuty użyte w: {automation}",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja używa następujących atrybutów, których ich encje nie mają. Ani teraz, ani jako coś, co oferuje ten rodzaj encji, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{attributes}\n\n\n\nWyzwalacz lub warunek czekający na atrybut, który nigdy się nie pojawi, nigdy nie zadziała i nie da Ci znać. Szablon, który go odczytuje, nic nie dostaje. Aby to naprawić, [edytuj automatyzację]({edit}) i użyj atrybutu, który encja ma.\n\nSpook 👻 Twój ziomek."
+        },
+        "automation_unknown_state_references": {
+            "title": "Nieznane stany użyte w: {automation}",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja czeka na następujące stany lub je sprawdza, w których ich encje nigdy nie są. Ani jako coś, czym ten rodzaj encji może być, ani wśród opcji, które oferuje encja, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{states}\n\n\n\nWyzwalacz czekający na stan, który nigdy nie nadejdzie, nigdy się nie uruchomi, warunek, który go sprawdza, nigdy nie zostanie spełniony, i żaden z nich nie da Ci znać. W stanach liczy się wielkość liter: `On` to nie `on`. Aby to naprawić, [edytuj automatyzację]({edit}) i użyj stanu, w którym encja może być.\n\nSpook 👻 Twój ziomek."
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Nieznane ID wyzwalaczy użyte w: {automation}",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja sprawdza następujące ID wyzwalaczy, których nie ma żaden z jej własnych wyzwalaczy:\n\n{trigger_ids}\n\n\n\nSprawdzenie ID, którego nie przekazuje żaden wyzwalacz, zawsze wychodzi tak samo: warunek wyzwalacza, który o nie pyta, nigdy nie jest spełniony, więc część, którą chroni, nigdy się nie wykonuje, i nic Ci o tym nie mówi. W ID wyzwalaczy liczy się wielkość liter, a wyzwalacz bez własnego ID występuje pod swoją pozycją na liście, licząc od `0`. Aby to naprawić, [edytuj automatyzację]({edit}) i użyj ID jednego z jej wyzwalaczy albo nadaj wyzwalaczowi ID, o które pyta automatyzacja.\n\nSpook 👻 Twój ziomek."
+        },
+        "lovelace_unknown_attribute_references": {
+            "title": "Nieznane atrybuty użyte w panelu: {dashboard}",
+            "description": "Spook znalazł ducha w Twoich panelach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący panel:\n\n[{dashboard}]({edit})\n\nTen panel pokazuje lub sprawdza następujące atrybuty, których ich encje nie mają. Ani teraz, ani jako coś, co oferuje ten rodzaj encji, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{attributes}\n\n\n\nKarta pokazująca atrybut, który nigdy się nie pojawi, pozostaje pusta, a warunek widoczności lub filtr, który go sprawdza, nigdy nie jest spełniony. Żadne z nich nie da Ci znać. Aby to naprawić, [edytuj panel]({edit}) i użyj atrybutu, który encja ma.\n\nSpook 👻 Twój ziomek."
+        },
+        "lovelace_unknown_state_references": {
+            "title": "Nieznane stany użyte w panelu: {dashboard}",
+            "description": "Spook znalazł ducha w Twoich panelach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący panel:\n\n[{dashboard}]({edit})\n\nTen panel sprawdza następujące stany, w których ich encje nigdy nie są. Ani jako coś, czym ten rodzaj encji może być, ani wśród opcji, które oferuje encja, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{states}\n\n\n\nWarunek widoczności lub filtr sprawdzający stan, który nigdy nie nadejdzie, nigdy nie jest spełniony, a obraz ustawiony dla takiego stanu nigdy się nie pokaże. Żadne z nich nie da Ci znać. W stanach liczy się wielkość liter: `On` to nie `on`. Aby to naprawić, [edytuj panel]({edit}) i użyj stanu, w którym encja może być.\n\nSpook 👻 Twój ziomek."
+        },
+        "lovelace_unknown_view_references": {
+            "title": "Nieznane widoki, do których prowadzi panel: {dashboard}",
+            "description": "Spook znalazł ducha w Twoich panelach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący panel:\n\n[{dashboard}]({edit})\n\nTen panel prowadzi do następujących widoków, które nie istnieją:\n\n{paths}\n\n\n\nPrzycisk lub karta prowadząca do jednego z nich otwiera zamiast tego pierwszy widok tego panelu, bez słowa. Zwykle dzieje się tak, gdy widok został przemianowany, przeniesiony lub usunięty. Aby naprawić ten błąd, [edytuj panel]({edit}) i skieruj je do widoku, który istnieje.\n\nSpook 👻 Twój ziomek."
+        },
+        "script_unknown_attribute_references": {
+            "title": "Nieznane atrybuty użyte w: {script}",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt używa następujących atrybutów, których ich encje nie mają. Ani teraz, ani jako coś, co oferuje ten rodzaj encji, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{attributes}\n\n\n\nWyzwalacz lub warunek czekający na atrybut, który nigdy się nie pojawi, nigdy nie zadziała i nie da Ci znać. Szablon, który go odczytuje, nic nie dostaje. Aby to naprawić, [edytuj skrypt]({edit}) i użyj atrybutu, który encja ma.\n\nSpook 👻 Twój ziomek."
+        },
+        "script_unknown_state_references": {
+            "title": "Nieznane stany użyte w: {script}",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt czeka na następujące stany lub je sprawdza, w których ich encje nigdy nie są. Ani jako coś, czym ten rodzaj encji może być, ani wśród opcji, które oferuje encja, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{states}\n\n\n\nWyzwalacz czekający na stan, który nigdy nie nadejdzie, nigdy się nie uruchomi, warunek, który go sprawdza, nigdy nie zostanie spełniony, i żaden z nich nie da Ci znać. W stanach liczy się wielkość liter: `On` to nie `on`. Aby to naprawić, [edytuj skrypt]({edit}) i użyj stanu, w którym encja może być.\n\nSpook 👻 Twój ziomek."
+        },
+        "template_unknown_attribute_references": {
+            "title": "Nieznane atrybuty użyte w pomocniku szablonu: {helper}",
+            "description": "Spook znalazł ducha w Twoich pomocnikach szablonów 👻\n\nUnosząc się w powietrzu, Spook napotkał następującego pomocnika szablonu:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTen pomocnik szablonu używa następujących atrybutów, których ich encje nie mają. Ani teraz, ani jako coś, co oferuje ten rodzaj encji, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{attributes}\n\n\n\nSzablon odczytujący atrybut, który nigdy się nie pojawi, nic nie dostaje, a warunek w jednej z jego akcji, który na taki atrybut czeka, nigdy nie jest spełniony. Żadne z nich nie da Ci znać. Aby to naprawić, [edytuj pomocnika szablonu]({edit}) i użyj atrybutu, który encja ma.\n\nSpook 👻 Twój ziomek."
+        },
+        "automation_never_true_templates": {
+            "title": "Szablony, które nigdy nie mogą być spełnione, w: {automation}",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja ma następujące szablony, które nigdy nie mogą być spełnione, cokolwiek dzieje się w Twoim domu:\n\n{templates}\n\n\n\nWarunek szablonu jest spełniony tylko wtedy, gdy renderuje `true`, i tak samo `wait_template`, chyba że później zmieni się w coś, co czyta się jako prawdę. Wyzwalacz szablonu uruchamia się, gdy jego szablon zmienia się w coś, co czyta się jako prawdę, na przykład `true`, `on`, `yes` lub `1`. Te szablony zawsze renderują coś innego przez to, jak są napisane. Typowe przyczyny:\n\n- Cudzysłowy wokół szablonu. Blok `>-` traktuje je jako tekst, więc trafiają do wyniku.\n- Brak ograniczników szablonu, więc tekst jest brany tak, jak jest.\n- YAML wklejony w pole szablonu.\n- Komentarz YAML `#` wewnątrz Jinja, który Jinja wypisuje jako tekst.\n- Warunek, który renderuje `on` zamiast `true`.\n\nNic Ci o tym nie mówi: warunek nigdy nie jest spełniony, oczekiwanie kończy się tylko po upływie limitu czasu, a wyzwalacz nigdy się nie uruchamia. Aby to naprawić, [edytuj automatyzację]({edit}) i spraw, aby szablon renderował `true`, gdy ma być spełniony.\n\nSpook 👻 Twój ziomek."
+        },
+        "script_never_true_templates": {
+            "title": "Szablony, które nigdy nie mogą być spełnione, w: {script}",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt ma następujące szablony, które nigdy nie mogą być spełnione, cokolwiek dzieje się w Twoim domu:\n\n{templates}\n\n\n\nWarunek szablonu jest spełniony tylko wtedy, gdy renderuje `true`, i tak samo `wait_template`, chyba że później zmieni się w coś, co czyta się jako prawdę. Wyzwalacz szablonu w `wait_for_trigger` uruchamia się, gdy jego szablon zmienia się w coś, co czyta się jako prawdę, na przykład `true`, `on`, `yes` lub `1`. Te szablony zawsze renderują coś innego przez to, jak są napisane. Typowe przyczyny:\n\n- Cudzysłowy wokół szablonu. Blok `>-` traktuje je jako tekst, więc trafiają do wyniku.\n- Brak ograniczników szablonu, więc tekst jest brany tak, jak jest.\n- YAML wklejony w pole szablonu.\n- Komentarz YAML `#` wewnątrz Jinja, który Jinja wypisuje jako tekst.\n- Warunek, który renderuje `on` zamiast `true`.\n\nNic Ci o tym nie mówi: warunek nigdy nie jest spełniony, a oczekiwanie kończy się tylko po upływie limitu czasu. Aby to naprawić, [edytuj skrypt]({edit}) i spraw, aby szablon renderował `true`, gdy ma być spełniony.\n\nSpook 👻 Twój ziomek."
+        },
+        "automation_unknown_config_entry_references": {
+            "title": "Nieznane wpisy integracji użyte w: {automation}",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja przekazuje swoim akcjom następujące wpisy integracji, które są nieznane Home Assistant lub należą do innej integracji niż ta, o którą prosi akcja:\n\n{config_entries}\n\nHome Assistant odrzuca je, gdy krok jest wykonywany. Zwykle dzieje się tak po usunięciu i ponownym dodaniu integracji: dostała nowy wpis integracji z nowym ID.\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i wybierz ponownie wpis integracji w tych akcjach.\n\nSpook 👻 Twój ziomek."
+        },
+        "script_unknown_config_entry_references": {
+            "title": "Nieznane wpisy integracji użyte w: {script}",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt przekazuje swoim akcjom następujące wpisy integracji, które są nieznane Home Assistant lub należą do innej integracji niż ta, o którą prosi akcja:\n\n{config_entries}\n\nHome Assistant odrzuca je, gdy krok jest wykonywany. Zwykle dzieje się tak po usunięciu i ponownym dodaniu integracji: dostała nowy wpis integracji z nowym ID.\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) i wybierz ponownie wpis integracji w tych akcjach.\n\nSpook 👻 Twój ziomek."
+        },
+        "automation_unknown_icons": {
+            "title": "Nieznane ikony użyte w: {automation}",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja przekazuje następujące ikony, które nie istnieją w Material Design Icons dostarczanych z Home Assistant:\n\n{icons}\n\n\n\nKażda z nich wyświetla się jako puste miejsce, bez słowa. Zwykle dzieje się tak, gdy ikona została błędnie wpisana, przemianowana lub usunięta albo wybrana z nowszej wersji Material Design Icons niż ta, którą ma Home Assistant. Aby naprawić ten błąd, [edytuj automatyzację]({edit}) i zastąp je ikonami, które istnieją.\n\nSpook 👻 Twój ziomek."
+        },
+        "script_unknown_icons": {
+            "title": "Nieznane ikony użyte w: {script}",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt używa lub przekazuje następujące ikony, które nie istnieją w Material Design Icons dostarczanych z Home Assistant:\n\n{icons}\n\n\n\nKażda z nich wyświetla się jako puste miejsce, bez słowa. Zwykle dzieje się tak, gdy ikona została błędnie wpisana, przemianowana lub usunięta albo wybrana z nowszej wersji Material Design Icons niż ta, którą ma Home Assistant. Aby naprawić ten błąd, [edytuj skrypt]({edit}) i zastąp je ikonami, które istnieją.\n\nSpook 👻 Twój ziomek."
+        },
+        "lovelace_unknown_icons": {
+            "title": "Nieznane ikony użyte w panelu: {dashboard}",
+            "description": "Spook znalazł ducha w Twoich panelach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący panel:\n\n[{dashboard}]({edit})\n\nTen panel używa następujących ikon, które nie istnieją w Material Design Icons dostarczanych z Home Assistant (wersja {version}):\n\n{icons}\n\n\n\nKażda z nich wyświetla się jako puste miejsce, bez słowa. Zwykle dzieje się tak, gdy ikona została błędnie wpisana, przemianowana lub usunięta albo wybrana z nowszej wersji Material Design Icons niż ta, którą ma Home Assistant. Aby naprawić ten błąd, [edytuj panel]({edit}) i zastąp je ikonami, które istnieją. Ikonę panelu na pasku bocznym zmienia się w ustawieniach Twoich paneli.\n\nSpook 👻 Twój ziomek."
+        },
+        "automation_unknown_user_references": {
+            "title": "Usunięci użytkownicy wskazani w: {automation}",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja wskazuje następujących użytkowników, którzy już nie istnieją:\n\n{users}\n\n\n\nHome Assistant nigdy nie nadaje tego samego ID użytkownika dwa razy, więc ci użytkownicy zostali usunięci. Wyzwalacz czekający na jednego z nich nigdy się dla nich nie uruchomi, a szablon porównujący z jednym z nich nigdy nie znajdzie dopasowania, bez słowa. Aby to naprawić, [edytuj automatyzację]({edit}) i użyj ID użytkownika, który istnieje, albo usuń to sprawdzenie.\n\nSpook 👻 Twój ziomek."
+        },
+        "script_unknown_user_references": {
+            "title": "Usunięci użytkownicy wskazani w: {script}",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt wskazuje następujących użytkowników, którzy już nie istnieją:\n\n{users}\n\n\n\nHome Assistant nigdy nie nadaje tego samego ID użytkownika dwa razy, więc ci użytkownicy zostali usunięci. Szablon porównujący z jednym z nich nigdy nie znajdzie dopasowania, a wyzwalacz czekający na jednego z nich nigdy się dla nich nie uruchomi, bez słowa. Aby to naprawić, [edytuj skrypt]({edit}) i użyj ID użytkownika, który istnieje, albo usuń to sprawdzenie.\n\nSpook 👻 Twój ziomek."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Usunięci użytkownicy wskazani w panelu: {dashboard}",
+            "description": "Spook znalazł ducha w Twoich panelach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący panel:\n\n[{dashboard}]({edit})\n\nTen panel wskazuje następujących użytkowników, którzy już nie istnieją:\n\n{users}\n\n\n\nHome Assistant nigdy nie nadaje tego samego ID użytkownika dwa razy, więc ci użytkownicy zostali usunięci. Karta, plakietka, sekcja lub widok pokazywane tylko im nie są teraz pokazywane nikomu, bez słowa. Zwolnienie ich z potwierdzenia nic już nie daje. Aby to naprawić, [edytuj panel]({edit}) i wybierz użytkowników, którzy mają to widzieć, albo usuń warunek.\n\nSpook 👻 Twój ziomek."
+        },
+        "lovelace_unknown_theme_references": {
+            "title": "Nieznane motywy użyte w panelu: {dashboard}",
+            "description": "Spook znalazł ducha w Twoich panelach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący panel:\n\n[{dashboard}]({edit})\n\nTen panel używa następujących motywów, które nie istnieją:\n\n{themes}\n\n\n\nKarta, sekcja lub widok z jednym z tych motywów dostaje zamiast tego domyślny wygląd, bez słowa. Zwykle dzieje się tak, gdy motyw został przemianowany lub usunięty. Aby naprawić ten błąd, [edytuj panel]({edit}) i wybierz motyw, który istnieje, albo dodaj motyw z powrotem.\n\nSpook 👻 Twój ziomek."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "title": "Nieznane atrybuty użyte w encji szablonu: {name}",
+            "description": "Spook znalazł ducha w Twoich encjach szablonów 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą encję szablonu:\n\n{name} (`{entity_id}`)\n\nTa encja szablonu używa następujących atrybutów, których ich encje nie mają. Ani teraz, ani jako coś, co oferuje ten rodzaj encji, ani nigdzie w tym, co rejestrator o nich pamięta:\n\n{attributes}\n\n\n\nSzablon odczytujący atrybut, który nigdy się nie pojawi, nic nie dostaje, a wyzwalacz lub warunek, który na taki atrybut czeka, nigdy się nie uruchamia ani nie jest spełniony. Żadne z nich nie da Ci znać.\n\nTa encja szablonu jest skonfigurowana w Twojej konfiguracji YAML. Aby to naprawić, edytuj ją w sekcji `template:` swojej konfiguracji, użyj atrybutu, który encja ma, i przeładuj encje szablonów.\n\nSpook 👻 Twój ziomek."
+        },
+        "template_unknown_entity_references_yaml": {
+            "title": "Nieznane encje użyte w encji szablonu: {name}",
+            "description": "Spook znalazł ducha w Twoich encjach szablonów 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą encję szablonu:\n\n{name} (`{entity_id}`)\n\nJej konfiguracja odwołuje się do następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nZwykle dzieje się tak, gdy encja została przemianowana lub usunięta. Szablon, który ją odczytuje, nic nie dostaje, a wyzwalacz, który na nią czeka, nigdy się nie uruchamia.\n\nTa encja szablonu jest skonfigurowana w Twojej konfiguracji YAML. Aby naprawić ten błąd, edytuj ją w sekcji `template:` swojej konfiguracji, odwołaj się do istniejących encji i przeładuj encje szablonów.\n\nSpook 👻 Twój ziomek."
+        },
+        "template_unknown_service_references_yaml": {
+            "title": "Nieznane akcje użyte w encji szablonu: {name}",
+            "description": "Spook znalazł ducha w Twoich encjach szablonów 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą encję szablonu:\n\n{name} (`{entity_id}`)\n\nOdwołuje się do następujących akcji, które są nieznane Home Assistant:\n\n{services}\n\n\n\nZwykle dzieje się tak, gdy dostawca akcji został usunięty albo skrypt został przemianowany lub usunięty.\n\nTa encja szablonu jest skonfigurowana w Twojej konfiguracji YAML. Aby naprawić ten błąd, edytuj ją w sekcji `template:` swojej konfiguracji, użyj istniejących akcji i przeładuj encje szablonów.\n\nSpook 👻 Twój ziomek."
+        },
+        "unknown_icons": {
+            "title": "Nieznane ikony w Twoich ustawieniach",
+            "description": "Spook znalazł ducha w Twoich ustawieniach 👻\n\nNastępujące ikony nie istnieją w Material Design Icons dostarczanych z Home Assistant (wersja {version}):\n\n{icons}\n\n\n\nKażda z nich wyświetla się jako puste miejsce, bez słowa. Zwykle dzieje się tak, gdy ikona została błędnie wpisana, przemianowana lub usunięta albo wybrana z nowszej wersji Material Design Icons niż ta, którą ma Home Assistant. Aby naprawić ten błąd, nadaj każdemu z nich ikonę, która istnieje: encji, pomocnikowi lub strefie w ich ustawieniach, obszarowi, piętru lub etykiecie w ustawieniach obszarów, etykiet i stref, kategorii tam, gdzie jest używana, oraz wpisom w `customize:` w swojej konfiguracji.\n\nSpook 👻 Twój ziomek."
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Położenie",
                     "description": "Przenieś ją na górę lub na dół listy. Podaj to albo pozycję, za którą ją umieścić."
+                }
+            }
+        },
+        "homeassistant_update_area": {
+            "name": "Zaktualizuj obszar",
+            "description": "Aktualizuje istniejący obszar w locie. Wszystko, co pominiesz, zachowuje dotychczasową wartość. Aliasy i etykiety zastępują te, które obszar ma. Piętro, ikonę, zdjęcie i czujniki można wyczyścić, ustawiając je na null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID obszaru",
+                    "description": "ID obszaru do zaktualizowania."
+                },
+                "name": {
+                    "name": "Nazwa",
+                    "description": "Nowa nazwa obszaru."
+                },
+                "aliases": {
+                    "name": "Aliasy",
+                    "description": "Aliasy obszaru. Zastępują te, które ma, a pusta lista usuwa je wszystkie."
+                },
+                "floor_id": {
+                    "name": "ID piętra",
+                    "description": "ID piętra, na którym jest obszar."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nowa ikona obszaru."
+                },
+                "picture": {
+                    "name": "Zdjęcie",
+                    "description": "URL lub ścieżka zdjęcia obszaru."
+                },
+                "labels": {
+                    "name": "Etykiety",
+                    "description": "ID etykiet obszaru. Zastępują te, które ma, a pusta lista usuwa je wszystkie."
+                },
+                "temperature_entity_id": {
+                    "name": "Czujnik temperatury",
+                    "description": "Czujnik, który mierzy temperaturę w obszarze."
+                },
+                "humidity_entity_id": {
+                    "name": "Czujnik wilgotności",
+                    "description": "Czujnik, który mierzy wilgotność w obszarze."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Zaktualizuj urządzenie",
+            "description": "Aktualizuje istniejące urządzenie w locie. Wszystko, co pominiesz, zachowuje dotychczasową wartość. Etykiety zastępują te, które urządzenie ma. Nazwę i obszar można wyczyścić, ustawiając je na null, co przywraca urządzeniu nazwę nadaną przez jego integrację.",
+            "fields": {
+                "device_id": {
+                    "name": "ID urządzenia",
+                    "description": "ID urządzenia do zaktualizowania. Selektor urządzeń Home Assistant nie pokazuje wyłączonych urządzeń, więc ich ID podaj w trybie YAML."
+                },
+                "name_by_user": {
+                    "name": "Nazwa",
+                    "description": "Nowa nazwa urządzenia."
+                },
+                "area_id": {
+                    "name": "ID obszaru",
+                    "description": "ID obszaru, w którym jest urządzenie."
+                },
+                "labels": {
+                    "name": "Etykiety",
+                    "description": "ID etykiet urządzenia. Zastępują te, które ma, a pusta lista usuwa je wszystkie."
+                },
+                "disabled_by": {
+                    "name": "Wyłączone przez",
+                    "description": "Ustaw na user, aby wyłączyć urządzenie, albo na null, aby znów je włączyć. Działa tak samo jak akcje wyłączania i włączania urządzenia."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Zaktualizuj piętro",
+            "description": "Aktualizuje istniejące piętro w locie. Wszystko, co pominiesz, zachowuje dotychczasową wartość. Aliasy zastępują te, które piętro ma. Ikonę i poziom można wyczyścić, ustawiając je na null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID piętra",
+                    "description": "ID piętra do zaktualizowania."
+                },
+                "name": {
+                    "name": "Nazwa",
+                    "description": "Nowa nazwa piętra."
+                },
+                "aliases": {
+                    "name": "Aliasy",
+                    "description": "Aliasy piętra. Zastępują te, które ma, a pusta lista usuwa je wszystkie."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nowa ikona piętra."
+                },
+                "level": {
+                    "name": "Poziom",
+                    "description": "Poziom, na którym znajduje się piętro w Twoim domu."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Utwórz harmonogram",
+            "description": "Tworzy w locie nowego pomocnika harmonogramu, włączonego w przedziałach czasu podanych dla każdego dnia tygodnia. Zwraca ID encji nowego harmonogramu.",
+            "fields": {
+                "name": {
+                    "name": "Nazwa",
+                    "description": "Nazwa nowego harmonogramu."
+                },
+                "schedule_id": {
+                    "name": "ID encji harmonogramu",
+                    "description": "ID encji nowego harmonogramu. Prefiks schedule. jest dodawany automatycznie. Jeśli nie podano, ID encji zostanie wygenerowane na podstawie nazwy."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona nowego harmonogramu."
+                },
+                "monday": {
+                    "name": "Poniedziałek",
+                    "description": "Kiedy harmonogram jest włączony w poniedziałki: lista przedziałów czasu, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Jeśli pominiesz, jest wyłączony przez cały dzień."
+                },
+                "tuesday": {
+                    "name": "Wtorek",
+                    "description": "Kiedy harmonogram jest włączony we wtorki: lista przedziałów czasu, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Jeśli pominiesz, jest wyłączony przez cały dzień."
+                },
+                "wednesday": {
+                    "name": "Środa",
+                    "description": "Kiedy harmonogram jest włączony w środy: lista przedziałów czasu, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Jeśli pominiesz, jest wyłączony przez cały dzień."
+                },
+                "thursday": {
+                    "name": "Czwartek",
+                    "description": "Kiedy harmonogram jest włączony w czwartki: lista przedziałów czasu, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Jeśli pominiesz, jest wyłączony przez cały dzień."
+                },
+                "friday": {
+                    "name": "Piątek",
+                    "description": "Kiedy harmonogram jest włączony w piątki: lista przedziałów czasu, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Jeśli pominiesz, jest wyłączony przez cały dzień."
+                },
+                "saturday": {
+                    "name": "Sobota",
+                    "description": "Kiedy harmonogram jest włączony w soboty: lista przedziałów czasu, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Jeśli pominiesz, jest wyłączony przez cały dzień."
+                },
+                "sunday": {
+                    "name": "Niedziela",
+                    "description": "Kiedy harmonogram jest włączony w niedziele: lista przedziałów czasu, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Jeśli pominiesz, jest wyłączony przez cały dzień."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Usuń harmonogram",
+            "description": "Usuwa pomocników harmonogramu utworzonych w interfejsie. Harmonogramów skonfigurowanych w YAML Spook nie może usunąć.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID encji",
+                    "description": "Harmonogram lub harmonogramy do usunięcia."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Ustaw przedziały czasu dnia",
+            "description": "Zastępuje przedziały czasu jednego lub kilku dni w pomocniku harmonogramu utworzonym w interfejsie. Harmonogramów skonfigurowanych w YAML Spook nie może zmienić.",
+            "fields": {
+                "day": {
+                    "name": "Dzień",
+                    "description": "Dzień lub dni tygodnia, dla których ustawić przedziały czasu."
+                },
+                "blocks": {
+                    "name": "Przedziały czasu",
+                    "description": "Przedziały czasu, w których harmonogram jest włączony w te dni, każdy z czasem od i do oraz opcjonalnymi danymi, które pokazuje jako atrybuty, gdy jest włączony. Zastępują przedziały, które te dni miały. Pusta lista zostawia te dni wyłączone przez cały dzień."
                 }
             }
         }
