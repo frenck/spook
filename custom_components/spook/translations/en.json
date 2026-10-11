@@ -750,8 +750,14 @@
     "event_whole_days": {
       "message": "{summary} lasts whole days, so it can only be moved by whole days."
     },
+    "floor_name_taken": {
+      "message": "The name {name} is already taken by floor {floor_id}."
+    },
     "floor_not_found": {
       "message": "Floor {floor_id} not found."
+    },
+    "floor_nothing_to_update": {
+      "message": "Nothing to update on floor {floor_id}: give at least one of {fields}."
     },
     "group_member_not_allowed": {
       "message": "{entity_id} cannot join this group: it holds {domains} entities."
@@ -1986,6 +1992,32 @@
         "aliases": {
           "name": "Aliases",
           "description": "A list of aliases for the floor. This is useful if you want to use the floor in a different language or different nickname."
+        }
+      }
+    },
+    "homeassistant_update_floor": {
+      "name": "Update a floor",
+      "description": "Updates an existing floor on the fly. Anything you leave out keeps the value it already has. Aliases replace the ones the floor has. The icon and level can be cleared by setting them to null.",
+      "fields": {
+        "floor_id": {
+          "name": "Floor ID",
+          "description": "The ID of the floor to update."
+        },
+        "name": {
+          "name": "Name",
+          "description": "New name for the floor."
+        },
+        "aliases": {
+          "name": "Aliases",
+          "description": "The aliases for the floor. Replaces the ones it has, an empty list removes them all."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "New icon to use for the floor."
+        },
+        "level": {
+          "name": "Level",
+          "description": "The level the floor is on in your home."
         }
       }
     },

@@ -876,6 +876,48 @@ homeassistant_create_floor:
       selector:
         object:
 
+homeassistant_update_floor:
+  name: Update a floor 👻
+  description: >-
+    Updates an existing floor on the fly. Anything you leave out keeps the
+    value it already has. Aliases replace the ones the floor has. The icon
+    and level can be cleared by setting them to null.
+  fields:
+    floor_id:
+      name: Floor ID
+      description: The ID of the floor to update.
+      required: true
+      selector:
+        floor:
+    name:
+      name: Name
+      description: New name for the floor.
+      required: false
+      selector:
+        text:
+    aliases:
+      name: Aliases
+      description: >-
+        The aliases for the floor. Replaces the ones it has, an empty list
+        removes them all.
+      required: false
+      selector:
+        object:
+    icon:
+      name: Icon
+      description: New icon to use for the floor.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:texture-box
+    level:
+      name: Level
+      description: The level the floor is on in your home.
+      required: false
+      selector:
+        number:
+          mode: box
+
 homeassistant_add_alias_to_floor:
   name: Add an alias to a floor 👻
   description: >-

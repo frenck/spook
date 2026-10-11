@@ -775,6 +775,20 @@ Data:
 
 Documentation: https://spook.boo/entities#update-an-entitys-id
 
+### `homeassistant.update_floor`: Update a floor
+
+Updates an existing floor on the fly. Anything you leave out keeps the value it already has. Aliases replace the ones the floor has. The icon and level can be cleared by setting them to null.
+
+Data:
+
+- `floor_id` (required, floor): The ID of the floor to update.
+- `name` (optional, text): New name for the floor.
+- `aliases` (optional, object): The aliases for the floor. Replaces the ones it has, an empty list removes them all.
+- `icon` (optional, icon): New icon to use for the floor.
+- `level` (optional, number): The level the floor is on in your home.
+
+Documentation: https://spook.boo/floors#update-a-floor
+
 ### `homeassistant.update_label`: Update a label
 
 Updates an existing label on the fly. Anything you leave out keeps the value it already has. The description, icon and color can be cleared by setting them to null.
