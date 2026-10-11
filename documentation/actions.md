@@ -324,6 +324,12 @@ Instantly create a new floor in your home. _#StackItUp_
 
 `homeassistant.create_floor`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor), [documentation](floors#create-a-floor) 📚
 
+## Floors: Update a floor
+
+Changes a floor without deleting it first, so every area stays on it. _#renovation_
+
+`homeassistant.update_floor`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_floor), [documentation](floors#update-a-floor) 📚
+
 ## Floors: Delete a floor
 
 Just like that, a whole floor is gone. _#Illusionist_

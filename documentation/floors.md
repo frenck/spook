@@ -89,6 +89,86 @@ data:
 
 :::
 
+### Update a floor
+
+Updates an existing floor in your Home Assistant instance. Anything you leave
+out keeps the value it already has, so you can change an icon without
+touching the name or the level.
+
+Setting `icon` or `level` to `null` clears it. The `aliases` you give replace
+the ones the floor has, and an empty list removes them all. To add or remove a
+single alias instead, use the actions made for that.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Update a floor 👻
+* - {term}`Action name`
+  - `homeassistant.update_floor`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_floor)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_floor)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `floor_id`
+  - {term}`string <string>`
+  - Yes
+  - `first_floor`
+* - `name`
+  - {term}`string <string>`
+  - No
+  - `Ground floor`
+* - `aliases`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["downstairs"]`
+* - `icon`
+  - {term}`string <string>` or `null`
+  - No
+  - `mdi:home-floor-g`
+* - `level`
+  - {term}`integer <integer>` or `null`
+  - No
+  - `0`
+```
+
+:::{note}
+You need to give at least one thing to change. A call with only a `floor_id`
+is refused, so a misspelled parameter cannot pass for a successful update that
+quietly did nothing.
+
+Renaming a floor to a name another floor already carries is refused too, since
+Home Assistant keeps floor names unique.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.update_floor
+data:
+  floor_id: "first_floor"
+  name: "Ground floor"
+  level: 0
+```
+
+:::
+
 ### Delete a floor
 
 Delete a floor from your Home Assistant instance.
