@@ -397,6 +397,24 @@ An automation on a blueprint is checked with its inputs filled in, the way Home 
 
 To resolve the raised issue, edit the automation and make the template render `true` when it should pass: remove the quotes around it, wrap it in `{{ }}`, remove what was pasted around it, use `{# #}` for comments, or compare to get `true` instead of `on`. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Removed users
+
+Automations are inspected for the users they name by their ID: the `user_id` an event trigger waits for in its `context`, also in a `wait_for_trigger`, and in templates the ID of a user compared to text. That is the user behind something, like `trigger.to_state.context.user_id == '…'`, `trigger.event.context.user_id in ['…', '…']` or `context.user_id != '…'`, and the user of a person, like `state_attr('person.frenck', 'user_id') == '…'` or `is_state_attr('person.frenck', 'user_id', '…')`. If an automation names a user that no longer exists, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the user IDs it cannot find.
+
+Home Assistant gives every user a random ID and never hands the same one out twice, so an ID no user has belongs to a user that was removed. A trigger waiting for that user never fires for them, and a template comparing with that ID never matches. Home Assistant does not tell you.
+
+Some things are not checked, so Spook does not guess:
+
+- Something that is not shaped like a user ID. A user written down by name never matched anybody, and is not a user that was removed.
+- `user_id` in the `event_data` of an event trigger, or in the data of an event in a template. What an event calls `user_id` is up to whoever fires it, like the Telegram user of a Telegram command.
+- An attribute called `user_id` of anything but a person.
+- A comparison something else takes part in, like a filter, and a template or automation that gives `trigger`, `context` or the like a meaning of its own.
+- A disabled step or trigger, and an automation that is turned off or failed to load.
+
+Spook looks again whenever a user is added or removed, and whenever automations are reloaded, which saving one in the editor does.
+
+To resolve the raised issue, edit the automation and use the ID of a user that exists, or remove the check. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).

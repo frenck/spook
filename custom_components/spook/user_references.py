@@ -12,6 +12,17 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
+from .reference_extraction import (
+    VALUE_KEYS,
+    names_given_to_templates,
+    without_disabled_steps,
+    without_never_rendered,
+)
+from .template_extraction import (
+    extract_template_strings_from_config,
+    extract_user_ids_from_template,
+)
+
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
@@ -137,3 +148,58 @@ def extract_user_ids_from_view(view: Any) -> set[str]:
     found: set[str] = set()
     _walk(view, found, is_view=True)
     return found
+
+
+# An event trigger only fires for an event whose context holds what its own
+# `context` asks for, and `user_id` in there is the user behind the event.
+# Not so in `event_data`: what an event calls `user_id` is up to whoever
+# fires it, like the Telegram user of a Telegram command.
+_EVENT_TRIGGER = "event"
+_TRIGGER_KEYS = ("trigger", "platform")
+_USER_ID = "user_id"
+
+
+def _add_event_trigger_users(config: Any, found: set[str]) -> None:
+    """Add the users event triggers wait for, wherever they are."""
+    if isinstance(config, list):
+        for item in config:
+            _add_event_trigger_users(item, found)
+        return
+
+    if not isinstance(config, dict):
+        return
+
+    if any(config.get(key) == _EVENT_TRIGGER for key in _TRIGGER_KEYS) and (
+        isinstance(context := config.get("context"), dict)
+    ):
+        users = context.get(_USER_ID)
+
+        # A draft is not validated, so this can hold anything. Only a string
+        # can be a user ID, and a mapping cannot even go in a set.
+        found.update(
+            user
+            for user in (users if isinstance(users, list) else [users])
+            if isinstance(user, str)
+        )
+
+    for key, value in config.items():
+        if key not in VALUE_KEYS:
+            _add_event_trigger_users(value, found)
+
+
+def extract_user_ids_from_config(config: Any) -> set[str]:
+    """Return the user IDs an automation or a script names.
+
+    The users event triggers wait for, and the literals templates compare
+    the ID of a user to. What only a disabled step names does not run, and a
+    description is never rendered, so neither counts.
+    """
+    running = without_never_rendered(without_disabled_steps(config))
+    shadowed = names_given_to_templates(config)
+
+    found: set[str] = set()
+    _add_event_trigger_users(running, found)
+    for template in extract_template_strings_from_config(running):
+        found.update(extract_user_ids_from_template(template, shadowed))
+
+    return {value for value in found if is_user_id_shaped(value)}

@@ -2196,6 +2196,196 @@ def extract_trigger_ids_from_template(template_str: str) -> frozenset[str]:
     return frozenset(found)
 
 
+# Where a template finds the user behind something: the context of a state,
+# an event or the run itself, which carries the ID of the user who started
+# it. `context` is the run's own, so a script started by a user gets theirs.
+# The others are where a lookup of a state or an event starts.
+_CONTEXT = "context"
+_CONTEXT_ROOTS = frozenset({_CONTEXT, _STATES, "this", _TRIGGER, "wait"})
+_USER_ID = "user_id"
+
+# A person keeps the ID of the user it belongs to as an attribute, and
+# nothing else promises that `user_id` means a Home Assistant user.
+_PERSON_PREFIX = "person."
+
+
+def _lookup_path(tokens: list[_Token], index: int) -> tuple[list[str], int]:
+    """Read the names a lookup goes through, after the name at this index.
+
+    `.name` and `['name']` alike, Jinja looks both up the same way. Returns
+    the names and where the lookup ends.
+    """
+    path: list[str] = []
+    position = index + 1
+    while True:
+        if _shaped(tokens, position, ("dot", "name")):
+            path.append(tokens[position + 1][1])
+            position += 2
+        elif _shaped(tokens, position, ("lbracket", "string", "rbracket")):
+            path.append(tokens[position + 1][1])
+            position += 3
+        else:
+            return path, position
+
+
+# What a trigger hands over that is a state or an event, and so has a
+# context of its own. The rest of it, like the data of an event or the
+# attributes of a state, is whatever its maker put in there.
+_TRIGGER_CONTEXT_HOLDERS = frozenset({"event", "from_state", "to_state", "zone"})
+
+
+def _is_trigger_user_id_path(path: list[str]) -> bool:
+    """Return whether a lookup in a trigger reads the user behind it."""
+    match path:
+        case [holder, "context", "user_id"]:
+            return holder in _TRIGGER_CONTEXT_HOLDERS
+    return False
+
+
+def _is_user_id_path(root: str, path: list[str]) -> bool:
+    """Return whether a lookup from this root reads the ID of a user.
+
+    Only where Home Assistant puts a context itself. The same names further
+    down a payload are someone else's.
+    """
+    match root, path:
+        case "trigger", _:
+            return _is_trigger_user_id_path(path)
+        case "wait", ["trigger", *rest]:
+            return _is_trigger_user_id_path(rest)
+        case (
+            ("context", ["user_id"])
+            | ("this", ["context", "user_id"])
+            | ("states", ["person", _, "attributes", "user_id"])
+        ):
+            return True
+        # `states.light.kitchen` and `states['light.kitchen']` are the same.
+        case "states", [domain, _, "context", "user_id"] if "." not in domain:
+            return True
+        case "states", [entity_id, "context", "user_id"] if "." in entity_id:
+            return True
+    return False
+
+
+def _person_user_id_call(tokens: list[_Token], index: int) -> bool:
+    """Return whether this is `state_attr('person.x', 'user_id')`, called."""
+    return _shaped(
+        tokens,
+        index + 1,
+        ("lparen", "string", "comma", ("string", _USER_ID), "rparen"),
+    ) and tokens[index + 2][1].startswith(_PERSON_PREFIX)
+
+
+def _user_id_lookup(tokens: list[_Token], index: int, local: set[str]) -> int | None:
+    """Read a lookup of a user ID starting at the name at this index.
+
+    Returns where it ends. A name the template or the configuration gives a
+    meaning of its own (`local`) is not the one Home Assistant hands over.
+    """
+    name = tokens[index][1]
+    if name in local:
+        return None
+
+    if name in _CONTEXT_ROOTS:
+        path, end = _lookup_path(tokens, index)
+        return end if _is_user_id_path(name, path) else None
+
+    if name == _ATTRIBUTE_FILTER and _person_user_id_call(tokens, index):
+        return index + 6
+
+    return None
+
+
+def _compared_user_ids(tokens: list[_Token], index: int, end: int) -> list[str]:
+    """Read the literals a user ID lookup is compared to.
+
+    Read like the trigger ID: `== 'x'`, `!=`, `in` or `not in` a list of
+    them, and `'x' ==` the other way around, the lookup a whole side. That
+    also keeps out a lookup read from halfway: after a dot, `context` or
+    `trigger` is a piece of something else, like `trigger` in `wait.trigger`,
+    which is read from `wait`.
+    """
+    if (
+        _side_starts(tokens, index)
+        and (compared := _compared_after(tokens, end)) is not None
+    ):
+        literals, after = compared
+        if _side_ends(tokens, after):
+            return literals
+
+    literal = index - 2
+    if (
+        _is(tokens, literal, "string")
+        and tokens[index - 1][0] in _EQUALITY
+        and _side_starts(tokens, literal)
+        and _side_ends(tokens, end)
+    ):
+        return [tokens[literal][1]]
+
+    return []
+
+
+def _person_user_id_test(tokens: list[_Token], index: int) -> list[str]:
+    """Read `is_state_attr('person.x', 'user_id', 'y')`, called, as `y`."""
+    if (
+        _shaped(
+            tokens,
+            index + 1,
+            (
+                "lparen",
+                "string",
+                "comma",
+                ("string", _USER_ID),
+                "comma",
+                "string",
+                "rparen",
+            ),
+        )
+        and tokens[index + 2][1].startswith(_PERSON_PREFIX)
+        and not _is(tokens, index - 1, "dot")
+    ):
+        return [tokens[index + 6][1]]
+    return []
+
+
+@lru_cache(maxsize=1024)
+def extract_user_ids_from_template(
+    template_str: str, shadowed: frozenset[str] = frozenset()
+) -> frozenset[str]:
+    """Return the literals a template compares the ID of a user to.
+
+    The user behind a context, like `trigger.to_state.context.user_id`,
+    `trigger.event.context.user_id` or the run's own `context.user_id`, and
+    the user of a person, with `state_attr('person.x', 'user_id')` or
+    `states.person.x.attributes.user_id`. Compared like the trigger ID, and
+    `is_state_attr('person.x', 'user_id', 'y')` too.
+
+    Whatever the literal is: telling a user ID apart from anything else is
+    up to the caller. Not read when the template, or the configuration it
+    sits in (`shadowed`), gives the name it starts at a meaning of its own.
+
+    Pure in its arguments, so cached like the other readers.
+    """
+    if not is_template_string(template_str):
+        return frozenset()
+
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions) | shadowed
+
+    found: set[str] = set()
+    for tokens in expressions:
+        for index, (kind, name) in enumerate(tokens):
+            if kind != "name":
+                continue
+
+            if name == _ATTRIBUTE_TEST and name not in local:
+                found.update(_person_user_id_test(tokens, index))
+            elif (end := _user_id_lookup(tokens, index, local)) is not None:
+                found.update(_compared_user_ids(tokens, index, end))
+
+    return frozenset(found)
+
+
 # The functions that take a device ID or an entity ID, called directly or as
 # a filter. `is_device_attr` is a test as well.
 _DEVICE_LOOKUPS = frozenset({"device_attr", "device_name", "is_device_attr"})

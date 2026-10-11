@@ -36,6 +36,7 @@ REPAIR_DOCUMENTATION: Final = {
         "automation#unknown-referenced-trigger-ids"
     ),
     "automation_unknown_trigger_references": "automation#unknown-referenced-triggers",
+    "automation_unknown_user_references": "automation#removed-users",
     "empty_areas": "homeassistant#empty-areas",
     "empty_floors": "homeassistant#empty-floors",
     "energy_unknown_references": "energy#unknown-referenced-entities",
