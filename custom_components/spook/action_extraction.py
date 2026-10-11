@@ -56,6 +56,7 @@ async def async_extract_entities_from_action_config(
     _is_payload: bool = False,
     _in_values: bool = False,
     _service: str | None = None,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs from action configuration.
 
@@ -79,6 +80,10 @@ async def async_extract_entities_from_action_config(
     text, and whether a ``target`` in there belongs to notify. The value of
     ``data`` is payload, not an action: a ``service`` key there is a field,
     so the service resolved further out still judges the fields beside it.
+
+    ``shadowed`` holds the names the whole configuration gives its
+    templates, as `reference_extraction.names_given_to_templates` finds
+    them. This walks a part of it, so it cannot find them itself.
     """
     entities = set()
 
@@ -101,6 +106,7 @@ async def async_extract_entities_from_action_config(
                     _is_payload=_is_payload,
                     _in_values=_in_values,
                     _service=_service,
+                    shadowed=shadowed,
                 )
             )
         return entities
@@ -122,7 +128,9 @@ async def async_extract_entities_from_action_config(
 
     # Extract entity IDs from direct fields
     entities.update(
-        await _extract_entities_from_action_fields(hass, config, known_services)
+        await _extract_entities_from_action_fields(
+            hass, config, known_services, shadowed
+        )
     )
 
     # A condition or a trigger waited for in a step can compare against an
@@ -132,11 +140,15 @@ async def async_extract_entities_from_action_config(
         entities.update(threshold_entities(config))
 
     # Extract entities from target configuration
-    entities.update(await _extract_entities_from_target(hass, config, known_services))
+    entities.update(
+        await _extract_entities_from_target(hass, config, known_services, shadowed)
+    )
 
     # Extract entities from service data
     entities.update(
-        await _extract_entities_from_service_data(hass, config, known_services, service)
+        await _extract_entities_from_service_data(
+            hass, config, known_services, service, shadowed
+        )
     )
 
     # Extract from nested configs (like if/then/else, repeat, etc.)
@@ -149,6 +161,7 @@ async def async_extract_entities_from_action_config(
             in_payload=_in_payload,
             _in_values=_in_values,
             _service=service,
+            shadowed=shadowed,
         )
     )
 
@@ -161,6 +174,7 @@ async def async_extract_entities_from_helper_actions(
     *,
     include_disabled: bool = True,
     known_services: set[str],
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs from the actions in a helper's options.
 
@@ -182,13 +196,17 @@ async def async_extract_entities_from_helper_actions(
             option,
             include_disabled=include_disabled,
             known_services=known_services,
+            shadowed=shadowed,
         )
 
     return entities
 
 
 async def _extract_entities_from_action_fields(
-    hass: HomeAssistant, config: dict[str, Any], known_services: set[str]
+    hass: HomeAssistant,
+    config: dict[str, Any],
+    known_services: set[str],
+    shadowed: frozenset[str],
 ) -> set[str]:
     """Extract entities from direct action fields."""
     entities = set()
@@ -196,14 +214,17 @@ async def _extract_entities_from_action_fields(
         if key in config:
             entities.update(
                 await async_extract_entities_from_value(
-                    hass, config[key], known_services=known_services
+                    hass, config[key], known_services=known_services, shadowed=shadowed
                 )
             )
     return entities
 
 
 async def _extract_entities_from_target(
-    hass: HomeAssistant, config: dict[str, Any], known_services: set[str]
+    hass: HomeAssistant,
+    config: dict[str, Any],
+    known_services: set[str],
+    shadowed: frozenset[str],
 ) -> set[str]:
     """Extract entities from target configuration."""
     entities = set()
@@ -213,7 +234,10 @@ async def _extract_entities_from_target(
             if key in target:
                 entities.update(
                     await async_extract_entities_from_value(
-                        hass, target[key], known_services=known_services
+                        hass,
+                        target[key],
+                        known_services=known_services,
+                        shadowed=shadowed,
                     )
                 )
     return entities
@@ -275,6 +299,7 @@ async def _extract_entities_from_service_data(
     config: dict[str, Any],
     known_services: set[str],
     service: str | None,
+    shadowed: frozenset[str],
 ) -> set[str]:
     """Extract entities from service data."""
     entities = set()
@@ -284,7 +309,7 @@ async def _extract_entities_from_service_data(
             # data field is a template string itself
             entities.update(
                 await async_extract_entities_from_value(
-                    hass, data_value, known_services=known_services
+                    hass, data_value, known_services=known_services, shadowed=shadowed
                 )
             )
         elif isinstance(data_value, dict):
@@ -296,13 +321,15 @@ async def _extract_entities_from_service_data(
                     continue
                 entities.update(
                     await async_extract_entities_from_value(
-                        hass, value, known_services=known_services
+                        hass, value, known_services=known_services, shadowed=shadowed
                     )
                 )
 
     if service == "script.turn_on":
         entities.update(
-            await _extract_entities_from_script_variables(hass, config, known_services)
+            await _extract_entities_from_script_variables(
+                hass, config, known_services, shadowed
+            )
         )
 
     return entities
@@ -312,6 +339,7 @@ async def _extract_entities_from_script_variables(
     hass: HomeAssistant,
     config: dict[str, Any],
     known_services: set[str],
+    shadowed: frozenset[str],
 ) -> set[str]:
     """Extract entities from the variables script.turn_on hands a script.
 
@@ -334,7 +362,7 @@ async def _extract_entities_from_script_variables(
         for value in variables.values():
             entities.update(
                 await async_extract_entities_from_value(
-                    hass, value, known_services=known_services
+                    hass, value, known_services=known_services, shadowed=shadowed
                 )
             )
 
@@ -346,7 +374,7 @@ async def _extract_entities_from_script_variables(
 _ACTION_DATA_KEYS = frozenset({"data", "data_template"})
 
 
-async def _extract_entities_from_nested_configs(
+async def _extract_entities_from_nested_configs(  # noqa: PLR0913 # pylint: disable=too-many-arguments
     hass: HomeAssistant,
     config: dict[str, Any],
     known_services: set[str],
@@ -355,6 +383,7 @@ async def _extract_entities_from_nested_configs(
     in_payload: bool = False,
     _in_values: bool = False,
     _service: str | None = None,
+    shadowed: frozenset[str],
 ) -> set[str]:
     """Extract entities from nested configurations.
 
@@ -380,6 +409,7 @@ async def _extract_entities_from_nested_configs(
                     _is_payload=key in _ACTION_DATA_KEYS,
                     _in_values=_in_values or key in VALUE_KEYS,
                     _service=_service,
+                    shadowed=shadowed,
                 )
             )
     return entities
@@ -390,11 +420,12 @@ async def async_extract_entities_from_value(
     value: Any,
     *,
     known_services: set[str] | None = None,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs from a configuration value.
 
     See `async_extract_entities_from_action_config` for what
-    ``known_services`` is and why passing it in matters.
+    ``known_services`` and ``shadowed`` are and why passing them in matters.
     """
     entities = set()
 
@@ -406,7 +437,7 @@ async def async_extract_entities_from_value(
                 known_services = async_get_all_services(hass)
             try:
                 template_entities = await async_extract_entities_from_template_string(
-                    hass, value, known_services
+                    hass, value, known_services, shadowed
                 )
                 entities.update(template_entities)
             # pylint: disable-next=broad-exception-caught
@@ -427,7 +458,7 @@ async def async_extract_entities_from_value(
         for item in value:
             entities.update(
                 await async_extract_entities_from_value(
-                    hass, item, known_services=known_services
+                    hass, item, known_services=known_services, shadowed=shadowed
                 )
             )
     elif (
@@ -583,19 +614,21 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
     entity_ids: set[str],
     raw_config: Any,
     *,
-    named_in: Callable[[dict[str, Any]], Awaitable[set[str]]],
+    named_in: Callable[[dict[str, Any], frozenset[str]], Awaitable[set[str]]],
     known_entity_ids: set[str],
     known_services: set[str],
 ) -> set[str]:
     """Return which of what an automation or script names does not exist.
 
     `entity_ids` is everything gathered for it, Home Assistant's own list
-    included, and `named_in` reads a configuration the way the repair does.
-    Shared by the automation and script repairs, which settle it the same way.
+    included, and `named_in` reads a configuration the way the repair does,
+    with the names the whole configuration gives its templates. Shared by the
+    automation and script repairs, which settle it the same way.
     """
     entity_ids = set(entity_ids)
+    shadowed = names_given_to_templates(raw_config)
     if isinstance(raw_config, dict):
-        named = await named_in(raw_config)
+        named = await named_in(raw_config, shadowed)
 
         # Home Assistant's own list takes the `entity_id` of somebody's own
         # event too, which is data from the sender, and the made-up entity
@@ -609,7 +642,9 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
         # once those are pruned. Home Assistant's own list also reads keys
         # the repair does not, like the `at` of a time trigger. Whatever only
         # a disabled part holds goes as well, whichever key it sits under.
-        still_named = await named_in(without_disabled_steps(raw_config))
+        # The names stay those of all of it: a variable set in a disabled
+        # step still hides the lookup in a template that runs.
+        still_named = await named_in(without_disabled_steps(raw_config), shadowed)
         entity_ids -= (
             named | mentioned_only_in_disabled_steps(raw_config)
         ) - still_named
@@ -619,6 +654,7 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
         entity_ids=entity_ids,
         known_entity_ids=known_entity_ids,
         known_services=known_services,
+        shadowed=shadowed,
     )
 
     # Where an entity ID goes, something that is no entity ID at all finds

@@ -675,11 +675,12 @@ async def test_extract_entities_from_config_reuses_duplicate_template_results(
         hass: HomeAssistant,
         template_str: str,
         known_services: set[str] | None = None,
+        shadowed: frozenset[str] = frozenset(),
     ) -> set[str]:
         """Extract entity IDs from a template string."""
         nonlocal calls
         calls += 1
-        return await original(hass, template_str, known_services)
+        return await original(hass, template_str, known_services, shadowed)
 
     monkeypatch.setattr(
         template_extraction,

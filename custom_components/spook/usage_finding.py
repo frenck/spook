@@ -45,6 +45,7 @@ from .helper_sources import (
 from .reference_extraction import (
     core_references,
     extract_targets_from_config,
+    names_given_to_templates,
     without_never_rendered,
 )
 from .repairs import INSPECTION_YIELD_INTERVAL
@@ -138,7 +139,10 @@ async def _async_named_by_automation(
                 hass, raw_config, known_services
             )
             | await async_extract_entities_from_config(
-                hass, without_never_rendered(raw_config), known_services
+                hass,
+                without_never_rendered(raw_config),
+                known_services,
+                names_given_to_templates(raw_config),
             )
         )
 
@@ -166,15 +170,17 @@ async def _async_named_by_script(
 
     if "entity" in wanted:
         steps = raw_config.get("sequence") or []
+        shadowed = names_given_to_templates(raw_config)
         named["entity"] = (
             core_references(entity, "entities")
             | await async_extract_entities_from_action_config(
                 hass,
                 [steps] if isinstance(steps, dict) else steps,
                 known_services=known_services,
+                shadowed=shadowed,
             )
             | await async_extract_entities_from_config(
-                hass, without_never_rendered(raw_config), known_services
+                hass, without_never_rendered(raw_config), known_services, shadowed
             )
         )
 
@@ -356,10 +362,11 @@ async def _async_named_by_helper(
     if entry.domain == _TEMPLATE_HELPER_DOMAIN:
         if "entity" in wanted:
             options = dict(entry.options)
+            shadowed = names_given_to_templates(options)
             named["entity"] = await async_extract_entities_from_config(
-                hass, options, known_services
+                hass, options, known_services, shadowed
             ) | await async_extract_entities_from_helper_actions(
-                hass, options, known_services=known_services
+                hass, options, known_services=known_services, shadowed=shadowed
             )
         if "action" in wanted:
             named["action"] = find_services_in_helper_options(

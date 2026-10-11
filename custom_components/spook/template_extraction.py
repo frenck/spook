@@ -139,6 +139,7 @@ async def async_extract_entities_from_template_string(
     hass: HomeAssistant,
     template_str: str,
     known_services: set[str] | None = None,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs from a template string using regex analysis.
 
@@ -153,7 +154,7 @@ async def async_extract_entities_from_template_string(
     # Use regex patterns to find entities
     try:
         regex_entities = extract_entities_from_template_regex(
-            hass, template_str, known_services
+            hass, template_str, known_services, shadowed
         )
         entities.update(regex_entities)
     # pylint: disable-next=broad-exception-caught
@@ -337,42 +338,48 @@ def _is_concatenated_template_match(
     return before_literal.endswith(_GLUE) or after_literal.startswith(_GLUE)
 
 
-def _filter_and_test_name_offsets(template_str: str) -> frozenset[int]:
-    """Return where each name Jinja reads as the name of a filter or test starts.
+def _states_lookup_offsets(template_str: str) -> frozenset[int] | None:
+    """Return where each `states` Jinja reads as Home Assistant's lookup starts.
 
-    That is the name right after a `|`, an `is` or an `is not`. Jinja's
-    parser reads a dotted name there whole, as one filter or test name: in
+    The exact name, as Jinja names are case sensitive, and not right after
+    a dot: `obj.states` is an attribute of `obj`. Not the name right after
+    a `|`, an `is` or an `is not` either. Jinja's parser reads a dotted name
+    there whole, as one filter or test name: in
     `'x' | states.light.kitchen.state` that is a filter called
     `states.light.kitchen.state`, which Home Assistant does not have, and
     no lookup of `light.kitchen`.
+
+    A template Jinja cannot read has no answer, and is read by the source
+    alone.
     """
     lexed = _lexed(template_str)
     if lexed is None:
-        return frozenset()
+        return None
 
     tokens = [token for token in lexed if token[1] != "whitespace"]
     return frozenset(
         start
-        for index, (start, kind, _value) in enumerate(tokens)
+        for index, (start, kind, value) in enumerate(tokens)
         if kind == "name"
-        and (
-            _is_raw(tokens, index - 1, "operator", ("|",))
-            or _is_raw(tokens, index - 1, "name", ("is",))
-            or (
-                _is_raw(tokens, index - 1, "name", ("not",))
-                and _is_raw(tokens, index - 2, "name", ("is",))
-            )
+        and value == _STATES
+        and not _is_raw(tokens, index - 1, "operator", (".", "|"))
+        and not _is_raw(tokens, index - 1, "name", ("is",))
+        and not (
+            _is_raw(tokens, index - 1, "name", ("not",))
+            and _is_raw(tokens, index - 2, "name", ("is",))
         )
     )
 
 
-def _is_filter_or_test_name_match(
-    match: re.Match[str], filter_and_test_name_offsets: frozenset[int]
+def _is_no_states_lookup_match(
+    match: re.Match[str], states_lookup_offsets: frozenset[int] | None
 ) -> bool:
-    """Return if a `states.domain.entity` match is a filter or test name."""
+    """Return if a `states.domain.entity` match starts at no `states` lookup."""
     if len(match.groups()) != _STATES_DOMAIN_ENTITY_GROUPS:
         return False
-    return match.start() in filter_and_test_name_offsets
+    if states_lookup_offsets is None:
+        return False
+    return match.start() not in states_lookup_offsets
 
 
 def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:
@@ -1248,15 +1255,17 @@ def _states_spelled_out(
 
 
 @lru_cache(maxsize=1024)
-def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
+def _looked_up_in_any_case(
+    template_str: str, shadowed: frozenset[str] = frozenset()
+) -> frozenset[str]:
     """Return the entity IDs a template looks a state up for, as written.
 
     Handed to a lookup as a literal, or spelled out after `states.`, and not
-    by a name the template defines itself. These are the ones Home Assistant
-    tries in lower case too.
+    by a name the template, or the configuration in `shadowed`, defines
+    itself. These are the ones Home Assistant tries in lower case too.
     """
     expressions = _expressions(template_str)
-    local = _named_locally(expressions)
+    local = _named_locally(expressions) | shadowed
 
     return frozenset(
         {value for _name, value in _literal_state_lookups(expressions, local)}
@@ -1313,11 +1322,17 @@ def _entity_id_from_template_match(match: re.Match[str]) -> str:
 
 
 @lru_cache(maxsize=1024)
-def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str]:
+def _extract_entity_candidates_from_template(
+    template_str: str, shadowed: frozenset[str] = frozenset()
+) -> frozenset[str]:
     """Extract entity ID candidates from a template string.
 
-    Pure in the template string, so results are cached: repairs re-inspect
-    the same unchanged templates over and over.
+    `shadowed` holds the names the configuration around the template gives
+    a meaning of its own, like a variable called `states`. Those, and the
+    names the template defines itself, are not Home Assistant's lookups.
+
+    Pure in its arguments, so results are cached: repairs re-inspect the
+    same unchanged templates over and over.
     """
     # One kind of line ending, so the lexer's offsets and the regex's agree.
     template_without_comments = _LINE_ENDINGS.sub(
@@ -1325,13 +1340,21 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
     )
     text_argument_offsets = _text_argument_offsets(template_without_comments)
     glued_literals = _glued_literals(template_without_comments)
-    filter_and_test_name_offsets = _filter_and_test_name_offsets(
-        template_without_comments
+    states_lookup_offsets = _states_lookup_offsets(template_without_comments)
+    # `states.light.kitchen` is no literal, only names: when `states` is the
+    # template's or the configuration's own, it names no entity at all. A
+    # literal is still read, whatever it is handed to, just like one in
+    # `{% set x = 'light.kitchen' %}` or handed to a macro of any other name.
+    states_is_shadowed = _STATES in shadowed or _STATES in _named_locally(
+        _expressions(template_without_comments)
     )
 
     entities = set()
 
     for pattern in COMPILED_ENTITY_ID_TEMPLATE_PATTERNS:
+        if states_is_shadowed and pattern.groups == _STATES_DOMAIN_ENTITY_GROUPS:
+            continue
+
         for match in pattern.finditer(template_without_comments):
             if (
                 _is_concatenated_template_match(
@@ -1340,13 +1363,13 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 or _is_jinja_import_match(template_without_comments, match)
                 or _is_string_method_argument_match(template_without_comments, match)
                 or _is_text_argument_match(match, text_argument_offsets)
-                or _is_filter_or_test_name_match(match, filter_and_test_name_offsets)
+                or _is_no_states_lookup_match(match, states_lookup_offsets)
             ):
                 continue
 
             entity_id = _entity_id_from_template_match(match)
             if not entity_id.islower() and entity_id in _looked_up_in_any_case(
-                template_without_comments
+                template_without_comments, shadowed
             ):
                 entity_id = entity_id.lower()
 
@@ -1364,6 +1387,7 @@ def extract_entities_from_template_regex(
     hass: HomeAssistant,
     template_str: str,
     known_services: set[str] | None = None,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs from template string using regex patterns.
 
@@ -1375,7 +1399,7 @@ def extract_entities_from_template_regex(
     if not isinstance(template_str, str):
         return set()
 
-    entities = set(_extract_entity_candidates_from_template(template_str))
+    entities = set(_extract_entity_candidates_from_template(template_str, shadowed))
 
     # Filter out known services to avoid false positives
     if known_services is None:
@@ -1383,12 +1407,14 @@ def extract_entities_from_template_regex(
     return entities - known_services
 
 
-async def _process_template_object(
+async def _process_template_object(  # noqa: PLR0913 # pylint: disable=too-many-arguments
     hass: HomeAssistant,
     template: Template,
     known_entity_ids: set[str],
     known_services: set[str],
     unknown_entities: set[str],
+    *,
+    shadowed: frozenset[str],
 ) -> None:
     """Process a Template object and add unknown entities to the set."""
     template_entities = set()
@@ -1397,7 +1423,7 @@ async def _process_template_object(
     try:
         if hasattr(template, "template") and template.template:
             regex_entities = extract_entities_from_template_regex(
-                hass, template.template, known_services
+                hass, template.template, known_services, shadowed
             )
             template_entities.update(regex_entities)
     # pylint: disable-next=broad-exception-caught
@@ -1410,16 +1436,18 @@ async def _process_template_object(
             unknown_entities.add(template_entity)
 
 
-async def _process_template_string(
+async def _process_template_string(  # noqa: PLR0913 # pylint: disable=too-many-arguments
     hass: HomeAssistant,
     template_str: str,
     known_entity_ids: set[str],
     known_services: set[str],
     unknown_entities: set[str],
+    *,
+    shadowed: frozenset[str],
 ) -> None:
     """Process a template string and add unknown entities to the set."""
     template_entities = await async_extract_entities_from_template_string(
-        hass, template_str, known_services
+        hass, template_str, known_services, shadowed
     )
     # Check if any of the template entities are unknown
     for template_entity in template_entities:
@@ -1438,6 +1466,7 @@ async def async_filter_known_entity_ids_with_templates(
     entity_ids: Iterable[str],
     known_entity_ids: set[str] | None = None,
     known_services: set[str] | None = None,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Async version that can process templates to extract entity dependencies.
 
@@ -1448,6 +1477,9 @@ async def async_filter_known_entity_ids_with_templates(
     ``known_services`` is what tells an action name apart from an entity id.
     Building it flattens every service Home Assistant has, so a caller running
     this over one item after another should build it once and pass it in.
+
+    ``shadowed`` holds the names the configuration gives its templates, as
+    `reference_extraction.names_given_to_templates` finds them.
     """
     if known_entity_ids is None:
         known_entity_ids = async_get_all_entity_ids(hass)
@@ -1460,7 +1492,12 @@ async def async_filter_known_entity_ids_with_templates(
             if known_services is None:
                 known_services = async_get_all_services(hass)
             await _process_template_object(
-                hass, entity_id_raw, known_entity_ids, known_services, unknown_entities
+                hass,
+                entity_id_raw,
+                known_entity_ids,
+                known_services,
+                unknown_entities,
+                shadowed=shadowed,
             )
             continue
 
@@ -1472,7 +1509,12 @@ async def async_filter_known_entity_ids_with_templates(
             if known_services is None:
                 known_services = async_get_all_services(hass)
             await _process_template_string(
-                hass, entity_id_raw, known_entity_ids, known_services, unknown_entities
+                hass,
+                entity_id_raw,
+                known_entity_ids,
+                known_services,
+                unknown_entities,
+                shadowed=shadowed,
             )
         else:
             # Process as regular entity ID(s), handling comma-separated lists
@@ -1512,12 +1554,19 @@ async def async_extract_entities_from_config(
     hass: HomeAssistant,
     config: Any,
     known_services: set[str] | None = None,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs referenced in templates within a configuration structure.
 
     ``known_services`` is what tells an action name apart from an entity id.
     Building it flattens every service Home Assistant has, so a caller walking
     one configuration after another should build it once and pass it in.
+
+    ``shadowed`` holds the names the configuration gives its templates, as
+    `reference_extraction.names_given_to_templates` finds them: a variable
+    called `states` is not Home Assistant's `states`. Taken from the whole
+    configuration, so a caller handing in a part of it, or a copy without
+    its descriptions, passes them in.
     """
     entities = set()
     if not config:
@@ -1535,7 +1584,7 @@ async def async_extract_entities_from_config(
                 extracted_templates[
                     template_str
                 ] = await async_extract_entities_from_template_string(
-                    hass, template_str, known_services
+                    hass, template_str, known_services, shadowed
                 )
             referenced_entities = extracted_templates[template_str]
             entities.update(referenced_entities)

@@ -21,7 +21,11 @@ from ....entity_filtering import (
     async_name_helper_in_the_registry,
 )
 from ....entity_suggestions import async_describe_unknown_entities
-from ....reference_extraction import without_disabled_steps, without_never_rendered
+from ....reference_extraction import (
+    names_given_to_templates,
+    without_disabled_steps,
+    without_never_rendered,
+)
 from ....repairs import AbstractSpookRepair
 from ....template_extraction import async_extract_entities_from_config
 from ...automation.repairs.unknown_entity_references import (
@@ -97,8 +101,9 @@ class SpookRepair(AbstractSpookRepair):
             self.possible_issue_ids.add(entry.entry_id)
 
             options = dict(entry.options)
+            shadowed = names_given_to_templates(options)
             referenced = await async_extract_entities_from_config(
-                self.hass, options, known_services
+                self.hass, options, known_services, shadowed
             )
 
             # Extracting the actions twice separates references that a step
@@ -110,9 +115,10 @@ class SpookRepair(AbstractSpookRepair):
                 options,
                 include_disabled=False,
                 known_services=known_services,
+                shadowed=shadowed,
             )
             referenced |= await async_extract_entities_from_helper_actions(
-                self.hass, options, known_services=known_services
+                self.hass, options, known_services=known_services, shadowed=shadowed
             )
 
             await self._async_report(
@@ -140,10 +146,16 @@ class SpookRepair(AbstractSpookRepair):
             config = template_entity.config
             # Read once as it is and once without its disabled steps, for the
             # same reason as above. Here the templates go too: a disabled
-            # trigger or step is never rendered, whatever is in it.
-            referenced = await self._async_named_in_yaml(config, known_services)
+            # trigger or step is never rendered, whatever is in it. The names
+            # it gives its templates come from all of it both times, so a
+            # template does not count as active only because the step that
+            # names its variable is disabled.
+            shadowed = names_given_to_templates(config)
+            referenced = await self._async_named_in_yaml(
+                config, known_services, shadowed
+            )
             active = await self._async_named_in_yaml(
-                without_disabled_steps(config), known_services
+                without_disabled_steps(config), known_services, shadowed
             )
 
             await self._async_report(
@@ -162,7 +174,10 @@ class SpookRepair(AbstractSpookRepair):
             )
 
     async def _async_named_in_yaml(
-        self, config: dict[str, Any], known_services: set[str]
+        self,
+        config: dict[str, Any],
+        known_services: set[str],
+        shadowed: frozenset[str],
     ) -> set[str]:
         """Return the entities a template entity from YAML names.
 
@@ -171,7 +186,7 @@ class SpookRepair(AbstractSpookRepair):
         its section, read the way an automation's are.
         """
         named = await async_extract_entities_from_config(
-            self.hass, without_never_rendered(config), known_services
+            self.hass, without_never_rendered(config), known_services, shadowed
         )
         # Home Assistant validates every action of a template entity into a
         # list of steps. A mapping is something else, like its attributes,
@@ -182,10 +197,10 @@ class SpookRepair(AbstractSpookRepair):
             if isinstance(value, list)
         }
         named |= await async_extract_entities_from_helper_actions(
-            self.hass, actions, known_services=known_services
+            self.hass, actions, known_services=known_services, shadowed=shadowed
         )
         named |= await extract_entities_from_automation_config(
-            self.hass, config, known_services
+            self.hass, config, known_services, shadowed
         )
         return named
 
