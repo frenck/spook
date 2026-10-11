@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "此空間無法編輯：{entity_id}。"
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "數量 {amount} 不適用於 {entity_id}，它以 {step} 為步進值變化。請使用 {step} 的倍數，或者不設定數量以移動一步。"
+        },
+        "area_cannot_update": {
+            "message": "區域 {area_id} 無法這樣變更：{error}。"
+        },
+        "area_name_taken": {
+            "message": "名稱 {name} 已被區域 {area_id} 使用。"
+        },
+        "area_nothing_to_update": {
+            "message": "區域 {area_id} 沒有需要更新的內容：請至少提供 {fields} 其中之一。"
+        },
+        "device_nothing_to_update": {
+            "message": "裝置 {device_id} 沒有需要更新的內容：請至少提供 {fields} 其中之一。"
+        },
+        "floor_name_taken": {
+            "message": "名稱 {name} 已被樓層 {floor_id} 使用。"
+        },
+        "floor_nothing_to_update": {
+            "message": "樓層 {floor_id} 沒有需要更新的內容：請至少提供 {fields} 其中之一。"
+        },
+        "schedule_blocks_invalid": {
+            "message": "這些時間區塊不適用於 {entity_id}：{error}。尚未做任何變更。"
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} 是來自您 YAML 設定的排程，Spook 無法變更它。請改為在您的設定中編輯。"
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "自從 Spook 上次檢查後，這些感測器已經回來，或設定已改為指向其他地方，因此沒有清除任何東西。Spook 會自行再檢查一次並更新此修復。"
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist 無法區分這些：{name}",
+            "description": "Spook 在您的語音助理中發現了一個幽靈 👻\n\n以下實體都已向 Assist 公開，並且都回應名稱 {name}：\n\n{entities}\n\n名稱相同時，Assist 只能透過區域來區分它們：您說出的區域，或者語音衛星所在的區域。其中一些共用同一個區域，或者根本沒有區域，所以 Assist 無法在任何地方僅憑這個名稱把它們挑出來。於是要求 {name} 會失敗，而且不會說明是哪些實體在礙事。\n\n要修正此問題，請給每個實體一個獨有的名稱或別名，或者把它們移到不同的區域。您可以在 [公開的實體](/config/voice-assistants/expose) 中變更實體的別名，以及 Assist 是否能看到它。區域在 [區域頁面](/config/areas/dashboard) 中設定。\n\nSpook 👻 您的好夥伴。"
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化使用了以下屬性，但這些實體並沒有這些屬性。現在沒有，這類實體本身也不提供，記錄器所記得的歷史中也從未出現過：\n\n{attributes}\n\n\n\n等待一個從不出現的屬性的觸發條件或條件永遠不會觸發，也不會告訴您。讀取它的模板什麼也得不到。要修正此問題，請 [編輯此自動化]({edit}) 並使用實體擁有的屬性。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知屬性：{automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化等待或檢查以下狀態，但這些實體從不會處於這些狀態。這類實體不可能有這種狀態，實體提供的選項中也沒有，記錄器所記得的歷史中也從未出現過：\n\n{states}\n\n\n\n等待一個永遠不會到來的狀態的觸發條件永遠不會觸發，檢查它的條件永遠不會通過，而且兩者都不會告訴您。狀態區分大小寫：`On` 不是 `on`。要修正此問題，請 [編輯此自動化]({edit}) 並使用實體可能處於的狀態。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知狀態：{automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化檢查以下觸發 ID，但它自己的觸發條件都沒有這些 ID：\n\n{trigger_ids}\n\n\n\n檢查一個沒有任何觸發條件會傳遞的 ID，結果總是一樣：要求它的觸發條件判斷永遠不會通過，因此它所保護的部分永遠不會執行，也沒有任何提示。觸發 ID 區分大小寫，沒有自己 ID 的觸發條件以它在清單中的位置作為 ID，從 `0` 開始計數。要修正此問題，請 [編輯此自動化]({edit}) 並使用其某個觸發條件的 ID，或者為觸發條件設定自動化所要求的 ID。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知觸發 ID：{automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板顯示或檢查以下屬性，但這些實體並沒有這些屬性。現在沒有，這類實體本身也不提供，記錄器所記得的歷史中也從未出現過：\n\n{attributes}\n\n\n\n顯示一個從不出現的屬性的卡片會一直是空的，檢查它的可見性條件或篩選器永遠不會通過。兩者都不會告訴您。要修正此問題，請 [編輯該儀表板]({edit}) 並使用實體擁有的屬性。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下儀表板中使用了未知屬性：{dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板檢查以下狀態，但這些實體從不會處於這些狀態。這類實體不可能有這種狀態，實體提供的選項中也沒有，記錄器所記得的歷史中也從未出現過：\n\n{states}\n\n\n\n檢查一個永遠不會到來的狀態的可見性條件或篩選器永遠不會通過，為它設定的圖片也永遠不會顯示。它們都不會告訴您。狀態區分大小寫：`On` 不是 `on`。要修正此問題，請 [編輯該儀表板]({edit}) 並使用實體可能處於的狀態。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下儀表板中使用了未知狀態：{dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板會導覽到以下不存在的視圖：\n\n{paths}\n\n\n\n導覽到其中某個視圖的按鈕或卡片會悄無聲息地開啟該儀表板的第一個視圖。這通常發生在視圖被重新命名、移動或移除之後。要修復此錯誤，請 [編輯該儀表板]({edit}) 並讓它們指向存在的視圖。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下儀表板中導覽到未知視圖：{dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本使用了以下屬性，但這些實體並沒有這些屬性。現在沒有，這類實體本身也不提供，記錄器所記得的歷史中也從未出現過：\n\n{attributes}\n\n\n\n等待一個從不出現的屬性的觸發條件或條件永遠不會觸發，也不會告訴您。讀取它的模板什麼也得不到。要修正此問題，請 [編輯腳本]({edit}) 並使用實體擁有的屬性。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知屬性：{script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本等待或檢查以下狀態，但這些實體從不會處於這些狀態。這類實體不可能有這種狀態，實體提供的選項中也沒有，記錄器所記得的歷史中也從未出現過：\n\n{states}\n\n\n\n等待一個永遠不會到來的狀態的觸發條件永遠不會觸發，檢查它的條件永遠不會通過，而且兩者都不會告訴您。狀態區分大小寫：`On` 不是 `on`。要修正此問題，請 [編輯腳本]({edit}) 並使用實體可能處於的狀態。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知狀態：{script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook 在您的模板輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下模板輔助項目：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n該模板輔助項目使用了以下屬性，但這些實體並沒有這些屬性。現在沒有，這類實體本身也不提供，記錄器所記得的歷史中也從未出現過：\n\n{attributes}\n\n\n\n讀取一個從不出現的屬性的模板什麼也得不到，它的動作中等待該屬性的條件永遠不會通過。兩者都不會告訴您。要修正此問題，請 [編輯該模板輔助項目]({edit}) 並使用實體擁有的屬性。\n\nSpook 👻 您的好夥伴。",
+            "title": "模板輔助項目 {helper} 中使用了未知屬性"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化包含以下模板，無論家裡發生什麼，它們都永遠無法通過：\n\n{templates}\n\n\n\n模板條件只有在渲染出 `true` 時才會通過，`wait_template` 也一樣，除非它稍後變成可被視為真的值。模板觸發條件在模板變成可被視為真的值時觸發，例如 `true`、`on`、`yes` 或 `1`。由於寫法的關係，這些模板總是渲染出別的東西。常見原因：\n\n- 模板外面加了引號。`>-` 區塊會把引號當作文字，於是引號出現在結果中。\n- 完全沒有模板分隔符號，所以文字被原樣使用。\n- 把 YAML 貼到了模板欄位中。\n- Jinja 中的 YAML `#` 註解，Jinja 會把它當作文字輸出。\n- 條件渲染出 `on` 而不是 `true`。\n\n沒有任何提示：條件永遠不會通過，等待只會在逾時後結束，觸發條件永遠不會觸發。要修正此問題，請 [編輯此自動化]({edit}) 並讓模板在應該通過時渲染出 `true`。\n\nSpook 👻 您的好夥伴。",
+            "title": "以下項目中有永遠無法通過的模板：{automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化向其動作傳遞了以下整合條目，但 Home Assistant 無法辨識它們，或者它們屬於與動作要求不同的整合：\n\n{config_entries}\n\nHome Assistant 會在該步驟執行時拒絕它們。這通常發生在某個整合被移除後又重新新增時：它得到了一個新的整合條目，以及新的 ID。\n\n要修復此錯誤，請 [編輯此自動化]({edit}) 並在這些動作中重新選擇整合條目。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知整合條目：{automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化傳出了以下圖示，但它們不存在於 Home Assistant 內建的 Material Design Icons 中：\n\n{icons}\n\n\n\n這些圖示都會悄無聲息地顯示為空白。這通常是因為圖示名稱拼錯、圖示被重新命名或移除，或者選自比 Home Assistant 內建版本更新的 Material Design Icons。要修復此錯誤，請 [編輯此自動化]({edit}) 並把它們替換為存在的圖示。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知圖示：{automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化提到了以下已不存在的使用者：\n\n{users}\n\n\n\nHome Assistant 不會重複分配同一個使用者 ID，所以這些使用者已被移除。等待其中某個使用者的觸發條件永遠不會為他們觸發，與其中某個使用者比較的模板永遠不會相符，而且都沒有任何提示。要修正此問題，請 [編輯此自動化]({edit}) 並使用存在的使用者的 ID，或者移除該檢查。\n\nSpook 👻 您的好夥伴。",
+            "title": "以下項目中提到了已移除的使用者：{automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板使用了以下圖示，但它們不存在於 Home Assistant 內建的 Material Design Icons（版本 {version}）中：\n\n{icons}\n\n\n\n這些圖示都會悄無聲息地顯示為空白。這通常是因為圖示名稱拼錯、圖示被重新命名或移除，或者選自比 Home Assistant 內建版本更新的 Material Design Icons。要修復此錯誤，請 [編輯該儀表板]({edit}) 並把它們替換為存在的圖示。側邊欄中儀表板的圖示需要在儀表板設定中變更。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下儀表板中使用了未知圖示：{dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板提到了以下已不存在的使用者：\n\n{users}\n\n\n\nHome Assistant 不會重複分配同一個使用者 ID，所以這些使用者已被移除。只對他們顯示的卡片、徽章、區段或視圖現在對誰都不顯示了，而且沒有任何提示。為他們設定的確認豁免也不再起作用。要修正此問題，請 [編輯該儀表板]({edit}) 並選擇應該看到它的使用者，或者移除該條件。\n\nSpook 👻 您的好夥伴。",
+            "title": "以下儀表板中提到了已移除的使用者：{dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板使用了以下不存在的主題：\n\n{themes}\n\n\n\n使用這些主題之一的卡片、區段或視圖會悄無聲息地改用預設外觀。這通常發生在主題被重新命名或移除之後。要修復此錯誤，請 [編輯該儀表板]({edit}) 並選擇一個存在的主題，或者把該主題加回來。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下儀表板中使用了未知主題：{dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本包含以下模板，無論家裡發生什麼，它們都永遠無法通過：\n\n{templates}\n\n\n\n模板條件只有在渲染出 `true` 時才會通過，`wait_template` 也一樣，除非它稍後變成可被視為真的值。`wait_for_trigger` 中的模板觸發條件在模板變成可被視為真的值時觸發，例如 `true`、`on`、`yes` 或 `1`。由於寫法的關係，這些模板總是渲染出別的東西。常見原因：\n\n- 模板外面加了引號。`>-` 區塊會把引號當作文字，於是引號出現在結果中。\n- 完全沒有模板分隔符號，所以文字被原樣使用。\n- 把 YAML 貼到了模板欄位中。\n- Jinja 中的 YAML `#` 註解，Jinja 會把它當作文字輸出。\n- 條件渲染出 `on` 而不是 `true`。\n\n沒有任何提示：條件永遠不會通過，等待只會在逾時後結束。要修正此問題，請 [編輯腳本]({edit}) 並讓模板在應該通過時渲染出 `true`。\n\nSpook 👻 您的好夥伴。",
+            "title": "以下腳本中有永遠無法通過的模板：{script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本向其動作傳遞了以下整合條目，但 Home Assistant 無法辨識它們，或者它們屬於與動作要求不同的整合：\n\n{config_entries}\n\nHome Assistant 會在該步驟執行時拒絕它們。這通常發生在某個整合被移除後又重新新增時：它得到了一個新的整合條目，以及新的 ID。\n\n要修復此錯誤，請 [編輯腳本]({edit}) 並在這些動作中重新選擇整合條目。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知整合條目：{script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本使用或傳出了以下圖示，但它們不存在於 Home Assistant 內建的 Material Design Icons 中：\n\n{icons}\n\n\n\n這些圖示都會悄無聲息地顯示為空白。這通常是因為圖示名稱拼錯、圖示被重新命名或移除，或者選自比 Home Assistant 內建版本更新的 Material Design Icons。要修復此錯誤，請 [編輯腳本]({edit}) 並把它們替換為存在的圖示。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知圖示：{script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本提到了以下已不存在的使用者：\n\n{users}\n\n\n\nHome Assistant 不會重複分配同一個使用者 ID，所以這些使用者已被移除。與其中某個使用者比較的模板永遠不會相符，等待其中某個使用者的觸發條件永遠不會為他們觸發，而且都沒有任何提示。要修正此問題，請 [編輯腳本]({edit}) 並使用存在的使用者的 ID，或者移除該檢查。\n\nSpook 👻 您的好夥伴。",
+            "title": "以下腳本中提到了已移除的使用者：{script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook 在您的模板實體中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下模板實體：\n\n{name} (`{entity_id}`)\n\n該模板實體使用了以下屬性，但這些實體並沒有這些屬性。現在沒有，這類實體本身也不提供，記錄器所記得的歷史中也從未出現過：\n\n{attributes}\n\n\n\n讀取一個從不出現的屬性的模板什麼也得不到，等待它的觸發條件或條件永遠不會觸發或通過。它們都不會告訴您。\n\n該模板實體是在您的 YAML 設定中設置的。要修正此問題，請在設定的 `template:` 區段編輯它，使用實體擁有的屬性，然後重新載入模板實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "模板實體 {name} 中使用了未知屬性"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook 在您的模板實體中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下模板實體：\n\n{name} (`{entity_id}`)\n\n其設定引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n這通常發生在實體被重新命名或移除時。讀取它的模板什麼也得不到，等待它的觸發條件永遠不會觸發。\n\n該模板實體是在您的 YAML 設定中設置的。要修正此錯誤，請在設定的 `template:` 區段編輯它，引用現有的實體，然後重新載入模板實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "模板實體 {name} 中使用了未知實體"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook 在您的模板實體中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下模板實體：\n\n{name} (`{entity_id}`)\n\n它引用了以下 Home Assistant 無法辨識的動作：\n\n{services}\n\n\n\n這通常發生在動作的提供者被移除，或者腳本被重新命名或刪除時。\n\n該模板實體是在您的 YAML 設定中設置的。要修正此錯誤，請在設定的 `template:` 區段編輯它，使用現有的動作，然後重新載入模板實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "模板實體 {name} 中使用了未知動作"
+        },
+        "unknown_icons": {
+            "description": "Spook 在您的設定中發現了一個幽靈 👻\n\n以下圖示不存在於 Home Assistant 內建的 Material Design Icons（版本 {version}）中：\n\n{icons}\n\n\n\n這些圖示都會悄無聲息地顯示為空白。這通常是因為圖示名稱拼錯、圖示被重新命名或移除，或者選自比 Home Assistant 內建版本更新的 Material Design Icons。要修復此錯誤，請為每一項設定一個存在的圖示：實體、輔助項目或空間在各自的設定中變更，區域、樓層或標籤在區域、標籤與空間的設定中變更，分類在使用它的地方變更，另外還有設定中的 `customize:`。\n\nSpook 👻 您的好夥伴。",
+            "title": "您的設定中有未知圖示"
         }
     },
     "services": {
@@ -2667,6 +2794,170 @@
                     "description": "群組從現在起應包含的實體。"
                 }
             }
+        },
+        "homeassistant_update_area": {
+            "name": "更新區域",
+            "description": "動態更新現有區域。未提供的項目會保留原本的值。別名和標籤會取代區域現有的。樓層、圖示、圖片和感測器可以透過設定為 null 來清除。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要更新的區域的 ID。"
+                },
+                "name": {
+                    "name": "名稱",
+                    "description": "區域的新名稱。"
+                },
+                "aliases": {
+                    "name": "別名",
+                    "description": "區域的別名。會取代現有的別名，空清單會將其全部移除。"
+                },
+                "floor_id": {
+                    "name": "樓層 ID",
+                    "description": "區域所在樓層的 ID。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "區域要使用的新圖示。"
+                },
+                "picture": {
+                    "name": "圖片",
+                    "description": "區域圖片的網址或路徑。"
+                },
+                "labels": {
+                    "name": "標籤",
+                    "description": "區域的標籤 ID。會取代現有的標籤，空清單會將其全部移除。"
+                },
+                "temperature_entity_id": {
+                    "name": "溫度感測器",
+                    "description": "測量該區域溫度的感測器。"
+                },
+                "humidity_entity_id": {
+                    "name": "濕度感測器",
+                    "description": "測量該區域濕度的感測器。"
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "更新裝置",
+            "description": "動態更新現有裝置。未提供的項目會保留原本的值。標籤會取代裝置現有的。名稱和區域可以透過設定為 null 來清除，這會讓裝置恢復其整合給它的名稱。",
+            "fields": {
+                "device_id": {
+                    "name": "裝置 ID",
+                    "description": "要更新的裝置的 ID。Home Assistant 的裝置選擇器不會顯示已停用的裝置，請使用 YAML 模式填寫它們的 ID。"
+                },
+                "name_by_user": {
+                    "name": "名稱",
+                    "description": "裝置的新名稱。"
+                },
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "裝置所在區域的 ID。"
+                },
+                "labels": {
+                    "name": "標籤",
+                    "description": "裝置的標籤 ID。會取代現有的標籤，空清單會將其全部移除。"
+                },
+                "disabled_by": {
+                    "name": "停用者",
+                    "description": "設定為 user 以停用裝置，設定為 null 以重新啟用。效果與停用裝置和啟用裝置動作相同。"
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "更新樓層",
+            "description": "動態更新現有樓層。未提供的項目會保留原本的值。別名會取代樓層現有的。圖示和層數可以透過設定為 null 來清除。",
+            "fields": {
+                "floor_id": {
+                    "name": "樓層 ID",
+                    "description": "要更新的樓層的 ID。"
+                },
+                "name": {
+                    "name": "名稱",
+                    "description": "樓層的新名稱。"
+                },
+                "aliases": {
+                    "name": "別名",
+                    "description": "樓層的別名。會取代現有的別名，空清單會將其全部移除。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "樓層要使用的新圖示。"
+                },
+                "level": {
+                    "name": "層數",
+                    "description": "樓層在您家中所處的層級。"
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "建立排程",
+            "description": "動態建立新的排程輔助項目，在每週各天指定的時間區塊內開啟。會回傳新排程的實體 ID。",
+            "fields": {
+                "name": {
+                    "name": "名稱",
+                    "description": "新排程的名稱。"
+                },
+                "schedule_id": {
+                    "name": "排程實體 ID",
+                    "description": "新排程的實體 ID。schedule. 前綴會自動加上。如果不提供，實體 ID 將根據名稱產生。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "新排程的圖示。"
+                },
+                "monday": {
+                    "name": "星期一",
+                    "description": "排程在星期一開啟的時間：一個時間區塊清單，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。不設定則整天關閉。"
+                },
+                "tuesday": {
+                    "name": "星期二",
+                    "description": "排程在星期二開啟的時間：一個時間區塊清單，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。不設定則整天關閉。"
+                },
+                "wednesday": {
+                    "name": "星期三",
+                    "description": "排程在星期三開啟的時間：一個時間區塊清單，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。不設定則整天關閉。"
+                },
+                "thursday": {
+                    "name": "星期四",
+                    "description": "排程在星期四開啟的時間：一個時間區塊清單，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。不設定則整天關閉。"
+                },
+                "friday": {
+                    "name": "星期五",
+                    "description": "排程在星期五開啟的時間：一個時間區塊清單，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。不設定則整天關閉。"
+                },
+                "saturday": {
+                    "name": "星期六",
+                    "description": "排程在星期六開啟的時間：一個時間區塊清單，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。不設定則整天關閉。"
+                },
+                "sunday": {
+                    "name": "星期日",
+                    "description": "排程在星期日開啟的時間：一個時間區塊清單，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。不設定則整天關閉。"
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "刪除排程",
+            "description": "刪除在 UI 中建立的排程輔助項目。在 YAML 中設定的排程無法由 Spook 刪除。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體 ID",
+                    "description": "要刪除的排程。"
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "設定某天的時間區塊",
+            "description": "取代在 UI 中建立的排程輔助項目中一天或多天的時間區塊。在 YAML 中設定的排程無法由 Spook 變更。",
+            "fields": {
+                "day": {
+                    "name": "星期",
+                    "description": "要設定時間區塊的一週中的某天或某幾天。"
+                },
+                "blocks": {
+                    "name": "時間區塊",
+                    "description": "排程在這些天中開啟的時間區塊，每個區塊包含開始時間和結束時間，以及開啟期間作為屬性顯示的選用資料。它們會取代這些天原有的時間區塊。空清單會讓這些天整天關閉。"
+                }
+            }
         }
     },
     "conditions": {
@@ -2755,6 +3046,16 @@
         "not_triggered_by_user": {
             "name": "非使用者觸發",
             "description": "當沒有人為本次執行負責時通過：排程、太陽、整合自行行動或執行按鈕。故意不接受任何選項。要排除特定人員，請將「由使用者觸發」放在「非」條件內。"
+        },
+        "is_available": {
+            "name": "實體可用",
+            "description": "當實體可以通訊時通過：只要不是無法使用或未知即可。適用於並非一直通電的喇叭或智慧插座。",
+            "fields": {
+                "behavior": {
+                    "name": "行為",
+                    "description": "任一實體可用即可，還是所有實體都必須可用。"
+                }
+            }
         }
     },
     "triggers": {
@@ -2975,6 +3276,92 @@
         "device_discovered": {
             "name": "裝置已發現",
             "description": "當 Home Assistant 發現可以設定的新事物時觸發，例如剛剛出現在您網路中的裝置。"
+        },
+        "state_changed": {
+            "name": "Spook 的狀態觸發條件",
+            "description": "當實體狀態改變時觸發，適用於目標涵蓋的一切：實體、裝置、區域、樓層和標籤。可以依領域、整合或裝置類別縮小範圍，也可以把目標留空，讓它們從所有實體中挑選。還可以再排除一些內容，並決定變化需要持續多久才算數。",
+            "fields": {
+                "domain": {
+                    "name": "領域",
+                    "description": "僅限這些領域的實體，例如 binary_sensor 或 cover。沒有目標時，從所有實體中挑選。"
+                },
+                "integration": {
+                    "name": "整合",
+                    "description": "僅限這些整合提供的實體，例如 zha 或 hue。沒有目標時，從所有實體中挑選。"
+                },
+                "config_entry": {
+                    "name": "整合條目",
+                    "description": "僅限此整合條目的實體。沒有目標時，從所有實體中挑選。"
+                },
+                "device_class": {
+                    "name": "裝置類別",
+                    "description": "僅限這些裝置類別的實體，例如 door 或 window。沒有目標時，從所有實體中挑選。"
+                },
+                "exclude_target": {
+                    "name": "排除",
+                    "description": "要排除的實體、裝置、區域、樓層或標籤。其中的一切都會被排除，診斷實體也一樣。"
+                },
+                "exclude_domain": {
+                    "name": "排除的領域",
+                    "description": "排除這些領域的實體。如果「排除」中沒有任何內容，則適用於目標涵蓋的一切。"
+                },
+                "exclude_integration": {
+                    "name": "排除的整合",
+                    "description": "排除這些整合提供的實體。"
+                },
+                "exclude_config_entry": {
+                    "name": "排除的整合條目",
+                    "description": "排除此整合條目的實體。"
+                },
+                "exclude_device_class": {
+                    "name": "排除的裝置類別",
+                    "description": "排除這些裝置類別的實體。"
+                },
+                "attribute": {
+                    "name": "屬性",
+                    "description": "追蹤此屬性，而不是狀態。"
+                },
+                "from": {
+                    "name": "從",
+                    "description": "僅限從這些狀態之一發生的變化。"
+                },
+                "not_from": {
+                    "name": "不從",
+                    "description": "僅限不是從這些狀態之一發生的變化。"
+                },
+                "to": {
+                    "name": "到",
+                    "description": "僅限變為這些狀態之一的變化。"
+                },
+                "not_to": {
+                    "name": "不到",
+                    "description": "僅限不是變為這些狀態之一的變化。"
+                },
+                "ignore_unavailable": {
+                    "name": "忽略無法使用和未知",
+                    "description": "忽略從無法使用和未知變出、或變為無法使用和未知的變化，這樣重新啟動或路由器重新開機就不會讓一切都觸發。要在「從」或「到」中使用它們，請關閉此項。"
+                },
+                "attribute_changes": {
+                    "name": "計入屬性變化",
+                    "description": "僅屬性改變而狀態不變時也觸發。追蹤屬性時此項不起作用。"
+                },
+                "behavior": {
+                    "name": "行為",
+                    "description": "對每個實體都觸發、在目標中第一個到達的實體時觸發，還是在全部到達時觸發。「第一個」和「全部」需要設定「到」或「不到」。在忽略無法使用和未知期間，處於這些狀態的實體不參與。"
+                },
+                "for": {
+                    "name": "持續時間",
+                    "description": "僅在新狀態保持了這麼久之後才觸發。期間的任何其他變化都會取消它。"
+                },
+                "blip_tolerance": {
+                    "name": "瞬斷容許誤差",
+                    "description": "在等待「持續時間」期間，如果變為無法使用或未知並在這段時間內恢復原樣，等待不會重新開始。僅與「持續時間」一起使用時有效。"
+                },
+                "delay": {
+                    "name": "延遲",
+                    "description": "無論期間發生什麼，都等待這麼久再觸發。類似於在動作開頭放一個延遲。"
+                }
+            }
         }
     },
     "selector": {
@@ -2989,6 +3376,17 @@
             "options": {
                 "bottom": "底部",
                 "top": "頂部"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "星期一",
+                "tuesday": "星期二",
+                "wednesday": "星期三",
+                "thursday": "星期四",
+                "friday": "星期五",
+                "saturday": "星期六",
+                "sunday": "星期日"
             }
         }
     },
