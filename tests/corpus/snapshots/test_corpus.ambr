@@ -1,4 +1,37 @@
 # serializer version: 1
+# name: test_automation_case[action-data-entity-id-with-attribute]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'binary_sensor.living_room_window',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+      'climate.living_room.temperature',
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+      'binary_sensor.living_room_window: off',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+  })
+# ---
 # name: test_automation_case[action-names-chosen-in-template]
   dict({
     'areas': list([
@@ -644,6 +677,42 @@
     ]),
     'triggers': list([
       'state',
+    ]),
+  })
+# ---
+# name: test_automation_case[disabled-time-and-zone-parts]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'trigger',
+      'zone',
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'sensor.phone_next_alarm',
+      'switch.coffee_maker',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'switch.turn_on',
+    ]),
+    'states': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'template',
+      'time',
     ]),
   })
 # ---
@@ -3073,6 +3142,40 @@
     ]),
   })
 # ---
+# name: test_automation_case[states-lookup-of-weather-attribute]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'weather.home: temperature',
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'weather.home',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+      'weather.home.temperature',
+    ]),
+    'services': list([
+      'notify.notify',
+    ]),
+    'states': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'numeric_state',
+    ]),
+  })
+# ---
 # name: test_automation_case[states-or-states-truthiness]
   dict({
     'areas': list([
@@ -3828,6 +3931,76 @@
     ]),
     'triggers': list([
       'state',
+    ]),
+  })
+# ---
+# name: test_automation_case[trigger-id-copied-from-another-automation]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'trigger',
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'light.living_room',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'light.turn_off',
+      'light.turn_on',
+    ]),
+    'states': list([
+    ]),
+    'trigger_ids': list([
+      'dim-down-doublepress',
+    ]),
+    'triggers': list([
+      'event',
+    ]),
+  })
+# ---
+# name: test_automation_case[trigger-id-typo-in-template]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'sensor.anthurium_soil_moisture',
+      'sensor.croton_soil_moisture',
+      'sensor.dracaena_soil_moisture',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'notify.notify',
+    ]),
+    'states': list([
+    ]),
+    'trigger_ids': list([
+      'draceana',
+    ]),
+    'triggers': list([
+      'template',
     ]),
   })
 # ---
@@ -4834,6 +5007,22 @@
     ]),
   })
 # ---
+# name: test_dashboard_case[core-cards-attribute-in-entity-field]
+  dict({
+    'areas': list([
+    ]),
+    'entities': list([
+      'weather.home',
+    ]),
+    'not_entity_ids': list([
+      'climate.living_room.current_temperature',
+      'sensor.phone.battery_level',
+      'weather.home.temperature',
+    ]),
+    'services': list([
+    ]),
+  })
+# ---
 # name: test_dashboard_case[custom-card-placeholders]
   dict({
     'areas': list([
@@ -5331,6 +5520,20 @@
       'switch.pool_pump',
     ]),
     'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+  })
+# ---
+# name: test_dashboard_case[picture-elements-image-attribute-in-entity]
+  dict({
+    'areas': list([
+    ]),
+    'entities': list([
+      'climate.office',
+    ]),
+    'not_entity_ids': list([
+      'climate.office.hvac_action',
     ]),
     'services': list([
     ]),
@@ -5975,6 +6178,34 @@
     'services': list([
       'input_datetime.set_datetime',
       'input_number.set_value',
+    ]),
+    'states': list([
+    ]),
+    'triggers': list([
+    ]),
+  })
+# ---
+# name: test_script_case[disabled-scene-steps]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'scene.hallway_night',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
     ]),
     'states': list([
     ]),
@@ -6751,6 +6982,38 @@
     ]),
     'services': list([
       'media_player.select_source',
+    ]),
+    'states': list([
+    ]),
+    'triggers': list([
+    ]),
+  })
+# ---
+# name: test_script_case[states-lookup-saved-to-a-variable]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'climate.family_room',
+      'sensor.saved_temperature',
+      'sensor.saved_thermostat_state',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+      'climate.family_room.temperature',
+    ]),
+    'services': list([
+      'variable.update_sensor',
     ]),
     'states': list([
     ]),

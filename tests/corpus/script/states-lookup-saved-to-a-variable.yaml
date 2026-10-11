@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/using-variables-sensor-data-in-service-call-automations/585959/8
+note: >-
+  Saving the thermostat setpoint before leaving, to put it back later. The
+  setpoint is an attribute, glued to the entity ID inside `states()`, so the
+  saved value is always `unknown`. Reported as not an entity ID. The plain
+  state of the same thermostat, saved next to it, is a lookup that works.
+expect:
+  not_entity_ids:
+    find: [climate.family_room.temperature]
+  entities:
+    find: [climate.family_room, sensor.saved_thermostat_state]
+---
+alias: Save the thermostat
+sequence:
+  - action: variable.update_sensor
+    target:
+      entity_id: sensor.saved_temperature
+    data:
+      value: "{{ states('climate.family_room.temperature') }}"
+  - action: variable.update_sensor
+    target:
+      entity_id: sensor.saved_thermostat_state
+    data:
+      value: "{{ states('climate.family_room') }}"
