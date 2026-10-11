@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from contextlib import asynccontextmanager, suppress
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
@@ -125,6 +126,28 @@ def _first_sentence(text: str) -> str:
 def _error(message: str) -> ToolResult:
     """Return a refusal or failure the model can read and pass on."""
     return ToolResult(data={"error": message}, error=True)
+
+
+def _draft_config(config: dict[str, Any]) -> dict[str, Any]:
+    """Return the draft to check, also when it came in as a JSON string.
+
+    Gemini takes no object without fixed properties, so Home Assistant's
+    Gemini integration hands it the draft as an object holding one string,
+    `json`. Read as it came, that draft names nothing, and nothing is clean.
+    """
+    if set(config) != {"json"} or not isinstance(config["json"], str):
+        return config
+
+    try:
+        draft = json.loads(config["json"])
+    except ValueError as err:
+        message = f"The draft is not valid JSON: {err}"
+        raise DraftError(message) from err
+
+    if not isinstance(draft, dict):
+        message = "The draft should be a JSON object."
+        raise DraftError(message)
+    return draft
 
 
 class _IssueStrings:
@@ -725,7 +748,7 @@ class CheckReferencesTool(_SpookTool):
         """Check the draft."""
         try:
             unknown: dict[str, Any] = await async_check_draft(
-                hass, args["kind"], args["config"]
+                hass, args["kind"], _draft_config(args["config"])
             )
         except DraftError as err:
             return _error(str(err))

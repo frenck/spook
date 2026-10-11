@@ -13,8 +13,12 @@ These tools are only offered on Home Assistant's own administrator API, availabl
 
 There are two ways to get an assistant talking to Spook:
 
-- **In Home Assistant**: open the settings of a conversation agent (like OpenAI, Anthropic or Ollama) and select the **Home Assistant** API under the options for controlling Home Assistant.
-- **From outside Home Assistant**: point an MCP client (like Claude Desktop or Claude Code) at Home Assistant's [MCP server](https://www.home-assistant.io/integrations/mcp_server/) and select the **Home Assistant** API there.
+- **In Home Assistant**: open the settings of a conversation agent (like OpenAI, Anthropic or Ollama) and select the **Home Assistant** API under **Control Home Assistant**.
+- **From outside Home Assistant**: point an MCP client (like Claude Desktop or Claude Code) at Home Assistant's [MCP server](https://www.home-assistant.io/integrations/mcp_server/). Either select the **Home Assistant** API in the options of the MCP server, or use the address that serves only that API: `/api/mcp/homeassistant`. One set up to expose all APIs picks it up by itself. One set up before Home Assistant 2026.10 keeps serving only the APIs it was set up with, so it needs one of those two.
+
+Spook's tools are not an API of their own. They are part of Home Assistant's **Home Assistant** API, next to Home Assistant's own tools for managing itself, so that is the one to look for.
+
+The **Home Assistant** API is for administrators only, and Home Assistant refuses it to anyone else. That includes a voice assistant, which asks without a user. A conversation agent that has it selected, even next to **Assist**, stops answering those. Give your voice assistant its own conversation agent, with only **Assist**.
 
 Then just ask. "How is my house doing?", "Where is `light.kitchen` used?", or "Check this automation before I save it."
 
