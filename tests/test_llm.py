@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+import json
 from pathlib import Path
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
@@ -912,6 +913,47 @@ async def test_check_references_on_a_card_naming_no_entity_id(
     assert result.data["unknown"] == {
         "not_entity_ids": ["cover.bedroom_blind.current_position"]
     }
+
+
+async def test_check_references_reads_a_draft_gemini_wrapped(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a draft handed over as a JSON string is checked, not passed.
+
+    Gemini takes no object without fixed properties, so Home Assistant's
+    Gemini integration offers `config` as an object holding one string,
+    `json`. Read as it came, that draft names nothing and comes back clean.
+    """
+    draft = {"sequence": [{"action": "light.turn_on", "target": {"area_id": "attic"}}]}
+
+    result = await _call(
+        hass,
+        "spook__check_references",
+        hass_admin_user,
+        kind="script",
+        config={"json": json.dumps(draft)},
+    )
+    assert result.data["clean"] is False
+    assert result.data["unknown"]["areas"] == ["attic"]
+
+    result = await _call(
+        hass,
+        "spook__check_references",
+        hass_admin_user,
+        kind="automation",
+        config={"json": "{not json"},
+    )
+    assert result.error
+    assert "not valid JSON" in result.data["error"]
+
+    result = await _call(
+        hass,
+        "spook__check_references",
+        hass_admin_user,
+        kind="automation",
+        config={"json": "[]"},
+    )
+    assert result.error
 
 
 async def test_check_references_refuses_what_it_cannot_read(
