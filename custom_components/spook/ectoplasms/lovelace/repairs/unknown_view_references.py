@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import re
 from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote
 
@@ -13,7 +12,10 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
 from homeassistant.core import callback
 
 from ....const import LOGGER
-from ....dashboard_extraction import extract_navigation_paths_from_dashboard_node
+from ....dashboard_extraction import (
+    extract_navigation_paths_from_dashboard_node,
+    javascript_number,
+)
 from ....repairs import AbstractSpookRepair
 from ..dashboards import async_dashboard_configs
 
@@ -40,29 +42,6 @@ _TEMPLATE_MARKERS = ("{{", "{%", "{#", "[[", "${")
 # The browser drops these from a URL, or reads them as a slash, before the
 # frontend gets to see the path. What it ends up as is the browser's call.
 _REWRITTEN_BY_THE_BROWSER = ("\t", "\n", "\r", "\\")
-
-# What `Number()` in JavaScript reads as a number. A view is looked up by that
-# too, so `/dashboard/1` opens the second view, and so does `/dashboard/1.0`.
-_JAVASCRIPT_WHITESPACE = re.compile(r"^[\s\ufeff]+|[\s\ufeff]+$")
-_JAVASCRIPT_DECIMAL = re.compile(
-    r"[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?"
-)
-_JAVASCRIPT_PREFIXED = re.compile(r"0[xX][0-9a-fA-F]+|0[oO][0-7]+|0[bB][01]+")
-
-
-def _javascript_number(text: str) -> float | None:
-    """Return what `Number()` in JavaScript makes of a string, None for NaN."""
-    text = _JAVASCRIPT_WHITESPACE.sub("", text)
-    if not text:
-        return 0.0
-
-    if _JAVASCRIPT_PREFIXED.fullmatch(text):
-        return float(int(text, 0))
-
-    if _JAVASCRIPT_DECIMAL.fullmatch(text):
-        return float(text)
-
-    return None
 
 
 def _dashboard_and_view(path: str) -> tuple[str, str] | None:
@@ -129,7 +108,9 @@ def _opens_a_view(view: str, paths: set[str], count: int) -> bool:
         if candidate in paths:
             return True
 
-        number = _javascript_number(candidate)
+        # A view is looked up by its index too, read the way `Number()` reads
+        # it, so `/dashboard/1` opens the second view, and so does `1.0`.
+        number = javascript_number(candidate)
         if number is not None and number.is_integer() and 0 <= number < count:
             return True
 

@@ -252,8 +252,21 @@ async def test_a_subview_back_path_to_a_missing_view_is_reported(
         "/lovelace/-1",
         "/lovelace/1.5",
         "/lovelace/Home",
+        "/lovelace/Infinity",
+        # Infinity to JavaScript, too big for a float to Python.
+        f"/lovelace/0x{'f' * 300}",
     ],
-    ids=["query", "hash", "deeper", "index-too-high", "negative", "fraction", "case"],
+    ids=[
+        "query",
+        "hash",
+        "deeper",
+        "index-too-high",
+        "negative",
+        "fraction",
+        "case",
+        "infinity",
+        "too-big-for-a-float",
+    ],
 )
 async def test_paths_the_frontend_finds_no_view_for(
     hass: HomeAssistant,

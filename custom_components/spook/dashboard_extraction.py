@@ -806,3 +806,49 @@ def extract_navigation_paths_from_dashboard_node(node: Any) -> set[str]:
     paths: set[str] = set()
     _walk_navigation(node, paths)
     return paths
+
+
+# What `Number()` and `trim()` in JavaScript take for whitespace: tab, line
+# and form feeds, the byte order mark, every space separator and the line
+# terminators. Python's own `\s` and `strip()` take a few more, like the
+# separators `\x1c` to `\x1f`, that JavaScript leaves in place.
+_JAVASCRIPT_WHITESPACE_CHARACTERS = (
+    "\t\n\v\f\r \u00a0\u1680\u2000\u2001\u2002\u2003\u2004\u2005\u2006"
+    "\u2007\u2008\u2009\u200a\u2028\u2029\u202f\u205f\u3000\ufeff"
+)
+_JAVASCRIPT_DECIMAL = re.compile(
+    r"[+-]?(?:[0-9]+\.?[0-9]*|\.[0-9]+)(?:[eE][+-]?[0-9]+)?"
+)
+_JAVASCRIPT_PREFIXED = re.compile(r"0[xX][0-9a-fA-F]+|0[oO][0-7]+|0[bB][01]+")
+_JAVASCRIPT_INFINITY = {"Infinity": 1, "+Infinity": 1, "-Infinity": -1}
+
+
+def javascript_trim(text: str) -> str:
+    """Return a string the way `trim()` in JavaScript leaves it."""
+    return text.strip(_JAVASCRIPT_WHITESPACE_CHARACTERS)
+
+
+def javascript_number(text: str) -> float | None:
+    """Return what `Number()` in JavaScript makes of a string, None for NaN.
+
+    Python's `float()` is no stand in: it takes `nan`, `inf` in any case and
+    underscores, all of which are NaN to JavaScript.
+    """
+    text = javascript_trim(text)
+    if not text:
+        return 0.0
+
+    if (sign := _JAVASCRIPT_INFINITY.get(text)) is not None:
+        return sign * float("inf")
+
+    if _JAVASCRIPT_PREFIXED.fullmatch(text):
+        # Too big for a float is Infinity to JavaScript, an error to Python.
+        try:
+            return float(int(text, 0))
+        except OverflowError:
+            return float("inf")
+
+    if _JAVASCRIPT_DECIMAL.fullmatch(text):
+        return float(text)
+
+    return None

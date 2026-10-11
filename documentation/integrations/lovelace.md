@@ -67,6 +67,34 @@ What you see depends on where the reference sits, and the frontend decides that 
 
 To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown referenced attributes
+
+Dashboards are inspected for the attributes they show and check: the `attribute` of the entity card, the gauge card, the attribute row, the state label element and the entities of a picture glance card, the attribute a map card labels its markers with, the attributes in the `state_content` of a tile card or an entity badge, and the `attribute` of state and numeric state conditions and of entity filter state filters. If a dashboard uses an attribute its entity does not have, Spook will raise a repair issue naming the dashboard, the attribute, the entity, and what was most likely meant when Spook is near certain of it.
+
+A card showing an attribute that never shows up stays empty, and a condition checking one never passes. Nothing tells you. That is the ghost this catches.
+
+Spook holds these to the same evidence as the attributes used in [automations](automation.md#unknown-referenced-attributes): an attribute is only reported when Spook cannot find it anywhere. Not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`.
+
+### Unknown referenced states
+
+Dashboards are inspected for the states they check for: the `state` and `state_not` of visibility conditions on cards, badges and sections, of the conditions of a conditional card, row or picture element, and of the filters of an entity filter card or badge. The states a picture card or image element picks an image or a filter for count too. If a dashboard checks for a state its entity is never in, like `On` for a light that is `on` or `off`, Spook will raise a repair issue naming the dashboard, the state, the entity, and what was most likely meant when Spook is near certain of it.
+
+Only entities whose states are a fixed set are checked, and on the same evidence as the states used in [automations](automation.md#unknown-referenced-states). A plain sensor can be anything, so nothing it is asked to be is ever wrong.
+
+The frontend compares a state that looks like an entity ID with the state of that entity as well, so those are never reported. Neither is a condition without an entity of its own, unless it sits on a card or badge whose entity it takes. A filter on an entity filter card is held against every entity on it, and is only reported when none of them can ever pass it.
+
+Spook looks ten minutes after Home Assistant starts, when the recorder has settled. After that it looks again when a dashboard is saved, when an entity is added or removed, when the entity registry changes, when an integration loads, and once a day. The same goes for unknown attributes.
+
+To resolve the raised issue, edit the dashboard and use an attribute the entity has, or a state it can be in. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Third-party cards are not checked at all, and neither is anything inside them. They can use the same keys as Home Assistant's own cards and mean something else entirely.
+- Templates are not checked, and neither are attributes, states or entities that are only worked out while running.
+- A state written as a number, or as `true` or `false`, is not checked. How the frontend compares those depends on where the condition is evaluated.
+  :::
+
 ### Unknown actions
 
 Dashboards are inspected for the {term}`actions <performing actions>` their buttons and cards perform. A tap, hold or double tap action set to perform an action that does not exist does nothing when used, and says nothing either: the button just sits there. Spook raises a repair issue naming the dashboard and the actions that are missing.
