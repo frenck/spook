@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "Deze zone kan niet worden bewerkt: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Hoeveelheid {amount} past niet bij {entity_id}, die in stappen van {step} beweegt. Gebruik een veelvoud van {step}, of laat de hoeveelheid weg om één stap te zetten."
+        },
+        "area_cannot_update": {
+            "message": "Ruimte {area_id} kan niet zo worden gewijzigd: {error}."
+        },
+        "area_name_taken": {
+            "message": "De naam {name} is al in gebruik door ruimte {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Niets bij te werken aan ruimte {area_id}: geef minstens één van {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Niets bij te werken aan apparaat {device_id}: geef minstens één van {fields}."
+        },
+        "floor_name_taken": {
+            "message": "De naam {name} is al in gebruik door verdieping {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Niets bij te werken aan verdieping {floor_id}: geef minstens één van {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Die tijdsblokken werken niet voor {entity_id}: {error}. Er is niets gewijzigd."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} is een schema uit je YAML-configuratie, en dat kan Spook niet wijzigen. Pas het in plaats daarvan aan in je configuratie."
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "Deze sensoren zijn terug, of de instellingen verwijzen nu ergens anders naar, sinds Spook keek. Er is dus niets gewist. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist kan deze niet uit elkaar houden: {name}",
+            "description": "Spook heeft een geest gevonden in je spraakassistenten 👻\n\nDe volgende entiteiten zijn beschikbaar gemaakt voor Assist, en luisteren allemaal naar de naam {name}:\n\n{entities}\n\nAls namen hetzelfde zijn, houdt Assist ze alleen uit elkaar op ruimte: de ruimte die je noemt, of de ruimte waarin je spraaksatelliet staat. Sommige hiervan delen een ruimte, of hebben helemaal geen ruimte, dus Assist kan ze nergens vandaan op deze naam vinden. Vragen naar {name} mislukt dan, en niets zegt welke entiteiten in de weg zitten.\n\nOm dit te verhelpen, geef je elk een eigen naam of alias, of zet je ze in verschillende ruimtes. De aliassen van een entiteit, en of Assist haar überhaupt ziet, pas je aan onder [Beschikbaar gemaakte entiteiten](/config/voice-assistants/expose). Ruimtes stel je in op de [pagina Ruimtes](/config/areas/dashboard).\n\nSpook 👻 Je homie."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering gebruikt de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen trigger of voorwaarde die wacht op een attribuut dat nooit verschijnt, gaat nooit af, en zegt je dat niet. Een template die er een leest, krijgt niets. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en gebruik je een attribuut dat de entiteit heeft.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende attributen gebruikt in: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering wacht op, of controleert, de volgende statussen, waarin hun entiteiten nooit zijn. Niet als iets wat dat soort entiteit kan zijn, niet tussen de opties die de entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{states}\n\n\n\nEen trigger die wacht op een status die nooit komt, gaat nooit af, een voorwaarde die erop controleert, slaagt nooit, en geen van beide zegt je dat. Statussen zijn hoofdlettergevoelig: `On` is niet `on`. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en gebruik je een status waarin de entiteit kan zijn.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende statussen gebruikt in: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering controleert op de volgende trigger-ID's, die geen van haar eigen triggers heeft:\n\n{trigger_ids}\n\n\n\nEen controle op een ID dat geen enkele trigger doorgeeft, valt altijd hetzelfde uit: een triggervoorwaarde die erom vraagt, slaagt nooit, dus het deel dat ze bewaakt, draait nooit, en niets zegt je dat. Trigger-ID's zijn hoofdlettergevoelig, en een trigger zonder eigen ID gaat door het leven als zijn positie in de lijst, geteld vanaf `0`. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en gebruik je het ID van een van haar triggers, of geef je de trigger het ID waar de automatisering om vraagt.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende trigger-ID's gebruikt in: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard toont of controleert de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen kaart die een attribuut toont dat nooit verschijnt, blijft leeg, en een zichtbaarheidsvoorwaarde of filter die er een controleert, slaagt nooit. Geen van beide zegt je dat. Om dit te verhelpen, [bewerk je het dashboard]({edit}) en gebruik je een attribuut dat de entiteit heeft.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende attributen gebruikt in dashboard: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard controleert op de volgende statussen, waarin hun entiteiten nooit zijn. Niet als iets wat dat soort entiteit kan zijn, niet tussen de opties die de entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{states}\n\n\n\nEen zichtbaarheidsvoorwaarde of filter die controleert op een status die nooit komt, slaagt nooit, en een afbeelding die voor zo'n status is ingesteld, wordt nooit getoond. Geen van allen zegt je dat. Statussen zijn hoofdlettergevoelig: `On` is niet `on`. Om dit te verhelpen, [bewerk je het dashboard]({edit}) en gebruik je een status waarin de entiteit kan zijn.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende statussen gebruikt in dashboard: {dashboard}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script wacht op, of controleert, de volgende statussen, waarin hun entiteiten nooit zijn. Niet als iets wat dat soort entiteit kan zijn, niet tussen de opties die de entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{states}\n\n\n\nEen trigger die wacht op een status die nooit komt, gaat nooit af, een voorwaarde die erop controleert, slaagt nooit, en geen van beide zegt je dat. Statussen zijn hoofdlettergevoelig: `On` is niet `on`. Om dit te verhelpen, [bewerk je het script]({edit}) en gebruik je een status waarin de entiteit kan zijn.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende statussen gebruikt in: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook heeft een geest gevonden in je template-helpers 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-helper tegen:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDeze template-helper gebruikt de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen template die een attribuut leest dat nooit verschijnt, krijgt niets, en een voorwaarde in een van zijn acties die erop wacht, slaagt nooit. Geen van beide zegt je dat. Om dit te verhelpen, [bewerk je de template-helper]({edit}) en gebruik je een attribuut dat de entiteit heeft.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende attributen gebruikt in template-helper: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering heeft de volgende templates, die nooit kunnen slagen, wat er ook in je huis gebeurt:\n\n{templates}\n\n\n\nEen templatevoorwaarde slaagt alleen als ze `true` oplevert, en een `wait_template` ook, tenzij die later verandert in iets wat als waar telt. Een templatetrigger gaat af wanneer zijn template verandert in iets wat als waar telt, zoals `true`, `on`, `yes` of `1`. Deze templates leveren altijd iets anders op, door hoe ze geschreven zijn. De gebruikelijke oorzaken:\n\n- Aanhalingstekens rond de template. Een `>-`-blok neemt ze als tekst, dus ze komen in het resultaat terecht.\n- Helemaal geen templatetekens, dus de tekst wordt genomen zoals hij is.\n- YAML die in het templateveld is geplakt.\n- Een YAML-`#`-opmerking in de Jinja, die Jinja als tekst afdrukt.\n- Een voorwaarde die `on` oplevert in plaats van `true`.\n\nNiets zegt het je: de voorwaarde slaagt nooit, het wachten eindigt alleen op de time-out, en de trigger gaat nooit af. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en laat je de template `true` opleveren wanneer hij moet slagen.\n\nSpook 👻 Je homie.",
+            "title": "Templates die nooit kunnen slagen in: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering geeft haar acties de volgende integratie-instanties mee, die Home Assistant niet kent, of die bij een andere integratie horen dan de actie vraagt:\n\n{config_entries}\n\nHome Assistant weigert deze wanneer de stap wordt uitgevoerd. Dit gebeurt meestal nadat een integratie is verwijderd en opnieuw toegevoegd: ze kreeg een nieuwe integratie-instantie, met een nieuw ID.\n\nOm deze fout te verhelpen, [bewerk je de automatisering]({edit}) en kies je de integratie-instantie in deze acties opnieuw.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende integratie-instanties gebruikt in: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering deelt de volgende pictogrammen uit, die niet bestaan in de Material Design Icons die bij Home Assistant horen:\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je de automatisering]({edit}) en vervang je deze door pictogrammen die bestaan.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende pictogrammen gebruikt in: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering noemt de volgende gebruikers, die niet meer bestaan:\n\n{users}\n\n\n\nHome Assistant geeft een gebruikers-ID nooit twee keer uit, dus deze gebruikers zijn verwijderd. Een trigger die op een van hen wacht, gaat voor hen nooit af, en een template die met een van hen vergelijkt, komt nooit overeen, zonder dat te zeggen. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en gebruik je het ID van een gebruiker die bestaat, of verwijder je de controle.\n\nSpook 👻 Je homie.",
+            "title": "Verwijderde gebruikers genoemd in: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard gebruikt de volgende pictogrammen, die niet bestaan in de Material Design Icons die bij Home Assistant horen (versie {version}):\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en vervang je deze door pictogrammen die bestaan. Het pictogram van het dashboard in de zijbalk wijzig je in de instellingen van je dashboards.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende pictogrammen gebruikt in dashboard: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard noemt de volgende gebruikers, die niet meer bestaan:\n\n{users}\n\n\n\nHome Assistant geeft een gebruikers-ID nooit twee keer uit, dus deze gebruikers zijn verwijderd. Een kaart, badge, sectie of weergave die alleen aan hen wordt getoond, wordt nu aan niemand getoond, zonder dat te zeggen. Een uitzondering op een bevestiging voor hen doet niets meer. Om dit te verhelpen, [bewerk je het dashboard]({edit}) en kies je de gebruikers die het moeten zien, of verwijder je de voorwaarde.\n\nSpook 👻 Je homie.",
+            "title": "Verwijderde gebruikers genoemd in dashboard: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard gebruikt de volgende thema's, die niet bestaan:\n\n{themes}\n\n\n\nEen kaart, sectie of weergave met een van deze thema's krijgt in plaats daarvan het standaarduiterlijk, zonder dat te zeggen. Dit gebeurt vaak wanneer een thema is hernoemd of verwijderd. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en kies je een thema dat bestaat, of voeg je het thema weer toe.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende thema's gebruikt in dashboard: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "title": "Templates die nooit kunnen slagen in: {script}",
+            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script heeft de volgende templates, die nooit kunnen slagen, wat er ook in je huis gebeurt:\n\n{templates}\n\n\n\nEen templatevoorwaarde slaagt alleen als ze `true` oplevert, en een `wait_template` ook, tenzij die later verandert in iets wat als waar telt. Een templatetrigger in een `wait_for_trigger` gaat af wanneer zijn template verandert in iets wat als waar telt, zoals `true`, `on`, `yes` of `1`. Deze templates leveren altijd iets anders op, door hoe ze geschreven zijn. De gebruikelijke oorzaken:\n\n- Aanhalingstekens rond de template. Een `>-`-blok neemt ze als tekst, dus ze komen in het resultaat terecht.\n- Helemaal geen templatetekens, dus de tekst wordt genomen zoals hij is.\n- YAML die in het templateveld is geplakt.\n- Een YAML-`#`-opmerking in de Jinja, die Jinja als tekst afdrukt.\n- Een voorwaarde die `on` oplevert in plaats van `true`.\n\nNiets zegt het je: de voorwaarde slaagt nooit, en het wachten eindigt alleen op de time-out. Om dit te verhelpen, [bewerk je het script]({edit}) en laat je de template `true` opleveren wanneer hij moet slagen.\n\nSpook 👻 Je homie."
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script geeft zijn acties de volgende integratie-instanties mee, die Home Assistant niet kent, of die bij een andere integratie horen dan de actie vraagt:\n\n{config_entries}\n\nHome Assistant weigert deze wanneer de stap wordt uitgevoerd. Dit gebeurt meestal nadat een integratie is verwijderd en opnieuw toegevoegd: ze kreeg een nieuwe integratie-instantie, met een nieuw ID.\n\nOm deze fout te verhelpen, [bewerk je het script]({edit}) en kies je de integratie-instantie in deze acties opnieuw.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende integratie-instanties gebruikt in: {script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script gebruikt of deelt de volgende pictogrammen uit, die niet bestaan in de Material Design Icons die bij Home Assistant horen:\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je het script]({edit}) en vervang je deze door pictogrammen die bestaan.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende pictogrammen gebruikt in: {script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script noemt de volgende gebruikers, die niet meer bestaan:\n\n{users}\n\n\n\nHome Assistant geeft een gebruikers-ID nooit twee keer uit, dus deze gebruikers zijn verwijderd. Een template die met een van hen vergelijkt, komt nooit overeen, en een trigger die op een van hen wacht, gaat voor hen nooit af, zonder dat te zeggen. Om dit te verhelpen, [bewerk je het script]({edit}) en gebruik je het ID van een gebruiker die bestaat, of verwijder je de controle.\n\nSpook 👻 Je homie.",
+            "title": "Verwijderde gebruikers genoemd in: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook heeft een geest gevonden in je template-entiteiten 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-entiteit tegen:\n\n{name} (`{entity_id}`)\n\nDeze template-entiteit gebruikt de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen template die een attribuut leest dat nooit verschijnt, krijgt niets, en een trigger of voorwaarde die erop wacht, gaat nooit af of slaagt nooit. Geen van allen zegt je dat.\n\nDeze template-entiteit is ingesteld in je YAML-configuratie. Om dit te verhelpen, pas je haar aan in de sectie `template:` van je configuratie, gebruik je een attribuut dat de entiteit heeft, en herlaad je je template-entiteiten.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende attributen gebruikt in template-entiteit: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook heeft een geest gevonden in je template-entiteiten 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-entiteit tegen:\n\n{name} (`{entity_id}`)\n\nDe configuratie verwijst naar de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\n\n\nDit gebeurt vaak wanneer een entiteit is hernoemd of verwijderd. Een template die er een leest, krijgt niets, en een trigger die erop wacht, gaat nooit af.\n\nDeze template-entiteit is ingesteld in je YAML-configuratie. Om deze fout te verhelpen, pas je haar aan in de sectie `template:` van je configuratie, verwijs je naar bestaande entiteiten, en herlaad je je template-entiteiten.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende entiteiten gebruikt in template-entiteit: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook heeft een geest gevonden in je template-entiteiten 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-entiteit tegen:\n\n{name} (`{entity_id}`)\n\nZe verwijst naar de volgende acties, die Home Assistant niet kent:\n\n{services}\n\n\n\nDit gebeurt vaak wanneer de integratie achter een actie is verwijderd, of een script is hernoemd of verwijderd.\n\nDeze template-entiteit is ingesteld in je YAML-configuratie. Om deze fout te verhelpen, pas je haar aan in de sectie `template:` van je configuratie, gebruik je bestaande acties, en herlaad je je template-entiteiten.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende acties gebruikt in template-entiteit: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook heeft een geest gevonden in je instellingen 👻\n\nDe volgende pictogrammen bestaan niet in de Material Design Icons die bij Home Assistant horen (versie {version}):\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, geef je elk hiervan een pictogram dat bestaat: een entiteit, helper of zone in de eigen instellingen, een ruimte, verdieping of label in de instellingen van je ruimtes, labels en zones, een categorie waar die wordt gebruikt, en `customize:` in je configuratie.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende pictogrammen in je instellingen"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard navigeert naar de volgende weergaven, die niet bestaan:\n\n{paths}\n\n\n\nEen knop of kaart die naar een daarvan navigeert, opent in plaats daarvan de eerste weergave van dat dashboard, zonder dat te zeggen. Dit gebeurt vaak wanneer een weergave is hernoemd, verplaatst of verwijderd. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en laat je deze naar een weergave wijzen die bestaat.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende weergaven waarnaar wordt genavigeerd in dashboard: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script gebruikt de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen trigger of voorwaarde die wacht op een attribuut dat nooit verschijnt, gaat nooit af, en zegt je dat niet. Een template die er een leest, krijgt niets. Om dit te verhelpen, [bewerk je het script]({edit}) en gebruik je een attribuut dat de entiteit heeft.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende attributen gebruikt in: {script}"
         }
     },
     "services": {
@@ -2667,6 +2794,170 @@
             },
             "name": "Verhoog temperatuur",
             "description": "Zet het instelpunt van een boiler een stap hoger, binnen zijn grenzen."
+        },
+        "homeassistant_update_area": {
+            "name": "Een ruimte bijwerken",
+            "description": "Werkt in een handomdraai een bestaande ruimte bij. Alles wat je weglaat, houdt de waarde die het al heeft. Aliassen en labels vervangen die van de ruimte. De verdieping, het pictogram, de afbeelding en de sensoren kun je wissen door ze op null te zetten.",
+            "fields": {
+                "area_id": {
+                    "name": "Ruimte-ID",
+                    "description": "Het ID van de ruimte die je wilt bijwerken."
+                },
+                "name": {
+                    "name": "Naam",
+                    "description": "Nieuwe naam voor de ruimte."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen voor de ruimte. Vervangt de aliassen die ze heeft, een lege lijst verwijdert ze allemaal."
+                },
+                "floor_id": {
+                    "name": "Verdieping-ID",
+                    "description": "Het ID van de verdieping waarop de ruimte ligt."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Nieuw pictogram voor de ruimte."
+                },
+                "picture": {
+                    "name": "Afbeelding",
+                    "description": "De URL of het pad van een afbeelding voor de ruimte."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "De ID's van de labels voor de ruimte. Vervangt de labels die ze heeft, een lege lijst verwijdert ze allemaal."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperatuursensor",
+                    "description": "De sensor die de temperatuur in de ruimte meet."
+                },
+                "humidity_entity_id": {
+                    "name": "Vochtigheidssensor",
+                    "description": "De sensor die de luchtvochtigheid in de ruimte meet."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Een apparaat bijwerken",
+            "description": "Werkt in een handomdraai een bestaand apparaat bij. Alles wat je weglaat, houdt de waarde die het al heeft. Labels vervangen die van het apparaat. De naam en de ruimte kun je wissen door ze op null te zetten, waarmee het apparaat de naam terugkrijgt die zijn integratie het gaf.",
+            "fields": {
+                "device_id": {
+                    "name": "Apparaat-ID",
+                    "description": "Het ID van het apparaat dat je wilt bijwerken. De apparaatkiezer van Home Assistant toont geen gedeactiveerde apparaten, gebruik de YAML-modus om hun ID op te geven."
+                },
+                "name_by_user": {
+                    "name": "Naam",
+                    "description": "Nieuwe naam voor het apparaat."
+                },
+                "area_id": {
+                    "name": "Ruimte-ID",
+                    "description": "Het ID van de ruimte waarin het apparaat staat."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "De ID's van de labels voor het apparaat. Vervangt de labels die het heeft, een lege lijst verwijdert ze allemaal."
+                },
+                "disabled_by": {
+                    "name": "Gedeactiveerd door",
+                    "description": "Zet dit op user om het apparaat te deactiveren, of op null om het weer te activeren. Dit werkt zoals de acties om een apparaat te deactiveren en te activeren."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Een verdieping bijwerken",
+            "description": "Werkt in een handomdraai een bestaande verdieping bij. Alles wat je weglaat, houdt de waarde die het al heeft. Aliassen vervangen die van de verdieping. Het pictogram en het niveau kun je wissen door ze op null te zetten.",
+            "fields": {
+                "floor_id": {
+                    "name": "Verdieping-ID",
+                    "description": "Het ID van de verdieping die je wilt bijwerken."
+                },
+                "name": {
+                    "name": "Naam",
+                    "description": "Nieuwe naam voor de verdieping."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen voor de verdieping. Vervangt de aliassen die ze heeft, een lege lijst verwijdert ze allemaal."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Nieuw pictogram voor de verdieping."
+                },
+                "level": {
+                    "name": "Niveau",
+                    "description": "Op welk niveau de verdieping zich in je huis bevindt."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Een schema aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe schema-helper aan, die aan staat tijdens de opgegeven tijdsblokken voor elke dag van de week. Geeft de entiteits-ID van het nieuwe schema terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van het nieuwe schema."
+                },
+                "schedule_id": {
+                    "name": "Entiteits-ID van schema",
+                    "description": "De entiteits-ID voor het nieuwe schema. Het voorvoegsel schedule. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor het nieuwe schema."
+                },
+                "monday": {
+                    "name": "Maandag",
+                    "description": "Wanneer het schema op maandag aan staat: een lijst met tijdsblokken, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Weggelaten staat het de hele dag uit."
+                },
+                "tuesday": {
+                    "name": "Dinsdag",
+                    "description": "Wanneer het schema op dinsdag aan staat: een lijst met tijdsblokken, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Weggelaten staat het de hele dag uit."
+                },
+                "wednesday": {
+                    "name": "Woensdag",
+                    "description": "Wanneer het schema op woensdag aan staat: een lijst met tijdsblokken, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Weggelaten staat het de hele dag uit."
+                },
+                "thursday": {
+                    "name": "Donderdag",
+                    "description": "Wanneer het schema op donderdag aan staat: een lijst met tijdsblokken, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Weggelaten staat het de hele dag uit."
+                },
+                "friday": {
+                    "name": "Vrijdag",
+                    "description": "Wanneer het schema op vrijdag aan staat: een lijst met tijdsblokken, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Weggelaten staat het de hele dag uit."
+                },
+                "saturday": {
+                    "name": "Zaterdag",
+                    "description": "Wanneer het schema op zaterdag aan staat: een lijst met tijdsblokken, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Weggelaten staat het de hele dag uit."
+                },
+                "sunday": {
+                    "name": "Zondag",
+                    "description": "Wanneer het schema op zondag aan staat: een lijst met tijdsblokken, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Weggelaten staat het de hele dag uit."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Een schema verwijderen",
+            "description": "Verwijdert schema-helpers die in de gebruikersinterface zijn gemaakt. Schema's die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "Het schema of de schema's die je wilt verwijderen."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "De tijdsblokken van een dag instellen",
+            "description": "Vervangt de tijdsblokken van een of meer dagen van een schema-helper die in de gebruikersinterface is gemaakt. Schema's die in YAML zijn ingesteld, kan Spook niet wijzigen.",
+            "fields": {
+                "day": {
+                    "name": "Dag",
+                    "description": "De dag of dagen van de week waarvan je de tijdsblokken instelt."
+                },
+                "blocks": {
+                    "name": "Tijdsblokken",
+                    "description": "De tijdsblokken waarin het schema op die dagen aan staat, elk met een van- en een tot-tijd, en optionele gegevens die het als attributen toont zolang het aan staat. Deze vervangen de blokken die de dagen hadden. Een lege lijst laat de dagen de hele dag uit."
+                }
+            }
         }
     },
     "conditions": {
@@ -2755,6 +3046,16 @@
         "not_triggered_by_user": {
             "name": "Niet gestart door een gebruiker",
             "description": "Slaagt wanneer niemand verantwoordelijk kan worden gehouden voor deze uitvoering: een schema, de zon, een integratie die uit zichzelf iets doet, of de knop Uitvoeren. Heeft met opzet geen opties. Wil je juist bepaalde personen uitsluiten, zet dan \"Gestart door een gebruiker\" in een Niet-voorwaarde."
+        },
+        "is_available": {
+            "name": "Entiteit is beschikbaar",
+            "description": "Slaagt wanneer een entiteit er is om mee te praten: alles behalve onbeschikbaar of onbekend. Voor een speaker of een slimme stekker die niet altijd stroom heeft.",
+            "fields": {
+                "behavior": {
+                    "name": "Gedrag",
+                    "description": "Of het genoeg is dat een van de entiteiten er is, of dat ze er allemaal moeten zijn."
+                }
+            }
         }
     },
     "triggers": {
@@ -2975,6 +3276,92 @@
         "device_discovered": {
             "name": "Apparaat ontdekt",
             "description": "Wordt geactiveerd wanneer Home Assistant iets nieuws ontdekt dat het kan instellen, zoals een apparaat dat net op je netwerk is opgedoken."
+        },
+        "state_changed": {
+            "description": "Gaat af wanneer een entiteit van status verandert, voor alles wat een doel omvat: entiteiten, apparaten, ruimtes, verdiepingen en labels. Beperk het op domein, integratie of apparaatklasse, of laat het doel leeg en laat die de entiteiten uit alles kiezen. Sluit dingen weer uit, en bepaal hoe lang een wijziging moet aanhouden voordat die telt.",
+            "fields": {
+                "integration": {
+                    "description": "Alleen entiteiten van deze integraties, zoals zha of hue. Zonder doel worden ze uit alles gekozen.",
+                    "name": "Integraties"
+                },
+                "config_entry": {
+                    "name": "Integratie-instantie",
+                    "description": "Alleen entiteiten van deze integratie-instantie. Zonder doel worden ze uit alles gekozen."
+                },
+                "device_class": {
+                    "name": "Apparaatklassen",
+                    "description": "Alleen entiteiten van deze apparaatklassen, zoals door of window. Zonder doel worden ze uit alles gekozen."
+                },
+                "exclude_target": {
+                    "name": "Uitsluiten",
+                    "description": "Entiteiten, apparaten, ruimtes, verdiepingen of labels om uit te sluiten. Alles daarin wordt uitgesloten, ook de diagnostische entiteiten."
+                },
+                "exclude_domain": {
+                    "name": "Domeinen uitsluiten",
+                    "description": "Sluit entiteiten van deze domeinen uit. Staat er niets in Uitsluiten, dan geldt dit voor alles wat het doel omvat."
+                },
+                "exclude_integration": {
+                    "name": "Integraties uitsluiten",
+                    "description": "Sluit entiteiten van deze integraties uit."
+                },
+                "exclude_config_entry": {
+                    "description": "Sluit de entiteiten van deze integratie-instantie uit.",
+                    "name": "Integratie-instantie uitsluiten"
+                },
+                "exclude_device_class": {
+                    "name": "Apparaatklassen uitsluiten",
+                    "description": "Sluit entiteiten van deze apparaatklassen uit."
+                },
+                "attribute": {
+                    "name": "Attribuut",
+                    "description": "Volg dit attribuut in plaats van de status."
+                },
+                "from": {
+                    "name": "Van",
+                    "description": "Alleen wijzigingen die van een van deze statussen komen."
+                },
+                "not_from": {
+                    "name": "Niet van",
+                    "description": "Alleen wijzigingen die niet van een van deze statussen komen."
+                },
+                "to": {
+                    "name": "Naar",
+                    "description": "Alleen wijzigingen die naar een van deze statussen gaan."
+                },
+                "ignore_unavailable": {
+                    "name": "Onbeschikbaar en onbekend negeren",
+                    "description": "Laat wijzigingen van of naar onbeschikbaar en onbekend weg, zodat een herstart of een herstartende router niet voor alles afgaat. Zet dit uit om ze in Van of Naar te gebruiken."
+                },
+                "attribute_changes": {
+                    "name": "Attribuutwijzigingen meetellen",
+                    "description": "Ga ook af wanneer alleen een attribuut veranderde en de status hetzelfde bleef. Doet niets zolang een attribuut wordt gevolgd."
+                },
+                "behavior": {
+                    "name": "Gedrag",
+                    "description": "Ga af voor elke entiteit, voor de eerste van het doel die er komt, of zodra ze er allemaal zijn. Eerste en alle hebben Naar of Niet naar nodig. Zolang onbeschikbaar en onbekend worden genegeerd, doen entiteiten in die statussen niet mee."
+                },
+                "for": {
+                    "name": "Gedurende",
+                    "description": "Ga pas af zodra de nieuwe status zo lang heeft aangehouden. Elke andere wijziging tussendoor blaast het af."
+                },
+                "blip_tolerance": {
+                    "name": "Haperingstolerantie",
+                    "description": "Tijdens het wachten op Gedurende begint het wachten niet opnieuw als de entiteit binnen deze tijd onbeschikbaar of onbekend wordt en terugkomt zoals ze was. Werkt alleen samen met Gedurende."
+                },
+                "domain": {
+                    "name": "Domeinen",
+                    "description": "Alleen entiteiten van deze domeinen, zoals binary_sensor of cover. Zonder doel worden ze uit alles gekozen."
+                },
+                "not_to": {
+                    "name": "Niet naar",
+                    "description": "Alleen wijzigingen die niet naar een van deze statussen gaan."
+                },
+                "delay": {
+                    "name": "Vertraging",
+                    "description": "Wacht zo lang voordat het afgaat, wat er ook tussendoor gebeurt. Zoals een vertraging aan het begin van de acties."
+                }
+            },
+            "name": "Statustrigger van Spook"
         }
     },
     "selector": {
@@ -2989,6 +3376,17 @@
             "options": {
                 "bottom": "Onderaan",
                 "top": "Bovenaan"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Maandag",
+                "tuesday": "Dinsdag",
+                "wednesday": "Woensdag",
+                "thursday": "Donderdag",
+                "saturday": "Zaterdag",
+                "friday": "Vrijdag",
+                "sunday": "Zondag"
             }
         }
     },
