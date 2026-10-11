@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "Diese Zone ist nicht bearbeitbar: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Die Menge {amount} passt nicht zu {entity_id}, das sich in Schritten von {step} bewegt. Verwende ein Vielfaches von {step}, oder lass die Menge weg, um einen Schritt weiterzugehen."
+        },
+        "area_cannot_update": {
+            "message": "Bereich {area_id} lässt sich so nicht ändern: {error}."
+        },
+        "area_name_taken": {
+            "message": "Der Name {name} ist bereits von Bereich {area_id} belegt."
+        },
+        "area_nothing_to_update": {
+            "message": "Nichts zu aktualisieren an Bereich {area_id}: Gib mindestens eines von {fields} an."
+        },
+        "device_nothing_to_update": {
+            "message": "Nichts zu aktualisieren an Gerät {device_id}: Gib mindestens eines von {fields} an."
+        },
+        "floor_name_taken": {
+            "message": "Der Name {name} ist bereits von Etage {floor_id} belegt."
+        },
+        "floor_nothing_to_update": {
+            "message": "Nichts zu aktualisieren an Etage {floor_id}: Gib mindestens eines von {fields} an."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Diese Zeitblöcke funktionieren für {entity_id} nicht: {error}. Es wurde nichts geändert."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} ist ein Zeitplan aus deiner YAML-Konfiguration, den Spook nicht ändern kann. Bearbeite ihn stattdessen in deiner Konfiguration."
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "Diese Sensoren sind zurück, oder die Einstellungen zeigen inzwischen woandershin, seit Spook nachgesehen hat. Daher wurde nichts geleert. Spook schaut von selbst noch einmal nach und aktualisiert diese Reparatur."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist kann diese nicht unterscheiden: {name}",
+            "description": "Spook hat einen Geist in deinen Sprachassistenten gefunden 👻\n\nDie folgenden Entitäten sind für Assist freigegeben und hören alle auf den Namen {name}:\n\n{entities}\n\nWenn Namen gleich sind, unterscheidet Assist sie nur nach Bereich: dem, den du nennst, oder dem, in dem dein Sprachsatellit steht. Einige davon teilen sich einen Bereich oder haben gar keinen Bereich, deshalb kann Assist sie von nirgendwo über diesen Namen finden. Eine Anfrage nach {name} schlägt dann fehl, und nichts sagt dir, welche Entitäten im Weg sind.\n\nUm das zu beheben, gib jeder einen eigenen Namen oder Alias, oder verschiebe sie in verschiedene Bereiche. Die Aliase einer Entität, und ob Assist sie überhaupt sieht, änderst du unter [Freigegebene Entitäten](/config/voice-assistants/expose). Bereiche legst du auf der [Seite Bereiche](/config/areas/dashboard) fest.\n\nSpook 👻 Dein Kumpel."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung verwendet die folgenden Attribute, die ihre Entitäten nicht haben. Nicht im Moment, nicht als etwas, das diese Art von Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{attributes}\n\n\n\nEin Auslöser oder eine Bedingung, die auf ein Attribut wartet, das nie auftaucht, löst nie aus und sagt dir das nicht. Ein Template, das eines liest, bekommt nichts. Um das zu beheben, [bearbeite die Automatisierung]({edit}) und verwende ein Attribut, das die Entität hat.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Attribute verwendet in: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung wartet auf die folgenden Zustände oder prüft sie, aber ihre Entitäten sind nie in diesen Zuständen. Nicht als etwas, das diese Art von Entität sein kann, nicht unter den Optionen, die die Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{states}\n\n\n\nEin Auslöser, der auf einen Zustand wartet, der nie kommt, löst nie aus, eine Bedingung, die darauf prüft, trifft nie zu, und keines von beiden sagt dir das. Bei Zuständen wird zwischen Groß- und Kleinschreibung unterschieden: `On` ist nicht `on`. Um das zu beheben, [bearbeite die Automatisierung]({edit}) und verwende einen Zustand, den die Entität haben kann.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Zustände verwendet in: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung prüft auf die folgenden Auslöser-IDs, die keiner ihrer eigenen Auslöser hat:\n\n{trigger_ids}\n\n\n\nEine Prüfung auf eine ID, die kein Auslöser übergibt, geht immer gleich aus: Eine Auslöser-Bedingung, die danach fragt, trifft nie zu, sodass der Teil, den sie schützt, nie läuft, und nichts sagt dir das. Bei Auslöser-IDs wird zwischen Groß- und Kleinschreibung unterschieden, und ein Auslöser ohne eigene ID läuft unter seiner Position in der Liste, gezählt ab `0`. Um das zu beheben, [bearbeite die Automatisierung]({edit}) und verwende die ID eines ihrer Auslöser, oder gib dem Auslöser die ID, nach der die Automatisierung fragt.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Auslöser-IDs verwendet in: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard zeigt oder prüft die folgenden Attribute, die ihre Entitäten nicht haben. Nicht im Moment, nicht als etwas, das diese Art von Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{attributes}\n\n\n\nEine Karte, die ein Attribut zeigt, das nie auftaucht, bleibt leer, und eine Sichtbarkeitsbedingung oder ein Filter, der eines prüft, trifft nie zu. Keines von beiden sagt dir das. Um das zu beheben, [bearbeite das Dashboard]({edit}) und verwende ein Attribut, das die Entität hat.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Attribute im Dashboard verwendet: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard prüft auf die folgenden Zustände, aber ihre Entitäten sind nie in diesen Zuständen. Nicht als etwas, das diese Art von Entität sein kann, nicht unter den Optionen, die die Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{states}\n\n\n\nEine Sichtbarkeitsbedingung oder ein Filter, der auf einen Zustand prüft, der nie kommt, trifft nie zu, und ein Bild, das für einen solchen Zustand festgelegt ist, wird nie angezeigt. Nichts davon sagt dir das. Bei Zuständen wird zwischen Groß- und Kleinschreibung unterschieden: `On` ist nicht `on`. Um das zu beheben, [bearbeite das Dashboard]({edit}) und verwende einen Zustand, den die Entität haben kann.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Zustände im Dashboard verwendet: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard navigiert zu den folgenden Ansichten, die nicht existieren:\n\n{paths}\n\n\n\nEine Schaltfläche oder Karte, die zu einer davon navigiert, öffnet stattdessen die erste Ansicht dieses Dashboards, ohne das zu sagen. Das passiert oft, wenn eine Ansicht umbenannt, verschoben oder entfernt wurde. Um diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und lass diese auf eine Ansicht zeigen, die existiert.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Ansichten im Dashboard angesteuert: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript verwendet die folgenden Attribute, die ihre Entitäten nicht haben. Nicht im Moment, nicht als etwas, das diese Art von Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{attributes}\n\n\n\nEin Auslöser oder eine Bedingung, die auf ein Attribut wartet, das nie auftaucht, löst nie aus und sagt dir das nicht. Ein Template, das eines liest, bekommt nichts. Um das zu beheben, [bearbeite das Skript]({edit}) und verwende ein Attribut, das die Entität hat.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Attribute verwendet in: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript wartet auf die folgenden Zustände oder prüft sie, aber ihre Entitäten sind nie in diesen Zuständen. Nicht als etwas, das diese Art von Entität sein kann, nicht unter den Optionen, die die Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{states}\n\n\n\nEin Auslöser, der auf einen Zustand wartet, der nie kommt, löst nie aus, eine Bedingung, die darauf prüft, trifft nie zu, und keines von beiden sagt dir das. Bei Zuständen wird zwischen Groß- und Kleinschreibung unterschieden: `On` ist nicht `on`. Um das zu beheben, [bearbeite das Skript]({edit}) und verwende einen Zustand, den die Entität haben kann.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Zustände verwendet in: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook hat einen Geist in deinen Template-Helfern gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Template-Helfer:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDieser Template-Helfer verwendet die folgenden Attribute, die ihre Entitäten nicht haben. Nicht im Moment, nicht als etwas, das diese Art von Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{attributes}\n\n\n\nEin Template, das ein Attribut liest, das nie auftaucht, bekommt nichts, und eine Bedingung in einer seiner Aktionen, die auf eines wartet, trifft nie zu. Keines von beiden sagt dir das. Um das zu beheben, [bearbeite den Template-Helfer]({edit}) und verwende ein Attribut, das die Entität hat.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Attribute im Template-Helfer verwendet: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung hat die folgenden Templates, die nie zutreffen können, egal was in deinem Zuhause passiert:\n\n{templates}\n\n\n\nEine Template-Bedingung trifft nur zu, wenn sie `true` ergibt, und ein `wait_template` ebenso, es sei denn, es wird später zu etwas, das als wahr gilt. Ein Template-Auslöser löst aus, wenn sein Template zu etwas wird, das als wahr gilt, etwa `true`, `on`, `yes` oder `1`. Diese Templates ergeben immer etwas anderes, weil sie so geschrieben sind. Die üblichen Ursachen:\n\n- Anführungszeichen um das Template. Ein `>-`-Block nimmt sie als Text, also landen sie im Ergebnis.\n- Gar keine Template-Begrenzer, also wird der Text so genommen, wie er ist.\n- YAML, das in das Template-Feld eingefügt wurde.\n- Ein YAML-Kommentar mit `#` im Jinja, den Jinja als Text ausgibt.\n- Eine Bedingung, die `on` statt `true` ergibt.\n\nNichts sagt es dir: Die Bedingung trifft nie zu, das Warten endet nur mit seinem Timeout, und der Auslöser löst nie aus. Um das zu beheben, [bearbeite die Automatisierung]({edit}) und sorge dafür, dass das Template `true` ergibt, wenn es zutreffen soll.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Templates, die nie zutreffen können, in: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung übergibt ihren Aktionen die folgenden Integrationseinträge, die Home Assistant unbekannt sind oder zu einer anderen Integration gehören, als die Aktion verlangt:\n\n{config_entries}\n\nHome Assistant lehnt diese ab, wenn der Schritt ausgeführt wird. Das passiert meist, nachdem eine Integration entfernt und wieder hinzugefügt wurde: Sie hat einen neuen Integrationseintrag bekommen, mit einer neuen ID.\n\nUm diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und wähle den Integrationseintrag in diesen Aktionen erneut aus.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Integrationseinträge verwendet in: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung vergibt die folgenden Symbole, die es in den Material Design Icons, die mit Home Assistant geliefert werden, nicht gibt:\n\n{icons}\n\n\n\nJedes davon erscheint als leere Stelle, ohne ein Wort. Das passiert oft, wenn ein Symbol vertippt, umbenannt oder entfernt wurde, oder aus einer neueren Version von Material Design Icons stammt als der, die mit Home Assistant geliefert wird. Um diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und ersetze diese durch Symbole, die es gibt.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Symbole verwendet in: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung nennt die folgenden Benutzer, die nicht mehr existieren:\n\n{users}\n\n\n\nHome Assistant vergibt eine Benutzer-ID nie zweimal, also wurden diese Benutzer entfernt. Ein Auslöser, der auf einen von ihnen wartet, löst für sie nie aus, und ein Template, das mit einem von ihnen vergleicht, passt nie, ohne das zu sagen. Um das zu beheben, [bearbeite die Automatisierung]({edit}) und verwende die ID eines Benutzers, der existiert, oder entferne die Prüfung.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Entfernte Benutzer genannt in: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard verwendet die folgenden Symbole, die es in den Material Design Icons, die mit Home Assistant geliefert werden (Version {version}), nicht gibt:\n\n{icons}\n\n\n\nJedes davon erscheint als leere Stelle, ohne ein Wort. Das passiert oft, wenn ein Symbol vertippt, umbenannt oder entfernt wurde, oder aus einer neueren Version von Material Design Icons stammt als der, die mit Home Assistant geliefert wird. Um diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und ersetze diese durch Symbole, die es gibt. Das Symbol des Dashboards in der Seitenleiste änderst du in den Einstellungen deiner Dashboards.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Symbole im Dashboard verwendet: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard nennt die folgenden Benutzer, die nicht mehr existieren:\n\n{users}\n\n\n\nHome Assistant vergibt eine Benutzer-ID nie zweimal, also wurden diese Benutzer entfernt. Eine Karte, ein Badge, ein Abschnitt oder eine Ansicht, die nur ihnen angezeigt wird, wird jetzt niemandem angezeigt, ohne das zu sagen. Eine Ausnahme von einer Bestätigung für sie bewirkt nichts mehr. Um das zu beheben, [bearbeite das Dashboard]({edit}) und wähle die Benutzer, die es sehen sollen, oder entferne die Bedingung.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Entfernte Benutzer im Dashboard genannt: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard verwendet die folgenden Designs, die nicht existieren:\n\n{themes}\n\n\n\nEine Karte, ein Abschnitt oder eine Ansicht mit einem dieser Designs bekommt stattdessen das Standardaussehen, ohne das zu sagen. Das passiert oft, wenn ein Design umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und wähle ein Design, das existiert, oder füge das Design wieder hinzu.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Designs im Dashboard verwendet: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript hat die folgenden Templates, die nie zutreffen können, egal was in deinem Zuhause passiert:\n\n{templates}\n\n\n\nEine Template-Bedingung trifft nur zu, wenn sie `true` ergibt, und ein `wait_template` ebenso, es sei denn, es wird später zu etwas, das als wahr gilt. Ein Template-Auslöser in einem `wait_for_trigger` löst aus, wenn sein Template zu etwas wird, das als wahr gilt, etwa `true`, `on`, `yes` oder `1`. Diese Templates ergeben immer etwas anderes, weil sie so geschrieben sind. Die üblichen Ursachen:\n\n- Anführungszeichen um das Template. Ein `>-`-Block nimmt sie als Text, also landen sie im Ergebnis.\n- Gar keine Template-Begrenzer, also wird der Text so genommen, wie er ist.\n- YAML, das in das Template-Feld eingefügt wurde.\n- Ein YAML-Kommentar mit `#` im Jinja, den Jinja als Text ausgibt.\n- Eine Bedingung, die `on` statt `true` ergibt.\n\nNichts sagt es dir: Die Bedingung trifft nie zu, und das Warten endet nur mit seinem Timeout. Um das zu beheben, [bearbeite das Skript]({edit}) und sorge dafür, dass das Template `true` ergibt, wenn es zutreffen soll.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Templates, die nie zutreffen können, in: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript übergibt seinen Aktionen die folgenden Integrationseinträge, die Home Assistant unbekannt sind oder zu einer anderen Integration gehören, als die Aktion verlangt:\n\n{config_entries}\n\nHome Assistant lehnt diese ab, wenn der Schritt ausgeführt wird. Das passiert meist, nachdem eine Integration entfernt und wieder hinzugefügt wurde: Sie hat einen neuen Integrationseintrag bekommen, mit einer neuen ID.\n\nUm diesen Fehler zu beheben, [bearbeite das Skript]({edit}) und wähle den Integrationseintrag in diesen Aktionen erneut aus.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Integrationseinträge verwendet in: {script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript verwendet oder vergibt die folgenden Symbole, die es in den Material Design Icons, die mit Home Assistant geliefert werden, nicht gibt:\n\n{icons}\n\n\n\nJedes davon erscheint als leere Stelle, ohne ein Wort. Das passiert oft, wenn ein Symbol vertippt, umbenannt oder entfernt wurde, oder aus einer neueren Version von Material Design Icons stammt als der, die mit Home Assistant geliefert wird. Um diesen Fehler zu beheben, [bearbeite das Skript]({edit}) und ersetze diese durch Symbole, die es gibt.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Symbole verwendet in: {script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript nennt die folgenden Benutzer, die nicht mehr existieren:\n\n{users}\n\n\n\nHome Assistant vergibt eine Benutzer-ID nie zweimal, also wurden diese Benutzer entfernt. Ein Template, das mit einem von ihnen vergleicht, passt nie, und ein Auslöser, der auf einen von ihnen wartet, löst für sie nie aus, ohne das zu sagen. Um das zu beheben, [bearbeite das Skript]({edit}) und verwende die ID eines Benutzers, der existiert, oder entferne die Prüfung.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Entfernte Benutzer genannt in: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook hat einen Geist in deinen Template-Entitäten gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Template-Entität:\n\n{name} (`{entity_id}`)\n\nDiese Template-Entität verwendet die folgenden Attribute, die ihre Entitäten nicht haben. Nicht im Moment, nicht als etwas, das diese Art von Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{attributes}\n\n\n\nEin Template, das ein Attribut liest, das nie auftaucht, bekommt nichts, und ein Auslöser oder eine Bedingung, die auf eines wartet, löst nie aus oder trifft nie zu. Nichts davon sagt dir das.\n\nDiese Template-Entität ist in deiner YAML-Konfiguration eingerichtet. Um das zu beheben, bearbeite sie im Abschnitt `template:` deiner Konfiguration, verwende ein Attribut, das die Entität hat, und lade deine Template-Entitäten neu.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Attribute in Template-Entität verwendet: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook hat einen Geist in deinen Template-Entitäten gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Template-Entität:\n\n{name} (`{entity_id}`)\n\nIhre Konfiguration verweist auf die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nDas passiert oft, wenn eine Entität umbenannt oder entfernt wurde. Ein Template, das eine davon liest, bekommt nichts, und ein Auslöser, der auf eine wartet, löst nie aus.\n\nDiese Template-Entität ist in deiner YAML-Konfiguration eingerichtet. Um diesen Fehler zu beheben, bearbeite sie im Abschnitt `template:` deiner Konfiguration, verweise auf vorhandene Entitäten und lade deine Template-Entitäten neu.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Entitäten in Template-Entität verwendet: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook hat einen Geist in deinen Template-Entitäten gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Template-Entität:\n\n{name} (`{entity_id}`)\n\nSie verweist auf die folgenden Aktionen, die Home Assistant unbekannt sind:\n\n{services}\n\n\n\nDas passiert oft, wenn die Integration hinter einer Aktion entfernt wurde oder ein Skript umbenannt oder gelöscht wurde.\n\nDiese Template-Entität ist in deiner YAML-Konfiguration eingerichtet. Um diesen Fehler zu beheben, bearbeite sie im Abschnitt `template:` deiner Konfiguration, verwende vorhandene Aktionen und lade deine Template-Entitäten neu.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Aktionen in Template-Entität verwendet: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook hat einen Geist in deinen Einstellungen gefunden 👻\n\nDie folgenden Symbole gibt es nicht in den Material Design Icons, die mit Home Assistant geliefert werden (Version {version}):\n\n{icons}\n\n\n\nJedes davon erscheint als leere Stelle, ohne ein Wort. Das passiert oft, wenn ein Symbol vertippt, umbenannt oder entfernt wurde, oder aus einer neueren Version von Material Design Icons stammt als der, die mit Home Assistant geliefert wird. Um diesen Fehler zu beheben, gib jedem davon ein Symbol, das es gibt: einer Entität, einem Helfer oder einer Zone in deren Einstellungen, einem Bereich, einer Etage oder einem Label in den Einstellungen deiner Bereiche, Labels und Zonen, einer Kategorie dort, wo sie verwendet wird, und `customize:` in deiner Konfiguration.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Symbole in deinen Einstellungen"
         }
     },
     "services": {
@@ -2667,6 +2794,170 @@
                     "description": "An den Anfang oder ans Ende der Liste verschieben. Gib dies oder einen Eintrag an, hinter den er soll."
                 }
             }
+        },
+        "homeassistant_update_area": {
+            "name": "Bereich aktualisieren",
+            "description": "Aktualisiert einen vorhandenen Bereich direkt. Alles, was du weglässt, behält den Wert, den es schon hat. Aliase und Labels ersetzen die, die der Bereich hat. Etage, Symbol, Bild und Sensoren lassen sich leeren, indem du sie auf null setzt.",
+            "fields": {
+                "area_id": {
+                    "name": "Bereichs-ID",
+                    "description": "Die ID des zu aktualisierenden Bereichs."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "Neuer Name für den Bereich."
+                },
+                "aliases": {
+                    "name": "Aliase",
+                    "description": "Die Aliase für den Bereich. Ersetzt die vorhandenen, eine leere Liste entfernt alle."
+                },
+                "floor_id": {
+                    "name": "Etagen-ID",
+                    "description": "Die ID der Etage, auf der der Bereich liegt."
+                },
+                "icon": {
+                    "name": "Symbol",
+                    "description": "Neues Symbol für den Bereich."
+                },
+                "picture": {
+                    "name": "Bild",
+                    "description": "Die URL oder der Pfad eines Bildes für den Bereich."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "Die IDs der Labels für den Bereich. Ersetzt die vorhandenen, eine leere Liste entfernt alle."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperatursensor",
+                    "description": "Der Sensor, der die Temperatur im Bereich misst."
+                },
+                "humidity_entity_id": {
+                    "name": "Feuchtigkeitssensor",
+                    "description": "Der Sensor, der die Luftfeuchtigkeit im Bereich misst."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Gerät aktualisieren",
+            "description": "Aktualisiert ein vorhandenes Gerät direkt. Alles, was du weglässt, behält den Wert, den es schon hat. Labels ersetzen die, die das Gerät hat. Name und Bereich lassen sich leeren, indem du sie auf null setzt, wodurch das Gerät den Namen zurückbekommt, den seine Integration ihm gegeben hat.",
+            "fields": {
+                "device_id": {
+                    "name": "Geräte-ID",
+                    "description": "Die ID des zu aktualisierenden Geräts. Deaktivierte Geräte zeigt die Geräteauswahl von Home Assistant nicht an, verwende den YAML-Modus, um ihre ID anzugeben."
+                },
+                "name_by_user": {
+                    "name": "Name",
+                    "description": "Neuer Name für das Gerät."
+                },
+                "area_id": {
+                    "name": "Bereichs-ID",
+                    "description": "Die ID des Bereichs, in dem sich das Gerät befindet."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "Die IDs der Labels für das Gerät. Ersetzt die vorhandenen, eine leere Liste entfernt alle."
+                },
+                "disabled_by": {
+                    "name": "Deaktiviert durch",
+                    "description": "Setze es auf user, um das Gerät zu deaktivieren, oder auf null, um es wieder zu aktivieren. Das funktioniert wie die Aktionen zum Deaktivieren und Aktivieren eines Geräts."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Etage aktualisieren",
+            "description": "Aktualisiert eine vorhandene Etage direkt. Alles, was du weglässt, behält den Wert, den es schon hat. Aliase ersetzen die, die die Etage hat. Symbol und Ebene lassen sich leeren, indem du sie auf null setzt.",
+            "fields": {
+                "floor_id": {
+                    "name": "Etagen-ID",
+                    "description": "Die ID der zu aktualisierenden Etage."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "Neuer Name für die Etage."
+                },
+                "aliases": {
+                    "name": "Aliase",
+                    "description": "Die Aliase für die Etage. Ersetzt die vorhandenen, eine leere Liste entfernt alle."
+                },
+                "icon": {
+                    "name": "Symbol",
+                    "description": "Neues Symbol für die Etage."
+                },
+                "level": {
+                    "name": "Ebene",
+                    "description": "Die Ebene, auf der sich die Etage in deinem Zuhause befindet."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Zeitplan anlegen",
+            "description": "Legt direkt einen neuen Zeitplan-Helfer an, der während der für jeden Wochentag angegebenen Zeitblöcke an ist. Gibt die Entitäts-ID des neuen Zeitplans zurück.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "Der Name des neuen Zeitplans."
+                },
+                "schedule_id": {
+                    "name": "Zeitplan-Entitäts-ID",
+                    "description": "Die Entitäts-ID für den neuen Zeitplan. Das Präfix „schedule.“ wird automatisch hinzugefügt. Wird keine angegeben, wird die Entitäts-ID aus dem Namen erzeugt."
+                },
+                "icon": {
+                    "name": "Symbol",
+                    "description": "Das Symbol für den neuen Zeitplan."
+                },
+                "monday": {
+                    "name": "Montag",
+                    "description": "Wann der Zeitplan montags an ist: eine Liste von Zeitblöcken, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Weggelassen, ist er den ganzen Tag aus."
+                },
+                "tuesday": {
+                    "name": "Dienstag",
+                    "description": "Wann der Zeitplan dienstags an ist: eine Liste von Zeitblöcken, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Weggelassen, ist er den ganzen Tag aus."
+                },
+                "wednesday": {
+                    "name": "Mittwoch",
+                    "description": "Wann der Zeitplan mittwochs an ist: eine Liste von Zeitblöcken, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Weggelassen, ist er den ganzen Tag aus."
+                },
+                "thursday": {
+                    "name": "Donnerstag",
+                    "description": "Wann der Zeitplan donnerstags an ist: eine Liste von Zeitblöcken, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Weggelassen, ist er den ganzen Tag aus."
+                },
+                "friday": {
+                    "name": "Freitag",
+                    "description": "Wann der Zeitplan freitags an ist: eine Liste von Zeitblöcken, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Weggelassen, ist er den ganzen Tag aus."
+                },
+                "saturday": {
+                    "name": "Samstag",
+                    "description": "Wann der Zeitplan samstags an ist: eine Liste von Zeitblöcken, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Weggelassen, ist er den ganzen Tag aus."
+                },
+                "sunday": {
+                    "name": "Sonntag",
+                    "description": "Wann der Zeitplan sonntags an ist: eine Liste von Zeitblöcken, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Weggelassen, ist er den ganzen Tag aus."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Zeitplan löschen",
+            "description": "Löscht Zeitplan-Helfer, die in der Oberfläche erstellt wurden. In YAML eingerichtete Zeitpläne kann Spook nicht löschen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID",
+                    "description": "Der oder die zu löschenden Zeitpläne."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Zeitblöcke eines Tages festlegen",
+            "description": "Ersetzt die Zeitblöcke eines oder mehrerer Tage eines Zeitplan-Helfers, der in der Oberfläche erstellt wurde. In YAML eingerichtete Zeitpläne kann Spook nicht ändern.",
+            "fields": {
+                "day": {
+                    "name": "Tag",
+                    "description": "Der Tag oder die Tage der Woche, deren Zeitblöcke festgelegt werden."
+                },
+                "blocks": {
+                    "name": "Zeitblöcke",
+                    "description": "Die Zeitblöcke, in denen der Zeitplan an diesen Tagen an ist, jeweils mit einer Von- und einer Bis-Zeit, und optionalen Daten, die er als Attribute zeigt, solange er an ist. Diese ersetzen die Blöcke, die die Tage hatten. Eine leere Liste lässt die Tage den ganzen Tag aus."
+                }
+            }
         }
     },
     "conditions": {
@@ -2755,6 +3046,16 @@
         "not_triggered_by_user": {
             "name": "Nicht von einem Benutzer ausgelöst",
             "description": "Trifft zu, wenn niemand für diesen Durchlauf verantwortlich gemacht werden kann: ein Zeitplan, die Sonne, eine Integration, die von sich aus handelt, oder die Schaltfläche Ausführen. Hat mit Absicht keine Optionen. Willst du stattdessen bestimmte Personen ausschließen, setze \"Von einem Benutzer ausgelöst\" in eine Nicht-Bedingung."
+        },
+        "is_available": {
+            "name": "Entität ist verfügbar",
+            "description": "Trifft zu, wenn eine Entität ansprechbar ist: alles außer nicht verfügbar oder unbekannt. Für einen Lautsprecher oder eine smarte Steckdose, die nicht immer Strom hat.",
+            "fields": {
+                "behavior": {
+                    "name": "Verhalten",
+                    "description": "Ob es reicht, dass eine der Entitäten da ist, oder ob alle da sein müssen."
+                }
+            }
         }
     },
     "triggers": {
@@ -2975,6 +3276,92 @@
         "script_started": {
             "name": "Skript gestartet",
             "description": "Wird ausgelöst, wenn ein Skript einen Durchlauf startet. Ein Durchlauf, den das Skript ablehnt, weil es schon läuft, zählt nicht. Lass das Ziel leer, um alle Skripte zu beobachten."
+        },
+        "state_changed": {
+            "name": "Spooks Zustandsauslöser",
+            "description": "Löst aus, wenn eine Entität ihren Zustand ändert, für alles, was ein Ziel umfasst: Entitäten, Geräte, Bereiche, Etagen und Labels. Grenze es nach Domäne, Integration oder Geräteklasse ein, oder lass das Ziel leer und lass diese die Entitäten aus allem auswählen. Schließe Dinge wieder aus und lege fest, wie lange eine Änderung bestehen muss, bevor sie zählt.",
+            "fields": {
+                "domain": {
+                    "name": "Domänen",
+                    "description": "Nur Entitäten dieser Domänen, etwa binary_sensor oder cover. Ohne Ziel werden sie aus allem ausgewählt."
+                },
+                "integration": {
+                    "name": "Integrationen",
+                    "description": "Nur Entitäten, die von diesen Integrationen bereitgestellt werden, etwa zha oder hue. Ohne Ziel werden sie aus allem ausgewählt."
+                },
+                "config_entry": {
+                    "name": "Integrationseintrag",
+                    "description": "Nur Entitäten dieses Integrationseintrags. Ohne Ziel werden sie aus allem ausgewählt."
+                },
+                "device_class": {
+                    "name": "Geräteklassen",
+                    "description": "Nur Entitäten dieser Geräteklassen, etwa door oder window. Ohne Ziel werden sie aus allem ausgewählt."
+                },
+                "exclude_target": {
+                    "name": "Ausschließen",
+                    "description": "Entitäten, Geräte, Bereiche, Etagen oder Labels, die ausgeschlossen werden. Alles darin wird ausgeschlossen, auch die Diagnose-Entitäten."
+                },
+                "exclude_domain": {
+                    "name": "Domänen ausschließen",
+                    "description": "Schließt Entitäten dieser Domänen aus. Steht nichts unter Ausschließen, gilt das für alles, was das Ziel umfasst."
+                },
+                "exclude_integration": {
+                    "name": "Integrationen ausschließen",
+                    "description": "Schließt Entitäten aus, die von diesen Integrationen bereitgestellt werden."
+                },
+                "exclude_config_entry": {
+                    "name": "Integrationseintrag ausschließen",
+                    "description": "Schließt die Entitäten dieses Integrationseintrags aus."
+                },
+                "exclude_device_class": {
+                    "name": "Geräteklassen ausschließen",
+                    "description": "Schließt Entitäten dieser Geräteklassen aus."
+                },
+                "attribute": {
+                    "name": "Attribut",
+                    "description": "Folge diesem Attribut statt dem Zustand."
+                },
+                "from": {
+                    "name": "Von",
+                    "description": "Nur Änderungen, die von einem dieser Zustände kommen."
+                },
+                "not_from": {
+                    "name": "Nicht von",
+                    "description": "Nur Änderungen, die nicht von einem dieser Zustände kommen."
+                },
+                "to": {
+                    "name": "Nach",
+                    "description": "Nur Änderungen, die zu einem dieser Zustände gehen."
+                },
+                "not_to": {
+                    "name": "Nicht nach",
+                    "description": "Nur Änderungen, die nicht zu einem dieser Zustände gehen."
+                },
+                "ignore_unavailable": {
+                    "name": "Nicht verfügbar und unbekannt ignorieren",
+                    "description": "Lässt Änderungen von oder zu nicht verfügbar und unbekannt weg, damit ein Neustart oder ein neu startender Router nicht für alles auslöst. Schalte es aus, um sie in Von oder Nach zu verwenden."
+                },
+                "attribute_changes": {
+                    "name": "Attributänderungen mitzählen",
+                    "description": "Auch auslösen, wenn sich nur ein Attribut geändert hat und der Zustand gleich geblieben ist. Wirkt nicht, solange einem Attribut gefolgt wird."
+                },
+                "behavior": {
+                    "name": "Verhalten",
+                    "description": "Für jede Entität auslösen, für die erste des Ziels, die dort ankommt, oder sobald alle dort sind. Erste und alle brauchen Nach oder Nicht nach. Solange nicht verfügbar und unbekannt ignoriert werden, machen Entitäten in diesen Zuständen nicht mit."
+                },
+                "for": {
+                    "name": "Für",
+                    "description": "Erst auslösen, wenn der neue Zustand so lange gehalten hat. Jede andere Änderung dazwischen bricht es ab."
+                },
+                "blip_tolerance": {
+                    "name": "Aussetzer-Toleranz",
+                    "description": "Während auf Für gewartet wird, beginnt das Warten nicht von vorn, wenn die Entität innerhalb dieser Zeit nicht verfügbar oder unbekannt wird und so zurückkommt, wie sie war. Funktioniert nur zusammen mit Für."
+                },
+                "delay": {
+                    "name": "Verzögerung",
+                    "description": "So lange vor dem Auslösen warten, egal was dazwischen passiert. Wie eine Verzögerung am Anfang der Aktionen."
+                }
+            }
         }
     },
     "selector": {
@@ -2989,6 +3376,17 @@
             "options": {
                 "bottom": "Ende",
                 "top": "Anfang"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Montag",
+                "tuesday": "Dienstag",
+                "wednesday": "Mittwoch",
+                "thursday": "Donnerstag",
+                "friday": "Freitag",
+                "saturday": "Samstag",
+                "sunday": "Sonntag"
             }
         }
     },
