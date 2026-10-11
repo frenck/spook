@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.helpers.service import async_set_service_schema
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook import draft_checking
 from custom_components.spook.ectoplasms.automation.repairs.unknown_icons import (
     SpookRepair,
 )
@@ -189,3 +190,17 @@ async def test_no_frontend_means_nothing_is_judged(
         await _async_reported(hass, issue_registry, _set_group("mdi:ghost-group"))
         is None
     )
+
+
+async def test_a_draft_is_checked_for_unknown_icons(hass: HomeAssistant) -> None:
+    """A draft automation is asked about its icons like a saved one."""
+    assert await async_setup_component(hass, "group", {})
+
+    assert await draft_checking.async_check_draft(
+        hass,
+        "automation",
+        {
+            "triggers": [{"trigger": "event", "event_type": "haunt"}],
+            "actions": [_set_group("mdi:ghost-group"), _set_group("mdi:sofa")],
+        },
+    ) == {"icons": ["mdi:ghost-group"]}

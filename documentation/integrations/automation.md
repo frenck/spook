@@ -370,6 +370,33 @@ An automation on a blueprint is checked with its inputs filled in, the way Home 
 
 To resolve the raised issue, edit the automation and use the ID of one of its triggers, or give the trigger the ID the automation checks for. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Templates that can never pass
+
+Automations are inspected for templates that, because of how they are written, can never render what Home Assistant needs for them to pass: the `value_template` of template conditions and template triggers, shorthand template conditions (`conditions: "{{ ... }}"`), and `wait_template`. Wherever they are: at the top of the automation, and anywhere in its actions (an `if`, a `choose`, the `while` or `until` of a `repeat`, a condition step, nested in `and`, `or` or `not`, a `wait_for_trigger`). If one can never pass, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the templates that can never pass.
+
+What passes differs per kind. A template condition passes only when it renders `true` (any case). A template trigger fires when its template turns into something that reads as true: `true`, `on`, `yes`, `enable`, `1` or another number that is not zero. It has to see something that does not read as true first, so one that only ever renders `on` or `yes` never fires. A `wait_template` is checked like a condition first. After that it ends when its template renders again into something that reads as true. One without any Jinja, or made of fixed text alone, is never rendered again, so only `true` ends it.
+
+The shapes this catches, all seen on the forums:
+
+- Quotes around the template in a block. With `value_template: >-` followed by `"{{ is_state('light.hall', 'on') }}"`, the quotes are text, so the result is `"True"`, quotes included.
+- No `{{ }}` at all. `value_template: "is_state('light.hall', 'on')"` is not a template, it is that text. One missing `{{` does the same.
+- YAML pasted into the template field of the editor, like `- condition: template` followed by its `value_template:`. All of it is text around the template, and ends up in the result.
+- A YAML `#` comment inside the Jinja. Jinja does not know YAML comments: it prints them.
+- A condition that can only render `on`, `off` or another fixed text besides `true`, like `{{ 'on' if is_state('light.hall', 'on') else 'off' }}`. Fine for a trigger, never passing for a condition.
+
+A template condition, trigger or wait like that loads fine and never passes. The condition is false, the wait only ends on its timeout, the trigger never fires, and nothing tells you. That is the ghost this catches.
+
+Only the text of the template is read. Spook raises the issue only when that alone settles it: text that is always part of the result and can never be part of `true`, a result that always starts with something nothing true starts with, or every result the template can give, whichever way it goes, failing. Anything that depends on a state, a variable or the moment it runs is never judged. Some things are not reported on purpose:
+
+- A template trigger without any Jinja that does read as true, like `true` or `on`. It never changes, so it never fires either, but that is not what this repair is about.
+- A comment after the template in a trigger, like `{{ is_state('light.hall', 'on') }} # hall`. Home Assistant reads a trigger's result like Python, and Python skips that comment, so it works.
+- Text that is only printed in some branches of an `{% if %}` or a loop.
+- An automation that failed to load. Home Assistant reports that one itself.
+
+An automation on a blueprint is checked with its inputs filled in, the way Home Assistant runs it. Spook looks again whenever automations are reloaded, which saving one in the editor does.
+
+To resolve the raised issue, edit the automation and make the template render `true` when it should pass: remove the quotes around it, wrap it in `{{ }}`, remove what was pasted around it, use `{# #}` for comments, or compare to get `true` instead of `on`. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).

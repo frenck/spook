@@ -27,6 +27,7 @@ from .dashboard_extraction import (
     extract_not_entity_ids_from_dashboard_node,
 )
 from .ectoplasms.automation.repairs import (
+    never_true_templates as automation_templates,
     unknown_area_references as automation_areas,
     unknown_attribute_references as automation_attributes,
     unknown_condition_references as automation_conditions,
@@ -34,6 +35,7 @@ from .ectoplasms.automation.repairs import (
     unknown_device_references as automation_devices,
     unknown_entity_references as automation_entities,
     unknown_floor_references as automation_floors,
+    unknown_icons as automation_icons,
     unknown_label_references as automation_labels,
     unknown_service_references as automation_services,
     unknown_state_references as automation_states,
@@ -42,6 +44,7 @@ from .ectoplasms.automation.repairs import (
 )
 from .ectoplasms.lovelace.entity_names import async_check_dashboard_draft
 from .ectoplasms.script.repairs import (
+    never_true_templates as script_templates,
     unknown_area_references as script_areas,
     unknown_attribute_references as script_attributes,
     unknown_condition_references as script_conditions,
@@ -49,6 +52,7 @@ from .ectoplasms.script.repairs import (
     unknown_device_references as script_devices,
     unknown_entity_references as script_entities,
     unknown_floor_references as script_floors,
+    unknown_icons as script_icons,
     unknown_label_references as script_labels,
     unknown_service_references as script_services,
     unknown_state_references as script_states,
@@ -90,9 +94,11 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         automation_devices,
         automation_entities,
         automation_floors,
+        automation_icons,
         automation_labels,
         automation_services,
         automation_states,
+        automation_templates,
         automation_trigger_ids,
         automation_triggers,
     ),
@@ -104,9 +110,11 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         script_devices,
         script_entities,
         script_floors,
+        script_icons,
         script_labels,
         script_services,
         script_states,
+        script_templates,
         script_triggers,
     ),
 }
