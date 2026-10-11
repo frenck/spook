@@ -151,38 +151,41 @@ async def test_every_card_that_puts_on_a_theme_is_checked(
     issue_registry: ir.IssueRegistry,
 ) -> None:
     """Test each core card that calls `applyThemesOnElement` is read."""
-    card_types = [
-        "alarm-panel",
-        "button",
-        "calendar",
-        "entities",
-        "entity",
-        "entity-button",
-        "gauge",
-        "glance",
-        "humidifier",
-        "light",
-        "logbook",
-        "markdown",
-        "media-control",
-        "picture",
-        "picture-elements",
-        "picture-entity",
-        "picture-glance",
-        "plant-status",
-        "sensor",
-        "shopping-list",
-        "statistic",
-        "thermostat",
-        "todo-list",
-        "weather-forecast",
-    ]
+    # Each card type next to the frontend card whose `applyThemesOnElement`
+    # call puts on its theme. Written out here, not taken from the code, so
+    # a card dropped there fails this test.
+    theme_applied_by = {
+        "alarm-panel": "hui-alarm-panel-card",
+        "button": "hui-button-card",
+        "calendar": "hui-calendar-card",
+        "entities": "hui-entities-card",
+        "entity": "hui-entity-card",
+        "entity-button": "hui-button-card",
+        "gauge": "hui-gauge-card",
+        "glance": "hui-glance-card",
+        "humidifier": "hui-humidifier-card",
+        "light": "hui-light-card",
+        "logbook": "hui-logbook-card",
+        "markdown": "hui-markdown-card",
+        "media-control": "hui-media-control-card",
+        "picture": "hui-picture-card",
+        "picture-elements": "hui-picture-elements-card",
+        "picture-entity": "hui-picture-entity-card",
+        "picture-glance": "hui-picture-glance-card",
+        "plant-status": "hui-plant-status-card",
+        "sensor": "hui-entity-card",
+        "shopping-list": "hui-todo-list-card",
+        "statistic": "hui-statistic-card",
+        "thermostat": "hui-thermostat-card",
+        "todo-list": "hui-todo-list-card",
+        "weather-forecast": "hui-weather-forecast-card",
+    }
 
     assert await _async_reported(
         hass,
         issue_registry,
-        _with(*({"type": kind, "theme": f"Gone {kind}"} for kind in card_types)),
-    ) == "\n".join(f"- `Gone {kind}`" for kind in sorted(card_types))
+        _with(*({"type": kind, "theme": f"Gone {kind}"} for kind in theme_applied_by)),
+    ) == "\n".join(f"- `Gone {kind}`" for kind in sorted(theme_applied_by))
 
 
 async def test_cards_that_ignore_a_theme_are_left_alone(
