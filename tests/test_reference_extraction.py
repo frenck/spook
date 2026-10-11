@@ -12,6 +12,7 @@ from custom_components.spook.reference_extraction import (
     extract_targets_from_config,
     mentioned_only_in_disabled_steps,
     numeric_state_threshold_entities,
+    numeric_threshold_entities,
     only_in_disabled_steps,
     without_disabled_steps,
 )
@@ -487,3 +488,15 @@ def test_mentioned_only_in_disabled_steps_reads_parked_steps_like_core() -> None
     ]
 
     assert "scene.parked" in mentioned_only_in_disabled_steps(config)
+
+
+def test_numeric_threshold_entities_with_a_type_that_is_no_text() -> None:
+    """A threshold type that is a list is no threshold, and no crash either."""
+    config = {
+        "trigger": "light.brightness_crossed_threshold",
+        "options": {
+            "threshold": {"type": ["above"], "value": {"entity": "input_number.x"}}
+        },
+    }
+
+    assert numeric_threshold_entities(config) == set()
