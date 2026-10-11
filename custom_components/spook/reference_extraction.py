@@ -537,7 +537,7 @@ def _literal_entity_ids(value: Any) -> list[str]:
     ]
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, eq=False)
 class AttributeValue:
     """A value somebody named for an attribute, in place of a state.
 
@@ -548,6 +548,23 @@ class AttributeValue:
 
     attribute: str
     value: str | int | float | bool
+
+    # Python holds `False` equal to `0`, and `1` to `1.0`. In a configuration
+    # those are different entries, each with its own mistake, so the type of
+    # the value counts too. Otherwise a set keeps only one of them.
+    def __eq__(self, other: object) -> bool:
+        """Return whether both name the same attribute, and the same value."""
+        if not isinstance(other, AttributeValue):
+            return NotImplemented
+        return (self.attribute, type(self.value), self.value) == (
+            other.attribute,
+            type(other.value),
+            other.value,
+        )
+
+    def __hash__(self) -> int:
+        """Return a hash that tells the type of the value apart too."""
+        return hash((self.attribute, type(self.value), self.value))
 
 
 @dataclass(frozen=True, slots=True)

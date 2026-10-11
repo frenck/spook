@@ -46,7 +46,7 @@ from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
 from .attribute_checking import async_unknown_attributes
-from .attribute_value_checking import async_unknown_attribute_values
+from .attribute_value_checking import as_yaml, async_unknown_attribute_values
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
@@ -730,11 +730,6 @@ def _finding_reference(entity_id: str, name: str | AttributeValue) -> str:
     return f"{entity_id}:{name}"
 
 
-def _written(value: str | float) -> str:
-    """Return a value of an attribute the way it reads in YAML."""
-    return value if isinstance(value, str) else json.dumps(value)
-
-
 @dataclass(frozen=True, slots=True)
 class _UnknownName:
     """Something an entity never has, named in an automation or script."""
@@ -931,9 +926,7 @@ class AbstractSpookUnknownEntityNamesRepair(
         found = []
         for finding in unknown:
             if isinstance(name := finding.name, AttributeValue):
-                line = (
-                    f"{name.attribute} of {finding.entity_id}: {_written(name.value)}"
-                )
+                line = f"{name.attribute} of {finding.entity_id}: {as_yaml(name.value)}"
             else:
                 line = _finding_reference(finding.entity_id, name)
             if finding.suggestion is not None:
@@ -949,7 +942,7 @@ class AbstractSpookUnknownEntityNamesRepair(
             if isinstance(name := finding.name, AttributeValue):
                 line = (
                     f"- `{name.attribute}` of `{finding.entity_id}`: "
-                    f"`{_written(name.value)}`"
+                    f"`{as_yaml(name.value)}`"
                 )
             else:
                 line = self.finding_line.format(name=name, entity_id=finding.entity_id)

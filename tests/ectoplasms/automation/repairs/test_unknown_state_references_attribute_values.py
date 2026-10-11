@@ -210,7 +210,7 @@ async def test_suggestion_is_quoted_when_yaml_would_not_keep_it_text(
     await SpookRepair(hass).async_inspect()
 
     assert _found(issue_registry) == (
-        '- `hvac_action` of `climate.living_room`: `Off` (did you mean `"off"`?)'
+        '- `hvac_action` of `climate.living_room`: `"Off"` (did you mean `"off"`?)'
     )
 
 
@@ -629,6 +629,94 @@ async def test_value_keeps_its_type_in_the_issue(
     await SpookRepair(hass).async_inspect()
 
     assert _found(issue_registry) == (
-        '- `preset_mode` of `climate.living_room`: `True` (did you mean `"true"`?)\n'
+        '- `preset_mode` of `climate.living_room`: `"True"` (did you mean `"true"`?)\n'
         '- `preset_mode` of `climate.living_room`: `true` (did you mean `"true"`?)'
     )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_boolean_and_number_python_holds_equal_are_both_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test `false` and `0` are two entries, each with its own suggestion.
+
+    Python holds `False` equal to `0`, which once made one of them vanish.
+    """
+    await _climate(hass, {"fan_modes": ["off", "0"], "fan_mode": "0"})
+    await _automation(hass, triggers=[_attribute_trigger("fan_mode", to=[False, 0])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `fan_mode` of `climate.living_room`: `0` (did you mean `"0"`?)\n'
+        '- `fan_mode` of `climate.living_room`: `false` (did you mean `"off"`?)'
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_whole_number_and_decimal_are_both_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test `1` and `1.0` are two entries, each with its own suggestion."""
+    await _climate(hass, {"fan_modes": ["1", "1.0"], "fan_mode": "1"})
+    await _automation(hass, triggers=[_attribute_trigger("fan_mode", to=[1, 1.0])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `fan_mode` of `climate.living_room`: `1` (did you mean `"1"`?)\n'
+        '- `fan_mode` of `climate.living_room`: `1.0` (did you mean `"1.0"`?)'
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_boolean_and_number_without_a_guess_are_both_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test `false` and `0` stay two findings with no suggestion for either.
+
+    Both have two candidates. Without a suggestion to tell them apart, the
+    type of the value is all that does.
+    """
+    await _climate(hass, {"fan_modes": ["off", "no", "0", "00"], "fan_mode": "off"})
+    await _automation(hass, triggers=[_attribute_trigger("fan_mode", to=[False, 0])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        "- `fan_mode` of `climate.living_room`: `0`\n"
+        "- `fan_mode` of `climate.living_room`: `false`"
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_text_yaml_would_not_keep_is_shown_in_quotes(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the text `"false"` and the boolean `false` read apart in the issue.
+
+    Without the quotes, both lines say `false`, and nobody can tell which
+    entry of the configuration each one is about.
+    """
+    await _climate(hass, {"preset_modes": ["False"], "preset_mode": "False"})
+    triggers = [_attribute_trigger("preset_mode", to=[False, "false"])]
+    await _automation(hass, triggers=triggers)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `preset_mode` of `climate.living_room`: `"false"` (did you mean `"False"`?)\n'
+        '- `preset_mode` of `climate.living_room`: `false` (did you mean `"False"`?)'
+    )
+
+    draft = SimpleNamespace(
+        entity_id="automation.draft", raw_config={"triggers": triggers}
+    )
+    assert await SpookRepair(hass).async_check_draft(draft) == [
+        'preset_mode of climate.living_room: "false" (did you mean "False"?)',
+        'preset_mode of climate.living_room: false (did you mean "False"?)',
+    ]

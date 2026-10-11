@@ -24,6 +24,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field, replace
 from enum import StrEnum
 import importlib
+import json
 import sys
 from typing import TYPE_CHECKING, Any, Final
 
@@ -148,7 +149,7 @@ DATA_ATTRIBUTE_VALUE_KNOWLEDGE: HassKey[dict[str, _Knowledge]] = HassKey(
 )
 
 
-@dataclass(frozen=True, slots=True)
+@dataclass(frozen=True, slots=True, eq=False)
 class UnknownAttributeValue:
     """A value somebody named for an attribute that it never has."""
 
@@ -156,6 +157,28 @@ class UnknownAttributeValue:
     attribute: str
     value: Value
     suggestion: str | None
+
+    # Like the values asked about: `False` and `0` are two findings, each
+    # with its own suggestion, even though Python holds them equal.
+    def __eq__(self, other: object) -> bool:
+        """Return whether both are the same finding, the type of value too."""
+        if not isinstance(other, UnknownAttributeValue):
+            return NotImplemented
+        return self._key() == other._key()
+
+    def __hash__(self) -> int:
+        """Return a hash that tells the type of the value apart too."""
+        return hash(self._key())
+
+    def _key(self) -> tuple[str, str, type, Value, str | None]:
+        """Return what makes this finding the one it is."""
+        return (
+            self.entity_id,
+            self.attribute,
+            type(self.value),
+            self.value,
+            self.suggestion,
+        )
 
 
 def _comparable(value: Any) -> Value | None:
@@ -485,16 +508,25 @@ def _written_as(value: Value, known: set[Value]) -> set[str]:
     }
 
 
+def as_yaml(value: Value) -> str:
+    """Return a value the way it is written in YAML, to be read back as it is.
+
+    Text goes in quotes whenever YAML would not leave it text: `Off` in
+    quotes is text, but unquoted it is a boolean. A boolean or a number is
+    written the way YAML writes it, so `false` and `"false"` read apart.
+    """
+    if not isinstance(value, str):
+        return json.dumps(value)
+    return value if isinstance(_yaml_reads(value), str) else f'"{value}"'
+
+
 def _suggestion(written_as: set[str]) -> str | None:
     """Return what was most likely meant, when there is only one."""
     if len(written_as) != 1:
         return None
 
-    meant = next(iter(written_as))
-    # In quotes whenever YAML would not leave the meant text as text: without
-    # them, YAML makes the same mistake again. `Off` in quotes is text, but
-    # the `off` it was meant to be is not, unquoted.
-    return meant if isinstance(_yaml_reads(meant), str) else f'"{meant}"'
+    # Quoted where needed: without them, YAML makes the same mistake again.
+    return as_yaml(next(iter(written_as)))
 
 
 async def async_unknown_attribute_values(
