@@ -1347,6 +1347,27 @@ Documentation: https://spook.boo/repairs#unignore-all-issues
 
 ## schedule
 
+### `schedule.create`: Create a schedule
+
+Creates a new schedule helper on the fly, on during the time blocks given for each day of the week. Returns the entity ID of the new schedule.
+
+Response: on request.
+
+Data:
+
+- `name` (required, text): The name of the new schedule.
+- `schedule_id` (optional, text): The entity ID for the new schedule. The schedule. prefix is added automatically. If not provided, the entity ID will be generated based on the name.
+- `icon` (optional, icon): The icon for the new schedule.
+- `monday` (optional, object): When the schedule is on, on Mondays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+- `tuesday` (optional, object): When the schedule is on, on Tuesdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+- `wednesday` (optional, object): When the schedule is on, on Wednesdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+- `thursday` (optional, object): When the schedule is on, on Thursdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+- `friday` (optional, object): When the schedule is on, on Fridays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+- `saturday` (optional, object): When the schedule is on, on Saturdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+- `sunday` (optional, object): When the schedule is on, on Sundays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+
+Documentation: https://spook.boo/schedule#create-a-schedule
+
 ### `schedule.delete`: Delete a schedule
 
 Deletes schedule helpers made in the UI. Schedules set up in YAML cannot be deleted by Spook.
