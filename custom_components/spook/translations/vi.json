@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Đã thêm người dùng",
             "description": "Kích hoạt khi ai đó được cấp tài khoản đăng nhập Home Assistant. Những người dùng mà Home Assistant tự tạo cho các bộ tích hợp của nó không được tính."
+        },
+        "state_changed": {
+            "name": "Bộ kích hoạt trạng thái của Spook",
+            "description": "Kích hoạt khi một thực thể thay đổi trạng thái, cho mọi thứ mà mục tiêu bao gồm: thực thể, thiết bị, khu vực, tầng và nhãn. Thu hẹp theo miền, bộ tích hợp hoặc lớp thiết bị, hoặc để trống mục tiêu và để chúng chọn thực thể từ mọi thứ. Loại trừ bớt, và quyết định một thay đổi phải giữ bao lâu thì mới được tính.",
+            "fields": {
+                "domain": {
+                    "name": "Miền",
+                    "description": "Chỉ các thực thể thuộc những miền này, như binary_sensor hoặc cover. Không có mục tiêu thì chọn chúng từ mọi thứ."
+                },
+                "integration": {
+                    "name": "Bộ tích hợp",
+                    "description": "Chỉ các thực thể do những bộ tích hợp này cung cấp, như zha hoặc hue. Không có mục tiêu thì chọn chúng từ mọi thứ."
+                },
+                "config_entry": {
+                    "name": "Mục bộ tích hợp",
+                    "description": "Chỉ các thực thể của mục bộ tích hợp này. Không có mục tiêu thì chọn chúng từ mọi thứ."
+                },
+                "device_class": {
+                    "name": "Lớp thiết bị",
+                    "description": "Chỉ các thực thể thuộc những lớp thiết bị này, như door hoặc window. Không có mục tiêu thì chọn chúng từ mọi thứ."
+                },
+                "exclude_target": {
+                    "name": "Loại trừ",
+                    "description": "Thực thể, thiết bị, khu vực, tầng hoặc nhãn cần loại trừ. Mọi thứ bên trong chúng đều bị loại trừ, kể cả các thực thể chẩn đoán."
+                },
+                "exclude_domain": {
+                    "name": "Loại trừ miền",
+                    "description": "Loại trừ các thực thể thuộc những miền này. Khi Loại trừ để trống, cái này áp dụng cho mọi thứ mà mục tiêu bao gồm."
+                },
+                "exclude_integration": {
+                    "name": "Loại trừ bộ tích hợp",
+                    "description": "Loại trừ các thực thể do những bộ tích hợp này cung cấp."
+                },
+                "exclude_config_entry": {
+                    "name": "Loại trừ mục bộ tích hợp",
+                    "description": "Loại trừ các thực thể của mục bộ tích hợp này."
+                },
+                "exclude_device_class": {
+                    "name": "Loại trừ lớp thiết bị",
+                    "description": "Loại trừ các thực thể thuộc những lớp thiết bị này."
+                },
+                "from": {
+                    "name": "Từ",
+                    "description": "Chỉ những thay đổi đi ra từ một trong các trạng thái này."
+                },
+                "not_from": {
+                    "name": "Không từ",
+                    "description": "Chỉ những thay đổi không đi ra từ một trong các trạng thái này."
+                },
+                "to": {
+                    "name": "Đến",
+                    "description": "Chỉ những thay đổi đi đến một trong các trạng thái này."
+                },
+                "not_to": {
+                    "name": "Không đến",
+                    "description": "Chỉ những thay đổi không đi đến một trong các trạng thái này."
+                },
+                "ignore_unavailable": {
+                    "name": "Bỏ qua không khả dụng và không xác định",
+                    "description": "Bỏ qua những thay đổi từ hoặc đến không khả dụng và không xác định, để một lần khởi động lại hay một lần khởi động lại bộ định tuyến không kích hoạt cho mọi thứ. Tắt đi để dùng chúng trong Từ hoặc Đến."
+                },
+                "attribute_changes": {
+                    "name": "Tính cả thay đổi thuộc tính",
+                    "description": "Cũng kích hoạt khi chỉ một thuộc tính thay đổi còn trạng thái vẫn giữ nguyên. Không có tác dụng khi đang theo dõi một thuộc tính."
+                },
+                "for": {
+                    "name": "Trong",
+                    "description": "Chỉ kích hoạt khi trạng thái mới đã giữ được trong khoảng thời gian này. Bất kỳ thay đổi nào khác ở giữa sẽ hủy nó."
+                },
+                "blip_tolerance": {
+                    "name": "Dung sai chập chờn",
+                    "description": "Trong lúc chờ hết Trong, việc trở nên không khả dụng hoặc không xác định rồi quay lại như cũ trong khoảng thời gian này sẽ không làm việc chờ bắt đầu lại. Chỉ hoạt động cùng với Trong."
+                },
+                "delay": {
+                    "name": "Trì hoãn",
+                    "description": "Chờ khoảng thời gian này trước khi kích hoạt, bất kể điều gì xảy ra ở giữa. Giống như một lần trì hoãn ở đầu các hành động."
+                },
+                "attribute": {
+                    "name": "Thuộc tính",
+                    "description": "Theo dõi thuộc tính này thay vì trạng thái."
+                },
+                "behavior": {
+                    "name": "Hành vi",
+                    "description": "Kích hoạt cho từng thực thể, cho thực thể đầu tiên của mục tiêu đạt tới đó, hoặc một lần khi tất cả đều đã ở đó. Đầu tiên và tất cả cần có Đến hoặc Không đến. Khi không khả dụng và không xác định đang bị bỏ qua, các thực thể ở những trạng thái đó không tham gia."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Dưới cùng",
                 "top": "Trên cùng"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Thứ Hai",
+                "wednesday": "Thứ Tư",
+                "thursday": "Thứ Năm",
+                "friday": "Thứ Sáu",
+                "saturday": "Thứ Bảy",
+                "sunday": "Chủ Nhật",
+                "tuesday": "Thứ Ba"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Thời lượng",
                     "description": "Chờ bao lâu sau lượt chạy cuối cùng thì điều kiện này mới thỏa mãn lại."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Thực thể khả dụng",
+            "description": "Thỏa mãn khi một thực thể có mặt để giao tiếp: bất cứ trạng thái nào trừ không khả dụng hoặc không xác định. Dành cho một chiếc loa hay ổ cắm thông minh không phải lúc nào cũng có điện.",
+            "fields": {
+                "behavior": {
+                    "name": "Hành vi",
+                    "description": "Chỉ cần bất kỳ thực thể nào có mặt là đủ, hay tất cả đều phải có mặt."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Vùng này không thể chỉnh sửa: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Lượng {amount} không khớp với {entity_id}, thực thể này thay đổi theo bước {step}. Hãy dùng một bội số của {step}, hoặc bỏ trống lượng để di chuyển một bước."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Các khối thời gian đó không dùng được cho {entity_id}: {error}. Không có gì bị thay đổi."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} là một lịch trình từ cấu hình YAML của bạn, Spook không thể thay đổi nó. Hãy chỉnh sửa nó trong cấu hình của bạn."
+        },
+        "area_cannot_update": {
+            "message": "Không thể thay đổi khu vực {area_id} theo cách đó: {error}."
+        },
+        "area_name_taken": {
+            "message": "Tên {name} đã được khu vực {area_id} sử dụng."
+        },
+        "area_nothing_to_update": {
+            "message": "Không có gì để cập nhật cho khu vực {area_id}: hãy cung cấp ít nhất một trong {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Không có gì để cập nhật cho thiết bị {device_id}: hãy cung cấp ít nhất một trong {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Tên {name} đã được tầng {floor_id} sử dụng."
+        },
+        "floor_nothing_to_update": {
+            "message": "Không có gì để cập nhật cho tầng {floor_id}: hãy cung cấp ít nhất một trong {fields}."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Các cảm biến này đã quay lại, hoặc thiết lập giờ đã trỏ đi nơi khác, kể từ lúc Spook xem. Vì vậy chưa có gì bị xóa. Spook sẽ tự xem lại và cập nhật sửa chữa này."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "description": "Spook đã tìm thấy một con ma trong các trợ lý giọng nói của bạn 👻\n\nCác thực thể sau được hiển thị cho Assist, và tất cả đều trả lời theo tên {name}:\n\n{entities}\n\nKhi các tên giống nhau, Assist chỉ phân biệt chúng theo khu vực: khu vực bạn nêu tên, hoặc khu vực có vệ tinh giọng nói của bạn. Một số trong chúng ở chung một khu vực, hoặc không có khu vực nào, nên Assist không thể chọn ra chúng bằng tên này từ bất cứ đâu. Khi đó hỏi {name} sẽ thất bại, và không có gì cho biết thực thể nào đang cản đường.\n\nĐể sửa điều này, hãy đặt cho mỗi thực thể một tên hoặc biệt hiệu riêng, hoặc chuyển chúng sang các khu vực khác nhau. Bạn có thể thay đổi biệt hiệu của một thực thể, và việc Assist có thấy nó hay không, tại [Thực thể được hiển thị](/config/voice-assistants/expose). Khu vực được đặt trên [trang Khu vực](/config/areas/dashboard).\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Assist không phân biệt được những thứ này: {name}"
+        },
+        "automation_unknown_attribute_references": {
+            "title": "Thuộc tính không xác định được dùng trong: {automation}",
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này sử dụng các thuộc tính sau, những thứ mà thực thể của chúng không có. Không phải lúc này, không phải thứ mà loại thực thể đó cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{attributes}\n\n\n\nMột bộ kích hoạt hoặc điều kiện chờ một thuộc tính không bao giờ xuất hiện sẽ không bao giờ kích hoạt, và không báo cho bạn biết. Một bản mẫu đọc thuộc tính đó sẽ không nhận được gì. Để sửa điều này, hãy [chỉnh sửa tự động hóa]({edit}) và dùng một thuộc tính mà thực thể có.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "script_unknown_attribute_references": {
+            "title": "Thuộc tính không xác định được dùng trong: {script}",
+            "description": "Spook đã tìm thấy một con ma trong các tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này sử dụng các thuộc tính sau, những thứ mà thực thể của chúng không có. Không phải lúc này, không phải thứ mà loại thực thể đó cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{attributes}\n\n\n\nMột bộ kích hoạt hoặc điều kiện chờ một thuộc tính không bao giờ xuất hiện sẽ không bao giờ kích hoạt, và không báo cho bạn biết. Một bản mẫu đọc thuộc tính đó sẽ không nhận được gì. Để sửa điều này, hãy [chỉnh sửa tập lệnh]({edit}) và dùng một thuộc tính mà thực thể có.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này hiển thị hoặc kiểm tra các thuộc tính sau, những thứ mà thực thể của chúng không có. Không phải lúc này, không phải thứ mà loại thực thể đó cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{attributes}\n\n\n\nMột thẻ hiển thị thuộc tính không bao giờ xuất hiện sẽ để trống, và một điều kiện hiển thị hoặc bộ lọc kiểm tra thuộc tính đó sẽ không bao giờ thỏa mãn. Không cái nào báo cho bạn biết. Để sửa điều này, hãy [chỉnh sửa bảng điều khiển]({edit}) và dùng một thuộc tính mà thực thể có.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thuộc tính không xác định được dùng trong bảng điều khiển: {dashboard}"
+        },
+        "template_unknown_attribute_references": {
+            "title": "Thuộc tính không xác định được dùng trong biến trợ giúp bản mẫu: {helper}",
+            "description": "Spook đã tìm thấy một con ma trong các biến trợ giúp bản mẫu của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp biến trợ giúp bản mẫu sau:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nBiến trợ giúp bản mẫu này sử dụng các thuộc tính sau, những thứ mà thực thể của chúng không có. Không phải lúc này, không phải thứ mà loại thực thể đó cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{attributes}\n\n\n\nMột bản mẫu đọc thuộc tính không bao giờ xuất hiện sẽ không nhận được gì, và một điều kiện trong một hành động của nó chờ thuộc tính đó sẽ không bao giờ thỏa mãn. Không cái nào báo cho bạn biết. Để sửa điều này, hãy [chỉnh sửa biến trợ giúp bản mẫu]({edit}) và dùng một thuộc tính mà thực thể có.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "title": "Thuộc tính không xác định được dùng trong thực thể bản mẫu: {name}",
+            "description": "Spook đã tìm thấy một con ma trong các thực thể bản mẫu của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp thực thể bản mẫu sau:\n\n{name} (`{entity_id}`)\n\nThực thể bản mẫu này sử dụng các thuộc tính sau, những thứ mà thực thể của chúng không có. Không phải lúc này, không phải thứ mà loại thực thể đó cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{attributes}\n\n\n\nMột bản mẫu đọc thuộc tính không bao giờ xuất hiện sẽ không nhận được gì, và một bộ kích hoạt hoặc điều kiện chờ thuộc tính đó sẽ không bao giờ kích hoạt hay thỏa mãn. Không cái nào báo cho bạn biết.\n\nThực thể bản mẫu này được thiết lập trong cấu hình YAML của bạn. Để sửa điều này, hãy chỉnh sửa nó trong phần `template:` của cấu hình, dùng một thuộc tính mà thực thể có, rồi tải lại các thực thể bản mẫu.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "automation_unknown_state_references": {
+            "title": "Trạng thái không xác định được dùng trong: {automation}",
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này chờ hoặc kiểm tra các trạng thái sau, những trạng thái mà thực thể của chúng không bao giờ có. Không phải trạng thái mà loại thực thể đó có thể có, không nằm trong các tùy chọn mà thực thể cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{states}\n\n\n\nMột bộ kích hoạt chờ một trạng thái không bao giờ đến sẽ không bao giờ kích hoạt, một điều kiện kiểm tra trạng thái đó sẽ không bao giờ thỏa mãn, và không cái nào báo cho bạn biết. Trạng thái phân biệt chữ hoa chữ thường: `On` không phải là `on`. Để sửa điều này, hãy [chỉnh sửa tự động hóa]({edit}) và dùng một trạng thái mà thực thể có thể có.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "script_unknown_state_references": {
+            "title": "Trạng thái không xác định được dùng trong: {script}",
+            "description": "Spook đã tìm thấy một con ma trong các tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này chờ hoặc kiểm tra các trạng thái sau, những trạng thái mà thực thể của chúng không bao giờ có. Không phải trạng thái mà loại thực thể đó có thể có, không nằm trong các tùy chọn mà thực thể cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{states}\n\n\n\nMột bộ kích hoạt chờ một trạng thái không bao giờ đến sẽ không bao giờ kích hoạt, một điều kiện kiểm tra trạng thái đó sẽ không bao giờ thỏa mãn, và không cái nào báo cho bạn biết. Trạng thái phân biệt chữ hoa chữ thường: `On` không phải là `on`. Để sửa điều này, hãy [chỉnh sửa tập lệnh]({edit}) và dùng một trạng thái mà thực thể có thể có.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "lovelace_unknown_state_references": {
+            "title": "Trạng thái không xác định được dùng trong bảng điều khiển: {dashboard}",
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này kiểm tra các trạng thái sau, những trạng thái mà thực thể của chúng không bao giờ có. Không phải trạng thái mà loại thực thể đó có thể có, không nằm trong các tùy chọn mà thực thể cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{states}\n\n\n\nMột điều kiện hiển thị hoặc bộ lọc kiểm tra một trạng thái không bao giờ đến sẽ không bao giờ thỏa mãn, và một hình ảnh đặt cho trạng thái đó sẽ không bao giờ được hiển thị. Không cái nào báo cho bạn biết. Trạng thái phân biệt chữ hoa chữ thường: `On` không phải là `on`. Để sửa điều này, hãy [chỉnh sửa bảng điều khiển]({edit}) và dùng một trạng thái mà thực thể có thể có.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "ID bộ kích hoạt không xác định được dùng trong: {automation}",
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này kiểm tra các ID bộ kích hoạt sau, những ID mà không bộ kích hoạt nào của chính nó có:\n\n{trigger_ids}\n\n\n\nMột phép kiểm tra cho ID mà không bộ kích hoạt nào trao ra luôn cho cùng một kết quả: một điều kiện bộ kích hoạt hỏi ID đó sẽ không bao giờ thỏa mãn, nên phần mà nó canh giữ sẽ không bao giờ chạy, và không có gì báo cho bạn biết. ID bộ kích hoạt phân biệt chữ hoa chữ thường, và một bộ kích hoạt không có ID riêng thì được gọi theo vị trí của nó trong danh sách, đếm từ `0`. Để sửa điều này, hãy [chỉnh sửa tự động hóa]({edit}) và dùng ID của một trong các bộ kích hoạt của nó, hoặc đặt cho bộ kích hoạt cái ID mà tự động hóa yêu cầu.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "lovelace_unknown_view_references": {
+            "title": "Chế độ xem không xác định được điều hướng tới trong bảng điều khiển: {dashboard}",
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này điều hướng tới các chế độ xem sau, những thứ không tồn tại:\n\n{paths}\n\n\n\nMột nút hoặc thẻ điều hướng tới một trong số này sẽ mở chế độ xem đầu tiên của bảng điều khiển đó thay vào, mà không nói gì. Chuyện này thường xảy ra khi một chế độ xem đã bị đổi tên, di chuyển hoặc gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa bảng điều khiển]({edit}) và trỏ chúng tới một chế độ xem có tồn tại.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "automation_never_true_templates": {
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này có các bản mẫu sau, những bản mẫu không bao giờ thỏa mãn, bất kể điều gì xảy ra trong nhà bạn:\n\n{templates}\n\n\n\nMột điều kiện bản mẫu chỉ thỏa mãn khi nó kết xuất ra `true`, và một `wait_template` cũng vậy, trừ khi sau đó nó chuyển thành thứ được hiểu là đúng. Một bộ kích hoạt bản mẫu kích hoạt khi bản mẫu của nó chuyển thành thứ được hiểu là đúng, như `true`, `on`, `yes` hoặc `1`. Các bản mẫu này luôn kết xuất ra thứ khác, do cách chúng được viết. Những nguyên nhân thường gặp:\n\n- Dấu ngoặc kép bao quanh bản mẫu. Một khối `>-` coi chúng là văn bản, nên chúng nằm lại trong kết quả.\n- Hoàn toàn không có dấu phân cách bản mẫu, nên văn bản được giữ nguyên như vậy.\n- YAML được dán vào trường bản mẫu.\n- Một chú thích YAML `#` bên trong Jinja, thứ mà Jinja in ra thành văn bản.\n- Một điều kiện kết xuất ra `on` thay vì `true`.\n\nKhông có gì báo cho bạn biết: điều kiện không bao giờ thỏa mãn, việc chờ chỉ kết thúc khi hết thời gian chờ, và bộ kích hoạt không bao giờ kích hoạt. Để sửa điều này, hãy [chỉnh sửa tự động hóa]({edit}) và làm cho bản mẫu kết xuất ra `true` khi nó cần thỏa mãn.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Bản mẫu không bao giờ thỏa mãn trong: {automation}"
+        },
+        "script_never_true_templates": {
+            "title": "Bản mẫu không bao giờ thỏa mãn trong: {script}",
+            "description": "Spook đã tìm thấy một con ma trong các tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này có các bản mẫu sau, những bản mẫu không bao giờ thỏa mãn, bất kể điều gì xảy ra trong nhà bạn:\n\n{templates}\n\n\n\nMột điều kiện bản mẫu chỉ thỏa mãn khi nó kết xuất ra `true`, và một `wait_template` cũng vậy, trừ khi sau đó nó chuyển thành thứ được hiểu là đúng. Một bộ kích hoạt bản mẫu trong `wait_for_trigger` kích hoạt khi bản mẫu của nó chuyển thành thứ được hiểu là đúng, như `true`, `on`, `yes` hoặc `1`. Các bản mẫu này luôn kết xuất ra thứ khác, do cách chúng được viết. Những nguyên nhân thường gặp:\n\n- Dấu ngoặc kép bao quanh bản mẫu. Một khối `>-` coi chúng là văn bản, nên chúng nằm lại trong kết quả.\n- Hoàn toàn không có dấu phân cách bản mẫu, nên văn bản được giữ nguyên như vậy.\n- YAML được dán vào trường bản mẫu.\n- Một chú thích YAML `#` bên trong Jinja, thứ mà Jinja in ra thành văn bản.\n- Một điều kiện kết xuất ra `on` thay vì `true`.\n\nKhông có gì báo cho bạn biết: điều kiện không bao giờ thỏa mãn, và việc chờ chỉ kết thúc khi hết thời gian chờ. Để sửa điều này, hãy [chỉnh sửa tập lệnh]({edit}) và làm cho bản mẫu kết xuất ra `true` khi nó cần thỏa mãn.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "automation_unknown_config_entry_references": {
+            "title": "Mục bộ tích hợp không xác định được dùng trong: {automation}",
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này trao cho các hành động của nó các mục bộ tích hợp sau, những mục mà Home Assistant không biết đến, hoặc thuộc về một bộ tích hợp khác với bộ tích hợp mà hành động yêu cầu:\n\n{config_entries}\n\nHome Assistant từ chối chúng khi bước đó chạy. Chuyện này thường xảy ra sau khi một bộ tích hợp bị gỡ bỏ rồi thêm lại: nó nhận một mục bộ tích hợp mới, với một ID mới.\n\nĐể sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và chọn lại mục bộ tích hợp trong các hành động này.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "script_unknown_config_entry_references": {
+            "title": "Mục bộ tích hợp không xác định được dùng trong: {script}",
+            "description": "Spook đã tìm thấy một con ma trong các tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này trao cho các hành động của nó các mục bộ tích hợp sau, những mục mà Home Assistant không biết đến, hoặc thuộc về một bộ tích hợp khác với bộ tích hợp mà hành động yêu cầu:\n\n{config_entries}\n\nHome Assistant từ chối chúng khi bước đó chạy. Chuyện này thường xảy ra sau khi một bộ tích hợp bị gỡ bỏ rồi thêm lại: nó nhận một mục bộ tích hợp mới, với một ID mới.\n\nĐể sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và chọn lại mục bộ tích hợp trong các hành động này.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "automation_unknown_icons": {
+            "title": "Biểu tượng không xác định được dùng trong: {automation}",
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này trao ra các biểu tượng sau, những biểu tượng không tồn tại trong bộ Material Design Icons đi kèm Home Assistant:\n\n{icons}\n\n\n\nMỗi biểu tượng này hiện ra thành một chỗ trống, không một lời nào. Chuyện này thường xảy ra khi một biểu tượng bị gõ sai, đổi tên hoặc gỡ bỏ, hoặc được chọn từ một phiên bản Material Design Icons mới hơn bản đi kèm Home Assistant. Để sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và thay chúng bằng các biểu tượng có tồn tại.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "script_unknown_icons": {
+            "title": "Biểu tượng không xác định được dùng trong: {script}",
+            "description": "Spook đã tìm thấy một con ma trong các tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này sử dụng hoặc trao ra các biểu tượng sau, những biểu tượng không tồn tại trong bộ Material Design Icons đi kèm Home Assistant:\n\n{icons}\n\n\n\nMỗi biểu tượng này hiện ra thành một chỗ trống, không một lời nào. Chuyện này thường xảy ra khi một biểu tượng bị gõ sai, đổi tên hoặc gỡ bỏ, hoặc được chọn từ một phiên bản Material Design Icons mới hơn bản đi kèm Home Assistant. Để sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và thay chúng bằng các biểu tượng có tồn tại.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này sử dụng các biểu tượng sau, những biểu tượng không tồn tại trong bộ Material Design Icons đi kèm Home Assistant (phiên bản {version}):\n\n{icons}\n\n\n\nMỗi biểu tượng này hiện ra thành một chỗ trống, không một lời nào. Chuyện này thường xảy ra khi một biểu tượng bị gõ sai, đổi tên hoặc gỡ bỏ, hoặc được chọn từ một phiên bản Material Design Icons mới hơn bản đi kèm Home Assistant. Để sửa lỗi này, hãy [chỉnh sửa bảng điều khiển]({edit}) và thay chúng bằng các biểu tượng có tồn tại. Biểu tượng của bảng điều khiển trên thanh bên được thay đổi trong phần cài đặt bảng điều khiển của bạn.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Biểu tượng không xác định được dùng trong bảng điều khiển: {dashboard}"
+        },
+        "unknown_icons": {
+            "title": "Biểu tượng không xác định trong phần cài đặt của bạn",
+            "description": "Spook đã tìm thấy một con ma trong phần cài đặt của bạn 👻\n\nCác biểu tượng sau không tồn tại trong bộ Material Design Icons đi kèm Home Assistant (phiên bản {version}):\n\n{icons}\n\n\n\nMỗi biểu tượng này hiện ra thành một chỗ trống, không một lời nào. Chuyện này thường xảy ra khi một biểu tượng bị gõ sai, đổi tên hoặc gỡ bỏ, hoặc được chọn từ một phiên bản Material Design Icons mới hơn bản đi kèm Home Assistant. Để sửa lỗi này, hãy đặt cho mỗi thứ một biểu tượng có tồn tại: một thực thể, biến trợ giúp hoặc vùng trong phần cài đặt của nó, một khu vực, tầng hoặc nhãn trong phần cài đặt khu vực, nhãn và vùng, một danh mục ở nơi nó được dùng, và `customize:` trong cấu hình của bạn.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "automation_unknown_user_references": {
+            "title": "Người dùng đã bị xóa được nêu trong: {automation}",
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này nêu tên các người dùng sau, những người dùng không còn tồn tại:\n\n{users}\n\n\n\nHome Assistant không bao giờ cấp một ID người dùng hai lần, nên những người dùng này đã bị xóa. Một bộ kích hoạt chờ một trong số họ sẽ không bao giờ kích hoạt cho họ, và một bản mẫu so sánh với một trong số họ sẽ không bao giờ khớp, mà không nói gì. Để sửa điều này, hãy [chỉnh sửa tự động hóa]({edit}) và dùng ID của một người dùng có tồn tại, hoặc bỏ phép kiểm tra.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "script_unknown_user_references": {
+            "title": "Người dùng đã bị xóa được nêu trong: {script}",
+            "description": "Spook đã tìm thấy một con ma trong các tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này nêu tên các người dùng sau, những người dùng không còn tồn tại:\n\n{users}\n\n\n\nHome Assistant không bao giờ cấp một ID người dùng hai lần, nên những người dùng này đã bị xóa. Một bản mẫu so sánh với một trong số họ sẽ không bao giờ khớp, và một bộ kích hoạt chờ một trong số họ sẽ không bao giờ kích hoạt cho họ, mà không nói gì. Để sửa điều này, hãy [chỉnh sửa tập lệnh]({edit}) và dùng ID của một người dùng có tồn tại, hoặc bỏ phép kiểm tra.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Người dùng đã bị xóa được nêu trong bảng điều khiển: {dashboard}",
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này nêu tên các người dùng sau, những người dùng không còn tồn tại:\n\n{users}\n\n\n\nHome Assistant không bao giờ cấp một ID người dùng hai lần, nên những người dùng này đã bị xóa. Một thẻ, huy hiệu, phần hoặc chế độ xem chỉ hiển thị cho họ giờ không hiển thị cho ai cả, mà không nói gì. Một miễn trừ xác nhận dành cho họ giờ không còn tác dụng gì. Để sửa điều này, hãy [chỉnh sửa bảng điều khiển]({edit}) và chọn những người dùng nên thấy nó, hoặc bỏ điều kiện.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "lovelace_unknown_theme_references": {
+            "title": "Chủ đề không xác định được dùng trong bảng điều khiển: {dashboard}",
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này sử dụng các chủ đề sau, những chủ đề không tồn tại:\n\n{themes}\n\n\n\nMột thẻ, phần hoặc chế độ xem dùng một trong các chủ đề này sẽ nhận giao diện mặc định thay vào, mà không nói gì. Chuyện này thường xảy ra khi một chủ đề đã bị đổi tên hoặc gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa bảng điều khiển]({edit}) và chọn một chủ đề có tồn tại, hoặc thêm lại chủ đề đó.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "template_unknown_entity_references_yaml": {
+            "title": "Thực thể không xác định được dùng trong thực thể bản mẫu: {name}",
+            "description": "Spook đã tìm thấy một con ma trong các thực thể bản mẫu của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp thực thể bản mẫu sau:\n\n{name} (`{entity_id}`)\n\nCấu hình của nó tham chiếu đến các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nChuyện này thường xảy ra khi một thực thể đã bị đổi tên hoặc gỡ bỏ. Một bản mẫu đọc thực thể đó sẽ không nhận được gì, và một bộ kích hoạt chờ thực thể đó sẽ không bao giờ kích hoạt.\n\nThực thể bản mẫu này được thiết lập trong cấu hình YAML của bạn. Để sửa lỗi này, hãy chỉnh sửa nó trong phần `template:` của cấu hình, tham chiếu đến các thực thể có tồn tại, rồi tải lại các thực thể bản mẫu.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "template_unknown_service_references_yaml": {
+            "title": "Hành động không xác định được dùng trong thực thể bản mẫu: {name}",
+            "description": "Spook đã tìm thấy một con ma trong các thực thể bản mẫu của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp thực thể bản mẫu sau:\n\n{name} (`{entity_id}`)\n\nNó tham chiếu đến các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{services}\n\n\n\nChuyện này thường xảy ra khi thứ cung cấp hành động đã bị gỡ bỏ, hoặc một tập lệnh đã bị đổi tên hay xóa.\n\nThực thể bản mẫu này được thiết lập trong cấu hình YAML của bạn. Để sửa lỗi này, hãy chỉnh sửa nó trong phần `template:` của cấu hình, dùng các hành động có tồn tại, rồi tải lại các thực thể bản mẫu.\n\nSpook 👻 Bạn thân của bạn."
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Vị trí",
                     "description": "Di chuyển nó lên trên cùng hoặc xuống dưới cùng danh sách. Cho cái này hoặc một mục để đặt nó phía sau."
+                }
+            }
+        },
+        "schedule_create": {
+            "fields": {
+                "monday": {
+                    "name": "Thứ Hai",
+                    "description": "Khi nào lịch trình bật, vào các ngày Thứ Hai: một danh sách khối thời gian, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Nếu bỏ trống, nó tắt cả ngày."
+                },
+                "tuesday": {
+                    "name": "Thứ Ba",
+                    "description": "Khi nào lịch trình bật, vào các ngày Thứ Ba: một danh sách khối thời gian, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Nếu bỏ trống, nó tắt cả ngày."
+                },
+                "wednesday": {
+                    "description": "Khi nào lịch trình bật, vào các ngày Thứ Tư: một danh sách khối thời gian, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Nếu bỏ trống, nó tắt cả ngày.",
+                    "name": "Thứ Tư"
+                },
+                "thursday": {
+                    "name": "Thứ Năm",
+                    "description": "Khi nào lịch trình bật, vào các ngày Thứ Năm: một danh sách khối thời gian, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Nếu bỏ trống, nó tắt cả ngày."
+                },
+                "friday": {
+                    "name": "Thứ Sáu",
+                    "description": "Khi nào lịch trình bật, vào các ngày Thứ Sáu: một danh sách khối thời gian, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Nếu bỏ trống, nó tắt cả ngày."
+                },
+                "saturday": {
+                    "name": "Thứ Bảy",
+                    "description": "Khi nào lịch trình bật, vào các ngày Thứ Bảy: một danh sách khối thời gian, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Nếu bỏ trống, nó tắt cả ngày."
+                },
+                "sunday": {
+                    "name": "Chủ Nhật",
+                    "description": "Khi nào lịch trình bật, vào các ngày Chủ Nhật: một danh sách khối thời gian, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Nếu bỏ trống, nó tắt cả ngày."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của lịch trình mới."
+                },
+                "schedule_id": {
+                    "name": "ID thực thể lịch trình",
+                    "description": "ID thực thể cho lịch trình mới. Tiền tố schedule. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho lịch trình mới."
+                }
+            },
+            "name": "Tạo lịch trình",
+            "description": "Tạo một biến trợ giúp lịch trình mới ngay lập tức, bật trong các khối thời gian được cho cho từng ngày trong tuần. Trả về ID thực thể của lịch trình mới."
+        },
+        "homeassistant_update_area": {
+            "name": "Cập nhật khu vực",
+            "description": "Cập nhật một khu vực có sẵn ngay lập tức. Những gì bạn bỏ trống sẽ giữ giá trị hiện có. Biệt hiệu và nhãn thay thế những cái khu vực đang có. Tầng, biểu tượng, hình ảnh và cảm biến có thể được xóa trống bằng cách đặt thành null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần cập nhật."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên mới cho khu vực."
+                },
+                "aliases": {
+                    "name": "Biệt hiệu",
+                    "description": "Các biệt hiệu cho khu vực. Thay thế những cái nó đang có, một danh sách trống sẽ xóa tất cả."
+                },
+                "floor_id": {
+                    "name": "ID tầng",
+                    "description": "ID của tầng mà khu vực nằm trên."
+                },
+                "icon": {
+                    "description": "Biểu tượng mới dùng cho khu vực.",
+                    "name": "Biểu tượng"
+                },
+                "picture": {
+                    "name": "Hình ảnh",
+                    "description": "URL hoặc đường dẫn của một hình ảnh cho khu vực."
+                },
+                "labels": {
+                    "name": "Nhãn",
+                    "description": "ID của các nhãn cho khu vực. Thay thế những cái nó đang có, một danh sách trống sẽ xóa tất cả."
+                },
+                "temperature_entity_id": {
+                    "name": "Cảm biến nhiệt độ",
+                    "description": "Cảm biến đo nhiệt độ trong khu vực."
+                },
+                "humidity_entity_id": {
+                    "description": "Cảm biến đo độ ẩm trong khu vực.",
+                    "name": "Cảm biến độ ẩm"
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Cập nhật thiết bị",
+            "fields": {
+                "device_id": {
+                    "name": "ID thiết bị",
+                    "description": "ID của thiết bị cần cập nhật. Bộ chọn thiết bị của Home Assistant không hiển thị các thiết bị đã bị vô hiệu hóa, hãy dùng chế độ YAML để nhập ID của chúng."
+                },
+                "name_by_user": {
+                    "name": "Tên",
+                    "description": "Tên mới cho thiết bị."
+                },
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực mà thiết bị nằm trong."
+                },
+                "labels": {
+                    "name": "Nhãn",
+                    "description": "ID của các nhãn cho thiết bị. Thay thế những cái nó đang có, một danh sách trống sẽ xóa tất cả."
+                },
+                "disabled_by": {
+                    "name": "Bị vô hiệu hóa bởi",
+                    "description": "Đặt thành user để vô hiệu hóa thiết bị, hoặc thành null để bật lại. Việc này hoạt động giống như các hành động vô hiệu hóa và bật thiết bị."
+                }
+            },
+            "description": "Cập nhật một thiết bị có sẵn ngay lập tức. Những gì bạn bỏ trống sẽ giữ giá trị hiện có. Nhãn thay thế những cái thiết bị đang có. Tên và khu vực có thể được xóa trống bằng cách đặt thành null, việc này trả lại cho thiết bị cái tên mà bộ tích hợp của nó đã đặt."
+        },
+        "homeassistant_update_floor": {
+            "description": "Cập nhật một tầng có sẵn ngay lập tức. Những gì bạn bỏ trống sẽ giữ giá trị hiện có. Biệt hiệu thay thế những cái tầng đang có. Biểu tượng và cấp tầng có thể được xóa trống bằng cách đặt thành null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID tầng",
+                    "description": "ID của tầng cần cập nhật."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên mới cho tầng."
+                },
+                "aliases": {
+                    "name": "Biệt hiệu",
+                    "description": "Các biệt hiệu cho tầng. Thay thế những cái nó đang có, một danh sách trống sẽ xóa tất cả."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng mới dùng cho tầng."
+                },
+                "level": {
+                    "name": "Cấp tầng",
+                    "description": "Tầng này nằm ở cấp nào trong nhà bạn."
+                }
+            },
+            "name": "Cập nhật tầng"
+        },
+        "schedule_delete": {
+            "name": "Xóa lịch trình",
+            "description": "Xóa các biến trợ giúp lịch trình được tạo trong giao diện. Spook không thể xóa lịch trình được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) lịch trình cần xóa."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Đặt các khối thời gian của một ngày",
+            "description": "Thay thế các khối thời gian của một hoặc nhiều ngày trong một biến trợ giúp lịch trình được tạo trong giao diện. Spook không thể thay đổi lịch trình được thiết lập trong YAML.",
+            "fields": {
+                "day": {
+                    "name": "Ngày",
+                    "description": "Ngày hoặc các ngày trong tuần cần đặt khối thời gian."
+                },
+                "blocks": {
+                    "name": "Khối thời gian",
+                    "description": "Các khối thời gian mà lịch trình bật trong những ngày đó, mỗi khối có giờ bắt đầu và giờ kết thúc, cùng dữ liệu tùy chọn mà nó hiển thị dưới dạng thuộc tính khi đang bật. Chúng thay thế các khối mà những ngày đó đang có. Một danh sách trống để những ngày đó tắt cả ngày."
                 }
             }
         }
