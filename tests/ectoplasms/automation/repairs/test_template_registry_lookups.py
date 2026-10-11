@@ -6,7 +6,7 @@ The unknown area, floor and label repairs of automations and scripts report
 a literal like that, resolved the way each lookup resolves it.
 """
 
-# pylint: disable=wrong-import-order,protected-access
+# pylint: disable=wrong-import-order,protected-access,redefined-outer-name
 # ruff: noqa: SLF001
 from __future__ import annotations
 
@@ -56,7 +56,7 @@ _DEVICE = "DEVICE"
 
 
 @pytest.fixture
-async def house(hass: HomeAssistant) -> str:
+async def house(hass: HomeAssistant) -> str:  # pylint: disable=too-many-locals
     """Build a house where every lookup that finds something finds a lot.
 
     Upstairs holds the living room, and an area called Attic. The floor
