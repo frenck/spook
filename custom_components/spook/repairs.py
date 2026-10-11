@@ -1030,7 +1030,9 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         unknown.update(
             _UnknownName(
                 finding.entity_id,
-                AttributeValue(finding.attribute, finding.value),
+                AttributeValue(
+                    finding.attribute, finding.value, as_text=finding.as_text
+                ),
                 finding.suggestion,
             )
             for finding in await async_unknown_attribute_values(self.hass, values)
