@@ -9,7 +9,7 @@ import voluptuous as vol
 from homeassistant.components.number import DOMAIN, NumberEntity
 
 from ....services import AbstractSpookEntityComponentService
-from . import async_set_shown_value, shown_value_as_float, step_amount
+from ..stepping import async_set_shown_value, shown_value_as_float, step_amount
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall

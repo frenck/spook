@@ -22,11 +22,9 @@ from pytest_homeassistant_custom_component.common import (
     mock_platform,
 )
 
-from custom_components.spook.ectoplasms.number.services import (
-    async_set_shown_value,
-    decrement,
-    increment,
-)
+from custom_components.spook.ectoplasms.number.services import decrement, increment
+from custom_components.spook.ectoplasms.number.stepping import async_set_shown_value
+from custom_components.spook.services import SpookServiceManager
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -228,8 +226,14 @@ class _ChargeCurrent(NumberEntity):
         self.async_write_ha_state()
 
 
-async def _setup_charger(hass: HomeAssistant) -> None:
-    """Set up an integration with a charge current number, and both actions."""
+async def _setup_charger(
+    hass: HomeAssistant, *, every_action: bool = False
+) -> SpookServiceManager | None:
+    """Set up an integration with a charge current number, and both actions.
+
+    With every action, the way Spook sets them up: all its action modules
+    loaded, `number.max` and `number.min` included.
+    """
     assert await async_setup_component(hass, "homeassistant", {})
 
     async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -259,8 +263,15 @@ async def _setup_charger(hass: HomeAssistant) -> None:
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 
+    if every_action:
+        manager = SpookServiceManager(hass)
+        await manager.async_setup()
+        await hass.async_block_till_done()
+        return manager
+
     increment.SpookService(hass).async_register()
     decrement.SpookService(hass).async_register()
+    return None
 
 
 async def _run_from_the_frontend(
@@ -335,6 +346,42 @@ async def test_a_charger_steps_from_the_frontend(
     await _setup_charger(hass)
 
     response = await _run_from_the_frontend(hass, hass_ws_client, service, data)
+
+    assert response["success"], response
+    assert float(hass.states.get("number.charge_current").state) == expected
+
+
+@pytest.mark.parametrize(
+    ("service", "data", "expected"),
+    [
+        ("increment", {}, 18),
+        ("increment", {"amount": 12}, 24),
+        ("decrement", {}, 6),
+        ("decrement", {"amount": 12}, 6),
+    ],
+)
+async def test_stepping_with_every_spook_action_loaded(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    service: str,
+    data: dict[str, Any],
+    expected: float,
+) -> None:
+    """Test stepping still works once Spook loaded all its actions.
+
+    Loading `number.max` and `number.min` puts their modules on the package
+    the stepping helper lives in, under the names of the built-ins it uses.
+    The helper then called a module, and every step failed with "'module'
+    object is not callable". #1944, and #1926 before it.
+    """
+    manager = await _setup_charger(hass, every_action=True)
+    assert manager is not None
+    try:
+        response = await _run_from_the_frontend(hass, hass_ws_client, service, data)
+    finally:
+        # Unloaded like Spook unloads it: setting up every action puts Spook's
+        # strings in a translation cache the other tests share.
+        manager.async_on_unload()
 
     assert response["success"], response
     assert float(hass.states.get("number.charge_current").state) == expected
