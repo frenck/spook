@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "This zone is not editable: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Amount {amount} does not fit {entity_id}, which moves in steps of {step}. Use a multiple of {step}, or leave the amount out to move one step."
+        },
+        "area_cannot_update": {
+            "message": "Area {area_id} cannot be changed like that: {error}."
+        },
+        "area_name_taken": {
+            "message": "The name {name} is already taken by area {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Nothing to update on area {area_id}: give at least one of {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Nothing to update on device {device_id}: give at least one of {fields}."
+        },
+        "floor_name_taken": {
+            "message": "The name {name} is already taken by floor {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Nothing to update on floor {floor_id}: give at least one of {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Those time blocks do not work for {entity_id}: {error}. Nothing has been changed."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} is a schedule from your YAML configuration, which Spook cannot change. Edit it in your configuration instead."
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "These sensors are back, or the settings now point somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist can't tell these apart: {name}",
+            "description": "Spook has found a ghost in your voice assistants 👻\n\nThe following entities are exposed to Assist, and all answer to the name {name}:\n\n{entities}\n\nWhen names are the same, Assist only tells them apart by area: the one you name, or the one your voice satellite is in. Some of these share an area, or have no area at all, so Assist can't pick them out by this name from anywhere. Asking for {name} then fails, and nothing says which entities are in the way.\n\nTo fix this, give each one a name or alias of its own, or move them into different areas. You can change the aliases of an entity, and whether Assist sees it at all, under [Exposed entities](/config/voice-assistants/expose). Areas are set on the [Areas page](/config/areas/dashboard).\n\nSpook 👻 Your homie."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA trigger or condition waiting on an attribute that never shows up never fires, and does not tell you so. A template reading one gets nothing. To fix this, [edit the automation]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",
+            "title": "Unknown attributes used in: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation waits for, or checks, the following states, which their entities are never in. Not as something that kind of entity can be, not among the options the entity offers, and not anywhere in what the recorder remembers of them:\n\n{states}\n\n\n\nA trigger waiting for a state that never comes never fires, a condition checking for one never passes, and neither tells you so. States are case-sensitive: `On` is not `on`. To fix this, [edit the automation]({edit}) and use a state the entity can be in.\n\nSpook 👻 Your homie.",
+            "title": "Unknown states used in: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation checks for the following trigger IDs, which none of its own triggers has:\n\n{trigger_ids}\n\n\n\nA check for an ID no trigger hands over always comes out the same way: a trigger condition asking for it never passes, so the part it guards never runs, and nothing tells you so. Trigger IDs are case-sensitive, and a trigger without an ID of its own goes by its position in the list, counting from `0`. To fix this, [edit the automation]({edit}) and use the ID of one of its triggers, or give the trigger the ID the automation asks for.\n\nSpook 👻 Your homie.",
+            "title": "Unknown trigger IDs used in: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard shows or checks the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA card showing an attribute that never shows up stays empty, and a visibility condition or filter checking one never passes. Neither tells you so. To fix this, [edit the dashboard]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",
+            "title": "Unknown attributes used in dashboard: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard checks for the following states, which their entities are never in. Not as something that kind of entity can be, not among the options the entity offers, and not anywhere in what the recorder remembers of them:\n\n{states}\n\n\n\nA visibility condition or filter checking for a state that never comes never passes, and a picture set for one is never shown. None of them tell you so. States are case-sensitive: `On` is not `on`. To fix this, [edit the dashboard]({edit}) and use a state the entity can be in.\n\nSpook 👻 Your homie.",
+            "title": "Unknown states used in dashboard: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard navigates to the following views, which do not exist:\n\n{paths}\n\n\n\nA button or card navigating to one of these opens the first view of that dashboard instead, without saying so. This often happens when a view was renamed, moved or removed. To fix this error, [edit the dashboard]({edit}) and point these to a view that exists.\n\nSpook 👻 Your homie.",
+            "title": "Unknown views navigated to in dashboard: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA trigger or condition waiting on an attribute that never shows up never fires, and does not tell you so. A template reading one gets nothing. To fix this, [edit the script]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",
+            "title": "Unknown attributes used in: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script waits for, or checks, the following states, which their entities are never in. Not as something that kind of entity can be, not among the options the entity offers, and not anywhere in what the recorder remembers of them:\n\n{states}\n\n\n\nA trigger waiting for a state that never comes never fires, a condition checking for one never passes, and neither tells you so. States are case-sensitive: `On` is not `on`. To fix this, [edit the script]({edit}) and use a state the entity can be in.\n\nSpook 👻 Your homie.",
+            "title": "Unknown states used in: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nThis template helper uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA template reading an attribute that never shows up gets nothing, and a condition in one of its actions waiting on one never passes. Neither tells you so. To fix this, [edit the template helper]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",
+            "title": "Unknown attributes used in template helper: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation has the following templates, which can never pass, whatever happens in your home:\n\n{templates}\n\n\n\nA template condition passes only when it renders `true`, and a `wait_template` too, unless it changes into something that reads as true later. A template trigger fires when its template turns into something that reads as true, like `true`, `on`, `yes` or `1`. These templates always render something else, because of how they are written. The usual causes:\n\n- Quotes around the template. A `>-` block takes them as text, so they end up in the result.\n- No template delimiters at all, so the text is taken as it is.\n- YAML pasted into the template field.\n- A YAML `#` comment inside the Jinja, which Jinja prints as text.\n- A condition that renders `on` instead of `true`.\n\nNothing tells you: the condition never passes, the wait only ends on its timeout, and the trigger never fires. To fix this, [edit the automation]({edit}) and make the template render `true` when it should pass.\n\nSpook 👻 Your homie.",
+            "title": "Templates that can never pass in: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation hands its actions the following integration entries, which are unknown to Home Assistant, or belong to another integration than the action asks for:\n\n{config_entries}\n\nHome Assistant refuses these when the step runs. This usually happens after an integration was removed and added again: it got a new integration entry, with a new ID.\n\nTo fix this error, [edit the automation]({edit}) and pick the integration entry again in these actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown integration entries used in: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation hands out the following icons, which do not exist in the Material Design Icons that come with Home Assistant:\n\n{icons}\n\n\n\nEach of these shows up as an empty spot, without a word. This often happens when an icon was mistyped, renamed or removed, or picked from a newer version of Material Design Icons than the one Home Assistant comes with. To fix this error, [edit the automation]({edit}) and replace these with icons that exist.\n\nSpook 👻 Your homie.",
+            "title": "Unknown icons used in: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation names the following users, which no longer exist:\n\n{users}\n\n\n\nHome Assistant never gives a user ID out twice, so these users were removed. A trigger waiting for one of them never fires for them, and a template comparing with one of them never matches, without saying so. To fix this, [edit the automation]({edit}) and use the ID of a user that exists, or remove the check.\n\nSpook 👻 Your homie.",
+            "title": "Removed users named in: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard uses the following icons, which do not exist in the Material Design Icons that come with Home Assistant (version {version}):\n\n{icons}\n\n\n\nEach of these shows up as an empty spot, without a word. This often happens when an icon was mistyped, renamed or removed, or picked from a newer version of Material Design Icons than the one Home Assistant comes with. To fix this error, [edit the dashboard]({edit}) and replace these with icons that exist. The icon of the dashboard in the sidebar is changed in the settings of your dashboards.\n\nSpook 👻 Your homie.",
+            "title": "Unknown icons used in dashboard: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard names the following users, which no longer exist:\n\n{users}\n\n\n\nHome Assistant never gives a user ID out twice, so these users were removed. A card, badge, section or view shown only to them is now shown to nobody, without saying so. An exemption from a confirmation for them does nothing anymore. To fix this, [edit the dashboard]({edit}) and pick the users that should see it, or remove the condition.\n\nSpook 👻 Your homie.",
+            "title": "Removed users named in dashboard: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard uses the following themes, which do not exist:\n\n{themes}\n\n\n\nA card, section or view with one of these themes gets the default look instead, without saying so. This often happens when a theme was renamed or removed. To fix this error, [edit the dashboard]({edit}) and pick a theme that exists, or add the theme back.\n\nSpook 👻 Your homie.",
+            "title": "Unknown themes used in dashboard: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script has the following templates, which can never pass, whatever happens in your home:\n\n{templates}\n\n\n\nA template condition passes only when it renders `true`, and a `wait_template` too, unless it changes into something that reads as true later. A template trigger in a `wait_for_trigger` fires when its template turns into something that reads as true, like `true`, `on`, `yes` or `1`. These templates always render something else, because of how they are written. The usual causes:\n\n- Quotes around the template. A `>-` block takes them as text, so they end up in the result.\n- No template delimiters at all, so the text is taken as it is.\n- YAML pasted into the template field.\n- A YAML `#` comment inside the Jinja, which Jinja prints as text.\n- A condition that renders `on` instead of `true`.\n\nNothing tells you: the condition never passes, and the wait only ends on its timeout. To fix this, [edit the script]({edit}) and make the template render `true` when it should pass.\n\nSpook 👻 Your homie.",
+            "title": "Templates that can never pass in: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script hands its actions the following integration entries, which are unknown to Home Assistant, or belong to another integration than the action asks for:\n\n{config_entries}\n\nHome Assistant refuses these when the step runs. This usually happens after an integration was removed and added again: it got a new integration entry, with a new ID.\n\nTo fix this error, [edit the script]({edit}) and pick the integration entry again in these actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown integration entries used in: {script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses or hands out the following icons, which do not exist in the Material Design Icons that come with Home Assistant:\n\n{icons}\n\n\n\nEach of these shows up as an empty spot, without a word. This often happens when an icon was mistyped, renamed or removed, or picked from a newer version of Material Design Icons than the one Home Assistant comes with. To fix this error, [edit the script]({edit}) and replace these with icons that exist.\n\nSpook 👻 Your homie.",
+            "title": "Unknown icons used in: {script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script names the following users, which no longer exist:\n\n{users}\n\n\n\nHome Assistant never gives a user ID out twice, so these users were removed. A template comparing with one of them never matches, and a trigger waiting for one of them never fires for them, without saying so. To fix this, [edit the script]({edit}) and use the ID of a user that exists, or remove the check.\n\nSpook 👻 Your homie.",
+            "title": "Removed users named in: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook has found a ghost in your template entities 👻\n\nWhile floating around, Spook crossed path with the following template entity:\n\n{name} (`{entity_id}`)\n\nThis template entity uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA template reading an attribute that never shows up gets nothing, and a trigger or condition waiting on one never fires or passes. None of them tells you so.\n\nThis template entity is set up in your YAML configuration. To fix this, edit it in the `template:` section of your configuration, use an attribute the entity has, and reload your template entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown attributes used in template entity: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook has found a ghost in your template entities 👻\n\nWhile floating around, Spook crossed path with the following template entity:\n\n{name} (`{entity_id}`)\n\nIts configuration references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed. A template reading one gets nothing, and a trigger waiting on one never fires.\n\nThis template entity is set up in your YAML configuration. To fix this error, edit it in the `template:` section of your configuration, reference existing entities, and reload your template entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities used in template entity: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook has found a ghost in your template entities 👻\n\nWhile floating around, Spook crossed path with the following template entity:\n\n{name} (`{entity_id}`)\n\nIt references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nThis often happens when an action provider was removed, or a script was renamed or deleted.\n\nThis template entity is set up in your YAML configuration. To fix this error, edit it in the `template:` section of your configuration, use existing actions, and reload your template entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in template entity: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook has found a ghost in your settings 👻\n\nThe following icons do not exist in the Material Design Icons that come with Home Assistant (version {version}):\n\n{icons}\n\n\n\nEach of these shows up as an empty spot, without a word. This often happens when an icon was mistyped, renamed or removed, or picked from a newer version of Material Design Icons than the one Home Assistant comes with. To fix this error, give each of these an icon that exists: an entity, helper or zone in its settings, an area, floor or label in the settings of your areas, labels and zones, a category where it is used, and `customize:` in your configuration.\n\nSpook 👻 Your homie.",
+            "title": "Unknown icons in your settings"
         }
     },
     "conditions": {
@@ -973,6 +1100,16 @@
         "not_triggered_by_user": {
             "name": "Not triggered by a user",
             "description": "Passes when nobody can be held responsible for this run: a schedule, the sun, an integration acting on its own, or the Run button. Takes no options on purpose. To exclude specific people instead, put \"Triggered by a user\" inside a Not condition."
+        },
+        "is_available": {
+            "name": "Entity is available",
+            "description": "Passes when an entity is there to talk to: anything but unavailable or unknown. For a speaker or a smart plug that is not always powered.",
+            "fields": {
+                "behavior": {
+                    "name": "Behaviour",
+                    "description": "Whether any of the entities being there is enough, or all of them have to be."
+                }
+            }
         }
     },
     "services": {
@@ -2755,6 +2892,170 @@
                     "description": "Colour to use for the label. Can be a colour name from the list, or a hex colour code (like #FF0000)."
                 }
             }
+        },
+        "homeassistant_update_area": {
+            "name": "Update an area",
+            "description": "Updates an existing area on the fly. Anything you leave out keeps the value it already has. Aliases and labels replace the ones the area has. The floor, icon, picture and sensors can be cleared by setting them to null.",
+            "fields": {
+                "area_id": {
+                    "name": "Area ID",
+                    "description": "The ID of the area to update."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "New name for the area."
+                },
+                "aliases": {
+                    "name": "Aliases",
+                    "description": "The aliases for the area. Replaces the ones it has, an empty list removes them all."
+                },
+                "floor_id": {
+                    "name": "Floor ID",
+                    "description": "The ID of the floor the area is on."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "New icon to use for the area."
+                },
+                "picture": {
+                    "name": "Picture",
+                    "description": "The URL or path of a picture for the area."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "The IDs of the labels for the area. Replaces the ones it has, an empty list removes them all."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperature sensor",
+                    "description": "The sensor that measures the temperature in the area."
+                },
+                "humidity_entity_id": {
+                    "name": "Humidity sensor",
+                    "description": "The sensor that measures the humidity in the area."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Update a device",
+            "description": "Updates an existing device on the fly. Anything you leave out keeps the value it already has. Labels replace the ones the device has. The name and area can be cleared by setting them to null, which gives the device the name its integration gave it back.",
+            "fields": {
+                "device_id": {
+                    "name": "Device ID",
+                    "description": "The ID of the device to update. Disabled devices are not shown by Home Assistant's device selector, use YAML mode to give their ID."
+                },
+                "name_by_user": {
+                    "name": "Name",
+                    "description": "New name for the device."
+                },
+                "area_id": {
+                    "name": "Area ID",
+                    "description": "The ID of the area the device is in."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "The IDs of the labels for the device. Replaces the ones it has, an empty list removes them all."
+                },
+                "disabled_by": {
+                    "name": "Disabled by",
+                    "description": "Set to user to disable the device, or to null to enable it again. This works like the disable and enable device actions do."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Update a floor",
+            "description": "Updates an existing floor on the fly. Anything you leave out keeps the value it already has. Aliases replace the ones the floor has. The icon and level can be cleared by setting them to null.",
+            "fields": {
+                "floor_id": {
+                    "name": "Floor ID",
+                    "description": "The ID of the floor to update."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "New name for the floor."
+                },
+                "aliases": {
+                    "name": "Aliases",
+                    "description": "The aliases for the floor. Replaces the ones it has, an empty list removes them all."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "New icon to use for the floor."
+                },
+                "level": {
+                    "name": "Level",
+                    "description": "The level the floor is on in your home."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Create a schedule",
+            "description": "Creates a new schedule helper on the fly, on during the time blocks given for each day of the week. Returns the entity ID of the new schedule.",
+            "fields": {
+                "name": {
+                    "name": "Name",
+                    "description": "The name of the new schedule."
+                },
+                "schedule_id": {
+                    "name": "Schedule entity ID",
+                    "description": "The entity ID for the new schedule. The schedule. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "The icon for the new schedule."
+                },
+                "monday": {
+                    "name": "Monday",
+                    "description": "When the schedule is on, on Mondays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+                },
+                "tuesday": {
+                    "name": "Tuesday",
+                    "description": "When the schedule is on, on Tuesdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+                },
+                "wednesday": {
+                    "name": "Wednesday",
+                    "description": "When the schedule is on, on Wednesdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+                },
+                "thursday": {
+                    "name": "Thursday",
+                    "description": "When the schedule is on, on Thursdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+                },
+                "friday": {
+                    "name": "Friday",
+                    "description": "When the schedule is on, on Fridays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+                },
+                "saturday": {
+                    "name": "Saturday",
+                    "description": "When the schedule is on, on Saturdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+                },
+                "sunday": {
+                    "name": "Sunday",
+                    "description": "When the schedule is on, on Sundays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Delete a schedule",
+            "description": "Deletes schedule helpers made in the UI. Schedules set up in YAML cannot be deleted by Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entity ID",
+                    "description": "The schedule(s) to delete."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Set the time blocks of a day",
+            "description": "Replaces the time blocks of one or more days of a schedule helper made in the UI. Schedules set up in YAML cannot be changed by Spook.",
+            "fields": {
+                "day": {
+                    "name": "Day",
+                    "description": "The day or days of the week to set the time blocks of."
+                },
+                "blocks": {
+                    "name": "Time blocks",
+                    "description": "The time blocks the schedule is on during those days, each with a from and a to time, and optional data it shows as attributes while it is on. These replace the blocks the days had. An empty list leaves the days off all day."
+                }
+            }
         }
     },
     "triggers": {
@@ -2975,6 +3276,92 @@
         "device_discovered": {
             "name": "Device discovered",
             "description": "Fires when Home Assistant discovers something new it could set up, like a device that just turned up on your network."
+        },
+        "state_changed": {
+            "name": "Spook's state trigger",
+            "description": "Fires when an entity changes state, for everything a target covers: entities, devices, areas, floors and labels. Narrow it down by domain, integration or device class, or leave the target empty and let those pick the entities from everything. Exclude things again, and decide how long a change has to hold before it counts.",
+            "fields": {
+                "domain": {
+                    "name": "Domains",
+                    "description": "Only entities of these domains, like binary_sensor or cover. Without a target, picks them from everything."
+                },
+                "integration": {
+                    "name": "Integrations",
+                    "description": "Only entities provided by these integrations, like zha or hue. Without a target, picks them from everything."
+                },
+                "config_entry": {
+                    "name": "Integration entry",
+                    "description": "Only entities of this integration entry. Without a target, picks them from everything."
+                },
+                "device_class": {
+                    "name": "Device classes",
+                    "description": "Only entities of these device classes, like door or window. Without a target, picks them from everything."
+                },
+                "exclude_target": {
+                    "name": "Exclude",
+                    "description": "Entities, devices, areas, floors or labels to exclude. Everything in them is excluded, the diagnostic entities too."
+                },
+                "exclude_domain": {
+                    "name": "Exclude domains",
+                    "description": "Exclude entities of these domains. With nothing in Exclude, this applies to everything the target covers."
+                },
+                "exclude_integration": {
+                    "name": "Exclude integrations",
+                    "description": "Exclude entities provided by these integrations."
+                },
+                "exclude_config_entry": {
+                    "name": "Exclude integration entry",
+                    "description": "Exclude the entities of this integration entry."
+                },
+                "exclude_device_class": {
+                    "name": "Exclude device classes",
+                    "description": "Exclude entities of these device classes."
+                },
+                "attribute": {
+                    "name": "Attribute",
+                    "description": "Follow this attribute instead of the state."
+                },
+                "from": {
+                    "name": "From",
+                    "description": "Only changes coming from one of these states."
+                },
+                "not_from": {
+                    "name": "Not from",
+                    "description": "Only changes not coming from one of these states."
+                },
+                "to": {
+                    "name": "To",
+                    "description": "Only changes going to one of these states."
+                },
+                "not_to": {
+                    "name": "Not to",
+                    "description": "Only changes not going to one of these states."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignore unavailable and unknown",
+                    "description": "Leave out changes from or to unavailable and unknown, so a restart or a router reboot does not fire for everything. Turn off to use them in From or To."
+                },
+                "attribute_changes": {
+                    "name": "Count attribute changes",
+                    "description": "Also fire when only an attribute changed and the state stayed the same. Does nothing while following an attribute."
+                },
+                "behavior": {
+                    "name": "Behaviour",
+                    "description": "Fire for each entity, for the first one of the target to get there, or once all of them are there. First and all need To or Not to. While unavailable and unknown are ignored, entities in those states do not take part."
+                },
+                "for": {
+                    "name": "For",
+                    "description": "Only fire once the new state has held for this long. Any other change in between calls it off."
+                },
+                "blip_tolerance": {
+                    "name": "Blip tolerance",
+                    "description": "While waiting out For, going unavailable or unknown and coming back as it was within this time does not start the wait over. Only works together with For."
+                },
+                "delay": {
+                    "name": "Delay",
+                    "description": "Wait this long before firing, whatever happens in between. Like a delay at the start of the actions."
+                }
+            }
         }
     },
     "selector": {
@@ -2989,6 +3376,17 @@
             "options": {
                 "bottom": "Bottom",
                 "top": "Top"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Monday",
+                "tuesday": "Tuesday",
+                "wednesday": "Wednesday",
+                "thursday": "Thursday",
+                "friday": "Friday",
+                "saturday": "Saturday",
+                "sunday": "Sunday"
             }
         }
     },
