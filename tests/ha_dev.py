@@ -75,8 +75,18 @@ def _patch_restore_cache_helpers() -> None:
         ]
 
         # Only there on the development branch, which the guard above checks.
+        data = restore_state.async_get(hass)
         # pylint: disable-next=no-member,protected-access
-        restore_state.async_get(hass)._async_load_stored_states(stored_states)  # noqa: SLF001
+        data._async_load_stored_states(stored_states)  # noqa: SLF001
+
+        # The loader drops duplicates and invalid entity IDs without a word.
+        # Both harnesses refuse those, so the canary runs the same fixtures.
+        # pylint: disable-next=no-member
+        by_entity_id = data.last_states_by_entity_id
+        # pylint: disable-next=no-member
+        by_registry_id = data.last_states_by_entity_registry_id
+        loaded = len(by_entity_id) + len(by_registry_id)
+        assert loaded == len(states), f"Duplicate entity_id? {states}"
 
     def mock_restore_cache(hass: HomeAssistant, states: Sequence[State]) -> None:
         """Load the states, without extra data, as if read from storage."""
