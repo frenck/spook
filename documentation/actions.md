@@ -240,6 +240,12 @@ Guess what... this action does the reverse of [](#device-disable). _#noway_
 
 `homeassistant.enable_device`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device), [documentation](devices#enable-a-device) 📚
 
+## Device: Update
+
+Rename a device, move it to another area or change its labels, all in one go. _#glowup_
+
+`homeassistant.update_device`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_device), [documentation](devices#update-a-device) 📚
+
 (entity-disable)=
 
 ## Entity: Disable
