@@ -15,6 +15,7 @@ import voluptuous as vol
 import pytest
 
 from custom_components.spook.ectoplasms.homeassistant.services import update_device
+from tests.device_registry_helpers import simulate_composite_split
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -279,6 +280,44 @@ async def test_a_device_that_does_not_exist_is_refused(
 
     with pytest.raises(HomeAssistantError, match=r"Device no_such_device not found"):
         await _update(hass, device_id="no_such_device", name_by_user="Ghost")
+
+
+async def test_a_composite_device_id_updates_every_device_it_was_split_into(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    device_registry: dr.DeviceRegistry,
+    device: dr.DeviceEntry,
+) -> None:
+    """A pre-split device ID still works, the way it does as a target.
+
+    The registry hands the change to each device the old one was split into,
+    so nothing fails and no single split is picked at random.
+    """
+    other_entry = MockConfigEntry(domain="other", title="Other")
+    other_entry.add_to_hass(hass)
+    other = device_registry.async_get_or_create(
+        config_entry_id=other_entry.entry_id,
+        identifiers={("other", "speaker")},
+        name="Speaker",
+    )
+    simulate_composite_split(device_registry, device, "pre_split_id")
+    simulate_composite_split(device_registry, other, "pre_split_id")
+    kitchen = area_registry.async_create("Kitchen")
+    await _setup(hass)
+
+    await _update(
+        hass,
+        device_id="pre_split_id",
+        name_by_user="Ghost",
+        area_id=kitchen.id,
+        disabled_by="user",
+    )
+
+    for split in (device, other):
+        updated = device_registry.async_get(split.id)
+        assert updated.name_by_user == "Ghost"
+        assert updated.area_id == kitchen.id
+        assert updated.disabled_by is DeviceEntryDisabler.USER
 
 
 async def test_a_call_that_changes_nothing_is_refused(
