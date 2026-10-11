@@ -3,6 +3,7 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
@@ -30,6 +31,9 @@ ISSUE = "automation_never_true_templates_automation.haunted"
 
 EVENT = {"trigger": "event", "event_type": "haunt"}
 
+# Long enough for a running script to get to its next step.
+SETTLE = 0.05
+
 # Fine as a condition, a trigger and a wait: renders `True` or `False`.
 FINE = "{{ is_state('light.hall', 'on') }}"
 
@@ -44,6 +48,10 @@ ON_OR_OFF = "{{ 'on' if is_state('light.hall', 'on') else 'off' }}"
 
 # A YAML comment inside Jinja is printed: `True # hall` or `False # hall`.
 COMMENTED = "{{ is_state('light.hall', 'on') }} # the hall light"
+
+# Renders `on` or `yes`: both read as true, so it never changes from false to
+# true. It is rendered again whenever the sensor changes.
+ALWAYS_TRUTHY = "{{ 'on' if states('sensor.load') | float > 1 else 'yes' }}"
 
 
 def _template_condition(template: Any) -> dict[str, Any]:
@@ -291,6 +299,97 @@ async def test_a_trigger_that_never_fires_is_reported(
     ) == {template}
 
 
+@pytest.mark.parametrize(
+    "template",
+    [
+        ALWAYS_TRUTHY,
+        "{{ 'true' }}",
+        "{% if is_state('light.hall', 'on') %}on{% else %}1{% endif %}",
+    ],
+)
+async def test_a_trigger_that_always_reads_as_true_is_reported(
+    hass: HomeAssistant, issue_registry: ir.IssueRegistry, template: str
+) -> None:
+    """Test a trigger that never reads as false is reported.
+
+    It only fires after a render that does not read as true, so it never does.
+    """
+    assert await _found(
+        hass, issue_registry, triggers=[_template_trigger(template)]
+    ) == {template}
+
+
+async def test_home_assistant_never_fires_a_trigger_that_always_reads_as_true(
+    hass: HomeAssistant,
+) -> None:
+    """Test what the trigger check relies on, against Home Assistant itself.
+
+    Not its first render, and not a render error in between, arms it.
+    """
+    hass.states.async_set("sensor.load", "unavailable")
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": {
+                "triggers": [_template_trigger(ALWAYS_TRUTHY)],
+                "actions": [{"event": "fired"}],
+            }
+        },
+    )
+    fired = []
+    hass.bus.async_listen("fired", fired.append)
+
+    for state in ("0", "unavailable", "5", "0", "unavailable", "5"):
+        hass.states.async_set("sensor.load", state)
+        await hass.async_block_till_done()
+
+    assert not fired
+
+
+async def test_home_assistant_ends_a_wait_reading_as_true_once_rendered_again(
+    hass: HomeAssistant,
+) -> None:
+    """Test why a wait that reads as true but is rendered again is left alone.
+
+    It went from `yes` to `yes`, never from false to true, yet it ends: the
+    watch takes its first render as a change.
+    """
+    hass.states.async_set("sensor.load", "0")
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "haunted": {
+                    "sequence": [
+                        {"wait_template": ALWAYS_TRUTHY, "timeout": 60},
+                        {
+                            "event": "fired",
+                            "event_data": {"completed": "{{ wait.completed }}"},
+                        },
+                    ]
+                }
+            }
+        },
+    )
+    fired = []
+    hass.bus.async_listen("fired", fired.append)
+
+    running = hass.async_create_task(
+        hass.services.async_call("script", "haunted", blocking=True)
+    )
+    await asyncio.sleep(SETTLE)
+    hass.states.async_set("sensor.load", "0.5")
+    await asyncio.sleep(SETTLE)
+
+    # Well before its own timeout of a minute.
+    async with asyncio.timeout(5):
+        await running
+
+    assert [event.data["completed"] for event in fired] == [True]
+
+
 @pytest.mark.parametrize("template", ["on", "true", "1"])
 async def test_a_trigger_without_jinja_that_reads_as_true_is_left_alone(
     hass: HomeAssistant, issue_registry: ir.IssueRegistry, template: str
@@ -318,9 +417,12 @@ async def test_a_trigger_without_jinja_that_reads_as_true_is_left_alone(
         # Jinja that only ever prints what reads as true never goes from
         # false to true, so its watch never fires.
         (
-            "{{ 'on' if is_state('light.hall', 'on') else 'yes' }}",
-            {"{{ 'on' if is_state('light.hall', 'on') else 'yes' }}"},
+            "{% if true %}on{% else %}yes{% endif %}",
+            {"{% if true %}on{% else %}yes{% endif %}"},
         ),
+        # Unless it is rendered again: the first render the watch sees ends
+        # the wait when it reads as true.
+        (ALWAYS_TRUTHY, None),
         ("{{ 'true' if is_state('light.hall', 'on') else 'yes' }}", None),
         # With Jinja, a wait takes `on` once its template changes.
         (ON_OR_OFF, None),

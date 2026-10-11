@@ -44,13 +44,14 @@ class TemplateRole(StrEnum):
 
     # `components/template/trigger.py`: the render goes through
     # `result_as_boolean`, which also takes `on`, `yes`, `1` and the like.
+    # It only fires once it has seen a render that does not read as true, so
+    # a template that only ever reads as true never fires either.
     TRIGGER = "trigger"
 
     # `helpers/script.py` `_async_step_wait_template`: first checked like a
     # condition, then watched by `async_track_template`, which takes what a
-    # trigger takes, but only when its render changes from false to true. A
-    # template that cannot render both never makes that change, so for that
-    # one only the condition check counts.
+    # trigger takes, when its render changes into that. The first render it
+    # sees counts as a change, and so does one after a render error.
     WAIT = "wait"
 
 
@@ -93,6 +94,17 @@ _TRUTHY_STARTS = frozenset("tyoe+-.(#\\")
 # The only characters, lowercased, a condition's output can hold besides
 # whitespace.
 _LETTERS_OF_TRUE = frozenset("true")
+
+# What a template made of constants alone holds: text, constants, and a
+# choice between them on a constant test. It renders the same every time.
+_CONSTANT_PARTS = (
+    nodes.CondExpr,
+    nodes.Const,
+    nodes.If,
+    nodes.Output,
+    nodes.Template,
+    nodes.TemplateData,
+)
 
 
 def _combined(pieces: list[_Piece]) -> frozenset[str] | None:
@@ -182,6 +194,23 @@ def _output_pieces(template_str: str) -> tuple[_Piece, ...] | None:
     return tuple(pieces)
 
 
+@lru_cache(maxsize=1024)
+def _is_constant(template_str: str) -> bool:
+    """Return whether a template is made of constants alone.
+
+    Nothing in it is tracked, so it is never rendered again, and it cannot
+    fail to render. A filter, a function or a variable could do either.
+    Pure in its argument, so cached.
+    """
+    try:
+        parsed = _JINJA_PARSER.parse(template_str)
+    except TemplateSyntaxError:
+        return False
+    return all(
+        isinstance(node, _CONSTANT_PARTS) for node in parsed.find_all(nodes.Node)
+    )
+
+
 def _passes(hass: HomeAssistant, role: TemplateRole, output: str) -> bool | None:
     """Return whether Home Assistant takes this output as passing.
 
@@ -243,22 +272,41 @@ def _starts_untruthy(pieces: tuple[_Piece, ...]) -> bool:
     return False
 
 
-def _wait_never_ends(hass: HomeAssistant, outputs: frozenset[str]) -> bool:
+def _wait_never_ends(
+    hass: HomeAssistant, template_str: str, outputs: frozenset[str]
+) -> bool:
     """Return whether a wait with these outputs can never end, but on timeout.
 
-    The check up front takes only `true`. The watch after it only fires when
-    the render goes from something that is not true to something that is, so
-    it needs at least one of each. Every output `on` or `yes` never does.
+    The check up front takes only `true`. The watch after it fires on the
+    first render it sees that reads as true, and later on one that reads as
+    true after one that did not, or after a render error. So a wait whose
+    outputs all read as true, like `on` or `yes`, ends as soon as it renders
+    again: only one that never does, made of constants alone, never ends.
     """
     if any(
         _passes(hass, TemplateRole.CONDITION, output) is not False for output in outputs
     ):
         return False
 
-    reads_as_true = {_passes(hass, TemplateRole.TRIGGER, output) for output in outputs}
-    if None in reads_as_true:
-        return False
-    return reads_as_true != {True, False}
+    readings = {_passes(hass, TemplateRole.TRIGGER, output) for output in outputs}
+    if readings == {False}:
+        return True
+    return readings == {True} and _is_constant(template_str)
+
+
+def _no_output_passes(
+    hass: HomeAssistant, role: TemplateRole, template_str: str, outputs: frozenset[str]
+) -> bool:
+    """Return whether none of every output a template can give passes."""
+    if role is TemplateRole.WAIT:
+        return _wait_never_ends(hass, template_str, outputs)
+
+    readings = {_passes(hass, role, output) for output in outputs}
+    if role is TemplateRole.TRIGGER:
+        # Only a render that does not read as true arms a trigger, a render
+        # error never does. So one that always reads as true never fires.
+        return readings in ({True}, {False})
+    return readings == {False}
 
 
 def never_passes(hass: HomeAssistant, role: TemplateRole, template_str: str) -> bool:
@@ -279,9 +327,7 @@ def never_passes(hass: HomeAssistant, role: TemplateRole, template_str: str) -> 
         return False
 
     if (outputs := _combined(list(pieces))) is not None:
-        if role is TemplateRole.WAIT:
-            return _wait_never_ends(hass, outputs)
-        return all(_passes(hass, role, output) is False for output in outputs)
+        return _no_output_passes(hass, role, template_str, outputs)
 
     if role is TemplateRole.CONDITION:
         return any(
