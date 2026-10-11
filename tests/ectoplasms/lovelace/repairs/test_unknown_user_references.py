@@ -237,6 +237,18 @@ async def test_users_that_exist_are_not_reported(
             id="view-visible",
         ),
         pytest.param(
+            {
+                "views": [
+                    {
+                        "path": "secret",
+                        "type": "custom:masonry-layout",
+                        "visible": "VISIBLE",
+                    }
+                ]
+            },
+            id="custom-view-visible",
+        ),
+        pytest.param(
             _with_cards(
                 {
                     "type": "button",
@@ -333,6 +345,13 @@ async def test_every_place_a_dashboard_names_a_user_is_read(
             id="strategy",
         ),
         pytest.param(
+            {
+                "strategy": {"type": "original-states"},
+                "views": [{"path": "left-behind", "visible": "VISIBLE"}],
+            },
+            id="views-next-to-a-strategy",
+        ),
+        pytest.param(
             _with_cards({"type": "tile", "visibility": _only_for("casper")}),
             id="not-a-user-id",
         ),
@@ -344,8 +363,8 @@ async def test_what_is_not_a_user_the_frontend_checks_is_not_read(
     """Test a removed user is left alone where nothing compares it with users.
 
     A condition switched off, the inside of a custom card, data handed to an
-    action, a `visible` anywhere but on a view, a strategy's options, and
-    something that was never a user ID.
+    action, a `visible` anywhere but on a view, a strategy's options, views
+    a dashboard strategy leaves unused, and    something that was never a user ID.
     """
     removed = await async_removed_user_id(hass)
 

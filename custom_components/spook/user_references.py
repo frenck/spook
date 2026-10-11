@@ -75,15 +75,11 @@ def _add_conditions(conditions: Any, found: set[str]) -> None:
             found.update(_user_ids(condition.get("users")))
 
 
-def _collect(node: dict[str, Any], found: set[str], *, is_view: bool) -> None:
+def _collect(node: dict[str, Any], found: set[str]) -> None:
     """Collect the users one dashboard node names, leaving what it holds."""
     # Only the conditional card, row and element read `conditions` like this.
     if node.get("type") == "conditional":
         _add_conditions(node.get("conditions", []), found)
-
-    # The older way to show a view to some users only.
-    if is_view:
-        found.update(_listed_users(node.get("visible")))
 
     # Tapping something that asks first, except for these users.
     if isinstance(confirmation := node.get("confirmation"), dict):
@@ -103,11 +99,16 @@ def _walk(node: Any, found: set[str], *, is_view: bool = False) -> None:
     # Every card, badge and section can be made visible to some users only.
     _add_conditions(node.get("visibility", []), found)
 
+    # The older way to show a view to some users only. The frontend applies
+    # it to every view, a custom one too.
+    if is_view:
+        found.update(_listed_users(node.get("visible")))
+
     node_type = node.get("type")
     if isinstance(node_type, str) and node_type.startswith(_CUSTOM_PREFIX):
         return
 
-    _collect(node, found, is_view=is_view)
+    _collect(node, found)
 
     for key, value in node.items():
         # A strategy stores options for cards it makes, not cards.

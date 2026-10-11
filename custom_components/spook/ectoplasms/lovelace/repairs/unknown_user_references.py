@@ -94,8 +94,11 @@ class SpookRepair(AbstractSpookRepair):
         no users of its own to name.
         """
         users: dict[str, int | str] = {}
-        if not isinstance(config, dict) or not isinstance(
-            views := config.get("views"), list
+        if (
+            not isinstance(config, dict)
+            # Views left stored next to a strategy are never shown.
+            or "strategy" in config
+            or not isinstance(views := config.get("views"), list)
         ):
             return users
 
