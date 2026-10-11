@@ -333,6 +333,27 @@ async def test_this_and_trigger_are_not_reported(
     assert _issue(issue_registry, "sensor.triggered") is None
 
 
+async def test_attribute_called_entity_id_is_not_an_action(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an attribute named entity_id is a value it shows, nothing it calls."""
+    await _setup(
+        hass,
+        {
+            "sensor": {
+                "name": "Pointer",
+                "state": "1",
+                "attributes": {"entity_id": "sensor.ghost"},
+            }
+        },
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _issue(issue_registry, "sensor.pointer") is None
+
+
 async def test_one_issue_per_entity_with_only_its_own_findings(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

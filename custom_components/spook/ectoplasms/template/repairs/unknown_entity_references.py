@@ -173,8 +173,16 @@ class SpookRepair(AbstractSpookRepair):
         named = await async_extract_entities_from_config(
             self.hass, without_never_rendered(config), known_services
         )
+        # Home Assistant validates every action of a template entity into a
+        # list of steps. A mapping is something else, like its attributes,
+        # where `entity_id` is a value it shows and not a target.
+        actions = {
+            key: value
+            for key, value in own_configuration(config).items()
+            if isinstance(value, list)
+        }
         named |= await async_extract_entities_from_helper_actions(
-            self.hass, own_configuration(config), known_services=known_services
+            self.hass, actions, known_services=known_services
         )
         named |= await extract_entities_from_automation_config(
             self.hass, config, known_services
