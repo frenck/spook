@@ -17,14 +17,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
-from homeassistant.core import valid_entity_id
-
-from .entity_filtering import (
-    IGNORED_ENTITY_DOMAINS,
-    NEVER_AN_ENTITY_PREFIXES,
-    split_comma_separated_entity_ids,
-)
+from .entity_filtering import is_not_an_entity_id, split_comma_separated_entity_ids
 from .reference_extraction import is_pattern_reference
 from .template_extraction import KNOWN_DOMAINS
 
@@ -321,30 +314,6 @@ _VIEW_TYPES = frozenset({"masonry", "panel", "sections", "sidebar"})
 
 _CUSTOM_PREFIX = "custom:"
 
-# Filled in by something before the card ever sees it: Jinja, button-card's
-# `[[[ ]]]`, decluttering-card's `[[entity]]`. No entity ID has a brace or a
-# bracket in it, so neither is one that is wrong.
-_FILLED_IN_LATER = ("{", "[")
-
-
-def _is_not_an_entity_id(value: str) -> bool:
-    """Return whether a value in an entity field is no entity ID at all.
-
-    An entity ID with capitals is one, and reported as written elsewhere.
-    Everything the entity walk lets go on purpose is let go here too.
-    """
-    lower_cased = value.lower()
-    return not (
-        # Left empty by an editor halfway through.
-        not value.strip()
-        or valid_entity_id(lower_cased)
-        or lower_cased in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
-        or lower_cased.startswith((*NEVER_AN_ENTITY_PREFIXES, *IGNORED_ENTITY_DOMAINS))
-        or value in _CARD_PLACEHOLDERS
-        or is_pattern_reference(value)
-        or any(mark in value for mark in _FILLED_IN_LATER)
-    )
-
 
 def _check_value(value: Any, found: set[str]) -> None:
     """Collect a field's value if it is no entity ID."""
@@ -354,7 +323,7 @@ def _check_value(value: Any, found: set[str]) -> None:
     found.update(
         item
         for item in split_comma_separated_entity_ids(value)
-        if _is_not_an_entity_id(item)
+        if is_not_an_entity_id(item)
     )
 
 

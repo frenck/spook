@@ -753,7 +753,8 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
 
 
 # Filled in by something before it is used: Jinja, or a card's own
-# placeholders. No entity ID has a brace or a bracket in it, so neither is
+# placeholders, like button-card's `[[[ ]]]` and decluttering-card's
+# `[[entity]]`. No entity ID has a brace or a bracket in it, so neither is
 # one that is wrong.
 _FILLED_IN_LATER = ("{", "[")
 
