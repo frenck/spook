@@ -540,15 +540,17 @@ def extract_not_entity_ids_from_dashboard_node(node: Any) -> set[str]:
     return found
 
 
-# `area` is a reference on exactly two things, the area card and the area
-# view strategy, and both say `type: area`. Anywhere else the word is up for
-# grabs, and a custom card took it: flex-horseshoe-card prints whatever is
-# under `area` as a caption beneath its gauge, so `area: Garaj` was reported
-# as an area that had gone missing. #1609.
+# `area` is a reference on exactly three things. The area card and the area
+# view strategy both say `type: area`. The view the Home dashboard makes for
+# each area says `type: home-area`, and a Home dashboard somebody took control
+# of keeps those views, each with its area written in. Anywhere else the word
+# is up for grabs, and a custom card took it: flex-horseshoe-card prints
+# whatever is under `area` as a caption beneath its gauge, so `area: Garaj`
+# was reported as an area that had gone missing. #1609.
 #
 # The Mushroom template card is the exception that earns its place: its `area`
 # is the card's area, handed to its templates as a real area ID.
-_AREA_TYPES = frozenset({"area", "custom:mushroom-template-card"})
+_AREA_TYPES = frozenset({"area", "home-area", "custom:mushroom-template-card"})
 
 # `area_id` is a service-call target, and nobody captions with one of those.
 _AREA_ID_KEY = "area_id"
