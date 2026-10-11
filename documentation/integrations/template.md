@@ -1,8 +1,8 @@
 ---
 subject: Enhanced integrations
 title: Template helpers
-subtitle: Keep template helpers free of ghosts. 👻
-description: Spook inspects Template helpers and raises repair issues for references to unavailable entities and actions, and attributes their entities never have.
+subtitle: Keep template helpers and template entities free of ghosts. 👻
+description: Spook raises repair issues for Template helpers that reference unavailable entities, actions or attributes, and for template entities from YAML that reference unavailable entities or attributes.
 date: 2026-08-03T00:00:00+02:00
 ---
 
@@ -10,6 +10,8 @@ The [Template integration](https://www.home-assistant.io/integrations/template/)
 lets you create helpers whose values and actions are based on templates. Spook
 inspects Template helpers created in the Home Assistant user interface and
 raises repair issues when it finds references that are no longer available.
+
+Template entities set up in YAML, under `template:` in your configuration, are inspected for unknown entities and attributes too. That includes trigger based template entities, with the triggers, conditions, actions and variables of their section.
 
 ## Devices & entities
 
@@ -31,6 +33,12 @@ The repair issue lists the helper and the unavailable entity IDs. To resolve the
 issue, open the linked helper, update the reference to an existing entity, or
 remove it. Spook automatically removes the repair issue once it is fixed.
 
+Template entities from YAML are inspected the same way: every template they have, like the state, availability, attributes, icon and picture, their variables, and their own actions, like the `turn_on` of a template switch. A trigger based template entity is also inspected for the triggers, conditions, actions and variables of its section. A trigger on an entity that does not exist never fires, so the template entity never updates.
+
+Each template entity gets an issue of its own. When the triggers of a section name an entity that does not exist, every template entity in that section gets an issue, since none of them updates. What only a disabled trigger or step names is listed as such. `this` and `trigger` are only known while running, so whatever they point at is not checked.
+
+There is no editor for YAML, so the repair issue names the template entity and its entity ID. To resolve the issue, edit it under `template:` in your configuration and reload your template entities. Spook removes the repair issue once it is fixed.
+
 ### Unknown referenced actions
 
 Spook inspects action sequences configured in Template helpers, such as the
@@ -46,15 +54,15 @@ Spook automatically removes the repair issue once it is fixed.
 
 ### Unknown referenced attributes
 
-Spook inspects Template helpers for the attributes they use: attributes named in their templates, like `state_attr('light.kitchen', 'brightness')`, and the `attribute` of state and numeric state conditions and triggers in their actions. If a helper uses an attribute its entity does not have, Spook raises a repair issue. The repair issue lists the helper, the attribute, the entity, and what was most likely meant when Spook is near certain of it.
+Spook inspects Template helpers and template entities from YAML for the attributes they use: attributes named in their templates, like `state_attr('light.kitchen', 'brightness')`, and the `attribute` of state and numeric state conditions and triggers in their actions. For a trigger based template entity from YAML, that includes the triggers and conditions of its section. If a helper or template entity uses an attribute its entity does not have, Spook raises a repair issue. The repair issue lists the helper, the attribute, the entity, and what was most likely meant when Spook is near certain of it.
 
 A template reading an attribute that never shows up gets nothing, and nothing tells you. That is the ghost this catches.
 
 Many attributes only show up some of the time: a media player that is off drops most of its own, and integrations add their own that come and go. So an attribute is only reported when Spook cannot find it anywhere: not on the entity right now, not as something that kind of entity offers in Home Assistant, and not in anything the recorder remembers the entity having. An entity the recorder does not record is only checked for attributes that differ from a real one in upper and lower case alone, like `Brightness`. An attribute or entity that is only worked out while running, from a variable for example, is not checked.
 
-Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks again when a Template helper is added, changed or removed, when an entity is added or removed, when the entity registry changes, when an integration loads, and once a day.
+Spook does not look right after Home Assistant starts, when the recorder is busy, but ten minutes later. After that it looks again when a Template helper is added, changed or removed, when template entities are reloaded, when an entity is added or removed, when the entity registry changes, when an integration loads, and once a day.
 
-To resolve the issue, open the linked helper and use an attribute the entity has. Spook automatically removes the repair issue once it is fixed.
+To resolve the issue, open the linked helper and use an attribute the entity has. For a template entity from YAML, edit it under `template:` in your configuration and reload your template entities. Spook automatically removes the repair issue once it is fixed.
 
 ## Feature requests, ideas, and support
 
