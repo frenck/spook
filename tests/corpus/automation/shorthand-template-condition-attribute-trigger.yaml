@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/add-variable-for-trigger-attribute/643969
+note: >-
+  Shorthand template condition (a bare string) comparing the triggering preset_mode
+  with a slugified input_select. states() is called with a second argument that is
+  not an attribute.
+expect:
+  entities:
+    find: [climate.front_room, input_select.front_room_preset]
+  attributes:
+    find:
+      - climate.front_room: preset_mode
+    not_find:
+      - input_select.front_room_preset: option
+---
+id: sync_front_room_preset
+alias: Sync front room preset
+trigger:
+  platform: state
+  entity_id: climate.front_room
+  attribute: preset_mode
+condition: >
+  {{ trigger.to_state.attributes.preset_mode != states('input_select.front_room_preset', 'option') | slugify }}
+action:
+  - service: input_select.select_option
+    target:
+      entity_id: input_select.front_room_preset
+    data:
+      option: "{{ trigger.to_state.attributes.preset_mode }}"

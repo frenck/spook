@@ -1,0 +1,20 @@
+source: https://github.com/frenck/spook/issues/1068
+note: >-
+  The action itself is a template that picks switch.turn_on or switch.turn_off.
+  Those quoted strings are action names, not entities. In a house with
+  switches both actions exist, and the entity repair drops names of existing
+  actions; the corpus house has no switch actions, so they show up in the
+  snapshot here.
+expect:
+  entities:
+    find: [switch.porch_light, sun.sun]
+---
+alias: Porch light follows the sun
+triggers:
+  - trigger: state
+    entity_id: sun.sun
+actions:
+  - action: >-
+      {{ 'switch.turn_on' if is_state('sun.sun', 'below_horizon') else 'switch.turn_off' }}
+    target:
+      entity_id: switch.porch_light

@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/heads-up-2023-6-longer-has-persistent-notifications-in-states-what-to-do/578654/1
+note: >-
+  A notification ID built with iif from is_state on a persistent_notification
+  entity, which no longer exists since notifications left the state machine.
+  That domain is in Spook's ignored list, so it is not reported as an entity;
+  the state reader still names the pair for the recorder.
+out_of_scope: >-
+  `group.`, `device_tracker.` and `persistent_notification.` entities are
+  left out of the unknown entity repairs on purpose
+  (`IGNORED_ENTITY_DOMAINS`): an action can create them on the fly, so one
+  that does not exist yet is not necessarily broken.
+expect:
+  entities:
+    not_find: [persistent_notification.trash_today]
+---
+alias: Trash notification
+triggers:
+  - trigger: time
+    at: "18:00:00"
+actions:
+  - action: persistent_notification.create
+    data:
+      title: Trash
+      message: Put the bins out
+      notification_id: >-
+        trash-{{ is_state('persistent_notification.trash_today', 'notifying')
+          | iif('today', 'tomorrow') }}

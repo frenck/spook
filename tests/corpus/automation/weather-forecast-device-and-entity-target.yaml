@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/output-a-spoken-weather-forecast/612322/1
+note: >-
+  weather.get_forecasts with a target holding both a device ID and an entity,
+  the response spoken through tts. Device IDs are 32 hex characters. The
+  source asked by voice; a button here, the harness has no conversation.
+expect:
+  entities:
+    find: [weather.home]
+  devices:
+    find: [a1b2c3d4e5f60718293a4b5c6d7e8f90]
+---
+alias: Spoken forecast
+triggers:
+  - trigger: state
+    entity_id: input_button.forecast
+actions:
+  - action: weather.get_forecasts
+    data:
+      type: daily
+    target:
+      device_id: a1b2c3d4e5f60718293a4b5c6d7e8f90
+      entity_id: weather.home
+    response_variable: forecast
+  - action: tts.speak
+    target:
+      entity_id: tts.home_assistant_cloud
+    data:
+      media_player_entity_id: media_player.kitchen_voice
+      message: >-
+        Tomorrow {{ forecast['weather.home'].forecast[1].condition }}.

@@ -1,0 +1,32 @@
+source: https://www.home-assistant.io/docs/scripts/conditions/#state-condition
+note: >-
+  State condition over several entities with match any, and one on an
+  attribute with a list of states.
+expect:
+  entities:
+    find: [binary_sensor.window_kitchen, binary_sensor.window_bedroom, climate.house]
+---
+alias: Heating off when a window opens
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.window_kitchen
+      - binary_sensor.window_bedroom
+    to: "on"
+conditions:
+  - condition: state
+    entity_id:
+      - binary_sensor.window_kitchen
+      - binary_sensor.window_bedroom
+    match: any
+    state: "on"
+  - condition: state
+    entity_id: climate.house
+    attribute: hvac_action
+    state:
+      - heating
+      - preheating
+actions:
+  - action: climate.turn_off
+    target:
+      entity_id: climate.house

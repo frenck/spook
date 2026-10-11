@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/how-do-i-troubleshoot-my-automation-not-firing-automatically-but-it-works-manually/959641
+note: >-
+  Template trigger in a folded block scalar that also wraps the template in
+  double quotes, so the render is a quoted string, never true. The lookups in
+  it are still read. The original turned on switches through device actions,
+  which only validate against a device registry, so plain actions here.
+expect:
+  entities:
+    find: [input_boolean.resident_one_home, input_boolean.resident_two_home]
+  states:
+    find:
+      - input_boolean.resident_one_home: "off"
+      - input_boolean.resident_two_home: "off"
+---
+alias: Everyone away, cameras on
+description: ""
+triggers:
+  - trigger: template
+    value_template: >-
+      "{{ is_state('input_boolean.resident_one_home', 'off') and
+      is_state('input_boolean.resident_two_home', 'off') }}"
+conditions: []
+actions:
+  - action: switch.turn_on
+    target:
+      entity_id:
+        - switch.driveway_camera
+        - switch.garden_camera
+mode: single

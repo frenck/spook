@@ -1,0 +1,54 @@
+source: https://github.com/firstof9/my-ha-config/blob/master/decluttering_templates.yaml
+note: >-
+  Whole dashboard with decluttering_templates using [[entity]] and [[title]]
+  placeholders, and a view filling them through variables. The variable named
+  entity holds a real entity ID and is read for its key; the one named
+  average does too, under a name only the template knows.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+expect:
+  entities:
+    find: [sensor.house_power]
+    not_find: ["[[entity]]", "[[average]]", sensor.upstairs_temperature_average]
+---
+decluttering_templates:
+  usage_graph:
+    default:
+      - title: Usage
+    card:
+      type: custom:apexcharts-card
+      graph_span: 24h
+      header:
+        show: true
+        title: "[[title]]"
+      series:
+        - entity: "[[entity]]"
+          type: area
+          name: "[[title]]"
+          group_by:
+            func: avg
+            duration: 1h
+  floor_climate:
+    card:
+      type: glance
+      title: "[[floor]] climate"
+      show_icon: false
+      entities:
+        - entity: "[[average]]"
+          name: "[[floor]] average"
+views:
+  - title: Energy
+    path: energy
+    cards:
+      - type: custom:decluttering-card
+        template: usage_graph
+        variables:
+          - entity: sensor.house_power
+          - title: House power
+      - type: custom:decluttering-card
+        template: floor_climate
+        variables:
+          - floor: Upstairs
+          - average: sensor.upstairs_temperature_average

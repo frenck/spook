@@ -1,0 +1,33 @@
+source: https://community.home-assistant.io/t/scripting-with-repeat-index-undefinederror-dict-object-has-no-attribute-item/650399
+note: >-
+  Script that expands a passed entity or group, then builds the action name from the
+  loop item with split. Old service_template and data_template keys. The action is
+  a template, not an unknown action.
+expect:
+  services:
+    not_find: ["{{ repeat.item.split('.').0 }}.turn_{{ state }}"]
+---
+alias: Ensure device changes
+mode: parallel
+max: 20
+fields:
+  device:
+    description: Entity or group to switch
+  state:
+    description: on or off
+sequence:
+  - variables:
+      device_list: "{{ expand(device) | map(attribute='entity_id') | list }}"
+  - repeat:
+      for_each: "{{ device_list }}"
+      sequence:
+        - repeat:
+            sequence:
+              - service_template: "{{ repeat.item.split('.').0 }}.turn_{{ state }}"
+                data_template:
+                  entity_id: "{{ repeat.item }}"
+              - delay:
+                  seconds: 3
+            while:
+              - condition: template
+                value_template: "{{ states(repeat.item) != state }}"

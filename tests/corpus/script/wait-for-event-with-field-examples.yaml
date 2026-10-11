@@ -1,0 +1,38 @@
+source: https://community.home-assistant.io/t/wait-for-trigger-not-working/605549
+note: >-
+  Script fields whose example values are entity IDs and sentences, a
+  wait_for_trigger on an event with event_data, and wait.trigger.event.data
+  read afterwards. The field example is documentation, not a reference.
+out_of_scope: >-
+  Variables and for_each items are values somebody hands over. A literal
+  under a reference key like entity_id is read; a plain string under a key
+  of somebody's own is data until a template uses it, and Spook does not
+  follow that use.
+expect:
+  entities:
+    not_find: [media_player.bedroom_speaker, media_player.living_room_speaker]
+  services:
+    find: [script.ask_actionable_question]
+---
+alias: Ask yes or no
+fields:
+  speaker:
+    description: The speaker to ask on
+    example: media_player.bedroom_speaker
+sequence:
+  - variables:
+      device: media_player.living_room_speaker
+  - action: script.ask_actionable_question
+    data:
+      text: Yes or no?
+      event_id: yes_or_no
+      speaker: "{{ device }}"
+  - wait_for_trigger:
+      - trigger: event
+        event_type: actionable_notification_answer
+        event_data:
+          event_id: yes_or_no
+    timeout:
+      seconds: 10
+  - variables:
+      response_type: "{{ wait.trigger.event.data.event_response_type if wait.trigger else 'none' }}"

@@ -1,0 +1,20 @@
+source: https://community.home-assistant.io/t/list-devices-being-offline-for-too-long-based-on-newly-introduced-last-reported-state-attribute/720695
+note: >-
+  Markdown card listing devices with a label whose newest last_reported is too
+  old, looping over every state with a namespace dictionary. The loop variable
+  state, the label name and the device names are not references to check.
+---
+type: markdown
+title: Devices out of contact
+content: |
+  {%- set ns = namespace(devices={}) %}
+  {%- for state in states | sort(attribute='entity_id') %}
+    {%- set device = device_id(state.entity_id) %}
+    {%- if device and 'Availability check' in labels(device) | map('label_name') | list %}
+      {%- set seen = ns.devices.get(device, state.last_reported) %}
+      {%- set ns.devices = dict(ns.devices, **{device: [seen, state.last_reported] | max}) %}
+    {%- endif %}
+  {%- endfor %}
+  {%- for device, seen in ns.devices.items() if seen < now() - timedelta(hours=24) %}
+  * {{ device_attr(device, 'name') }}: {{ relative_time(seen) }}
+  {%- endfor %}

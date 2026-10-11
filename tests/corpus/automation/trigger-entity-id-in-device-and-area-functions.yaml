@@ -1,0 +1,33 @@
+source: https://github.com/frenck/spook/issues/1468
+note: >-
+  One automation for several smoke detectors; the message uses
+  device_name(trigger.entity_id) and area_name(trigger.entity_id). The
+  placeholder is a variable, not an entity.
+expect:
+  entities:
+    find:
+      - binary_sensor.hallway_smoke
+      - binary_sensor.kitchen_smoke
+      - binary_sensor.attic_smoke
+    not_find: [trigger.entity_id]
+  services:
+    find: [notify.mobile_app_phone]
+---
+alias: Smoke detected
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.hallway_smoke
+      - binary_sensor.kitchen_smoke
+      - binary_sensor.attic_smoke
+    to:
+      - "on"
+conditions: []
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      title: "Smoke in {{ area_name(trigger.entity_id) }}"
+      message: "{{ device_name(trigger.entity_id) }} detects smoke"
+      data:
+        priority: critical
+        url: /dashboard-safety/0

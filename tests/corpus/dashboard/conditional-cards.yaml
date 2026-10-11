@@ -1,0 +1,32 @@
+source: tests/test_dashboard_extraction.py (conditional cards and visibility)
+note: >-
+  A conditional card shows a card only in a certain state, and a card in a
+  sections view can carry visibility conditions of its own. The entities in
+  the conditions count as much as the ones on the cards.
+expect:
+  entities:
+    find:
+      - binary_sensor.washing_machine_running
+      - sensor.washing_machine_remaining
+      - person.alex
+      - camera.front_door
+---
+type: sections
+title: Utility
+sections:
+  - type: grid
+    cards:
+      - type: conditional
+        conditions:
+          - condition: state
+            entity: binary_sensor.washing_machine_running
+            state: "on"
+        card:
+          type: tile
+          entity: sensor.washing_machine_remaining
+      - type: picture-entity
+        entity: camera.front_door
+        visibility:
+          - condition: state
+            entity: person.alex
+            state: home

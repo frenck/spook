@@ -1,0 +1,22 @@
+source: custom_components/spook/dashboard_extraction.py (_AREA_TYPES, #1609)
+note: >-
+  `area` is an area on the area card and the Mushroom template card. On a
+  gauge card that prints it as a caption it is only text.
+expect:
+  areas:
+    find: [kitchen, garden_shed]
+    not_find: [Garage]
+  entities:
+    find: [sensor.garage_temperature]
+---
+type: grid
+cards:
+  - type: area
+    area: kitchen
+  - type: custom:mushroom-template-card
+    area: garden_shed
+    primary: "{{ area_name(area) }}"
+  - type: custom:flex-horseshoe-card
+    area: Garage
+    entities:
+      - entity: sensor.garage_temperature

@@ -1,0 +1,25 @@
+source: https://github.com/frenck/spook/issues/1821
+note: >-
+  Mobile app notification with a free text tag that happens to look like
+  notify.something. The tag groups notifications, it names no entity.
+expect:
+  entities:
+    not_find: [notify.kettle_ready_notice]
+  services:
+    find: [notify.mobile_app_phone]
+---
+alias: Kettle is ready
+triggers:
+  - trigger: numeric_state
+    entity_id: sensor.kettle_power
+    below: 5
+conditions:
+  - condition: state
+    entity_id: switch.kettle
+    state: "on"
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: The water has boiled
+      data:
+        tag: notify.kettle_ready_notice

@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/is-there-a-solution-for-user-in-a-template/985856/19
+note: >-
+  Cards shown per user and per screen size. User IDs are 32 hex characters,
+  like device IDs, and a media query is CSS. Neither is an entity.
+expect:
+  entities:
+    find: [script.play_music]
+---
+type: sections
+sections:
+  - type: grid
+    cards:
+      - type: markdown
+        content: Hello there
+        visibility:
+          - condition: user
+            users:
+              - d4e5f60718293a4b5c6d7e8f90a1b2c3
+      - type: button
+        entity: script.play_music
+        tap_action:
+          action: perform-action
+          perform_action: script.turn_on
+          target:
+            entity_id: script.play_music
+        visibility:
+          - condition: screen
+            media_query: "(min-width: 0px) and (max-width: 767px)"

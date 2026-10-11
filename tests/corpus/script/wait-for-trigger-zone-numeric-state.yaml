@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/improved-shopping-list/608232/1
+note: >-
+  numeric_state on a zone (its state is how many people are in it) inside a
+  wait_for_trigger, with a timeout, and the reminder only when the wait ended
+  on the trigger rather than the timeout.
+expect:
+  entities:
+    find: [zone.supermarket]
+---
+alias: Remind at the shop
+sequence:
+  - wait_for_trigger:
+      - trigger: numeric_state
+        entity_id: zone.supermarket
+        above: 0
+    timeout:
+      hours: 2
+    continue_on_timeout: false
+  - action: notify.notify
+    data:
+      message: Shopping list time

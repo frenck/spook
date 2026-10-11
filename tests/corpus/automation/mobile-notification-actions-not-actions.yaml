@@ -1,0 +1,38 @@
+source: https://community.home-assistant.io/t/interactive-notification-for-valentines/836118/1
+note: >-
+  Actionable notification: the buttons are `action: "YES"` mappings inside
+  notify data, and the reply comes back as mobile_app_notification_action with
+  event_data.action. None of those are Home Assistant actions or triggers.
+expect:
+  services:
+    find: [notify.mobile_app_phone, light.turn_on]
+    not_find: ["YES", "NO"]
+  triggers:
+    find: [state]
+    not_find: ["YES"]
+---
+alias: Ask before lights
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.front_door_contact
+    to: "on"
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: Turn on the porch light?
+      data:
+        actions:
+          - action: "YES"
+            title: "Yes"
+          - action: "NO"
+            title: "No"
+  - wait_for_trigger:
+      - trigger: event
+        event_type: mobile_app_notification_action
+        event_data:
+          action: "YES"
+    timeout: "00:15:00"
+    continue_on_timeout: false
+  - action: light.turn_on
+    target:
+      entity_id: light.porch

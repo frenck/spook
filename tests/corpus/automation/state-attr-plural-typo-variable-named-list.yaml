@@ -1,0 +1,31 @@
+source: https://community.home-assistant.io/t/repeat-counter-in-automation/715009
+note: >-
+  The sensor exposes schedule_list but the automation asks for schedules_list, so it
+  gets None. The variable is called list, shadowing the Jinja builtin, and is indexed
+  with repeat.index. homeassistant.turn_off is a core action, which every house
+  has.
+expect:
+  entities:
+    find: [sensor.schedule_entities]
+  attributes:
+    find:
+      - sensor.schedule_entities: schedules_list
+  services:
+    not_find: [homeassistant.turn_off]
+---
+alias: Turn off all schedules
+triggers:
+  - trigger: time
+    at: "23:00:00"
+actions:
+  - variables:
+      list: "{{ state_attr('sensor.schedule_entities', 'schedules_list') }}"
+      counter: "{{ states('sensor.schedule_entities') | int(0) }}"
+  - repeat:
+      sequence:
+        - service: homeassistant.turn_off
+          target:
+            entity_id: "{{ list[repeat.index - 1] }}"
+      until:
+        - condition: template
+          value_template: "{{ repeat.index >= counter }}"

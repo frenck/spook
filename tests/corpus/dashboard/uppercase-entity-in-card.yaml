@@ -1,0 +1,14 @@
+source: https://community.home-assistant.io/t/octopus-intelligent-smart-charge-picture-elements/737700/1
+note: >-
+  An entity ID typed with capitals in a tile. The frontend looks entities up
+  exactly as written, so the card shows the entity as unavailable.
+expect:
+  entities:
+    find: [sensor.car_charger_slot_2, binary_sensor.Car_Charger_Dispatching]
+---
+type: vertical-stack
+cards:
+  - type: tile
+    entity: binary_sensor.Car_Charger_Dispatching
+  - type: tile
+    entity: sensor.car_charger_slot_2

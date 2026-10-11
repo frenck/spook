@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/zone-home-state-for-first-to-arrive-home/869742
+note: >-
+  zone.home counts the user already, so the condition reads the zone persons
+  attribute and rejects one person before counting. The person ID sits as a reject
+  argument.
+expect:
+  entities:
+    find: [zone.home, person.resident_one, event.door_fingerprint_reader]
+  attributes:
+    find:
+      - zone.home: persons
+---
+alias: Welcome when nobody else is home
+triggers:
+  - trigger: state
+    entity_id: event.door_fingerprint_reader
+conditions:
+  - condition: template
+    value_template: >-
+      {{ state_attr('zone.home', 'persons') | reject('eq', 'person.resident_one') | list | count == 0 }}
+actions:
+  - action: scene.turn_on
+    target:
+      entity_id: scene.welcome_home

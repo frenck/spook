@@ -1,0 +1,20 @@
+source: https://github.com/frenck/spook/issues/1520
+note: >-
+  What a blueprint with an optional condition input looks like once the input
+  is left at its empty default: a condition step whose value is an empty list.
+  It always passes and names no condition type.
+expect:
+  entities:
+    find: [cover.living_room, sun.sun]
+---
+alias: Cover opens at sunrise
+triggers:
+  - trigger: state
+    entity_id: sun.sun
+    to: above_horizon
+conditions: []
+actions:
+  - condition: []
+  - action: cover.open_cover
+    target:
+      entity_id: cover.living_room

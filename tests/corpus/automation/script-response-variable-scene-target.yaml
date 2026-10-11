@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/trouble-with-getting-a-boolean-from-a-script-in-an-automation/830821
+note: >-
+  Calling a script that returns a scene and a flag through response_variable, then
+  turning on the scene named in the response. The scene is only known at run time.
+expect:
+  entities:
+    find: [sensor.house_power_average]
+  services:
+    find: [script.scene_selector, scene.turn_on]
+---
+alias: Power management scenes
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.house_power_average
+conditions: []
+actions:
+  - action: script.scene_selector
+    data: {}
+    response_variable: new_scene
+  - if:
+      - condition: template
+        value_template: "{{ new_scene.update }}"
+    then:
+      - action: scene.turn_on
+        target:
+          entity_id: "{{ new_scene.scene }}"
+mode: single

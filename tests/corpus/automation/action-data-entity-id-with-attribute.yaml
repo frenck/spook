@@ -1,0 +1,29 @@
+source: https://github.com/frenck/spook/pull/1920
+note: >-
+  The old way of writing a target, `entity_id` under `data`, with an attribute
+  glued to the entity ID. The automation loads, and the action refuses the
+  data the moment it runs. Reported as not an entity ID. The same key in the
+  payload of somebody's own event, and a template that builds the ID, stay
+  quiet.
+expect:
+  not_entity_ids:
+    find: [climate.living_room.temperature]
+    not_find: [camera.front_door.snapshot]
+  entities:
+    not_find: [climate.living_room.temperature]
+---
+alias: Heating on when the window closes
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.living_room_window
+    to: "off"
+actions:
+  - action: homeassistant.turn_on
+    data:
+      entity_id: climate.living_room.temperature
+  - action: homeassistant.turn_on
+    data:
+      entity_id: "{{ 'light.' ~ trigger.to_state.object_id }}"
+  - event: window_closed
+    event_data:
+      entity_id: camera.front_door.snapshot

@@ -1,0 +1,47 @@
+source: https://community.home-assistant.io/t/condition-statement-not-working/845419
+note: >-
+  A state condition placed in the middle of the action list where the user
+  expected it to wait. The original used a device trigger, which only
+  validates against a device registry; the corpus house has none, so it is a
+  state trigger here.
+expect:
+  entities:
+    find: [input_boolean.stop_music, media_player.kitchen, media_player.patio]
+  services:
+    find: [media_player.volume_set, media_player.select_source, media_player.media_stop]
+  states:
+    find:
+      - input_boolean.stop_music: "on"
+---
+alias: Music on button press
+description: ""
+triggers:
+  - trigger: state
+    entity_id: switch.music_button
+    to: "on"
+conditions: []
+actions:
+  - action: media_player.volume_set
+    target:
+      entity_id:
+        - media_player.kitchen
+        - media_player.patio
+    data:
+      volume_level: 0.13
+  - action: media_player.select_source
+    target:
+      entity_id:
+        - media_player.kitchen
+        - media_player.patio
+    data:
+      source: Evening Jazz
+  - condition: state
+    entity_id: input_boolean.stop_music
+    state: "on"
+  - action: media_player.media_stop
+    target:
+      entity_id:
+        - media_player.kitchen
+        - media_player.patio
+    data: {}
+mode: single

@@ -1,0 +1,57 @@
+source: https://github.com/mwagner/HA_config/blob/development/dashboards/main/views/01_main.yaml
+note: >-
+  Sections view with a markdown header greeting the user, sections pulled in by
+  !include (opaque strings here, the files are not part of the case), visibility by state and by screen size, and a Mushroom template card
+  whose tap turns off a different light than the card shows (a copy and paste
+  slip in the original).
+expect:
+  entities:
+    find: [binary_sensor.show_holiday_section, light.living_room, light.bedroom]
+  services:
+    find: [light.turn_off]
+---
+title: Home
+path: home
+type: sections
+max_columns: 3
+header:
+  card:
+    type: markdown
+    text_only: true
+    content: |-
+      # Hello {{ user }}
+      {% if is_state('input_boolean.test_environment', 'on') %}
+        This is the test environment.
+      {% endif %}
+  layout: center
+sections:
+  - type: grid
+    cards: !include ../parts/sections/top.yaml
+    column_span: 3
+  - type: grid
+    cards: !include ../parts/sections/holiday.yaml
+    visibility:
+      - condition: state
+        entity: binary_sensor.show_holiday_section
+        state: "on"
+  - type: grid
+    visibility:
+      - condition: screen
+        media_query: "(min-width: 768px) and (max-width: 1279px)"
+    cards:
+      - type: custom:mushroom-template-card
+        primary: Living room
+        secondary: "{{ states('light.living_room') }}"
+        icon: mdi:lightbulb-group
+        entity: light.living_room
+        badge_icon: >-
+          {% if is_state('binary_sensor.living_room_motion', 'on') %}
+            mdi:motion-sensor
+          {% endif %}
+        tap_action:
+          action: perform-action
+          perform_action: light.turn_off
+          target:
+            entity_id: light.bedroom
+        hold_action:
+          action: none

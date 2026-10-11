@@ -1,0 +1,49 @@
+source: tests/ectoplasms/automation/repairs/test_repeat_nested_targets.py
+note: >-
+  Targets several levels deep: in a repeat, in the default of a choose, in
+  the else of an if, in a parallel. Home Assistant's own extraction misses
+  some of these, Spook walks the configuration as written as well.
+expect:
+  areas:
+    find: [living_room, garden]
+  floors:
+    find: [upstairs]
+  labels:
+    find: [night_lights]
+  services:
+    find: [light.turn_on, light.turn_off, cover.close_cover, switch.turn_on]
+---
+alias: Bedtime
+triggers:
+  - trigger: time
+    at: "23:00:00"
+actions:
+  - repeat:
+      count: 3
+      sequence:
+        - action: light.turn_off
+          target:
+            area_id: living_room
+  - choose:
+      - conditions:
+          - condition: state
+            entity_id: input_boolean.guests
+            state: "on"
+        sequence:
+          - action: light.turn_on
+            target:
+              label_id: night_lights
+    default:
+      - action: cover.close_cover
+        target:
+          floor_id: upstairs
+  - if:
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+    then: []
+    else:
+      - parallel:
+          - action: switch.turn_on
+            target:
+              area_id: garden

@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/trouble-matching-trigger-event-id-in-choose-action-with-event-state-entity-trigger/709099/2
+note: >-
+  Button event entity: the press type is read from
+  trigger.to_state.attributes.event_type. No entity literal is in the
+  template, so no attribute pair either; the trigger entity is read.
+expect:
+  entities:
+    find: [event.hallway_button, light.hallway]
+---
+alias: Hallway button
+triggers:
+  - trigger: state
+    entity_id: event.hallway_button
+    not_from: unavailable
+conditions:
+  - condition: template
+    value_template: "{{ trigger.to_state.attributes.event_type == 'single' }}"
+actions:
+  - action: light.toggle
+    target:
+      entity_id: light.hallway

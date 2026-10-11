@@ -1,0 +1,37 @@
+source: https://community.home-assistant.io/t/weather-get-forecasts-response-to-input-text/911391
+note: >-
+  weather.get_forecasts into a response variable, then indexed by the weather entity
+  ID in double quotes. forecast here is the response key, not the long gone forecast
+  attribute.
+expect:
+  entities:
+    find: [weather.home, input_text.forecast_json]
+  services:
+    find: [weather.get_forecasts, persistent_notification.create, input_text.set_value]
+  attributes:
+    not_find:
+      - weather.home: forecast
+---
+alias: Forecast debug
+triggers:
+  - trigger: time
+    at: "14:00:00"
+actions:
+  - action: weather.get_forecasts
+    target:
+      entity_id: weather.home
+    data:
+      type: hourly
+    response_variable: forecast_response
+  - action: persistent_notification.create
+    data:
+      title: Forecast answer
+      message: >
+        {% set forecast = forecast_response["weather.home"].forecast %}
+        {% if forecast is defined %}{{ forecast[0].temperature }}{% else %}No data{% endif %}
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.forecast_json
+    data:
+      value: "{{ forecast_response['weather.home'].forecast[:2] | tojson }}"
+mode: single

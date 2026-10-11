@@ -1,0 +1,41 @@
+source: https://github.com/frenck/spook/issues/1090
+note: >-
+  Namespace loop over states.binary_sensor filtered with startswith on a quoted
+  entity ID prefix, collecting names of sensors that are not on.
+expect:
+  entities:
+    find: [input_boolean.notify_debug]
+    not_find: [binary_sensor.server]
+  services:
+    find: [notify.admin]
+---
+alias: Server health report
+triggers:
+  - trigger: time_pattern
+    minutes: 0
+actions:
+  - variables:
+      debug: "{{ is_state('input_boolean.notify_debug', 'on') }}"
+      failing: >-
+        {% set found = namespace(items=[]) %}
+        {% for sensor in states.binary_sensor
+           if sensor.entity_id.startswith('binary_sensor.server') %}
+          {% if sensor.state != 'on' %}
+            {% set found.items = found.items + [sensor.name ~ ' (' ~ sensor.state ~ ')'] %}
+          {% endif %}
+        {% endfor %}
+        {{ found.items }}
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ failing | count > 0 }}"
+        sequence:
+          - action: notify.admin
+            data:
+              message: "{{ failing | count }} servers down: {{ failing | join(', ') }}"
+    default:
+      - condition: template
+        value_template: "{{ debug }}"
+      - action: notify.admin
+        data:
+          message: All servers fine

@@ -1,0 +1,23 @@
+source: https://www.home-assistant.io/docs/automation/trigger/#sentence-trigger
+note: >-
+  Sentence trigger with a wildcard slot, answered through a templated
+  set_conversation_response that looks up a sensor. The slot name is not an
+  area. The harness does not set up conversation, so Home Assistant marks the
+  automation unavailable and only the trigger and condition readers run; in a
+  house the response template reads a real entity.
+expect:
+  triggers:
+    find: [conversation]
+  areas:
+    not_find: [room]
+---
+alias: Temperature question
+triggers:
+  - trigger: conversation
+    command:
+      - "how warm is it in the {room}"
+      - "what is the temperature in the {room}"
+actions:
+  - set_conversation_response: >-
+      Outside it is {{ states('sensor.outdoor_temperature') }} degrees, and I
+      do not know about the {{ trigger.slots.room }} yet.

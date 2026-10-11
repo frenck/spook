@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/input-text-set-value-data-template-not-working-anymore/652382
+note: >-
+  calendar.get_events into a response variable, then a loop writing HTML with an
+  ha-icon tag into an input_text through the old data_template key. The mdi icon
+  name and the response fields are not references.
+expect:
+  entities:
+    find: [calendar.family, input_text.family_agenda]
+  services:
+    find: [calendar.get_events, input_text.set_value]
+---
+alias: Fill today's agenda
+sequence:
+  - service: calendar.get_events
+    target:
+      entity_id:
+        - calendar.family
+    data:
+      duration:
+        hours: 13
+    response_variable: family_calendar
+  - service: input_text.set_value
+    target:
+      entity_id: input_text.family_agenda
+    data_template:
+      value: >-
+        {% for event in family_calendar['calendar.family'].events %}<ha-icon icon="mdi:calendar-heart-outline"></ha-icon>
+        {{ as_timestamp(event.start, default=0) | timestamp_custom('%d/%m %H:%M') }} {{ event.summary }}<br>{% endfor %}

@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/auto-entities-exclude-not-working/903769
+note: >-
+  Auto-entities listing temperature sensors in one area with an exclude that
+  only worked once it matched on name with a regex instead of entity_id. The
+  area here is a matcher value, not an area reference to check.
+expect:
+  areas:
+    not_find: [bathroom]
+---
+type: custom:auto-entities
+show_empty: false
+card:
+  type: entities
+  title: Temperatures
+  state_color: true
+filter:
+  include:
+    - entity_id: sensor.*[Tt]emperature
+      area: bathroom
+  exclude:
+    - name: /[Hh]eating/
+sort:
+  method: state
+  numeric: true

@@ -1,0 +1,47 @@
+source: https://community.home-assistant.io/t/wait-for-trigger-trigger-id-field-available-but-not-functional-bug-or-ui-issue/939493
+note: >-
+  wait_for_trigger with several state triggers on an input_select, each with an id,
+  branching afterwards on wait.trigger.id. Options are mixed case words that are the
+  real option values.
+expect:
+  entities:
+    find: [input_select.shutter_position, cover.living_room_shutter]
+  states:
+    find:
+      - input_select.shutter_position: Closed
+      - input_select.shutter_position: Open
+      - input_select.shutter_position: Sun protection
+---
+alias: Shutter follows selector
+triggers:
+  - trigger: state
+    entity_id: input_select.shutter_position
+    to: Closed
+actions:
+  - wait_for_trigger:
+      - trigger: state
+        entity_id: input_select.shutter_position
+        from: Closed
+        to: Open
+        id: closed_to_open
+      - trigger: state
+        entity_id: input_select.shutter_position
+        from: Closed
+        to: Sun protection
+        id: closed_to_sun
+    timeout:
+      minutes: 30
+    continue_on_timeout: false
+  - choose:
+      - conditions: "{{ wait.trigger.id == 'closed_to_open' }}"
+        sequence:
+          - action: cover.open_cover
+            target:
+              entity_id: cover.living_room_shutter
+      - conditions: "{{ wait.trigger.id == 'closed_to_sun' }}"
+        sequence:
+          - action: cover.set_cover_position
+            target:
+              entity_id: cover.living_room_shutter
+            data:
+              position: 30

@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/automation-based-on-phones-wifi-connection/775679/5
+note: >-
+  Zone triggers for one person entering and leaving home with trigger IDs,
+  and a zone condition. Zones are entities here, read through `zone`.
+expect:
+  entities:
+    find: [person.sam, zone.home, zone.work]
+---
+alias: Presence Sam
+triggers:
+  - trigger: zone
+    entity_id: person.sam
+    zone: zone.home
+    event: leave
+    id: leave_home
+  - trigger: zone
+    entity_id: person.sam
+    zone: zone.home
+    event: enter
+    id: arrive_home
+conditions:
+  - condition: not
+    conditions:
+      - condition: zone
+        entity_id: person.sam
+        zone: zone.work
+actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.sam_home

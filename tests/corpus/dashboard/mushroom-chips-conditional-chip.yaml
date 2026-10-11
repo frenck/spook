@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/mushroom-chips-card-conditional-entity-not-showing-at-all/903065
+note: >-
+  Mushroom chips card with a conditional chip. The UI editor dropped the chip
+  key, so nothing rendered; the fixed shape nests a template chip under chip.
+expect:
+  entities:
+    find: [binary_sensor.waste_pickup_today, sensor.outdoor_temperature]
+---
+type: custom:mushroom-chips-card
+chips:
+  - type: entity
+    entity: sensor.outdoor_temperature
+  - type: conditional
+    conditions:
+      - condition: state
+        entity: binary_sensor.waste_pickup_today
+        state: "on"
+    chip:
+      type: template
+      icon: mdi:trash-can
+      icon_color: green
+      content: "{{ state_attr('binary_sensor.waste_pickup_today', 'icon') }}"

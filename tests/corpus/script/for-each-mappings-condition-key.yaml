@@ -1,0 +1,24 @@
+source: https://www.home-assistant.io/docs/scripts/#for-each
+note: >-
+  for_each over mappings that pair a weather condition with a scene. The item
+  key `condition` is data, not a condition, and the values are weather states.
+  Distilled from the documented for_each mapping form; no public sighting of
+  this exact key found yet.
+expect:
+  conditions:
+    not_find: [rainy, sunny]
+---
+alias: Weather scene
+sequence:
+  - repeat:
+      for_each:
+        - condition: rainy
+          scene: scene.cosy
+        - condition: sunny
+          scene: scene.bright
+      sequence:
+        - if: "{{ is_state('weather.home', repeat.item.condition) }}"
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: "{{ repeat.item.scene }}"

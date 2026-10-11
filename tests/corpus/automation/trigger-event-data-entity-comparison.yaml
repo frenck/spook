@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/automation-trigger-local-device-control-vs-triggered-by-automation/592583/1
+note: >-
+  A call_service event trigger filtered on domain and service, with the
+  target entity checked in a template on trigger.event.data. The quoted entity
+  in the template is a reference; the event payload itself is left alone.
+expect:
+  entities:
+    find: [fan.living_room_ceiling]
+---
+alias: Ceiling fan switched by hand
+triggers:
+  - trigger: event
+    event_type: call_service
+    event_data:
+      domain: fan
+      service: turn_on
+conditions:
+  - condition: template
+    value_template: >-
+      {{ 'fan.living_room_ceiling' in
+         (trigger.event.data.service_data.entity_id | default([])) }}
+actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.fan_manual

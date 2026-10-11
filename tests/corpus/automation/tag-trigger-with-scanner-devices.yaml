@@ -1,0 +1,19 @@
+source: https://www.home-assistant.io/docs/automation/trigger/#tag-trigger
+note: >-
+  Tag trigger limited to two scanner devices by device_id. The tag ID is not
+  an entity or device; the scanners are devices.
+expect:
+  devices:
+    find: [f60718293a4b5c6d7e8f90a1b2c3d4e5, 0718293a4b5c6d7e8f90a1b2c3d4e5f6]
+---
+alias: Tag unlocks the door
+triggers:
+  - trigger: tag
+    tag_id: A7-6B-90-5F
+    device_id:
+      - f60718293a4b5c6d7e8f90a1b2c3d4e5
+      - 0718293a4b5c6d7e8f90a1b2c3d4e5f6
+actions:
+  - action: lock.unlock
+    target:
+      entity_id: lock.front_door

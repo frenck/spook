@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/where-can-you-put-variables-in-your-automation-and-state-based-trigger-templates-and-template-sensors/717565
+note: >-
+  A zha_event trigger with a variables block that imports a macro from
+  custom_templates and passes trigger.event plus a list of face names. The imported
+  file name looks like a dotted name but is not an entity.
+expect:
+  entities:
+    find: [input_text.cube_face]
+    not_find: [cube.jinja]
+---
+alias: Cube face tracker
+triggers:
+  - trigger: event
+    event_type: zha_event
+    event_data:
+      device_ieee: "00:15:8d:00:01:02:03:04"
+variables:
+  face: >-
+    {% from 'cube.jinja' import cube_face %}
+    {{ cube_face(trigger.event, ['lights', 'music', 'tv', 'blinds', 'fan', 'scene']) | trim }}
+conditions:
+  - condition: template
+    value_template: "{{ face not in ['', 'no face'] }}"
+actions:
+  - action: input_text.set_value
+    target:
+      entity_id: input_text.cube_face
+    data:
+      value: "{{ face }}"

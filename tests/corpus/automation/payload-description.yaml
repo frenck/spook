@@ -1,0 +1,33 @@
+source: tests/test_attribute_references.py::test_payloads_named_like_metadata_are_still_read (#1880)
+note: >-
+  `description` and `alias` are metadata at the top and on a step, and never
+  rendered. In action data `description` is a calendar event's text, which
+  is rendered, so a lookup in there is a real one. The entity side of the
+  never rendered text is in metadata-templates.yaml.
+expect:
+  attributes:
+    find:
+      - sensor.outdoor_temperature: unit_of_measurement
+    not_find:
+      - sensor.outdoor_temperature: Unit
+      - sensor.indoor_temperature: unit_of_measurement
+---
+alias: "Log the {{ state_attr('sensor.outdoor_temperature', 'Unit') }}"
+description: >-
+  Writes {{ state_attr('sensor.indoor_temperature', 'unit_of_measurement') }}
+  into the calendar.
+triggers:
+  - trigger: time
+    at: "07:00:00"
+actions:
+  - alias: "{{ state_attr('sensor.indoor_temperature', 'unit_of_measurement') }}"
+    action: calendar.create_event
+    target:
+      entity_id: calendar.home
+    data:
+      summary: Morning temperature
+      start_date_time: "{{ now() }}"
+      end_date_time: "{{ now() + timedelta(minutes=5) }}"
+      description: >-
+        {{ states('sensor.outdoor_temperature') }}
+        {{ state_attr('sensor.outdoor_temperature', 'unit_of_measurement') }}

@@ -1,0 +1,16 @@
+source: https://community.home-assistant.io/t/add-target-label-to-entities-just-like-logbook-card/824750/1
+note: >-
+  Logbook card filtered by a label target. Dashboards have no label repair, and
+  a label ID is not an entity or area, so nothing is read.
+out_of_scope: >-
+  The dashboard repairs check entities, areas and actions. Floors and labels
+  on a dashboard have no repair.
+expect:
+  entities:
+    not_find: [doors]
+  areas:
+    not_find: [doors]
+---
+type: logbook
+target:
+  label_id: doors

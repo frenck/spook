@@ -1,0 +1,34 @@
+source: custom_components/spook/dashboard_extraction.py (_MATCHER_KEYS, #1514 and #1468)
+note: >-
+  An auto-entities card: the filter says which entities to pick, by area
+  pattern, domain and state, and names none. `this.entity_id` stands for
+  whichever matched. The fixed row in `options` and the one in `entities` are
+  real references.
+expect:
+  entities:
+    find: [sensor.battery_summary, binary_sensor.low_battery_alert]
+    not_find: [this.entity_id]
+  areas:
+    not_find: ["basement/*"]
+---
+type: custom:auto-entities
+card:
+  type: entities
+  title: Batteries
+entities:
+  - sensor.battery_summary
+filter:
+  include:
+    - area: basement/*
+      domain: sensor
+      attributes:
+        device_class: battery
+      options:
+        entity: this.entity_id
+        type: custom:template-entity-row
+    - options:
+        type: entities
+        entities:
+          - binary_sensor.low_battery_alert
+  exclude:
+    - state: unavailable

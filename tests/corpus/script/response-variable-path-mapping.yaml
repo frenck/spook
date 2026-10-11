@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/cant-open-image-from-notification-on-android/773261/1
+note: >-
+  A script that returns a file path as its response through a variable holding
+  a mapping, and a caller-style camera.snapshot using it. The path text is not
+  an entity.
+expect:
+  entities:
+    find: [camera.driveway]
+---
+alias: Driveway snapshot
+variables:
+  path: |
+    {{ {'value': '/media/security/driveway/snapshot.jpeg'} }}
+sequence:
+  - alias: Get image
+    continue_on_error: true
+    action: camera.snapshot
+    target:
+      entity_id: camera.driveway
+    data:
+      filename: "{{ path.value }}"
+  - stop: Done
+    response_variable: path

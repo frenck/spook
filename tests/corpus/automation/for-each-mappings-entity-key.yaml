@@ -1,0 +1,26 @@
+source: https://www.home-assistant.io/docs/scripts/#for-each
+note: >-
+  for_each over mappings where each item calls its entity `entity_id`. The
+  items are values handed to the loop, not steps, but a literal entity ID
+  under a reference key in them is still read.
+expect:
+  entities:
+    find: [light.kitchen, light.hallway]
+---
+alias: Evening lights
+triggers:
+  - trigger: sun
+    event: sunset
+actions:
+  - repeat:
+      for_each:
+        - entity_id: light.kitchen
+          brightness_pct: 60
+        - entity_id: light.hallway
+          brightness_pct: 30
+      sequence:
+        - action: light.turn_on
+          target:
+            entity_id: "{{ repeat.item.entity_id }}"
+          data:
+            brightness_pct: "{{ repeat.item.brightness_pct }}"

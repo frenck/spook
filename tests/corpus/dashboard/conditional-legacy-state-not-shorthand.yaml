@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/conditional-card-in-grid-card-with-tile-card-does-not-work/631882
+note: >-
+  Conditional card using the older shorthand without a condition key (entity
+  plus state_not, entity plus state) inside a grid. One condition checks a sun
+  state that can never happen, written to test the card.
+expect:
+  entities:
+    find: [fan.bedroom, sun.sun]
+---
+type: grid
+square: true
+cards:
+  - type: conditional
+    conditions:
+      - entity: fan.bedroom
+        state_not: unavailable
+    card:
+      type: tile
+      entity: fan.bedroom
+  - type: conditional
+    conditions:
+      - entity: sun.sun
+        state: foo
+    card:
+      type: tile
+      entity: sun.sun

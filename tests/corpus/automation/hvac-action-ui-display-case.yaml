@@ -1,0 +1,33 @@
+source: https://community.home-assistant.io/t/reliably-detecting-changes-in-hvac-state-from-idle-to-heating/957358
+note: >-
+  Boiler relay follows any radiator valve calling for heat. Typed by hand from the
+  dashboard labels, the trigger uses "Idle" and "Heating" while the hvac_action
+  attribute holds lowercase values. The suggested template selects over all climate
+  states by attribute.
+expect:
+  entities:
+    find: [climate.bedroom_valve, climate.kitchen_valve, switch.boiler_relay]
+  attributes:
+    find:
+      - climate.bedroom_valve: hvac_action
+---
+alias: Boiler on when a valve calls for heat
+triggers:
+  - trigger: state
+    entity_id:
+      - climate.bedroom_valve
+      - climate.kitchen_valve
+    attribute: hvac_action
+    from: Idle
+    to: Heating
+  - trigger: template
+    value_template: >-
+      {{ states.climate | selectattr('attributes.hvac_action', 'eq', 'heating') | list | count > 0 }}
+conditions:
+  - condition: state
+    entity_id: switch.boiler_relay
+    state: "off"
+actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.boiler_relay

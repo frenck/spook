@@ -1,0 +1,25 @@
+source: https://www.home-assistant.io/dashboards/picture-glance/
+note: >-
+  Picture glance with camera_image, a state_image mapping keyed by state, and
+  entity rows with their own tap action. The image paths are not entities.
+expect:
+  entities:
+    find: [camera.driveway, binary_sensor.driveway_motion, light.driveway, light.porch]
+  services:
+    find: [light.toggle]
+---
+type: picture-glance
+title: Driveway
+camera_image: camera.driveway
+state_image:
+  "on": /local/driveway_on.jpg
+  "off": /local/driveway_off.jpg
+entity: binary_sensor.driveway_motion
+entities:
+  - light.driveway
+  - entity: light.porch
+    tap_action:
+      action: perform-action
+      perform_action: light.toggle
+      target:
+        entity_id: light.porch

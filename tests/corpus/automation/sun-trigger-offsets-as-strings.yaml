@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/led-controller-how-to-set-the-brightness/749502/1
+note: >-
+  Sun triggers with offsets as plain seconds and as a negative time string.
+  Home Assistant's own reading adds sun.sun for every sun trigger.
+expect:
+  entities:
+    find: [sun.sun]
+  triggers:
+    find: [sun]
+---
+alias: Porch lights around sunset
+triggers:
+  - trigger: sun
+    event: sunset
+    offset: "60"
+  - trigger: sun
+    event: sunset
+    offset: "-01:00:00"
+conditions:
+  - condition: sun
+    before: sunrise
+    before_offset: "-00:30:00"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.porch

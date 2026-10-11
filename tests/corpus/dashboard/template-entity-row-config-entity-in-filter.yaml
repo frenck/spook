@@ -1,0 +1,46 @@
+source: https://github.com/bacco007/HomeAssistantConfig/blob/master/ui/popup/updates.yaml
+note: >-
+  Fold entity row whose head counts group members with expand(), and an
+  auto-entities filter on group membership whose options render rows with
+  templates over config.entity, the row's own entity.
+expect:
+  entities:
+    find: [sensor.pending_updates]
+    not_find: [config.entity]
+---
+type: vertical-stack
+cards:
+  - type: custom:bubble-card
+    card_type: pop-up
+    hash: "#updates"
+    name: Updates
+    icon: mdi:update
+    entity: sensor.pending_updates
+  - type: entities
+    show_header_toggle: false
+    entities:
+      - type: custom:fold-entity-row
+        head:
+          type: custom:template-entity-row
+          name: Core updates
+          icon: mdi:home-assistant
+          state: >-
+            {{ expand('group.core_updates') | selectattr('state', 'eq', 'on') | list | count }}
+        entities:
+          - type: custom:auto-entities
+            card:
+              type: custom:fold-entity-row
+              head:
+                type: section
+                label: Available
+            show_empty: true
+            filter:
+              include:
+                - group: group.core_updates
+                  state: "on"
+                  options:
+                    type: custom:template-entity-row
+                    name: >-
+                      {{ state_attr(config.entity, 'friendly_name').split(':', 1)[0] }}
+                    state: "New: {{ state_attr(config.entity, 'latest_version') }}"
+                    secondary: "Current: {{ state_attr(config.entity, 'installed_version') }}"

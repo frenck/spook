@@ -1,0 +1,26 @@
+source: https://github.com/frenck/spook/issues/1338
+note: >-
+  A custom notifier action that takes a list of legacy notify service names in
+  its payload. Those are action names inside data, not entity references. In
+  a house that has those notify actions the entity repair drops them; the
+  corpus house has no notify actions, so they show up in the snapshot here.
+expect:
+  entities:
+    find: [binary_sensor.washing_machine_running]
+  services:
+    find: [notifier_hub.send]
+---
+alias: Washing machine done
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.washing_machine_running
+    from: "on"
+    to: "off"
+actions:
+  - action: notifier_hub.send
+    data:
+      title: Laundry
+      message: The washing machine finished
+      notify:
+        - notify.mobile_app_phone
+        - notify.living_room_tv

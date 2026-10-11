@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/i-need-to-find-the-name-by-user-attribute/896858/2
+note: >-
+  device_attr and is_device_attr called with a device registry ID literal.
+  The device repair reads device IDs out of templates already, through
+  device_entities(); these two take the same kind of literal.
+expect:
+  devices:
+    find: [8f1a3b7c9d2e4f60a1b2c3d4e5f60718]
+---
+alias: Remote battery check
+triggers:
+  - trigger: time
+    at: "09:00:00"
+conditions:
+  - condition: template
+    value_template: "{{ is_device_attr('8f1a3b7c9d2e4f60a1b2c3d4e5f60718', 'manufacturer', 'IKEA of Sweden') }}"
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        {{ device_attr('8f1a3b7c9d2e4f60a1b2c3d4e5f60718', 'name_by_user') }}
+        needs a look.

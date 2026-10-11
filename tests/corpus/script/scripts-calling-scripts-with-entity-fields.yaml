@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/pass-variables-across-scripts/966726/1
+note: >-
+  One script calling another with a speaker passed as plain field data, and an
+  AI task with entity_id inside data. Field data shaped like an entity ID is
+  read; here both really are entities.
+expect:
+  entities:
+    find: [media_player.kitchen_voice, ai_task.google_ai_task]
+---
+alias: Say hello
+sequence:
+  - action: ai_task.generate_data
+    data:
+      task_name: Prompt
+      instructions: Say hello to the family.
+      entity_id: ai_task.google_ai_task
+    response_variable: response
+  - action: script.speak_on
+    data:
+      device: media_player.kitchen_voice
+      message: "{{ response.data }}"

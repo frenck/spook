@@ -1,0 +1,31 @@
+source: https://community.home-assistant.io/t/setting-variables-in-choose-blocks-of-automations/256587
+note: >-
+  An automation level variable overwritten inside a choose branch and used after the
+  choose, where the inner value no longer applies. Variable named message_text.
+expect:
+  services:
+    find: [notify.phone_owner]
+---
+id: weekday_message
+alias: Weekday message
+trigger:
+  - platform: time
+    at: "07:00:00"
+variables:
+  message_text: "--"
+action:
+  - choose:
+      - conditions:
+          - condition: time
+            weekday:
+              - mon
+        sequence:
+          - variables:
+              message_text: a Monday
+    default:
+      - variables:
+          message_text: another day
+  - service: notify.phone_owner
+    data:
+      title: Weekday
+      message: "{{ message_text }}"

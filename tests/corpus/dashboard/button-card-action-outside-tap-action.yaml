@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/action-call-service-not-firing-the-service/812485
+note: >-
+  Button card with action, service and service_data at the card root instead of
+  under tap_action, so a tap only toggled. The option value is an input select
+  option that happens to look like an entity ID; it is payload, not a reference.
+expect:
+  entities:
+    find: [input_select.game_room_scene]
+    not_find: [switch.game_room_relax_scene]
+---
+type: custom:button-card
+entity: input_select.game_room_scene
+action: call-service
+service: input_select.select_option
+service_data:
+  option: switch.game_room_relax_scene
+target:
+  entity_id:
+    - input_select.game_room_scene

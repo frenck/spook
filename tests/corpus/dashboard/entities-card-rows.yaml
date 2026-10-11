@@ -1,0 +1,33 @@
+source: tests/test_dashboard_extraction.py::test_full_dashboard_walk
+note: >-
+  An entities card on its own, with every kind of row: a bare entity ID, a
+  row with options, an attribute row, a section and a button row that
+  performs an action. Rows without an entity name none.
+expect:
+  entities:
+    find:
+      - light.kitchen
+      - sensor.outdoor_temperature
+      - climate.living_room
+      - script.goodnight
+  services:
+    find: [script.goodnight]
+---
+type: entities
+title: Downstairs
+entities:
+  - light.kitchen
+  - entity: sensor.outdoor_temperature
+    name: Outside
+    secondary_info: last-changed
+  - type: attribute
+    entity: climate.living_room
+    attribute: current_temperature
+  - type: section
+    label: Scripts
+  - type: button
+    name: Goodnight
+    entity: script.goodnight
+    tap_action:
+      action: perform-action
+      perform_action: script.goodnight

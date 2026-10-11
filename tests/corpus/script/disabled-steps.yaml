@@ -1,0 +1,37 @@
+source: tests/ectoplasms/script/repairs/test_unknown_entity_references.py (parked wait_template, #1804)
+note: >-
+  Steps parked with `enabled: false`, including a parked wait template and a
+  parked condition step. What only they name, call or check is left out.
+out_of_scope: >-
+  A step, trigger or condition parked with `enabled: false` does nothing, so
+  what only it names is left out on purpose.
+expect:
+  entities:
+    find: [media_player.kitchen]
+    not_find: [media_player.old_speaker, input_boolean.old_flag]
+  services:
+    find: [media_player.volume_set]
+    not_find: [tts.old_service]
+  states:
+    not_find:
+      - input_boolean.old_flag: "on"
+  devices:
+    not_find: [0123456789abcdef0123456789abcdef]
+---
+alias: Announce
+sequence:
+  - condition: state
+    entity_id: input_boolean.old_flag
+    state: "on"
+    enabled: false
+  - wait_template: "{{ is_state('media_player.old_speaker', 'idle') }}"
+    enabled: false
+  - action: tts.old_service
+    enabled: false
+    target:
+      device_id: 0123456789abcdef0123456789abcdef
+  - action: media_player.volume_set
+    target:
+      entity_id: media_player.kitchen
+    data:
+      volume_level: 0.4

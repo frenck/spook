@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/automations-correct-method-of-self-referencing-current-automation-in-yaml/918991
+note: >-
+  Self rate limiting with the automation's own last_changed through
+  states[this.entity_id]. The first attempt in the thread nested a template
+  inside a template, which Home Assistant refuses as a syntax error, so the
+  automation never loads; only the working form is here. Neither names an
+  entity literally.
+expect:
+  entities:
+    find: [binary_sensor.water_leak_kitchen]
+    not_find: [this.entity_id]
+---
+alias: Leak alert
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.water_leak_kitchen
+    to: "on"
+conditions:
+  - condition: template
+    value_template: >-
+      {{ (now() - states[this.entity_id].last_changed).total_seconds() > 300 }}
+actions:
+  - action: notify.notify
+    data:
+      message: Water detected in the kitchen.

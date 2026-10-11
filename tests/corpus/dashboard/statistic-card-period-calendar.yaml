@@ -1,0 +1,15 @@
+source: https://www.home-assistant.io/dashboards/statistic/
+note: >-
+  Statistic card with a calendar period offset and a stat type. `period`
+  holds a nested mapping, none of it a reference.
+expect:
+  entities:
+    find: [sensor.energy_consumption]
+---
+type: statistic
+entity: sensor.energy_consumption
+stat_type: change
+period:
+  calendar:
+    period: month
+    offset: -1

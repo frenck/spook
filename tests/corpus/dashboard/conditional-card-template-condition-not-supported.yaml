@@ -1,0 +1,36 @@
+source: https://community.home-assistant.io/t/getting-a-wildcard-value-in-a-state-value-in/669845
+note: >-
+  Nested conditional cards where the inner one tries a template condition, which
+  dashboard conditions do not support. One attempt passes the bare domain sensor
+  to state_attr; neither the domain nor the template is a dashboard reference.
+expect:
+  entities:
+    find: [sensor.waste_days_until_pickup, input_boolean.waste_reminder, sensor.waste_next_type]
+---
+type: conditional
+conditions:
+  - condition: numeric_state
+    entity: sensor.waste_days_until_pickup
+    below: 2
+    above: -1
+  - condition: state
+    entity: input_boolean.waste_reminder
+    state: "on"
+card:
+  type: vertical-stack
+  cards:
+    - type: conditional
+      conditions:
+        - condition: state
+          entity: sensor.waste_next_type
+          state: paper
+      card:
+        type: markdown
+        content: Put the paper bin out.
+    - type: conditional
+      conditions:
+        - condition: template
+          value_template: "{{ 'garden' in state_attr('sensor', 'waste_next_type') }}"
+      card:
+        type: markdown
+        content: Put the garden bin out.

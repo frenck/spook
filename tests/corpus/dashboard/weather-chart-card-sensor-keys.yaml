@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/which-is-the-best-weather-integration-for-australia/308146/19
+note: >-
+  A weather card taking local sensors under short keys of its own (temp,
+  humid, press, windspeed, winddir). The weather entity is read.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+expect:
+  entities:
+    find: [weather.home]
+    not_find: [sensor.outdoor_temperature, sensor.wind_direction]
+---
+type: custom:weather-chart-card
+entity: weather.home
+temp: sensor.outdoor_temperature
+humid: sensor.outdoor_humidity
+press: sensor.outdoor_pressure
+windspeed: sensor.wind_gust_speed
+winddir: sensor.wind_direction
+units:
+  pressure: hPa
+  speed: km/h

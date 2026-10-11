@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/create-automation-groups/653325/7
+note: >-
+  Season switch that toggles every automation carrying a label, plus
+  automation.trigger on another label with skip_condition. Label targets are
+  read by the label repair.
+expect:
+  labels:
+    find: [heating_program, constraint]
+---
+alias: Toggle heating program
+triggers:
+  - trigger: state
+    entity_id: sensor.season
+conditions: []
+actions:
+  - action: automation.toggle
+    target:
+      label_id: heating_program
+  - action: automation.trigger
+    data:
+      skip_condition: false
+    target:
+      label_id: constraint

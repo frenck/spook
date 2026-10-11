@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/creating-a-device-with-multiple-sensor-entities-via-mqtt-discovery/584372/5
+note: >-
+  MQTT discovery sent from an automation: the payload is a template, and the
+  value_template meant for the discovered sensor is escaped with raw so it is
+  not rendered now. Only trigger.topic is rendered; nothing is an entity.
+expect:
+  entities:
+    not_find: [sensor.value_json]
+---
+alias: Announce outdoor sensor
+triggers:
+  - trigger: mqtt
+    topic: rtl_433/+/outdoor
+actions:
+  - action: mqtt.publish
+    data:
+      topic: homeassistant/sensor/outdoor_temperature/config
+      retain: true
+      payload: >-
+        {
+          "name": "Outdoor temperature",
+          "state_topic": "{{ trigger.topic }}",
+          "unique_id": "outdoor_temperature_{{ trigger.topic.split('/')[1] }}",
+          "value_template": {% raw %}"{{ value_json.temperature_C }}"{% endraw %},
+          "unit_of_measurement": "°C"
+        }

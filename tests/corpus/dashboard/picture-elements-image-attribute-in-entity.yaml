@@ -1,0 +1,34 @@
+source: https://community.home-assistant.io/t/how-do-you-use-attribute-for-state-image-in-a-picture-card/262157/1
+note: >-
+  A floor plan wanting a different thermostat image while it heats, with the
+  `hvac_action` attribute glued to the entity ID of an image element. No
+  lookup ever finds that, so it is reported as not an entity ID. The first try,
+  on the entity itself, is a plain entity.
+expect:
+  not_entity_ids:
+    find: [climate.office.hvac_action]
+  entities:
+    find: [climate.office]
+    not_find: [climate.office.hvac_action]
+---
+type: picture-elements
+image: /local/floorplan.png
+elements:
+  - type: image
+    entity: climate.office
+    image: /local/thermostat.png
+    state_image:
+      heat: /local/thermostat_on.png
+      "off": /local/thermostat_off.png
+    style:
+      top: 28%
+      left: 48%
+  - type: image
+    entity: climate.office.hvac_action
+    image: /local/thermostat.png
+    state_image:
+      heating: /local/thermostat_on.png
+      idle: /local/thermostat_off.png
+    style:
+      top: 28%
+      left: 60%

@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/many-many-logs-from-homeassistant-helpers-template/983698/3
+note: >-
+  A raw block passes template text through unrendered: here it carries a
+  states() call for whatever receives the payload. Home Assistant does not
+  look that entity up in this automation, but reported by design: raw text
+  like this is nearly always a template rendered further on, an MQTT
+  discovery value_template for one, so it is a real, indirect reference.
+  Decided with the maintainer.
+expect:
+  entities:
+    find: [sensor.hallway_display_text]
+---
+alias: Push template to display
+triggers:
+  - trigger: homeassistant
+    event: start
+actions:
+  - action: mqtt.publish
+    data:
+      topic: display/hallway/template
+      payload: >-
+        {% raw %}{{ states('sensor.hallway_display_text') }}{% endraw %}

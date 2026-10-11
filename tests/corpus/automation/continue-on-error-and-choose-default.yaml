@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/continue-on-error-not-working/429947
+note: >-
+  continue_on_error on a step that may fail, and a choose whose default holds
+  the only call to a script. Actions in the default branch are read.
+expect:
+  services:
+    find: [shell_command.backup_config, script.backup_failed, notify.notify]
+---
+alias: Nightly backup
+triggers:
+  - trigger: time
+    at: "03:00:00"
+actions:
+  - action: shell_command.backup_config
+    continue_on_error: true
+    response_variable: backup
+  - choose:
+      - conditions: "{{ backup.returncode == 0 }}"
+        sequence:
+          - action: notify.notify
+            data:
+              message: Backup done
+    default:
+      - action: script.backup_failed

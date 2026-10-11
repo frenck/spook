@@ -1,0 +1,38 @@
+source: https://github.com/dwainscheeren/dwains-dashboard-addons/blob/for-dd-2.0/rooms/fan-control/page.yaml
+note: >-
+  Fan speed buttons still calling fan.set_speed with a speed in service_data,
+  an action core removed years ago in favour of percentages and presets. The
+  JavaScript state template reads a speed attribute that is gone too, of
+  the same fan the card names.
+expect:
+  services:
+    find: [fan.set_speed, fan.turn_off]
+  entities:
+    find: [fan.bedroom]
+---
+type: horizontal-stack
+cards:
+  - type: custom:button-card
+    entity: fan.bedroom
+    icon: mdi:fan
+    name: "Off"
+    tap_action:
+      action: call-service
+      service: fan.turn_off
+      service_data:
+        entity_id: fan.bedroom
+  - type: custom:button-card
+    entity: fan.bedroom
+    icon: mdi:fan
+    name: Low
+    tap_action:
+      action: call-service
+      service: fan.set_speed
+      service_data:
+        entity_id: fan.bedroom
+        speed: low
+    state:
+      - operator: template
+        value: >
+          [[[ return states['fan.bedroom'].attributes.speed === 'low' && states['fan.bedroom'].state === 'on'; ]]]
+        spin: true

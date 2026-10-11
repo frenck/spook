@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/seasonal-automation-management/742995/1
+note: >-
+  An input_select whose options are scene entity IDs, set by one action and
+  activated by the next. The option is plain action data shaped like an
+  entity ID, read as one; here it really is a scene.
+expect:
+  entities:
+    find: [scene.movie_night, input_select.active_scene]
+---
+alias: Movie mode
+triggers:
+  - trigger: state
+    entity_id: media_player.tv
+    to: playing
+actions:
+  - action: input_select.select_option
+    target:
+      entity_id: input_select.active_scene
+    data:
+      option: scene.movie_night
+  - action: scene.turn_on
+    target:
+      entity_id: "{{ states('input_select.active_scene') }}"

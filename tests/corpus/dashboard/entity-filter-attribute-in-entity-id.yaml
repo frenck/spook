@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/lovelace-cards-conditional-based-on-entitys-attribute/502426/4
+note: >-
+  Somebody tried to filter on an attribute by gluing it to the entity ID. No
+  lookup ever finds that, so it is reported as not an entity ID, with no guess
+  at the entity it was meant to be. Decided with the maintainer. The later fix
+  with state_filter attribute is the second card.
+expect:
+  entities:
+    find: [cover.bedroom_blind]
+    not_find: [cover.bedroom_blind.current_position]
+  not_entity_ids:
+    find: [cover.bedroom_blind.current_position]
+---
+type: vertical-stack
+cards:
+  - type: entity-filter
+    entities:
+      - cover.bedroom_blind.current_position
+    state_filter:
+      - 0
+    card:
+      type: entities
+  - type: entity-filter
+    entities:
+      - cover.bedroom_blind
+    state_filter:
+      - operator: "=="
+        value: 0
+        attribute: current_position
