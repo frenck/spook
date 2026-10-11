@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "Denna zon går inte att redigera: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Mängden {amount} passar inte {entity_id}, som rör sig i steg om {step}. Använd en multipel av {step}, eller utelämna mängden för att röra den ett steg."
+        },
+        "area_cannot_update": {
+            "message": "Området {area_id} kan inte ändras så: {error}."
+        },
+        "area_name_taken": {
+            "message": "Namnet {name} används redan av området {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Inget att uppdatera i området {area_id}: ange minst ett av {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Inget att uppdatera i enheten {device_id}: ange minst ett av {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Namnet {name} används redan av våningen {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Inget att uppdatera i våningen {floor_id}: ange minst ett av {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "De tidsblocken fungerar inte för {entity_id}: {error}. Ingenting har ändrats."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} är ett schema från din YAML-konfiguration, som Spook inte kan ändra. Redigera det i din konfiguration i stället."
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "Dessa sensorer är tillbaka, eller inställningarna pekar nu någon annanstans, sedan Spook tittade. Därför har ingenting rensats. Spook tittar igen av sig själv och uppdaterar denna reparation."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist kan inte skilja dessa åt: {name}",
+            "description": "Spook har hittat ett spöke bland dina röstassistenter 👻\n\nFöljande entiteter är exponerade för Assist, och alla svarar på namnet {name}:\n\n{entities}\n\nNär namnen är samma skiljer Assist dem bara åt efter område: det du nämner, eller det din röstsatellit står i. Några av dessa delar område, eller har inget område alls, så Assist kan inte välja ut dem med detta namn varifrån som helst. Att be om {name} misslyckas då, och ingenting säger vilka entiteter som står i vägen.\n\nFör att åtgärda detta, ge var och en ett eget namn eller alias, eller flytta dem till olika områden. Du kan ändra en entitets alias, och om Assist alls ser den, under [Exponerade entiteter](/config/voice-assistants/expose). Områden ställs in på [sidan Områden](/config/areas/dashboard).\n\nSpook 👻 Din polare."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering använder följande attribut, som deras entiteter inte har. Inte just nu, inte som något den sortens entitet erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{attributes}\n\n\n\nEn utlösare eller ett villkor som väntar på ett attribut som aldrig dyker upp utlöses aldrig, och säger inget om det. En mall som läser ett får ingenting. För att åtgärda detta, [redigera automatiseringen]({edit}) och använd ett attribut som entiteten har.\n\nSpook 👻 Din polare.",
+            "title": "Okända attribut används i: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering väntar på, eller kontrollerar, följande tillstånd, som deras entiteter aldrig har. Inte som något den sortens entitet kan vara, inte bland de alternativ entiteten erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{states}\n\n\n\nEn utlösare som väntar på ett tillstånd som aldrig kommer utlöses aldrig, ett villkor som kontrollerar ett uppfylls aldrig, och ingen av dem säger något om det. Tillstånd är skiftlägeskänsliga: `On` är inte `on`. För att åtgärda detta, [redigera automatiseringen]({edit}) och använd ett tillstånd som entiteten kan ha.\n\nSpook 👻 Din polare.",
+            "title": "Okända tillstånd används i: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering kontrollerar följande utlösar-ID:n, som ingen av dess egna utlösare har:\n\n{trigger_ids}\n\n\n\nEn kontroll av ett ID som ingen utlösare lämnar över blir alltid likadan: ett utlösarvillkor som frågar efter det uppfylls aldrig, så delen det skyddar körs aldrig, och ingenting säger något om det. Utlösar-ID:n är skiftlägeskänsliga, och en utlösare utan eget ID går efter sin plats i listan, räknat från `0`. För att åtgärda detta, [redigera automatiseringen]({edit}) och använd ID:t för en av dess utlösare, eller ge utlösaren det ID som automatiseringen frågar efter.\n\nSpook 👻 Din polare.",
+            "title": "Okända utlösar-ID:n används i: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nMedan han svävade runt hittade Spook följande kontrollpanel:\n\n[{dashboard}]({edit})\n\nDenna kontrollpanel visar eller kontrollerar följande attribut, som deras entiteter inte har. Inte just nu, inte som något den sortens entitet erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{attributes}\n\n\n\nEtt kort som visar ett attribut som aldrig dyker upp förblir tomt, och ett synlighetsvillkor eller filter som kontrollerar ett uppfylls aldrig. Ingen av dem säger något om det. För att åtgärda detta, [redigera kontrollpanelen]({edit}) och använd ett attribut som entiteten har.\n\nSpook 👻 Din polare.",
+            "title": "Okända attribut används i kontrollpanel: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nMedan han svävade runt hittade Spook följande kontrollpanel:\n\n[{dashboard}]({edit})\n\nDenna kontrollpanel kontrollerar följande tillstånd, som deras entiteter aldrig har. Inte som något den sortens entitet kan vara, inte bland de alternativ entiteten erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{states}\n\n\n\nEtt synlighetsvillkor eller filter som kontrollerar ett tillstånd som aldrig kommer uppfylls aldrig, och en bild inställd för ett visas aldrig. Ingen av dem säger något om det. Tillstånd är skiftlägeskänsliga: `On` är inte `on`. För att åtgärda detta, [redigera kontrollpanelen]({edit}) och använd ett tillstånd som entiteten kan ha.\n\nSpook 👻 Din polare.",
+            "title": "Okända tillstånd används i kontrollpanel: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nMedan han svävade runt hittade Spook följande kontrollpanel:\n\n[{dashboard}]({edit})\n\nDenna kontrollpanel navigerar till följande vyer, som inte finns:\n\n{paths}\n\n\n\nEn knapp eller ett kort som navigerar till någon av dessa öppnar i stället den första vyn i kontrollpanelen, utan att säga något. Det händer ofta när en vy har bytt namn, flyttats eller tagits bort. För att åtgärda felet, [redigera kontrollpanelen]({edit}) och peka dessa mot en vy som finns.\n\nSpook 👻 Din polare.",
+            "title": "Okända vyer navigeras till i kontrollpanel: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript använder följande attribut, som deras entiteter inte har. Inte just nu, inte som något den sortens entitet erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{attributes}\n\n\n\nEn utlösare eller ett villkor som väntar på ett attribut som aldrig dyker upp utlöses aldrig, och säger inget om det. En mall som läser ett får ingenting. För att åtgärda detta, [redigera skriptet]({edit}) och använd ett attribut som entiteten har.\n\nSpook 👻 Din polare.",
+            "title": "Okända attribut används i: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript väntar på, eller kontrollerar, följande tillstånd, som deras entiteter aldrig har. Inte som något den sortens entitet kan vara, inte bland de alternativ entiteten erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{states}\n\n\n\nEn utlösare som väntar på ett tillstånd som aldrig kommer utlöses aldrig, ett villkor som kontrollerar ett uppfylls aldrig, och ingen av dem säger något om det. Tillstånd är skiftlägeskänsliga: `On` är inte `on`. För att åtgärda detta, [redigera skriptet]({edit}) och använd ett tillstånd som entiteten kan ha.\n\nSpook 👻 Din polare.",
+            "title": "Okända tillstånd används i: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDenna mallhjälpare använder följande attribut, som deras entiteter inte har. Inte just nu, inte som något den sortens entitet erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{attributes}\n\n\n\nEn mall som läser ett attribut som aldrig dyker upp får ingenting, och ett villkor i någon av dess åtgärder som väntar på ett uppfylls aldrig. Ingen av dem säger något om det. För att åtgärda detta, [redigera mallhjälparen]({edit}) och använd ett attribut som entiteten har.\n\nSpook 👻 Din polare.",
+            "title": "Okända attribut används i mallhjälpare: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering har följande mallar, som aldrig kan uppfyllas, vad som än händer i ditt hem:\n\n{templates}\n\n\n\nEtt mallvillkor uppfylls bara när det renderar `true`, och en `wait_template` likaså, om den inte senare ändras till något som läses som sant. En mallutlösare utlöses när dess mall blir något som läses som sant, som `true`, `on`, `yes` eller `1`. Dessa mallar renderar alltid något annat, på grund av hur de är skrivna. De vanligaste orsakerna:\n\n- Citattecken runt mallen. Ett `>-`-block tar dem som text, så de hamnar i resultatet.\n- Inga mallavgränsare alls, så texten tas som den är.\n- YAML inklistrad i mallfältet.\n- En YAML-kommentar med `#` inuti Jinja, som Jinja skriver ut som text.\n- Ett villkor som renderar `on` i stället för `true`.\n\nIngenting säger något: villkoret uppfylls aldrig, väntan slutar bara vid sin tidsgräns, och utlösaren utlöses aldrig. För att åtgärda detta, [redigera automatiseringen]({edit}) och få mallen att rendera `true` när den ska uppfyllas.\n\nSpook 👻 Din polare.",
+            "title": "Mallar som aldrig kan uppfyllas i: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering ger sina åtgärder följande integrationsposter, som är okända för Home Assistant, eller tillhör en annan integration än den åtgärden frågar efter:\n\n{config_entries}\n\nHome Assistant vägrar dessa när steget körs. Det händer oftast efter att en integration har tagits bort och lagts till igen: den fick en ny integrationspost, med ett nytt ID.\n\nFör att åtgärda felet, [redigera automatiseringen]({edit}) och välj integrationsposten igen i dessa åtgärder.\n\nSpook 👻 Din polare.",
+            "title": "Okända integrationsposter används i: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering delar ut följande ikoner, som inte finns i de Material Design Icons som följer med Home Assistant:\n\n{icons}\n\n\n\nVar och en av dessa visas som en tom plats, utan ett ord. Detta händer ofta när en ikon har stavats fel, bytt namn eller tagits bort, eller valts från en nyare version av Material Design Icons än den som följer med Home Assistant. För att åtgärda felet, [redigera automatiseringen]({edit}) och ersätt dessa med ikoner som finns.\n\nSpook 👻 Din polare.",
+            "title": "Okända ikoner används i: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering nämner följande användare, som inte finns längre:\n\n{users}\n\n\n\nHome Assistant delar aldrig ut ett användar-ID två gånger, så dessa användare har tagits bort. En utlösare som väntar på någon av dem utlöses aldrig för dem, och en mall som jämför med någon av dem matchar aldrig, utan att säga något. För att åtgärda detta, [redigera automatiseringen]({edit}) och använd ID:t för en användare som finns, eller ta bort kontrollen.\n\nSpook 👻 Din polare.",
+            "title": "Borttagna användare nämns i: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nMedan han svävade runt hittade Spook följande kontrollpanel:\n\n[{dashboard}]({edit})\n\nDenna kontrollpanel använder följande ikoner, som inte finns i de Material Design Icons som följer med Home Assistant (version {version}):\n\n{icons}\n\n\n\nVar och en av dessa visas som en tom plats, utan ett ord. Detta händer ofta när en ikon har stavats fel, bytt namn eller tagits bort, eller valts från en nyare version av Material Design Icons än den som följer med Home Assistant. För att åtgärda felet, [redigera kontrollpanelen]({edit}) och ersätt dessa med ikoner som finns. Kontrollpanelens ikon i sidofältet ändras i inställningarna för dina kontrollpaneler.\n\nSpook 👻 Din polare.",
+            "title": "Okända ikoner används i kontrollpanel: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nMedan han svävade runt hittade Spook följande kontrollpanel:\n\n[{dashboard}]({edit})\n\nDenna kontrollpanel nämner följande användare, som inte finns längre:\n\n{users}\n\n\n\nHome Assistant delar aldrig ut ett användar-ID två gånger, så dessa användare har tagits bort. Ett kort, en bricka, en sektion eller en vy som bara visas för dem visas nu för ingen, utan att säga något. Ett undantag från en bekräftelse för dem gör ingenting längre. För att åtgärda detta, [redigera kontrollpanelen]({edit}) och välj de användare som ska se det, eller ta bort villkoret.\n\nSpook 👻 Din polare.",
+            "title": "Borttagna användare nämns i kontrollpanel: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nMedan han svävade runt hittade Spook följande kontrollpanel:\n\n[{dashboard}]({edit})\n\nDenna kontrollpanel använder följande teman, som inte finns:\n\n{themes}\n\n\n\nEtt kort, en sektion eller en vy med något av dessa teman får standardutseendet i stället, utan att säga något. Det händer ofta när ett tema har bytt namn eller tagits bort. För att åtgärda felet, [redigera kontrollpanelen]({edit}) och välj ett tema som finns, eller lägg tillbaka temat.\n\nSpook 👻 Din polare.",
+            "title": "Okända teman används i kontrollpanel: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript har följande mallar, som aldrig kan uppfyllas, vad som än händer i ditt hem:\n\n{templates}\n\n\n\nEtt mallvillkor uppfylls bara när det renderar `true`, och en `wait_template` likaså, om den inte senare ändras till något som läses som sant. En mallutlösare i en `wait_for_trigger` utlöses när dess mall blir något som läses som sant, som `true`, `on`, `yes` eller `1`. Dessa mallar renderar alltid något annat, på grund av hur de är skrivna. De vanligaste orsakerna:\n\n- Citattecken runt mallen. Ett `>-`-block tar dem som text, så de hamnar i resultatet.\n- Inga mallavgränsare alls, så texten tas som den är.\n- YAML inklistrad i mallfältet.\n- En YAML-kommentar med `#` inuti Jinja, som Jinja skriver ut som text.\n- Ett villkor som renderar `on` i stället för `true`.\n\nIngenting säger något: villkoret uppfylls aldrig, och väntan slutar bara vid sin tidsgräns. För att åtgärda detta, [redigera skriptet]({edit}) och få mallen att rendera `true` när den ska uppfyllas.\n\nSpook 👻 Din polare.",
+            "title": "Mallar som aldrig kan uppfyllas i: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript ger sina åtgärder följande integrationsposter, som är okända för Home Assistant, eller tillhör en annan integration än den åtgärden frågar efter:\n\n{config_entries}\n\nHome Assistant vägrar dessa när steget körs. Det händer oftast efter att en integration har tagits bort och lagts till igen: den fick en ny integrationspost, med ett nytt ID.\n\nFör att åtgärda felet, [redigera skriptet]({edit}) och välj integrationsposten igen i dessa åtgärder.\n\nSpook 👻 Din polare.",
+            "title": "Okända integrationsposter används i: {script}"
+        },
+        "script_unknown_icons": {
+            "title": "Okända ikoner används i: {script}",
+            "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript använder eller delar ut följande ikoner, som inte finns i de Material Design Icons som följer med Home Assistant:\n\n{icons}\n\n\n\nVar och en av dessa visas som en tom plats, utan ett ord. Detta händer ofta när en ikon har stavats fel, bytt namn eller tagits bort, eller valts från en nyare version av Material Design Icons än den som följer med Home Assistant. För att åtgärda felet, [redigera skriptet]({edit}) och ersätt dessa med ikoner som finns.\n\nSpook 👻 Din polare."
+        },
+        "script_unknown_user_references": {
+            "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript nämner följande användare, som inte finns längre:\n\n{users}\n\n\n\nHome Assistant delar aldrig ut ett användar-ID två gånger, så dessa användare har tagits bort. En mall som jämför med någon av dem matchar aldrig, och en utlösare som väntar på någon av dem utlöses aldrig för dem, utan att säga något. För att åtgärda detta, [redigera skriptet]({edit}) och använd ID:t för en användare som finns, eller ta bort kontrollen.\n\nSpook 👻 Din polare.",
+            "title": "Borttagna användare nämns i: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook har hittat ett spöke bland dina mallentiteter 👻\n\nMedan han svävade runt hittade Spook följande mallentitet:\n\n{name} (`{entity_id}`)\n\nDenna mallentitet använder följande attribut, som deras entiteter inte har. Inte just nu, inte som något den sortens entitet erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{attributes}\n\n\n\nEn mall som läser ett attribut som aldrig dyker upp får ingenting, och en utlösare eller ett villkor som väntar på ett utlöses eller uppfylls aldrig. Ingen av dem säger något om det.\n\nDenna mallentitet är konfigurerad i din YAML-konfiguration. För att åtgärda detta, redigera den i avsnittet `template:` i din konfiguration, använd ett attribut som entiteten har, och ladda om dina mallentiteter.\n\nSpook 👻 Din polare.",
+            "title": "Okända attribut används i mallentitet: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook har hittat ett spöke bland dina mallentiteter 👻\n\nMedan han svävade runt hittade Spook följande mallentitet:\n\n{name} (`{entity_id}`)\n\nDess konfiguration refererar till följande entiteter som är okända för Home Assistant:\n\n{entities}\n\n\n\nDetta händer ofta när en entitet har bytt namn eller tagits bort. En mall som läser en får ingenting, och en utlösare som väntar på en utlöses aldrig.\n\nDenna mallentitet är konfigurerad i din YAML-konfiguration. För att åtgärda felet, redigera den i avsnittet `template:` i din konfiguration, referera till existerande entiteter, och ladda om dina mallentiteter.\n\nSpook 👻 Din polare.",
+            "title": "Okända entiteter används i mallentitet: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook har hittat ett spöke bland dina mallentiteter 👻\n\nMedan han svävade runt hittade Spook följande mallentitet:\n\n{name} (`{entity_id}`)\n\nDen refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\n\n\nDetta händer ofta när en leverantör av åtgärder har tagits bort, eller när ett skript har bytt namn eller tagits bort.\n\nDenna mallentitet är konfigurerad i din YAML-konfiguration. För att åtgärda felet, redigera den i avsnittet `template:` i din konfiguration, använd existerande åtgärder, och ladda om dina mallentiteter.\n\nSpook 👻 Din polare.",
+            "title": "Okända åtgärder används i mallentitet: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook har hittat ett spöke bland dina inställningar 👻\n\nFöljande ikoner finns inte i de Material Design Icons som följer med Home Assistant (version {version}):\n\n{icons}\n\n\n\nVar och en av dessa visas som en tom plats, utan ett ord. Detta händer ofta när en ikon har stavats fel, bytt namn eller tagits bort, eller valts från en nyare version av Material Design Icons än den som följer med Home Assistant. För att åtgärda felet, ge var och en av dessa en ikon som finns: en entitet, hjälpare eller zon i dess inställningar, ett område, en våning eller en etikett i inställningarna för dina områden, etiketter och zoner, en kategori där den används, och `customize:` i din konfiguration.\n\nSpook 👻 Din polare.",
+            "title": "Okända ikoner i dina inställningar"
         }
     },
     "services": {
@@ -2667,6 +2794,170 @@
                     "description": "Aliasen att ställa in."
                 }
             }
+        },
+        "homeassistant_update_area": {
+            "name": "Uppdatera ett område",
+            "description": "Uppdaterar ett befintligt område direkt. Allt du utelämnar behåller det värde det redan hade. Alias och etiketter ersätter dem som området har. Våningen, ikonen, bilden och sensorerna kan tömmas genom att sättas till null.",
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID",
+                    "description": "ID:t för området som ska uppdateras."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Nytt namn för området."
+                },
+                "aliases": {
+                    "description": "Områdets alias. Ersätter dem det har, en tom lista tar bort alla.",
+                    "name": "Alias"
+                },
+                "floor_id": {
+                    "name": "Vånings-ID",
+                    "description": "ID:t för våningen som området ligger på."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ny ikon för området."
+                },
+                "picture": {
+                    "name": "Bild",
+                    "description": "URL:en eller sökvägen till en bild för området."
+                },
+                "labels": {
+                    "name": "Etiketter",
+                    "description": "ID:n för områdets etiketter. Ersätter dem det har, en tom lista tar bort alla."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperatursensor",
+                    "description": "Sensorn som mäter temperaturen i området."
+                },
+                "humidity_entity_id": {
+                    "name": "Fuktighetssensor",
+                    "description": "Sensorn som mäter luftfuktigheten i området."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Uppdatera en enhet",
+            "description": "Uppdaterar en befintlig enhet direkt. Allt du utelämnar behåller det värde det redan hade. Etiketter ersätter dem som enheten har. Namnet och området kan tömmas genom att sättas till null, vilket ger enheten tillbaka det namn dess integration gav den.",
+            "fields": {
+                "device_id": {
+                    "name": "Enhets-ID",
+                    "description": "ID:t för enheten som ska uppdateras. Inaktiverade enheter visas inte av Home Assistants enhetsväljare, använd YAML-läge för att ange deras ID."
+                },
+                "name_by_user": {
+                    "description": "Nytt namn för enheten.",
+                    "name": "Namn"
+                },
+                "area_id": {
+                    "name": "Områdes-ID",
+                    "description": "ID:t för området som enheten finns i."
+                },
+                "labels": {
+                    "name": "Etiketter",
+                    "description": "ID:n för enhetens etiketter. Ersätter dem den har, en tom lista tar bort alla."
+                },
+                "disabled_by": {
+                    "name": "Inaktiverad av",
+                    "description": "Sätt till user för att inaktivera enheten, eller till null för att aktivera den igen. Detta fungerar som åtgärderna inaktivera och aktivera en enhet gör."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Uppdatera en våning",
+            "fields": {
+                "floor_id": {
+                    "name": "Vånings-ID",
+                    "description": "ID:t för våningen som ska uppdateras."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Nytt namn för våningen."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Våningens alias. Ersätter dem den har, en tom lista tar bort alla."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ny ikon för våningen."
+                },
+                "level": {
+                    "name": "Nivå",
+                    "description": "Den nivå som våningen är på i ditt hem."
+                }
+            },
+            "description": "Uppdaterar en befintlig våning direkt. Allt du utelämnar behåller det värde det redan hade. Alias ersätter dem som våningen har. Ikonen och nivån kan tömmas genom att sättas till null."
+        },
+        "schedule_create": {
+            "name": "Skapa ett schema",
+            "description": "Skapar en ny schemahjälpare direkt, på under de tidsblock som anges för varje veckodag. Returnerar entitets-ID:t för det nya schemat.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på det nya schemat."
+                },
+                "schedule_id": {
+                    "name": "Schemats entitets-ID",
+                    "description": "Entitets-ID:t för det nya schemat. Prefixet schedule. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för det nya schemat."
+                },
+                "monday": {
+                    "name": "Måndag",
+                    "description": "När schemat är på, på måndagar: en lista med tidsblock, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Utelämnas den är det av hela dagen."
+                },
+                "tuesday": {
+                    "name": "Tisdag",
+                    "description": "När schemat är på, på tisdagar: en lista med tidsblock, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Utelämnas den är det av hela dagen."
+                },
+                "wednesday": {
+                    "name": "Onsdag",
+                    "description": "När schemat är på, på onsdagar: en lista med tidsblock, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Utelämnas den är det av hela dagen."
+                },
+                "thursday": {
+                    "name": "Torsdag",
+                    "description": "När schemat är på, på torsdagar: en lista med tidsblock, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Utelämnas den är det av hela dagen."
+                },
+                "friday": {
+                    "name": "Fredag",
+                    "description": "När schemat är på, på fredagar: en lista med tidsblock, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Utelämnas den är det av hela dagen."
+                },
+                "saturday": {
+                    "name": "Lördag",
+                    "description": "När schemat är på, på lördagar: en lista med tidsblock, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Utelämnas den är det av hela dagen."
+                },
+                "sunday": {
+                    "name": "Söndag",
+                    "description": "När schemat är på, på söndagar: en lista med tidsblock, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Utelämnas den är det av hela dagen."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Ta bort ett schema",
+            "description": "Tar bort schemahjälpare som skapats i gränssnittet. Scheman som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Det eller de scheman som ska tas bort."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Ställ in tidsblocken för en dag",
+            "description": "Ersätter tidsblocken för en eller flera dagar i en schemahjälpare som skapats i gränssnittet. Scheman som är inställda i YAML kan inte ändras av Spook.",
+            "fields": {
+                "day": {
+                    "name": "Dag",
+                    "description": "Den eller de veckodagar som tidsblocken ska ställas in för."
+                },
+                "blocks": {
+                    "name": "Tidsblock",
+                    "description": "De tidsblock då schemat är på under de dagarna, vart och ett med en från- och en till-tid, och valfri data som visas som attribut medan det är på. Dessa ersätter de block dagarna hade. En tom lista lämnar dagarna av hela dagen."
+                }
+            }
         }
     },
     "conditions": {
@@ -3085,6 +3376,17 @@
             "options": {
                 "bottom": "Längst ner",
                 "top": "Högst upp"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Måndag",
+                "tuesday": "Tisdag",
+                "wednesday": "Onsdag",
+                "thursday": "Torsdag",
+                "friday": "Fredag",
+                "saturday": "Lördag",
+                "sunday": "Söndag"
             }
         }
     },
