@@ -226,7 +226,9 @@ class _ChargeCurrent(NumberEntity):
         self.async_write_ha_state()
 
 
-async def _setup_charger(hass: HomeAssistant, *, every_action: bool = False) -> None:
+async def _setup_charger(
+    hass: HomeAssistant, *, every_action: bool = False
+) -> SpookServiceManager | None:
     """Set up an integration with a charge current number, and both actions.
 
     With every action, the way Spook sets them up: all its action modules
@@ -265,10 +267,11 @@ async def _setup_charger(hass: HomeAssistant, *, every_action: bool = False) -> 
         manager = SpookServiceManager(hass)
         await manager.async_setup()
         await hass.async_block_till_done()
-        return
+        return manager
 
     increment.SpookService(hass).async_register()
     decrement.SpookService(hass).async_register()
+    return None
 
 
 async def _run_from_the_frontend(
@@ -371,9 +374,14 @@ async def test_stepping_with_every_spook_action_loaded(
     The helper then called a module, and every step failed with "'module'
     object is not callable". #1944, and #1926 before it.
     """
-    await _setup_charger(hass, every_action=True)
-
-    response = await _run_from_the_frontend(hass, hass_ws_client, service, data)
+    manager = await _setup_charger(hass, every_action=True)
+    assert manager is not None
+    try:
+        response = await _run_from_the_frontend(hass, hass_ws_client, service, data)
+    finally:
+        # Unloaded like Spook unloads it: setting up every action puts Spook's
+        # strings in a translation cache the other tests share.
+        manager.async_on_unload()
 
     assert response["success"], response
     assert float(hass.states.get("number.charge_current").state) == expected
