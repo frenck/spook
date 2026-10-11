@@ -748,6 +748,12 @@ Deletes schedule helpers made in the UI, without a trip to the helpers page. _#c
 
 `schedule.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=schedule.delete), [documentation](integrations/schedule#delete-a-schedule) 📚
 
+## Schedule: Set the time blocks of a day
+
+Replaces the time blocks of one or more days of a schedule, without opening its dialog. _#weekplanner_
+
+`schedule.set_day`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=schedule.set_day), [documentation](integrations/schedule#set-the-time-blocks-of-a-day) 📚
+
 ## Select: Select random option
 
 This action selects a random option from the list of options of a select entity. Optionally this can be limited to a set of given options. _#random_
