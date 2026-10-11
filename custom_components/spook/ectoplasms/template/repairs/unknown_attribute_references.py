@@ -18,6 +18,11 @@ from ....reference_extraction import (
 )
 from ....repairs import AbstractSpookRepair
 from ...spook.triggers.state_changed import async_watched_entity_ids
+from ..configuration import (
+    EVENT_TEMPLATE_RELOADED,
+    YamlTemplateEntity,
+    async_get_yaml_template_entities,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -44,12 +49,15 @@ def _finding_line(finding: UnknownAttribute) -> str:
 
 
 class SpookRepair(AbstractSpookRepair):
-    """Spook repair finds unknown attributes used in template helpers.
+    """Spook repair finds unknown attributes used in template entities.
 
     A template helper made in the UI keeps its templates and actions in the
-    options of its config entry. A template reading an attribute its entity
-    never has gets nothing, and a condition in one of its actions waiting on
-    one never passes. Neither says so.
+    options of its config entry. A template entity from the `template:`
+    section of the configuration keeps them on the entity, and a trigger
+    based one also has the triggers, conditions and actions of its section.
+    A template reading an attribute its entity never has gets nothing, and a
+    trigger or condition waiting on one never fires or passes. None of them
+    says so.
 
     What an entity has is only known at runtime, and the last place to look
     is the recorder. So, like the automation and script repairs: not right at
@@ -61,6 +69,7 @@ class SpookRepair(AbstractSpookRepair):
     repair = "template_unknown_attribute_references"
     inspect_events = {
         EVENT_COMPONENT_LOADED,
+        EVENT_TEMPLATE_RELOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = "template"
@@ -70,11 +79,13 @@ class SpookRepair(AbstractSpookRepair):
     inspect_interval = timedelta(days=1)
 
     _named: dict[str, tuple[Mapping[str, Any], NamedReferences]]
+    _named_in_yaml: dict[str, tuple[YamlTemplateEntity, NamedReferences]]
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
         super().__init__(hass)
         self._named = {}
+        self._named_in_yaml = {}
 
     def _references_in(self, entry: ConfigEntry) -> NamedReferences:
         """Return what the options of a helper name, and of which entities.
@@ -89,14 +100,30 @@ class SpookRepair(AbstractSpookRepair):
         self._named[entry.entry_id] = named
         return named[1]
 
-    def _pairs_in(self, entry: ConfigEntry) -> set[tuple[str, str]]:
-        """Return the (entity ID, attribute) pairs the options of a helper name.
+    def _references_in_yaml(
+        self, template_entity: YamlTemplateEntity
+    ) -> NamedReferences:
+        """Return what a template entity from YAML names, and of which entities.
+
+        Read once per configuration, remembered against what it was read
+        from: a reload hands every template entity a new one.
+        """
+        named = self._named_in_yaml.get(template_entity.entity_id)
+        if named is None or not named[0].is_read_from(template_entity):
+            named = (
+                template_entity,
+                extract_attribute_references_from_config(template_entity.config),
+            )
+        self._named_in_yaml[template_entity.entity_id] = named
+        return named[1]
+
+    def _pairs_in(self, references: NamedReferences) -> set[tuple[str, str]]:
+        """Return the (entity ID, attribute) pairs a configuration names.
 
         Resolved every round rather than remembered: what a registry ID stands
         for moves when the entity is renamed, and so does what Spook's own
         trigger in a wait for a trigger watches.
         """
-        references = self._references_in(entry)
         pairs = {
             (entity_id, attribute)
             for reference, attribute in references.pairs
@@ -128,7 +155,20 @@ class SpookRepair(AbstractSpookRepair):
             # Reading the options is CPU-bound, and a helper with actions can
             # be big: the event loop gets a turn after each.
             await asyncio.sleep(0)
-            named[entry.entry_id] = (entry, entry.options, self._pairs_in(entry))
+            named[entry.entry_id] = (
+                entry,
+                entry.options,
+                self._pairs_in(self._references_in(entry)),
+            )
+
+        named_in_yaml: dict[str, tuple[YamlTemplateEntity, set[tuple[str, str]]]]
+        named_in_yaml = {}
+        for template_entity in async_get_yaml_template_entities(self.hass):
+            await asyncio.sleep(0)
+            named_in_yaml[template_entity.entity_id] = (
+                template_entity,
+                self._pairs_in(self._references_in_yaml(template_entity)),
+            )
 
         # Whatever is gone is forgotten.
         self._named = {
@@ -136,9 +176,22 @@ class SpookRepair(AbstractSpookRepair):
             for entry_id, remembered in self._named.items()
             if entry_id in named
         }
+        self._named_in_yaml = {
+            entity_id: remembered
+            for entity_id, remembered in self._named_in_yaml.items()
+            if entity_id in named_in_yaml
+        }
 
         unknown = await async_unknown_attributes(
-            self.hass, {pair for _, _, pairs in named.values() for pair in pairs}
+            self.hass,
+            {
+                pair
+                for pairs in (
+                    *(pairs for _, _, pairs in named.values()),
+                    *(pairs for _, pairs in named_in_yaml.values()),
+                )
+                for pair in pairs
+            },
         )
         by_pair = {
             (finding.entity_id, finding.attribute): finding for finding in unknown
@@ -154,10 +207,9 @@ class SpookRepair(AbstractSpookRepair):
             ):
                 continue
 
-            if not (findings := [by_pair[pair] for pair in pairs & by_pair.keys()]):
+            if not (findings := _findings(pairs, by_pair)):
                 continue
 
-            findings.sort(key=lambda finding: (finding.entity_id, finding.attribute))
             self.async_create_issue(
                 issue_id=entry.entry_id,
                 references=[
@@ -173,3 +225,42 @@ class SpookRepair(AbstractSpookRepair):
                     "edit": "/config/helpers",
                 },
             )
+
+        # The same goes for a template entity reloaded meanwhile.
+        current = {
+            template_entity.entity_id: template_entity
+            for template_entity in async_get_yaml_template_entities(self.hass)
+        }
+        for template_entity, pairs in named_in_yaml.values():
+            if (
+                now := current.get(template_entity.entity_id)
+            ) is None or not now.is_read_from(template_entity):
+                continue
+
+            if not (findings := _findings(pairs, by_pair)):
+                continue
+
+            self.async_create_issue(
+                issue_id=template_entity.entity_id,
+                references=[
+                    _reference(finding.entity_id, finding.attribute)
+                    for finding in findings
+                ],
+                # There is no editor for YAML, so the issue says where to look.
+                translation_key=f"{self.repair}_yaml",
+                translation_placeholders={
+                    "attributes": "\n".join(map(_finding_line, findings)),
+                    "name": template_entity.name,
+                    "entity_id": template_entity.entity_id,
+                },
+            )
+
+
+def _findings(
+    pairs: set[tuple[str, str]], by_pair: dict[tuple[str, str], UnknownAttribute]
+) -> list[UnknownAttribute]:
+    """Return what of the pairs one template names is unknown, in order."""
+    return sorted(
+        (by_pair[pair] for pair in pairs & by_pair.keys()),
+        key=lambda finding: (finding.entity_id, finding.attribute),
+    )
