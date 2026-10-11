@@ -5,8 +5,10 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.components.script import DOMAIN as SCRIPT_DOMAIN
 from homeassistant.const import ATTR_ENTITY_ID, CONF_ENABLED
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.service import async_get_all_descriptions
 
 from .const import LOGGER
 from .entity_filtering import (
@@ -624,4 +626,155 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
     if isinstance(raw_config, dict):
         unknown |= extract_not_entity_ids_from_config(hass, raw_config)
 
+    return unknown
+
+
+# The selector an action describes a config entry field with. Home Assistant
+# offers nothing but config entries in it, of the one integration it names.
+_CONFIG_ENTRY_SELECTOR = "config_entry"
+
+# What each action takes a config entry in: the field, and the integration the
+# entry must be of, when its selector names one.
+type ConfigEntryFields = dict[str, dict[str, str | None]]
+
+
+def _collect_config_entry_fields(fields: Any, found: dict[str, str | None]) -> None:
+    """Collect the fields of an action description that take a config entry."""
+    if not isinstance(fields, dict):
+        return
+
+    for name, field in fields.items():
+        if not isinstance(field, dict):
+            continue
+
+        # A section only groups fields in the editor. Its fields still go
+        # into the data like any other.
+        if "fields" in field and "selector" not in field:
+            _collect_config_entry_fields(field["fields"], found)
+            continue
+
+        selector = field.get("selector")
+        if not isinstance(selector, dict) or _CONFIG_ENTRY_SELECTOR not in selector:
+            continue
+
+        config = selector[_CONFIG_ENTRY_SELECTOR]
+        integration = config.get("integration") if isinstance(config, dict) else None
+        found[name] = integration if isinstance(integration, str) else None
+
+
+async def async_get_config_entry_fields(hass: HomeAssistant) -> ConfigEntryFields:
+    """Return the actions that take a config entry, and in which fields.
+
+    Read from what each action says about itself, never guessed from the
+    name of a field: an integration is free to call a field `entry_id` and
+    mean something else by it. Only actions that exist right now describe
+    themselves, so an action of an integration that is not loaded is not
+    judged here. The unknown action repair is about that one.
+
+    A script's fields are left out. The selector there only tells the editor
+    what to offer, and the script takes whatever it is handed.
+    """
+    # Home Assistant reads every services.yaml for this, and checks what each
+    # one filters on by importing that integration. Whatever goes wrong in
+    # there should cost this check only, not every repair checking a draft.
+    try:
+        descriptions = await async_get_all_descriptions(hass)
+    # pylint: disable-next=broad-exception-caught
+    except Exception as exc:  # noqa: BLE001
+        LOGGER.debug("Failed to read what the actions take: %s", exc)
+        return {}
+
+    fields: ConfigEntryFields = {}
+    for domain, services in descriptions.items():
+        if domain == SCRIPT_DOMAIN:
+            continue
+
+        for service, description in services.items():
+            found: dict[str, str | None] = {}
+            _collect_config_entry_fields(description.get("fields"), found)
+            if found:
+                fields[f"{domain}.{service}"] = found
+
+    return fields
+
+
+def _config_entry_data(config: dict[str, Any], field: str) -> Any:
+    """Return what an action hands over in this field, if it is known now.
+
+    Home Assistant merges `data_template` over `data`, so that one wins. Data
+    that is a template as a whole is only known when it runs.
+    """
+    for key in _DATA_KEYS_LAST_FIRST:
+        data = config.get(key)
+        if isinstance(data, str):
+            return None
+        if isinstance(data, dict) and field in data:
+            return data[field]
+    return None
+
+
+def _collect_config_entry_references(
+    config: Any,
+    fields: ConfigEntryFields,
+    found: set[tuple[str, str | None]],
+    *,
+    in_values: bool = False,
+) -> None:
+    """Collect the config entries the actions in a configuration name."""
+    if isinstance(config, list):
+        for item in config:
+            _collect_config_entry_references(item, fields, found, in_values=in_values)
+        return
+
+    if not isinstance(config, dict):
+        return
+
+    # Below a key that holds values, nothing is an action, whatever its shape.
+    if not in_values and (action := _get_action_service(config)) is not None:
+        for field, integration in fields.get(action.lower(), {}).items():
+            value = _config_entry_data(config, field)
+            # Only a literal is judged. A template is whatever it renders to,
+            # and an empty value lets some integrations pick their only entry.
+            if isinstance(value, str) and value and not is_template_string(value):
+                found.add((value, integration))
+
+    for key, value in config.items():
+        _collect_config_entry_references(
+            value, fields, found, in_values=in_values or key in VALUE_KEYS
+        )
+
+
+def extract_config_entry_references_from_config(
+    config: Any, fields: ConfigEntryFields
+) -> set[tuple[str, str | None]]:
+    """Return the config entries an automation or script hands its actions.
+
+    Each with the integration the action wants it to be of, when it says.
+    Disabled steps do nothing, and text that is only shown is never run, so
+    neither is read.
+    """
+    found: set[tuple[str, str | None]] = set()
+    _collect_config_entry_references(
+        without_never_rendered(without_disabled_steps(config)), fields, found
+    )
+    return found
+
+
+def unknown_config_entries(
+    hass: HomeAssistant, config: Any, fields: ConfigEntryFields
+) -> set[str]:
+    """Return the config entries an automation or script names that go nowhere.
+
+    That is one that does not exist, and one of another integration than the
+    action asks for. Home Assistant refuses both, but only when the step runs.
+    An entry that exists but is not loaded right now is runtime state, not a
+    mistake in the configuration, so that one is left alone.
+    """
+    unknown: set[str] = set()
+    for entry_id, integration in extract_config_entry_references_from_config(
+        config, fields
+    ):
+        entry = hass.config_entries.async_get_entry(entry_id)
+        if entry is None or (integration is not None and entry.domain != integration):
+            unknown.add(entry_id)
     return unknown
