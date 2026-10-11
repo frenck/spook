@@ -123,6 +123,8 @@ Scripts are inspected for the use of {term}`entities <entity>`. If a script uses
 Spook found an issue with a script that is using non-existing entities.
 ```
 
+An entity spelled out after `states`, like `states.light.kitchen.state`, is not checked when that `states` is not Home Assistant's: when a template defines its own with a macro or `{% set %}`, or the script gives the name a meaning of its own, as a variable, a field or a response variable. Used as a filter, like `'light.kitchen' | states`, it still is Home Assistant's, and still checked. An entity ID in quotes is checked wherever it is, whatever it is handed to.
+
 To resolve the raised issue, you can either remove the reference to the non-existing entity ID or fix the referenced entity ID. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown referenced actions

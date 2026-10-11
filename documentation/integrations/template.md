@@ -37,6 +37,8 @@ Template entities from YAML are inspected the same way: every template they have
 
 Each template entity gets an issue of its own. When the triggers of a section name an entity that does not exist, every template entity in that section gets an issue, since none of them updates. What only a disabled trigger or step names is listed as such. `this` and `trigger` are only known while running, so whatever they point at is not checked.
 
+An entity spelled out after `states`, like `states.light.kitchen.state`, is not checked when that `states` is not Home Assistant's: when a template defines its own with a macro or `{% set %}`, or a template entity has a variable of that name. Used as a filter, like `'light.kitchen' | states`, it still is Home Assistant's, and still checked. An entity ID in quotes is checked wherever it is, whatever it is handed to.
+
 There is no editor for YAML, so the repair issue names the template entity and its entity ID. To resolve the issue, edit it under `template:` in your configuration and reload your template entities. Spook removes the repair issue once it is fixed.
 
 ### Unknown referenced actions

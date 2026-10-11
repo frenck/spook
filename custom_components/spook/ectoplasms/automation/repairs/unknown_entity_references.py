@@ -18,6 +18,7 @@ from ....reference_extraction import (
     VALUE_KEYS,
     core_references,
     event_payload_keys_to_leave_alone,
+    names_given_to_templates,
     threshold_entities,
     without_never_rendered,
 )
@@ -51,7 +52,10 @@ async def extract_template_entities_from_automation_entity(
     # A description, a name or a field example is shown, never rendered: an
     # entity in an example template there is not one the automation uses.
     return await async_extract_entities_from_config(
-        hass, without_never_rendered(config), known_services
+        hass,
+        without_never_rendered(config),
+        known_services,
+        names_given_to_templates(config),
     )
 
 
@@ -59,6 +63,7 @@ async def extract_entities_from_automation_config(
     hass: HomeAssistant,
     config: dict[str, Any],
     known_services: set[str] | None = None,
+    shadowed: frozenset[str] | None = None,
 ) -> set[str]:
     """Extract entity IDs from automation configuration.
 
@@ -66,6 +71,10 @@ async def extract_entities_from_automation_config(
     building it flattens every service Home Assistant has and the walk below
     passes a lot of template strings. See
     `action_extraction.async_extract_entities_from_action_config`.
+
+    The names the automation gives its templates, like a variable called
+    `states`, are taken from all of it here, before walking its parts,
+    unless ``shadowed`` already holds them.
     """
     entities = set()
 
@@ -74,13 +83,15 @@ async def extract_entities_from_automation_config(
 
     if known_services is None:
         known_services = async_get_all_services(hass)
+    if shadowed is None:
+        shadowed = names_given_to_templates(config)
 
     # Extract entities from trigger config
     for key in ("trigger", "triggers"):
         if key in config:
             entities.update(
                 await extract_entities_from_trigger_config(
-                    hass, config[key], known_services
+                    hass, config[key], known_services, shadowed=shadowed
                 )
             )
 
@@ -89,7 +100,7 @@ async def extract_entities_from_automation_config(
         if key in config:
             entities.update(
                 await extract_entities_from_condition_config(
-                    hass, config[key], known_services
+                    hass, config[key], known_services, shadowed=shadowed
                 )
             )
 
@@ -98,7 +109,10 @@ async def extract_entities_from_automation_config(
         if key in config:
             entities.update(
                 await async_extract_entities_from_action_config(
-                    hass, config[key], known_services=known_services
+                    hass,
+                    config[key],
+                    known_services=known_services,
+                    shadowed=shadowed,
                 )
             )
 
@@ -111,6 +125,7 @@ async def _entities_from_reference_fields(
     known_services: set[str],
     *,
     in_values: bool = False,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entities from the config keys that name a reference.
 
@@ -125,7 +140,7 @@ async def _entities_from_reference_fields(
         if key in config:
             entities.update(
                 await async_extract_entities_from_value(
-                    hass, config[key], known_services=known_services
+                    hass, config[key], known_services=known_services, shadowed=shadowed
                 )
             )
     return entities
@@ -137,6 +152,7 @@ async def extract_entities_from_trigger_config(
     known_services: set[str] | None = None,
     *,
     _in_values: bool = False,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs from trigger configuration."""
     entities = set()
@@ -151,7 +167,11 @@ async def extract_entities_from_trigger_config(
         for item in config:
             entities.update(
                 await extract_entities_from_trigger_config(
-                    hass, item, known_services, _in_values=_in_values
+                    hass,
+                    item,
+                    known_services,
+                    _in_values=_in_values,
+                    shadowed=shadowed,
                 )
             )
         return entities
@@ -161,7 +181,7 @@ async def extract_entities_from_trigger_config(
 
     entities.update(
         await _entities_from_reference_fields(
-            hass, config, known_services, in_values=_in_values
+            hass, config, known_services, in_values=_in_values, shadowed=shadowed
         )
     )
 
@@ -179,6 +199,7 @@ async def extract_entities_from_trigger_config(
                     value,
                     known_services,
                     _in_values=_in_values or key in VALUE_KEYS,
+                    shadowed=shadowed,
                 )
             )
 
@@ -219,6 +240,7 @@ async def extract_entities_from_condition_config(
     known_services: set[str] | None = None,
     *,
     _in_values: bool = False,
+    shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
     """Extract entity IDs from condition configuration."""
     entities = set()
@@ -233,7 +255,11 @@ async def extract_entities_from_condition_config(
         for item in config:
             entities.update(
                 await extract_entities_from_condition_config(
-                    hass, item, known_services, _in_values=_in_values
+                    hass,
+                    item,
+                    known_services,
+                    _in_values=_in_values,
+                    shadowed=shadowed,
                 )
             )
         return entities
@@ -243,7 +269,7 @@ async def extract_entities_from_condition_config(
 
     entities.update(
         await _entities_from_reference_fields(
-            hass, config, known_services, in_values=_in_values
+            hass, config, known_services, in_values=_in_values, shadowed=shadowed
         )
     )
 
@@ -256,6 +282,7 @@ async def extract_entities_from_condition_config(
                     value,
                     known_services,
                     _in_values=_in_values or key in VALUE_KEYS,
+                    shadowed=shadowed,
                 )
             )
 
@@ -307,7 +334,10 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
             self.hass, config, self._known_services
         )
         named |= await async_extract_entities_from_config(
-            self.hass, without_never_rendered(config), self._known_services
+            self.hass,
+            without_never_rendered(config),
+            self._known_services,
+            names_given_to_templates(config),
         )
         return named
 

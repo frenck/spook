@@ -15,6 +15,7 @@ from ....action_extraction import (
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
     core_references,
+    names_given_to_templates,
     without_never_rendered,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
@@ -51,7 +52,10 @@ async def extract_template_entities_from_script_entity(
     # A description, a name or a field example is shown, never rendered: an
     # entity in an example template there is not one the script uses.
     return await async_extract_entities_from_config(
-        hass, without_never_rendered(config), known_services
+        hass,
+        without_never_rendered(config),
+        known_services,
+        names_given_to_templates(config),
     )
 
 
@@ -96,14 +100,21 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         exactly what only those name.
         """
         steps = config.get("sequence") or []
+        # Its fields and variables, like one called `states`, are the script's
+        # own wherever the steps use them.
+        shadowed = names_given_to_templates(config)
         named = await async_extract_entities_from_action_config(
             self.hass,
             # A single step can be written without a list.
             [steps] if isinstance(steps, dict) else steps,
             known_services=self._known_services,
+            shadowed=shadowed,
         )
         named |= await async_extract_entities_from_config(
-            self.hass, without_never_rendered(config), self._known_services
+            self.hass,
+            without_never_rendered(config),
+            self._known_services,
+            shadowed,
         )
         return named
 
@@ -122,6 +133,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
                     self.hass,
                     raw_config.get("sequence") or [],
                     known_services=self._known_services,
+                    shadowed=names_given_to_templates(raw_config),
                 )
             )
 
