@@ -131,6 +131,26 @@ def _bulleted(items: Iterable[str]) -> str:
     return "\n".join(f"- `{item}`" for item in items)
 
 
+def format_config_entry_references(
+    hass: HomeAssistant, entry_ids: Iterable[str]
+) -> str:
+    """Return the markdown list of config entries an action cannot use.
+
+    One that exists was reported for being of another integration than the
+    action asks for, so it says whose it is. That is usually the clue: the ID
+    was copied over from an action of that other integration.
+    """
+    lines = []
+    for entry_id in entry_ids:
+        if (entry := hass.config_entries.async_get_entry(entry_id)) is None:
+            lines.append(f"- `{entry_id}`")
+        else:
+            lines.append(
+                f"- `{entry_id}` (belongs to {entry.title}, of `{entry.domain}`)"
+            )
+    return "\n".join(lines)
+
+
 def _fingerprint(references: Iterable[str]) -> str:
     r"""Return a short digest of what a finding is about.
 

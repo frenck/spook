@@ -21,6 +21,9 @@ REPAIR_DOCUMENTATION: Final = {
     "automation_unknown_condition_references": (
         "automation#unknown-referenced-conditions"
     ),
+    "automation_unknown_config_entry_references": (
+        "automation#unknown-referenced-integration-entries"
+    ),
     "automation_unknown_device_references": "automation#unknown-referenced-devices",
     "automation_unknown_entity_references": "automation#unknown-referenced-entities",
     "automation_unknown_floor_references": "automation#unknown-referenced-floors",
@@ -59,6 +62,9 @@ REPAIR_DOCUMENTATION: Final = {
     "script_unknown_area_references": "script#unknown-referenced-areas",
     "script_unknown_attribute_references": "script#unknown-referenced-attributes",
     "script_unknown_condition_references": "script#unknown-referenced-conditions",
+    "script_unknown_config_entry_references": (
+        "script#unknown-referenced-integration-entries"
+    ),
     "script_unknown_device_references": "script#unknown-referenced-devices",
     "script_unknown_entity_references": "script#unknown-referenced-entities",
     "script_unknown_floor_references": "script#unknown-referenced-floors",

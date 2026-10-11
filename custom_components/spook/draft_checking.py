@@ -18,6 +18,8 @@ from homeassistant.components import automation, script
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.script import Script
 
+from .action_extraction import ActionDescriptionsUnavailableError
+from .const import LOGGER
 from .dashboard_extraction import (
     extract_actions_from_dashboard_node,
     extract_areas_from_dashboard_node,
@@ -28,6 +30,7 @@ from .ectoplasms.automation.repairs import (
     unknown_area_references as automation_areas,
     unknown_attribute_references as automation_attributes,
     unknown_condition_references as automation_conditions,
+    unknown_config_entry_references as automation_config_entries,
     unknown_device_references as automation_devices,
     unknown_entity_references as automation_entities,
     unknown_floor_references as automation_floors,
@@ -42,6 +45,7 @@ from .ectoplasms.script.repairs import (
     unknown_area_references as script_areas,
     unknown_attribute_references as script_attributes,
     unknown_condition_references as script_conditions,
+    unknown_config_entry_references as script_config_entries,
     unknown_device_references as script_devices,
     unknown_entity_references as script_entities,
     unknown_floor_references as script_floors,
@@ -82,6 +86,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         automation_areas,
         automation_attributes,
         automation_conditions,
+        automation_config_entries,
         automation_devices,
         automation_entities,
         automation_floors,
@@ -95,6 +100,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         script_areas,
         script_attributes,
         script_conditions,
+        script_config_entries,
         script_devices,
         script_entities,
         script_floors,
@@ -197,8 +203,15 @@ async def _async_check_with_repairs(
         # The two hooks a repair runs on every entity in a round, in the
         # order it runs them. Protected, as they are not meant to be called
         # from outside a round; this is the one round that has no house.
-        # pylint: disable-next=protected-access
-        await repair._async_setup_inspection()  # noqa: SLF001
+        # Reading what every action takes can fail. That should cost this
+        # one check only, not the rest of the draft.
+        try:
+            # pylint: disable-next=protected-access
+            await repair._async_setup_inspection()  # noqa: SLF001
+        except ActionDescriptionsUnavailableError as exc:
+            LOGGER.debug("Skipped %s on a draft: %s", repair.repair, exc.__cause__)
+            continue
+
         # pylint: disable-next=protected-access
         found = await repair._async_compute_unknown_references(draft)  # noqa: SLF001
 

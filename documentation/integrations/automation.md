@@ -275,6 +275,16 @@ Spook found an issue with an automation that is using a non-existing device.
 
 To resolve the raised issue, you can either remove the reference to the non-existing device or fix the referenced device. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown referenced integration entries
+
+Automations are inspected for the integration entries they hand their actions. Plenty of integrations have actions that ask which of their integration entries to use, like Nord Pool's prices or Mealie's recipes. If an automation hands one an integration entry that does not exist, Spook will raise a repair issue. The same goes for an integration entry of another integration than the action asks for, which happens when a step is copied from an action of another integration. The repairs issue raised will contain the name of the automation and the integration entries that go nowhere.
+
+Home Assistant only refuses these when the step runs, so an automation that runs once in a while fails exactly then. This usually happens after an integration was removed and added again: that gives it a new integration entry, with a new ID, and every action still holds the old one.
+
+Spook only looks at the fields an action itself says take an integration entry, never at a field because of its name. Only actions that are there right now say what they take, so the actions of an integration that is not loaded are not checked. An integration entry that exists but is not loaded right now, because it is disabled or failed to set up, is not reported either: that is the state of the integration, not a mistake in the automation. An integration entry worked out while running, from a template or a variable, is not checked, and neither is a disabled step.
+
+To resolve the raised issue, edit the automation and pick the integration entry again in these actions. Spook will automatically remove the repair issue once the issue is fixed.
+
 ### Unknown referenced entities
 
 Automations are inspected for the use of {term}`entities <entity>`. If an automation is using an {term}`entity ID <entity id>` that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the entity ID that is referenced but not found.

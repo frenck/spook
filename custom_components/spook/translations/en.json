@@ -896,6 +896,10 @@
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following conditions, which cannot be provided by any integration available to Home Assistant:\n\n{conditions}\n\n\n\nThis often happens when the integration providing a condition was removed. To fix this error, [edit the automation]({edit}) and remove the use of these unavailable conditions, or restore the integration providing them.\n\nSpook 👻 Your homie.",
       "title": "Unknown conditions used in: {automation}"
     },
+    "automation_unknown_config_entry_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation hands its actions the following integration entries, which are unknown to Home Assistant, or belong to another integration than the action asks for:\n\n{config_entries}\n\nHome Assistant refuses these when the step runs. This usually happens after an integration was removed and added again: it got a new integration entry, with a new ID.\n\nTo fix this error, [edit the automation]({edit}) and pick the integration entry again in these actions.\n\nSpook 👻 Your homie.",
+      "title": "Unknown integration entries used in: {automation}"
+    },
     "automation_unknown_device_references": {
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
       "title": "Unknown devices used in: {automation}"
@@ -1189,6 +1193,10 @@
     "script_unknown_condition_references": {
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following conditions, which cannot be provided by any integration available to Home Assistant:\n\n{conditions}\n\n\n\nThis often happens when the integration providing a condition was removed. To fix this error, [edit the script]({edit}) and remove the use of these unavailable conditions, or restore the integration providing them.\n\nSpook 👻 Your homie.",
       "title": "Unknown conditions used in: {script}"
+    },
+    "script_unknown_config_entry_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script hands its actions the following integration entries, which are unknown to Home Assistant, or belong to another integration than the action asks for:\n\n{config_entries}\n\nHome Assistant refuses these when the step runs. This usually happens after an integration was removed and added again: it got a new integration entry, with a new ID.\n\nTo fix this error, [edit the script]({edit}) and pick the integration entry again in these actions.\n\nSpook 👻 Your homie.",
+      "title": "Unknown integration entries used in: {script}"
     },
     "script_unknown_device_references": {
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
