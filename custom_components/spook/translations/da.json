@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Bruger tilføjet",
             "description": "Udløses, når nogen får et login til Home Assistant. Brugere, som Home Assistant opretter til sine egne integrationer, er udeladt."
+        },
+        "state_changed": {
+            "description": "Udløses, når en entitet skifter tilstand, for alt, hvad et mål dækker: entiteter, enheder, områder, etager og labels. Indsnævr det efter domæne, integration eller enhedsklasse, eller lad målet stå tomt, og lad dem vælge entiteterne blandt alt. Udelad ting igen, og bestem, hvor længe en ændring skal holde, før den tæller.",
+            "fields": {
+                "domain": {
+                    "name": "Domæner",
+                    "description": "Kun entiteter fra disse domæner, som binary_sensor eller cover. Uden et mål vælges de blandt alt."
+                },
+                "integration": {
+                    "name": "Integrationer",
+                    "description": "Kun entiteter fra disse integrationer, som zha eller hue. Uden et mål vælges de blandt alt."
+                },
+                "config_entry": {
+                    "name": "Integrationspost",
+                    "description": "Kun entiteter fra denne integrationspost. Uden et mål vælges de blandt alt."
+                },
+                "device_class": {
+                    "name": "Enhedsklasser",
+                    "description": "Kun entiteter med disse enhedsklasser, som door eller window. Uden et mål vælges de blandt alt."
+                },
+                "exclude_target": {
+                    "name": "Udelad",
+                    "description": "Entiteter, enheder, områder, etager eller labels, der skal udelades. Alt i dem udelades, også de diagnostiske entiteter."
+                },
+                "exclude_domain": {
+                    "name": "Udelad domæner",
+                    "description": "Udelad entiteter fra disse domæner. Står der intet i Udelad, gælder det for alt, hvad målet dækker."
+                },
+                "exclude_integration": {
+                    "name": "Udelad integrationer",
+                    "description": "Udelad entiteter fra disse integrationer."
+                },
+                "exclude_config_entry": {
+                    "name": "Udelad integrationspost",
+                    "description": "Udelad entiteterne fra denne integrationspost."
+                },
+                "exclude_device_class": {
+                    "name": "Udelad enhedsklasser",
+                    "description": "Udelad entiteter med disse enhedsklasser."
+                },
+                "attribute": {
+                    "name": "Attribut",
+                    "description": "Følg denne attribut i stedet for tilstanden."
+                },
+                "from": {
+                    "name": "Fra",
+                    "description": "Kun ændringer, der kommer fra en af disse tilstande."
+                },
+                "not_from": {
+                    "name": "Ikke fra",
+                    "description": "Kun ændringer, der ikke kommer fra en af disse tilstande."
+                },
+                "to": {
+                    "name": "Til",
+                    "description": "Kun ændringer, der går til en af disse tilstande."
+                },
+                "not_to": {
+                    "name": "Ikke til",
+                    "description": "Kun ændringer, der ikke går til en af disse tilstande."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignorér utilgængelig og ukendt",
+                    "description": "Udelad ændringer fra eller til utilgængelig og ukendt, så en genstart af Home Assistant eller routeren ikke udløser for alt. Slå fra for at bruge dem i Fra eller Til."
+                },
+                "attribute_changes": {
+                    "description": "Udløs også, når kun en attribut er ændret, og tilstanden er den samme. Gør intet, mens en attribut følges.",
+                    "name": "Tæl attributændringer"
+                },
+                "behavior": {
+                    "name": "Adfærd",
+                    "description": "Udløs for hver entitet, for den første i målet, der når dertil, eller når de alle er der. Første og alle kræver Til eller Ikke til. Mens utilgængelig og ukendt ignoreres, er entiteter i de tilstande ikke med."
+                },
+                "for": {
+                    "name": "Varighed",
+                    "description": "Udløs først, når den nye tilstand har holdt så længe. Enhver anden ændring imellem afblæser det."
+                },
+                "blip_tolerance": {
+                    "name": "Tolerance for blink",
+                    "description": "Mens der ventes på Varighed, starter ventetiden ikke forfra, hvis entiteten bliver utilgængelig eller ukendt og kommer tilbage som før inden for denne tid. Virker kun sammen med Varighed."
+                },
+                "delay": {
+                    "name": "Forsinkelse",
+                    "description": "Vent så længe, før der udløses, uanset hvad der sker imellem. Som en forsinkelse i starten af handlingerne."
+                }
+            },
+            "name": "Spooks tilstandsudløser"
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Nederst",
                 "top": "Øverst"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Mandag",
+                "tuesday": "Tirsdag",
+                "wednesday": "Onsdag",
+                "thursday": "Torsdag",
+                "friday": "Fredag",
+                "saturday": "Lørdag",
+                "sunday": "Søndag"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Varighed",
                     "description": "Hvor længe der skal ventes efter sidste kørsel, før denne betingelse er opfyldt igen."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Entitet er tilgængelig",
+            "description": "Opfyldt, når en entitet er til at tale med: alt andet end utilgængelig eller ukendt. Til en højttaler eller et smartstik, der ikke altid har strøm.",
+            "fields": {
+                "behavior": {
+                    "name": "Adfærd",
+                    "description": "Om det er nok, at en af entiteterne er der, eller om de alle skal være det."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Denne zone kan ikke redigeres: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Mængden {amount} passer ikke til {entity_id}, som bevæger sig i trin på {step}. Brug et multiplum af {step}, eller udelad mængden for at flytte ét trin."
+        },
+        "area_cannot_update": {
+            "message": "Området {area_id} kan ikke ændres sådan: {error}."
+        },
+        "area_name_taken": {
+            "message": "Navnet {name} er allerede taget af området {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Intet at opdatere på området {area_id}: angiv mindst én af {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Intet at opdatere på enheden {device_id}: angiv mindst én af {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Navnet {name} er allerede taget af etagen {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Intet at opdatere på etagen {floor_id}: angiv mindst én af {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Disse tidsblokke virker ikke for {entity_id}: {error}. Intet er blevet ændret."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} er en tidsplan fra din YAML-konfiguration, som Spook ikke kan ændre. Redigér den i din konfiguration i stedet."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Disse sensorer er tilbage, eller indstillingerne peger nu et andet sted hen, siden Spook kiggede. Derfor er intet ryddet. Spook kigger igen af sig selv og opdaterer denne reparation."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist kan ikke skelne disse fra hinanden: {name}",
+            "description": "Spook har fundet et spøgelse i dine stemmeassistenter 👻\n\nFølgende entiteter er eksponeret for Assist, og de svarer alle på navnet {name}:\n\n{entities}\n\nNår navne er ens, skelner Assist kun mellem dem efter område: det, du nævner, eller det, din stemmesatellit står i. Nogle af disse deler et område eller har slet intet område, så Assist kan ikke finde dem ud fra dette navn, uanset hvor du er. At spørge efter {name} mislykkes så, og intet fortæller, hvilke entiteter der står i vejen.\n\nFor at rette dette skal du give hver af dem sit eget navn eller alias, eller flytte dem til forskellige områder. Du kan ændre en entitets aliasser, og om Assist overhovedet ser den, under [Eksponerede entiteter](/config/voice-assistants/expose). Områder indstilles på [siden Områder](/config/areas/dashboard).\n\nSpook 👻 er din ven."
+        },
+        "automation_unknown_attribute_references": {
+            "title": "Ukendte attributter brugt i: {automation}",
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering bruger følgende attributter, som deres entiteter ikke har. Hverken lige nu, som noget den slags entitet tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{attributes}\n\n\n\nEn udløser eller betingelse, der venter på en attribut, som aldrig dukker op, slår aldrig til, og du får intet at vide. En skabelon, der læser en, får intet. For at rette dette skal du [redigere automatiseringen]({edit}) og bruge en attribut, som entiteten har.\n\nSpook 👻 er din ven."
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering venter på eller tjekker følgende tilstande, som deres entiteter aldrig er i. Hverken som noget den slags entitet kan være, blandt de muligheder entiteten tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{states}\n\n\n\nEn udløser, der venter på en tilstand, som aldrig kommer, udløses aldrig, en betingelse, der tjekker for en, er aldrig opfyldt, og ingen af dem siger det. Tilstande skelner mellem store og små bogstaver: `On` er ikke `on`. For at rette dette skal du [redigere automatiseringen]({edit}) og bruge en tilstand, som entiteten kan være i.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte tilstande brugt i: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Ukendte udløser-ID'er brugt i: {automation}",
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering tjekker for følgende udløser-ID'er, som ingen af dens egne udløsere har:\n\n{trigger_ids}\n\n\n\nEt tjek for et ID, som ingen udløser afleverer, falder altid ud på samme måde: en udløserbetingelse, der spørger efter det, er aldrig opfyldt, så den del, den beskytter, kører aldrig, og intet fortæller dig det. Udløser-ID'er skelner mellem store og små bogstaver, og en udløser uden sit eget ID går under sin plads i listen, talt fra `0`. For at rette dette skal du [redigere automatiseringen]({edit}) og bruge ID'et for en af dens udløsere, eller give udløseren det ID, automatiseringen spørger efter.\n\nSpook 👻 er din ven."
+        },
+        "lovelace_unknown_attribute_references": {
+            "title": "Ukendte attributter brugt i betjeningspanelet: {dashboard}",
+            "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel viser eller tjekker følgende attributter, som deres entiteter ikke har. Hverken lige nu, som noget den slags entitet tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{attributes}\n\n\n\nEt kort, der viser en attribut, som aldrig dukker op, forbliver tomt, og en synlighedsbetingelse eller et filter, der tjekker en, er aldrig opfyldt. Ingen af dem siger det. For at rette dette skal du [redigere betjeningspanelet]({edit}) og bruge en attribut, som entiteten har.\n\nSpook 👻 er din ven."
+        },
+        "lovelace_unknown_state_references": {
+            "title": "Ukendte tilstande brugt i betjeningspanelet: {dashboard}",
+            "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel tjekker for følgende tilstande, som deres entiteter aldrig er i. Hverken som noget den slags entitet kan være, blandt de muligheder entiteten tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{states}\n\n\n\nEn synlighedsbetingelse eller et filter, der tjekker for en tilstand, som aldrig kommer, er aldrig opfyldt, og et billede, der er sat til en, vises aldrig. Ingen af dem siger det. Tilstande skelner mellem store og små bogstaver: `On` er ikke `on`. For at rette dette skal du [redigere betjeningspanelet]({edit}) og bruge en tilstand, som entiteten kan være i.\n\nSpook 👻 er din ven."
+        },
+        "lovelace_unknown_view_references": {
+            "title": "Ukendte visninger, der navigeres til i betjeningspanelet: {dashboard}",
+            "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel navigerer til følgende visninger, som ikke findes:\n\n{paths}\n\n\n\nEn knap eller et kort, der navigerer til en af dem, åbner i stedet den første visning i betjeningspanelet uden at sige det. Det sker ofte, når en visning er blevet omdøbt, flyttet eller fjernet. For at rette denne fejl skal du [redigere betjeningspanelet]({edit}) og pege dem på en visning, der findes.\n\nSpook 👻 er din ven."
+        },
+        "script_unknown_attribute_references": {
+            "title": "Ukendte attributter brugt i: {script}",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script bruger følgende attributter, som deres entiteter ikke har. Hverken lige nu, som noget den slags entitet tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{attributes}\n\n\n\nEn udløser eller betingelse, der venter på en attribut, som aldrig dukker op, slår aldrig til, og du får intet at vide. En skabelon, der læser en, får intet. For at rette dette skal du [redigere scriptet]({edit}) og bruge en attribut, som entiteten har.\n\nSpook 👻 er din ven."
+        },
+        "script_unknown_state_references": {
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script venter på eller tjekker følgende tilstande, som deres entiteter aldrig er i. Hverken som noget den slags entitet kan være, blandt de muligheder entiteten tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{states}\n\n\n\nEn udløser, der venter på en tilstand, som aldrig kommer, udløses aldrig, en betingelse, der tjekker for en, er aldrig opfyldt, og ingen af dem siger det. Tilstande skelner mellem store og små bogstaver: `On` er ikke `on`. For at rette dette skal du [redigere scriptet]({edit}) og bruge en tilstand, som entiteten kan være i.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte tilstande brugt i: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "title": "Ukendte attributter brugt i skabelonhjælper: {helper}",
+            "description": "Spook har fundet et spøgelse i dine skabelonhjælpere 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende skabelonhjælper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDenne skabelonhjælper bruger følgende attributter, som deres entiteter ikke har. Hverken lige nu, som noget den slags entitet tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{attributes}\n\n\n\nEn skabelon, der læser en attribut, som aldrig dukker op, får intet, og en betingelse i en af dens handlinger, der venter på en, er aldrig opfyldt. Ingen af dem siger det. For at rette dette skal du [redigere skabelonhjælperen]({edit}) og bruge en attribut, som entiteten har.\n\nSpook 👻 er din ven."
+        },
+        "automation_never_true_templates": {
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering har følgende skabeloner, som aldrig kan blive opfyldt, uanset hvad der sker i dit hjem:\n\n{templates}\n\n\n\nEn skabelonbetingelse er kun opfyldt, når den renderer `true`, og det samme gælder en `wait_template`, medmindre den senere skifter til noget, der læses som sandt. En skabelonudløser udløses, når dens skabelon skifter til noget, der læses som sandt, som `true`, `on`, `yes` eller `1`. Disse skabeloner renderer altid noget andet på grund af den måde, de er skrevet på. De almindelige årsager:\n\n- Anførselstegn omkring skabelonen. En `>-`-blok tager dem som tekst, så de ender i resultatet.\n- Slet ingen skabelonafgrænsere, så teksten tages, som den er.\n- YAML indsat i skabelonfeltet.\n- En YAML-`#`-kommentar inde i Jinja, som Jinja udskriver som tekst.\n- En betingelse, der renderer `on` i stedet for `true`.\n\nIntet fortæller dig det: betingelsen er aldrig opfyldt, ventetiden slutter kun ved sin timeout, og udløseren udløses aldrig. For at rette dette skal du [redigere automatiseringen]({edit}) og få skabelonen til at rendere `true`, når den skal være opfyldt.\n\nSpook 👻 er din ven.",
+            "title": "Skabeloner, der aldrig kan blive opfyldt, i: {automation}"
+        },
+        "script_never_true_templates": {
+            "title": "Skabeloner, der aldrig kan blive opfyldt, i: {script}",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script har følgende skabeloner, som aldrig kan blive opfyldt, uanset hvad der sker i dit hjem:\n\n{templates}\n\n\n\nEn skabelonbetingelse er kun opfyldt, når den renderer `true`, og det samme gælder en `wait_template`, medmindre den senere skifter til noget, der læses som sandt. En skabelonudløser i en `wait_for_trigger` udløses, når dens skabelon skifter til noget, der læses som sandt, som `true`, `on`, `yes` eller `1`. Disse skabeloner renderer altid noget andet på grund af den måde, de er skrevet på. De almindelige årsager:\n\n- Anførselstegn omkring skabelonen. En `>-`-blok tager dem som tekst, så de ender i resultatet.\n- Slet ingen skabelonafgrænsere, så teksten tages, som den er.\n- YAML indsat i skabelonfeltet.\n- En YAML-`#`-kommentar inde i Jinja, som Jinja udskriver som tekst.\n- En betingelse, der renderer `on` i stedet for `true`.\n\nIntet fortæller dig det: betingelsen er aldrig opfyldt, og ventetiden slutter kun ved sin timeout. For at rette dette skal du [redigere scriptet]({edit}) og få skabelonen til at rendere `true`, når den skal være opfyldt.\n\nSpook 👻 er din ven."
+        },
+        "automation_unknown_config_entry_references": {
+            "title": "Ukendte integrationsposter brugt i: {automation}",
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering giver sine handlinger følgende integrationsposter, som er ukendte for Home Assistant eller hører til en anden integration end den, handlingen beder om:\n\n{config_entries}\n\nHome Assistant afviser dem, når trinnet kører. Det sker som regel, når en integration er blevet fjernet og tilføjet igen: den fik en ny integrationspost med et nyt ID.\n\nFor at rette denne fejl skal du [redigere automatiseringen]({edit}) og vælge integrationsposten igen i disse handlinger.\n\nSpook 👻 er din ven."
+        },
+        "script_unknown_config_entry_references": {
+            "title": "Ukendte integrationsposter brugt i: {script}",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script giver sine handlinger følgende integrationsposter, som er ukendte for Home Assistant eller hører til en anden integration end den, handlingen beder om:\n\n{config_entries}\n\nHome Assistant afviser dem, når trinnet kører. Det sker som regel, når en integration er blevet fjernet og tilføjet igen: den fik en ny integrationspost med et nyt ID.\n\nFor at rette denne fejl skal du [redigere scriptet]({edit}) og vælge integrationsposten igen i disse handlinger.\n\nSpook 👻 er din ven."
+        },
+        "automation_unknown_icons": {
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering uddeler følgende ikoner, som ikke findes i de Material Design Icons, der følger med Home Assistant:\n\n{icons}\n\n\n\nHvert af dem vises som en tom plads, uden et ord. Det sker ofte, når et ikon er blevet stavet forkert, omdøbt eller fjernet, eller er valgt fra en nyere version af Material Design Icons end den, Home Assistant kommer med. For at rette denne fejl skal du [redigere automatiseringen]({edit}) og erstatte dem med ikoner, der findes.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte ikoner brugt i: {automation}"
+        },
+        "script_unknown_icons": {
+            "title": "Ukendte ikoner brugt i: {script}",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script bruger eller uddeler følgende ikoner, som ikke findes i de Material Design Icons, der følger med Home Assistant:\n\n{icons}\n\n\n\nHvert af dem vises som en tom plads, uden et ord. Det sker ofte, når et ikon er blevet stavet forkert, omdøbt eller fjernet, eller er valgt fra en nyere version af Material Design Icons end den, Home Assistant kommer med. For at rette denne fejl skal du [redigere scriptet]({edit}) og erstatte dem med ikoner, der findes.\n\nSpook 👻 er din ven."
+        },
+        "lovelace_unknown_icons": {
+            "title": "Ukendte ikoner brugt i betjeningspanelet: {dashboard}",
+            "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel bruger følgende ikoner, som ikke findes i de Material Design Icons, der følger med Home Assistant (version {version}):\n\n{icons}\n\n\n\nHvert af dem vises som en tom plads, uden et ord. Det sker ofte, når et ikon er blevet stavet forkert, omdøbt eller fjernet, eller er valgt fra en nyere version af Material Design Icons end den, Home Assistant kommer med. For at rette denne fejl skal du [redigere betjeningspanelet]({edit}) og erstatte dem med ikoner, der findes. Betjeningspanelets ikon i sidepanelet ændres i indstillingerne for dine betjeningspaneler.\n\nSpook 👻 er din ven."
+        },
+        "automation_unknown_user_references": {
+            "title": "Fjernede brugere nævnt i: {automation}",
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering nævner følgende brugere, som ikke længere findes:\n\n{users}\n\n\n\nHome Assistant giver aldrig det samme bruger-ID ud to gange, så disse brugere er blevet fjernet. En udløser, der venter på en af dem, udløses aldrig for dem, og en skabelon, der sammenligner med en af dem, giver aldrig et match, uden at det bliver sagt. For at rette dette skal du [redigere automatiseringen]({edit}) og bruge ID'et på en bruger, der findes, eller fjerne tjekket.\n\nSpook 👻 er din ven."
+        },
+        "script_unknown_user_references": {
+            "title": "Fjernede brugere nævnt i: {script}",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script nævner følgende brugere, som ikke længere findes:\n\n{users}\n\n\n\nHome Assistant giver aldrig det samme bruger-ID ud to gange, så disse brugere er blevet fjernet. En skabelon, der sammenligner med en af dem, giver aldrig et match, og en udløser, der venter på en af dem, udløses aldrig for dem, uden at det bliver sagt. For at rette dette skal du [redigere scriptet]({edit}) og bruge ID'et på en bruger, der findes, eller fjerne tjekket.\n\nSpook 👻 er din ven."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Fjernede brugere nævnt i betjeningspanelet: {dashboard}",
+            "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel nævner følgende brugere, som ikke længere findes:\n\n{users}\n\n\n\nHome Assistant giver aldrig det samme bruger-ID ud to gange, så disse brugere er blevet fjernet. Et kort, et badge, en sektion eller en visning, der kun vises for dem, vises nu for ingen, uden at det bliver sagt. En undtagelse fra en bekræftelse for dem gør ikke længere noget. For at rette dette skal du [redigere betjeningspanelet]({edit}) og vælge de brugere, der skal se det, eller fjerne betingelsen.\n\nSpook 👻 er din ven."
+        },
+        "lovelace_unknown_theme_references": {
+            "title": "Ukendte temaer brugt i betjeningspanelet: {dashboard}",
+            "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel bruger følgende temaer, som ikke findes:\n\n{themes}\n\n\n\nEt kort, en sektion eller en visning med et af disse temaer får i stedet standardudseendet, uden at det bliver sagt. Det sker ofte, når et tema er blevet omdøbt eller fjernet. For at rette denne fejl skal du [redigere betjeningspanelet]({edit}) og vælge et tema, der findes, eller tilføje temaet igen.\n\nSpook 👻 er din ven."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "title": "Ukendte attributter brugt i skabelonentitet: {name}",
+            "description": "Spook har fundet et spøgelse i dine skabelonentiteter 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende skabelonentitet:\n\n{name} (`{entity_id}`)\n\nDenne skabelonentitet bruger følgende attributter, som deres entiteter ikke har. Hverken lige nu, som noget den slags entitet tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{attributes}\n\n\n\nEn skabelon, der læser en attribut, som aldrig dukker op, får intet, og en udløser eller betingelse, der venter på en, udløses eller opfyldes aldrig. Ingen af dem siger det.\n\nDenne skabelonentitet er sat op i din YAML-konfiguration. For at rette dette skal du redigere den i afsnittet `template:` i din konfiguration, bruge en attribut, som entiteten har, og genindlæse dine skabelonentiteter.\n\nSpook 👻 er din ven."
+        },
+        "template_unknown_entity_references_yaml": {
+            "title": "Ukendte entiteter brugt i skabelonentitet: {name}",
+            "description": "Spook har fundet et spøgelse i dine skabelonentiteter 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende skabelonentitet:\n\n{name} (`{entity_id}`)\n\nDens konfiguration henviser til følgende entiteter, som er ukendte for Home Assistant:\n\n{entities}\n\n\n\nDet sker ofte, når en entitet er blevet omdøbt eller fjernet. En skabelon, der læser en af dem, får intet, og en udløser, der venter på en, udløses aldrig.\n\nDenne skabelonentitet er sat op i din YAML-konfiguration. For at rette denne fejl skal du redigere den i afsnittet `template:` i din konfiguration, henvise til eksisterende entiteter og genindlæse dine skabelonentiteter.\n\nSpook 👻 er din ven."
+        },
+        "template_unknown_service_references_yaml": {
+            "title": "Ukendte handlinger brugt i skabelonentitet: {name}",
+            "description": "Spook har fundet et spøgelse i dine skabelonentiteter 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende skabelonentitet:\n\n{name} (`{entity_id}`)\n\nDen henviser til følgende handlinger, som er ukendte for Home Assistant:\n\n{services}\n\n\n\nDet sker ofte, når det, der leverede en handling, er blevet fjernet, eller et script er blevet omdøbt eller slettet.\n\nDenne skabelonentitet er sat op i din YAML-konfiguration. For at rette denne fejl skal du redigere den i afsnittet `template:` i din konfiguration, bruge eksisterende handlinger og genindlæse dine skabelonentiteter.\n\nSpook 👻 er din ven."
+        },
+        "unknown_icons": {
+            "title": "Ukendte ikoner i dine indstillinger",
+            "description": "Spook har fundet et spøgelse i dine indstillinger 👻\n\nFølgende ikoner findes ikke i de Material Design Icons, der følger med Home Assistant (version {version}):\n\n{icons}\n\n\n\nHvert af dem vises som en tom plads, uden et ord. Det sker ofte, når et ikon er blevet stavet forkert, omdøbt eller fjernet, eller er valgt fra en nyere version af Material Design Icons end den, Home Assistant kommer med. For at rette denne fejl skal du give hver af dem et ikon, der findes: en entitet, hjælper eller zone i dens indstillinger, et område, en etage eller en label i indstillingerne for dine områder, labels og zoner, en kategori der, hvor den bruges, og `customize:` i din konfiguration.\n\nSpook 👻 er din ven."
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "force": {
                     "name": "Tving genstart",
                     "description": "Tving genstarten. ADVARSEL! Dette lukker ikke Home Assistant pænt ned, springer konfigurationstjek over og ignorerer igangværende databasemigreringer. Brug det kun, hvis du ved, hvad du gør."
+                }
+            }
+        },
+        "homeassistant_update_area": {
+            "name": "Opdatér et område",
+            "description": "Opdaterer et eksisterende område med det samme. Alt, hvad du udelader, beholder den værdi, det allerede har. Aliasser og labels erstatter dem, området har. Etagen, ikonet, billedet og sensorerne kan ryddes ved at sætte dem til null.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID'et på det område, der skal opdateres."
+                },
+                "name": {
+                    "name": "Navn",
+                    "description": "Nyt navn til området."
+                },
+                "aliases": {
+                    "name": "Aliasser",
+                    "description": "Aliasserne for området. Erstatter dem, det har, og en tom liste fjerner dem alle."
+                },
+                "floor_id": {
+                    "name": "Etage-ID",
+                    "description": "ID'et på den etage, området ligger på."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Nyt ikon, der skal bruges til området."
+                },
+                "picture": {
+                    "name": "Billede",
+                    "description": "URL'en eller stien til et billede til området."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperatursensor",
+                    "description": "Den sensor, der måler temperaturen i området."
+                },
+                "humidity_entity_id": {
+                    "name": "Fugtighedssensor",
+                    "description": "Den sensor, der måler luftfugtigheden i området."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "ID'erne på områdets labels. Erstatter dem, det har, og en tom liste fjerner dem alle."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Opdatér en enhed",
+            "description": "Opdaterer en eksisterende enhed med det samme. Alt, hvad du udelader, beholder den værdi, det allerede har. Labels erstatter dem, enheden har. Navnet og området kan ryddes ved at sætte dem til null, hvilket giver enheden det navn tilbage, som dens integration gav den.",
+            "fields": {
+                "device_id": {
+                    "name": "Enheds-ID",
+                    "description": "ID'et på den enhed, der skal opdateres. Deaktiverede enheder vises ikke i Home Assistants enhedsvælger, så brug YAML-tilstand for at angive deres ID."
+                },
+                "name_by_user": {
+                    "name": "Navn",
+                    "description": "Nyt navn til enheden."
+                },
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID'et på det område, enheden er i."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "ID'erne på enhedens labels. Erstatter dem, den har, og en tom liste fjerner dem alle."
+                },
+                "disabled_by": {
+                    "name": "Deaktiveret af",
+                    "description": "Sæt til user for at deaktivere enheden, eller til null for at aktivere den igen. Det virker ligesom handlingerne til at deaktivere og aktivere en enhed."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Opdatér en etage",
+            "description": "Opdaterer en eksisterende etage med det samme. Alt, hvad du udelader, beholder den værdi, det allerede har. Aliasser erstatter dem, etagen har. Ikonet og niveauet kan ryddes ved at sætte dem til null.",
+            "fields": {
+                "floor_id": {
+                    "name": "Etage-ID",
+                    "description": "ID'et på den etage, der skal opdateres."
+                },
+                "name": {
+                    "name": "Navn",
+                    "description": "Nyt navn til etagen."
+                },
+                "aliases": {
+                    "name": "Aliasser",
+                    "description": "Aliasserne for etagen. Erstatter dem, den har, og en tom liste fjerner dem alle."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Nyt ikon, der skal bruges til etagen."
+                },
+                "level": {
+                    "name": "Niveau",
+                    "description": "Det niveau, etagen ligger på i dit hjem."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Opret en tidsplan",
+            "description": "Opretter en ny tidsplan-hjælper med det samme, som er tændt i de tidsblokke, der er angivet for hver ugedag. Returnerer entitets-ID'et på den nye tidsplan.",
+            "fields": {
+                "name": {
+                    "name": "Navn",
+                    "description": "Navnet på den nye tidsplan."
+                },
+                "monday": {
+                    "name": "Mandag",
+                    "description": "Hvornår tidsplanen er tændt om mandagen: en liste med tidsblokke, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. Udelades den, er tidsplanen slukket hele dagen."
+                },
+                "tuesday": {
+                    "name": "Tirsdag",
+                    "description": "Hvornår tidsplanen er tændt om tirsdagen: en liste med tidsblokke, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. Udelades den, er tidsplanen slukket hele dagen."
+                },
+                "wednesday": {
+                    "name": "Onsdag",
+                    "description": "Hvornår tidsplanen er tændt om onsdagen: en liste med tidsblokke, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. Udelades den, er tidsplanen slukket hele dagen."
+                },
+                "thursday": {
+                    "name": "Torsdag",
+                    "description": "Hvornår tidsplanen er tændt om torsdagen: en liste med tidsblokke, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. Udelades den, er tidsplanen slukket hele dagen."
+                },
+                "friday": {
+                    "name": "Fredag",
+                    "description": "Hvornår tidsplanen er tændt om fredagen: en liste med tidsblokke, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. Udelades den, er tidsplanen slukket hele dagen."
+                },
+                "saturday": {
+                    "description": "Hvornår tidsplanen er tændt om lørdagen: en liste med tidsblokke, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. Udelades den, er tidsplanen slukket hele dagen.",
+                    "name": "Lørdag"
+                },
+                "sunday": {
+                    "name": "Søndag",
+                    "description": "Hvornår tidsplanen er tændt om søndagen: en liste med tidsblokke, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. Udelades den, er tidsplanen slukket hele dagen."
+                },
+                "schedule_id": {
+                    "name": "Entitets-ID for tidsplan",
+                    "description": "Entitets-ID'et for den nye tidsplan. Præfikset schedule. tilføjes automatisk. Angives det ikke, genereres entitets-ID'et ud fra navnet."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonet for den nye tidsplan."
+                }
+            }
+        },
+        "schedule_delete": {
+            "fields": {
+                "entity_id": {
+                    "description": "Den eller de tidsplaner, der skal slettes.",
+                    "name": "Entitets-ID"
+                }
+            },
+            "name": "Slet en tidsplan",
+            "description": "Sletter tidsplan-hjælpere, der er oprettet i brugerfladen. Tidsplaner, der er sat op i YAML, kan Spook ikke slette."
+        },
+        "schedule_set_day": {
+            "name": "Indstil tidsblokkene for en dag",
+            "description": "Erstatter tidsblokkene for en eller flere dage i en tidsplan-hjælper, der er oprettet i brugerfladen. Tidsplaner, der er sat op i YAML, kan Spook ikke ændre.",
+            "fields": {
+                "day": {
+                    "name": "Dag",
+                    "description": "Den eller de ugedage, hvis tidsblokke skal indstilles."
+                },
+                "blocks": {
+                    "name": "Tidsblokke",
+                    "description": "De tidsblokke, tidsplanen er tændt i på de dage, hver med et fra- og et til-tidspunkt og valgfrie data, som den viser som attributter, mens den er tændt. De erstatter de blokke, dagene havde. En tom liste lader dagene være slukket hele dagen."
                 }
             }
         }
