@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Kasutaja lisatud",
             "description": "Käivitub, kui kellelegi antakse Home Assistanti sisselogimine. Kasutajad, mille Home Assistant loob oma sidumiste jaoks, jäetakse välja."
+        },
+        "state_changed": {
+            "name": "Spooki olekupäästik",
+            "description": "Käivitub, kui olem muudab olekut, kõige jaoks, mida siht hõlmab: olemid, seadmed, alad, korrused ja sildid. Kitsenda seda domeeni, sidumise või seadmeklassi järgi või jäta siht tühjaks ja lase neil olemid kõigest välja valida. Välista asju uuesti ja otsusta, kui kaua peab muutus kestma, enne kui see arvesse läheb.",
+            "fields": {
+                "domain": {
+                    "name": "Domeenid",
+                    "description": "Ainult nende domeenide olemid, näiteks binary_sensor või cover. Ilma sihita valib need kõigest."
+                },
+                "integration": {
+                    "name": "Sidumised",
+                    "description": "Ainult nende sidumiste pakutavad olemid, näiteks zha või hue. Ilma sihita valib need kõigest."
+                },
+                "config_entry": {
+                    "name": "Sidumise kirje",
+                    "description": "Ainult selle sidumise kirje olemid. Ilma sihita valib need kõigest."
+                },
+                "device_class": {
+                    "name": "Seadmeklassid",
+                    "description": "Ainult nende seadmeklasside olemid, näiteks door või window. Ilma sihita valib need kõigest."
+                },
+                "exclude_domain": {
+                    "name": "Välista domeenid",
+                    "description": "Välista nende domeenide olemid. Kui väljal Välista pole midagi, kehtib see kõige kohta, mida siht hõlmab."
+                },
+                "exclude_integration": {
+                    "name": "Välista sidumised",
+                    "description": "Välista nende sidumiste pakutavad olemid."
+                },
+                "exclude_config_entry": {
+                    "name": "Välista sidumise kirje",
+                    "description": "Välista selle sidumise kirje olemid."
+                },
+                "exclude_device_class": {
+                    "name": "Välista seadmeklassid",
+                    "description": "Välista nende seadmeklasside olemid."
+                },
+                "attribute": {
+                    "name": "Atribuut",
+                    "description": "Jälgi oleku asemel seda atribuuti."
+                },
+                "from": {
+                    "name": "Olekust",
+                    "description": "Ainult muutused, mis tulevad mõnest neist olekutest."
+                },
+                "not_from": {
+                    "name": "Mitte olekust",
+                    "description": "Ainult muutused, mis ei tule ühestki neist olekutest."
+                },
+                "to": {
+                    "name": "Olekusse",
+                    "description": "Ainult muutused, mis lähevad mõnda neist olekutest."
+                },
+                "not_to": {
+                    "description": "Ainult muutused, mis ei lähe ühtegi neist olekutest.",
+                    "name": "Mitte olekusse"
+                },
+                "ignore_unavailable": {
+                    "name": "Eira kättesaamatut ja tundmatut",
+                    "description": "Jätab välja muutused kättesaamatust või tundmatust olekust või sinna, nii et taaskäivitus või ruuteri taaskäivitus ei käivita kõike. Lülita välja, et kasutada neid väljadel Olekust või Olekusse."
+                },
+                "attribute_changes": {
+                    "name": "Arvesta atribuudimuutusi",
+                    "description": "Käivitub ka siis, kui muutus ainult atribuut ja olek jäi samaks. Atribuudi jälgimise ajal ei tee midagi."
+                },
+                "behavior": {
+                    "name": "Käitumine",
+                    "description": "Käivitu iga olemi puhul, sihi esimese sinna jõudnud olemi puhul või siis, kui kõik on kohal. Esimene ja kõik vajavad välja Olekusse või Mitte olekusse. Kui kättesaamatut ja tundmatut eiratakse, ei võta neis olekutes olemid osa."
+                },
+                "for": {
+                    "name": "Kestus",
+                    "description": "Käivitu alles siis, kui uus olek on nii kaua kestnud. Iga muu vahepealne muutus tühistab selle."
+                },
+                "blip_tolerance": {
+                    "name": "Lühikatkestuse taluvus",
+                    "description": "Kestuse ootamise ajal ei alusta kättesaamatuks või tundmatuks muutumine ja selle aja jooksul endisena tagasi tulemine ootamist otsast peale. Töötab ainult koos väljaga Kestus."
+                },
+                "delay": {
+                    "name": "Viivitus",
+                    "description": "Oota nii kaua enne käivitumist, ükskõik mis vahepeal juhtub. Nagu viivitus toimingute alguses."
+                },
+                "exclude_target": {
+                    "name": "Välista",
+                    "description": "Välistatavad olemid, seadmed, alad, korrused või sildid. Kõik nende sees välistatakse, ka diagnostikaolemid."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Loendi lõppu",
                 "top": "Loendi algusesse"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Esmaspäev",
+                "tuesday": "Teisipäev",
+                "wednesday": "Kolmapäev",
+                "thursday": "Neljapäev",
+                "friday": "Reede",
+                "saturday": "Laupäev",
+                "sunday": "Pühapäev"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Kestus",
                     "description": "Kui kaua pärast viimast käivitust oodata, enne kui see tingimus uuesti kehtib."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Olem on saadaval",
+            "description": "Kehtib, kui olemiga saab suhelda: ükskõik mis olek peale kättesaamatu või tundmatu. Kõlarile või nutipistikule, mis pole alati vooluvõrgus.",
+            "fields": {
+                "behavior": {
+                    "name": "Käitumine",
+                    "description": "Kas piisab sellest, et ükskõik milline olem on kohal, või peavad kõik olema."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "See tsoon pole muudetav: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Kogus {amount} ei sobi olemile {entity_id}, mis liigub sammuga {step}. Kasuta sammu {step} kordset või jäta kogus välja, et liikuda ühe sammu võrra."
+        },
+        "area_cannot_update": {
+            "message": "Ala {area_id} ei saa nii muuta: {error}."
+        },
+        "area_name_taken": {
+            "message": "Nimi {name} on juba alal {area_id} kasutusel."
+        },
+        "area_nothing_to_update": {
+            "message": "Alal {area_id} pole midagi uuendada: anna vähemalt üks väljadest {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Seadmel {device_id} pole midagi uuendada: anna vähemalt üks väljadest {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Nimi {name} on juba korrusel {floor_id} kasutusel."
+        },
+        "floor_nothing_to_update": {
+            "message": "Korrusel {floor_id} pole midagi uuendada: anna vähemalt üks väljadest {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Need ajaplokid ei sobi ajakavale {entity_id}: {error}. Midagi ei muudetud."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} on ajakava sinu YAML-konfiguratsioonist ja Spook ei saa seda muuta. Muuda seda hoopis oma konfiguratsioonis."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Need andurid on pärast Spooki vaatamist tagasi või osutavad sätted nüüd mujale. Seega ei tühjendatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist ei suuda neid eristada: {name}",
+            "description": "Spook leidis su häälassistentidest kummituse 👻\n\nJärgmised olemid on Assistile avaldatud ja kõik vastavad nimele {name}:\n\n{entities}\n\nKui nimed on samad, eristab Assist neid ainult ala järgi: selle, mille nimetad, või selle, kus su häälsatelliit asub. Mõnel neist on sama ala või pole ala üldse, nii et Assist ei suuda neid selle nime järgi kuskilt välja valida. Päring {name} kohta siis nurjub ja miski ei ütle, millised olemid ette jäävad.\n\nParandamiseks anna igaühele oma nimi või alias või vii need eri aladesse. Olemi aliaseid ja seda, kas Assist seda üldse näeb, saad muuta jaotises [Avaldatud olemid](/config/voice-assistants/expose). Alad määratakse [alade lehel](/config/areas/dashboard).\n\nSpook 👻 Sinu semu."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering kasutab järgmisi atribuute, mida nende olemitel pole. Mitte praegu, mitte sellena, mida seda tüüpi olem pakub, ega kuskil selles, mida salvesti neist mäletab:\n\n{attributes}\n\n\n\nPäästik või tingimus, mis ootab atribuuti, mis kunagi ei ilmu, ei käivitu kunagi ega ütle sulle seda. Mall, mis seda loeb, ei saa midagi. Parandamiseks [muuda automatiseeringut]({edit}) ja kasuta atribuuti, mis olemil on.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud atribuudid kasutusel: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering ootab või kontrollib järgmisi olekuid, milles nende olemid kunagi ei ole. Mitte sellena, mis seda tüüpi olem olla saab, mitte olemi pakutavate valikute seas ega kuskil selles, mida salvesti neist mäletab:\n\n{states}\n\n\n\nPäästik, mis ootab olekut, mis kunagi ei tule, ei käivitu kunagi, tingimus, mis seda kontrollib, ei kehti kunagi, ja kumbki ei ütle sulle seda. Olekutes on suur- ja väiketähed olulised: `On` pole `on`. Parandamiseks [muuda automatiseeringut]({edit}) ja kasuta olekut, milles olem olla saab.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud olekud kasutusel: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering kontrollib järgmisi päästiku ID-sid, mida ühelgi tema enda päästikul pole:\n\n{trigger_ids}\n\n\n\nKontroll ID järele, mida ükski päästik ei anna, annab alati sama tulemuse: päästiku tingimus, mis seda küsib, ei kehti kunagi, nii et osa, mida see valvab, ei käivitu kunagi ja miski ei ütle sulle seda. Päästiku ID-des on suur- ja väiketähed olulised ning päästik, millel pole oma ID-d, käib oma asukoha järgi loendis, loendades alates `0`. Parandamiseks [muuda automatiseeringut]({edit}) ja kasuta mõne selle päästiku ID-d või anna päästikule ID, mida automatiseering küsib.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud päästiku ID-d kasutusel: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade näitab või kontrollib järgmisi atribuute, mida nende olemitel pole. Mitte praegu, mitte sellena, mida seda tüüpi olem pakub, ega kuskil selles, mida salvesti neist mäletab:\n\n{attributes}\n\n\n\nKaart, mis näitab atribuuti, mis kunagi ei ilmu, jääb tühjaks ning nähtavustingimus või filter, mis seda kontrollib, ei kehti kunagi. Kumbki ei ütle sulle seda. Parandamiseks [muuda vaadet]({edit}) ja kasuta atribuuti, mis olemil on.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates kasutatud tundmatud atribuudid: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade kontrollib järgmisi olekuid, milles nende olemid kunagi ei ole. Mitte sellena, mis seda tüüpi olem olla saab, mitte olemi pakutavate valikute seas ega kuskil selles, mida salvesti neist mäletab:\n\n{states}\n\n\n\nNähtavustingimus või filter, mis kontrollib olekut, mis kunagi ei tule, ei kehti kunagi, ja selle jaoks määratud pilti ei näidata kunagi. Ükski neist ei ütle sulle seda. Olekutes on suur- ja väiketähed olulised: `On` pole `on`. Parandamiseks [muuda vaadet]({edit}) ja kasuta olekut, milles olem olla saab.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates kasutatud tundmatud olekud: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade navigeerib järgmistele alamvaadetele, mida pole olemas:\n\n{paths}\n\n\n\nNupp või kaart, mis navigeerib mõnele neist, avab selle asemel selle vaate esimese alamvaate, ilma sellest teatamata. See juhtub sageli siis, kui alamvaade nimetati ümber, teisaldati või eemaldati. Vea parandamiseks [muuda vaadet]({edit}) ja suuna need olemasolevale alamvaatele.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates navigeeritakse tundmatutele alamvaadetele: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript kasutab järgmisi atribuute, mida nende olemitel pole. Mitte praegu, mitte sellena, mida seda tüüpi olem pakub, ega kuskil selles, mida salvesti neist mäletab:\n\n{attributes}\n\n\n\nPäästik või tingimus, mis ootab atribuuti, mis kunagi ei ilmu, ei käivitu kunagi ega ütle sulle seda. Mall, mis seda loeb, ei saa midagi. Parandamiseks [muuda skripti]({edit}) ja kasuta atribuuti, mis olemil on.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud atribuudid kasutusel: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript ootab või kontrollib järgmisi olekuid, milles nende olemid kunagi ei ole. Mitte sellena, mis seda tüüpi olem olla saab, mitte olemi pakutavate valikute seas ega kuskil selles, mida salvesti neist mäletab:\n\n{states}\n\n\n\nPäästik, mis ootab olekut, mis kunagi ei tule, ei käivitu kunagi, tingimus, mis seda kontrollib, ei kehti kunagi, ja kumbki ei ütle sulle seda. Olekutes on suur- ja väiketähed olulised: `On` pole `on`. Parandamiseks [muuda skripti]({edit}) ja kasuta olekut, milles olem olla saab.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud olekud kasutusel: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook leidis su mallipõhistest abilistest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise mallipõhise abilise otsa:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSee mallipõhine abiline kasutab järgmisi atribuute, mida nende olemitel pole. Mitte praegu, mitte sellena, mida seda tüüpi olem pakub, ega kuskil selles, mida salvesti neist mäletab:\n\n{attributes}\n\n\n\nMall, mis loeb atribuuti, mis kunagi ei ilmu, ei saa midagi, ja tingimus mõnes selle toimingus, mis seda ootab, ei kehti kunagi. Kumbki ei ütle sulle seda. Parandamiseks [muuda mallipõhist abilist]({edit}) ja kasuta atribuuti, mis olemil on.\n\nSpook 👻 Sinu semu.",
+            "title": "Mallipõhises abilises kasutatud tundmatud atribuudid: {helper}"
+        },
+        "automation_never_true_templates": {
+            "title": "Mallid, mis ei saa kunagi kehtida: {automation}",
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSelles automatiseeringus on järgmised mallid, mis ei saa kunagi kehtida, ükskõik mis su kodus juhtub:\n\n{templates}\n\n\n\nMallitingimus kehtib ainult siis, kui see renderdab `true`, ja nii ka `wait_template`, välja arvatud juhul, kui see hiljem muutub millekski, mis loetakse tõeseks. Mallipäästik käivitub, kui selle mall muutub millekski, mis loetakse tõeseks, näiteks `true`, `on`, `yes` või `1`. Need mallid renderdavad alati midagi muud, sest nii need on kirjutatud. Tavalised põhjused:\n\n- Jutumärgid malli ümber. Plokk `>-` võtab need tekstina, nii et need satuvad tulemusse.\n- Malli eraldajaid pole üldse, nii et tekst võetakse nii, nagu see on.\n- Mallivälja kleebitud YAML.\n- YAML-i kommentaar `#` Jinja sees, mille Jinja prindib tekstina.\n- Tingimus, mis renderdab `true` asemel `on`.\n\nMiski ei ütle sulle seda: tingimus ei kehti kunagi, ootamine lõpeb ainult ajalõpuga ja päästik ei käivitu kunagi. Parandamiseks [muuda automatiseeringut]({edit}) ja pane mall renderdama `true`, kui see peaks kehtima.\n\nSpook 👻 Sinu semu."
+        },
+        "script_never_true_templates": {
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSelles skriptis on järgmised mallid, mis ei saa kunagi kehtida, ükskõik mis su kodus juhtub:\n\n{templates}\n\n\n\nMallitingimus kehtib ainult siis, kui see renderdab `true`, ja nii ka `wait_template`, välja arvatud juhul, kui see hiljem muutub millekski, mis loetakse tõeseks. Mallipäästik toimingus `wait_for_trigger` käivitub, kui selle mall muutub millekski, mis loetakse tõeseks, näiteks `true`, `on`, `yes` või `1`. Need mallid renderdavad alati midagi muud, sest nii need on kirjutatud. Tavalised põhjused:\n\n- Jutumärgid malli ümber. Plokk `>-` võtab need tekstina, nii et need satuvad tulemusse.\n- Malli eraldajaid pole üldse, nii et tekst võetakse nii, nagu see on.\n- Mallivälja kleebitud YAML.\n- YAML-i kommentaar `#` Jinja sees, mille Jinja prindib tekstina.\n- Tingimus, mis renderdab `true` asemel `on`.\n\nMiski ei ütle sulle seda: tingimus ei kehti kunagi ja ootamine lõpeb ainult ajalõpuga. Parandamiseks [muuda skripti]({edit}) ja pane mall renderdama `true`, kui see peaks kehtima.\n\nSpook 👻 Sinu semu.",
+            "title": "Mallid, mis ei saa kunagi kehtida: {script}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering annab oma toimingutele järgmised sidumise kirjed, mida Home Assistant ei tunne või mis kuuluvad teisele sidumisele, kui toiming küsib:\n\n{config_entries}\n\nHome Assistant keeldub neist, kui samm käivitub. Tavaliselt juhtub see pärast seda, kui sidumine eemaldati ja uuesti lisati: see sai uue sidumise kirje uue ID-ga.\n\nVea parandamiseks [muuda automatiseeringut]({edit}) ja vali nendes toimingutes sidumise kirje uuesti.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud sidumise kirjed kasutusel: {automation}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript annab oma toimingutele järgmised sidumise kirjed, mida Home Assistant ei tunne või mis kuuluvad teisele sidumisele, kui toiming küsib:\n\n{config_entries}\n\nHome Assistant keeldub neist, kui samm käivitub. Tavaliselt juhtub see pärast seda, kui sidumine eemaldati ja uuesti lisati: see sai uue sidumise kirje uue ID-ga.\n\nVea parandamiseks [muuda skripti]({edit}) ja vali nendes toimingutes sidumise kirje uuesti.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud sidumise kirjed kasutusel: {script}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering jagab välja järgmisi ikoone, mida Home Assistantiga kaasas olevates Material Design Iconsis pole:\n\n{icons}\n\n\n\nIgaüks neist ilmub tühja kohana, ilma ühegi sõnata. See juhtub sageli siis, kui ikooni nimi kirjutati valesti, ikoon nimetati ümber või eemaldati või valiti Material Design Iconsi uuemast versioonist kui see, mis Home Assistantiga kaasas on. Vea parandamiseks [muuda automatiseeringut]({edit}) ja asenda need olemasolevate ikoonidega.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud ikoonid kasutusel: {automation}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript kasutab või jagab välja järgmisi ikoone, mida Home Assistantiga kaasas olevates Material Design Iconsis pole:\n\n{icons}\n\n\n\nIgaüks neist ilmub tühja kohana, ilma ühegi sõnata. See juhtub sageli siis, kui ikooni nimi kirjutati valesti, ikoon nimetati ümber või eemaldati või valiti Material Design Iconsi uuemast versioonist kui see, mis Home Assistantiga kaasas on. Vea parandamiseks [muuda skripti]({edit}) ja asenda need olemasolevate ikoonidega.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud ikoonid kasutusel: {script}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade kasutab järgmisi ikoone, mida Home Assistantiga kaasas olevates Material Design Iconsis (versioon {version}) pole:\n\n{icons}\n\n\n\nIgaüks neist ilmub tühja kohana, ilma ühegi sõnata. See juhtub sageli siis, kui ikooni nimi kirjutati valesti, ikoon nimetati ümber või eemaldati või valiti Material Design Iconsi uuemast versioonist kui see, mis Home Assistantiga kaasas on. Vea parandamiseks [muuda vaadet]({edit}) ja asenda need olemasolevate ikoonidega. Vaate ikooni külgribal muudetakse sinu vaadete sätetes.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates kasutatud tundmatud ikoonid: {dashboard}"
+        },
+        "unknown_icons": {
+            "description": "Spook leidis su sätetest kummituse 👻\n\nJärgmisi ikoone pole Home Assistantiga kaasas olevates Material Design Iconsis (versioon {version}):\n\n{icons}\n\n\n\nIgaüks neist ilmub tühja kohana, ilma ühegi sõnata. See juhtub sageli siis, kui ikooni nimi kirjutati valesti, ikoon nimetati ümber või eemaldati või valiti Material Design Iconsi uuemast versioonist kui see, mis Home Assistantiga kaasas on. Vea parandamiseks anna igaühele neist olemasolev ikoon: olemile, abilisele või tsoonile selle sätetes, alale, korrusele või sildile alade, siltide ja tsoonide sätetes, kategooriale seal, kus seda kasutatakse, ning `customize:` oma konfiguratsioonis.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud ikoonid sinu sätetes"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering nimetab järgmisi kasutajaid, keda enam pole:\n\n{users}\n\n\n\nHome Assistant ei anna kasutaja ID-d kunagi kaks korda välja, nii et need kasutajad eemaldati. Päästik, mis ootab mõnda neist, ei käivitu nende jaoks kunagi, ja mall, mis võrdleb mõnega neist, ei lange kunagi kokku, ilma sellest teatamata. Parandamiseks [muuda automatiseeringut]({edit}) ja kasuta olemasoleva kasutaja ID-d või eemalda kontroll.\n\nSpook 👻 Sinu semu.",
+            "title": "Eemaldatud kasutajad nimetatud: {automation}"
+        },
+        "script_unknown_user_references": {
+            "title": "Eemaldatud kasutajad nimetatud: {script}",
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript nimetab järgmisi kasutajaid, keda enam pole:\n\n{users}\n\n\n\nHome Assistant ei anna kasutaja ID-d kunagi kaks korda välja, nii et need kasutajad eemaldati. Mall, mis võrdleb mõnega neist, ei lange kunagi kokku, ja päästik, mis ootab mõnda neist, ei käivitu nende jaoks kunagi, ilma sellest teatamata. Parandamiseks [muuda skripti]({edit}) ja kasuta olemasoleva kasutaja ID-d või eemalda kontroll.\n\nSpook 👻 Sinu semu."
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade nimetab järgmisi kasutajaid, keda enam pole:\n\n{users}\n\n\n\nHome Assistant ei anna kasutaja ID-d kunagi kaks korda välja, nii et need kasutajad eemaldati. Kaarti, märki, jaotist või alamvaadet, mida näidati ainult neile, ei näidata nüüd kellelegi, ilma sellest teatamata. Kinnituse erand nende jaoks ei tee enam midagi. Parandamiseks [muuda vaadet]({edit}) ja vali kasutajad, kes peaksid seda nägema, või eemalda tingimus.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates nimetatud eemaldatud kasutajad: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade kasutab järgmisi teemasid, mida pole olemas:\n\n{themes}\n\n\n\nKaart, jaotis või alamvaade mõne neist teemadest saab selle asemel vaikeilme, ilma sellest teatamata. See juhtub sageli siis, kui teema nimetati ümber või eemaldati. Vea parandamiseks [muuda vaadet]({edit}) ja vali olemasolev teema või lisa teema tagasi.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates kasutatud tundmatud teemad: {dashboard}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook leidis su malliolemitest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise malliolemi otsa:\n\n{name} (`{entity_id}`)\n\nSee malliolem kasutab järgmisi atribuute, mida nende olemitel pole. Mitte praegu, mitte sellena, mida seda tüüpi olem pakub, ega kuskil selles, mida salvesti neist mäletab:\n\n{attributes}\n\n\n\nMall, mis loeb atribuuti, mis kunagi ei ilmu, ei saa midagi, ning päästik või tingimus, mis seda ootab, ei käivitu ega kehti kunagi. Ükski neist ei ütle sulle seda.\n\nSee malliolem on seadistatud sinu YAML-konfiguratsioonis. Parandamiseks muuda seda oma konfiguratsiooni jaotises `template:`, kasuta atribuuti, mis olemil on, ja laadi oma malliolemid uuesti.\n\nSpook 👻 Sinu semu.",
+            "title": "Malliolemis kasutatud tundmatud atribuudid: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook leidis su malliolemitest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise malliolemi otsa:\n\n{name} (`{entity_id}`)\n\nSee viitab järgmistele toimingutele, mida Home Assistant ei tunne:\n\n{services}\n\n\n\nSee juhtub sageli siis, kui toimingu pakkuja eemaldati või skript nimetati ümber või kustutati.\n\nSee malliolem on seadistatud sinu YAML-konfiguratsioonis. Vea parandamiseks muuda seda oma konfiguratsiooni jaotises `template:`, kasuta olemasolevaid toiminguid ja laadi oma malliolemid uuesti.\n\nSpook 👻 Sinu semu.",
+            "title": "Malliolemis kasutatud tundmatud toimingud: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook leidis su malliolemitest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise malliolemi otsa:\n\n{name} (`{entity_id}`)\n\nSelle seadistus viitab järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nSee juhtub sageli siis, kui olem nimetati ümber või eemaldati. Mall, mis seda loeb, ei saa midagi, ja päästik, mis seda ootab, ei käivitu kunagi.\n\nSee malliolem on seadistatud sinu YAML-konfiguratsioonis. Vea parandamiseks muuda seda oma konfiguratsiooni jaotises `template:`, viita olemasolevatele olemitele ja laadi oma malliolemid uuesti.\n\nSpook 👻 Sinu semu.",
+            "title": "Malliolemis kasutatud tundmatud olemid: {name}"
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Asend",
                     "description": "Liiguta see loendi algusesse või lõppu. Anna see või kirje, mille järele see panna."
+                }
+            }
+        },
+        "schedule_create": {
+            "fields": {
+                "monday": {
+                    "name": "Esmaspäev",
+                    "description": "Millal ajakava on esmaspäeviti sees: ajaplokkide loend, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Kui see puudub, on ajakava terve päeva väljas."
+                },
+                "tuesday": {
+                    "name": "Teisipäev",
+                    "description": "Millal ajakava on teisipäeviti sees: ajaplokkide loend, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Kui see puudub, on ajakava terve päeva väljas."
+                },
+                "wednesday": {
+                    "name": "Kolmapäev",
+                    "description": "Millal ajakava on kolmapäeviti sees: ajaplokkide loend, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Kui see puudub, on ajakava terve päeva väljas."
+                },
+                "thursday": {
+                    "name": "Neljapäev",
+                    "description": "Millal ajakava on neljapäeviti sees: ajaplokkide loend, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Kui see puudub, on ajakava terve päeva väljas."
+                },
+                "friday": {
+                    "name": "Reede",
+                    "description": "Millal ajakava on reedeti sees: ajaplokkide loend, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Kui see puudub, on ajakava terve päeva väljas."
+                },
+                "saturday": {
+                    "description": "Millal ajakava on laupäeviti sees: ajaplokkide loend, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Kui see puudub, on ajakava terve päeva väljas.",
+                    "name": "Laupäev"
+                },
+                "sunday": {
+                    "name": "Pühapäev",
+                    "description": "Millal ajakava on pühapäeviti sees: ajaplokkide loend, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Kui see puudub, on ajakava terve päeva väljas."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue ajakava nimi."
+                },
+                "schedule_id": {
+                    "name": "Ajakava olemi ID",
+                    "description": "Uue ajakava olemi ID. Eesliide schedule. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue ajakava ikoon."
+                }
+            },
+            "name": "Loo ajakava",
+            "description": "Loob käigu pealt uue ajakava abilise, mis on sees iga nädalapäeva jaoks antud ajaplokkide ajal. Tagastab uue ajakava olemi ID."
+        },
+        "homeassistant_update_area": {
+            "name": "Uuenda ala",
+            "fields": {
+                "name": {
+                    "description": "Ala uus nimi.",
+                    "name": "Nimi"
+                },
+                "aliases": {
+                    "name": "Aliased",
+                    "description": "Ala aliased. Asendab olemasolevad, tühi loend eemaldab need kõik."
+                },
+                "floor_id": {
+                    "name": "Korruse ID",
+                    "description": "Selle korruse ID, millel ala asub."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Ala jaoks kasutatav uus ikoon."
+                },
+                "picture": {
+                    "name": "Pilt",
+                    "description": "Ala pildi URL või tee."
+                },
+                "labels": {
+                    "name": "Sildid",
+                    "description": "Ala siltide ID-d. Asendab olemasolevad, tühi loend eemaldab need kõik."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperatuuriandur",
+                    "description": "Andur, mis mõõdab ala temperatuuri."
+                },
+                "humidity_entity_id": {
+                    "name": "Niiskusandur",
+                    "description": "Andur, mis mõõdab ala niiskust."
+                },
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Uuendatava ala ID."
+                }
+            },
+            "description": "Uuendab olemasolevat ala käigu pealt. Kõik, mille välja jätad, säilitab oma praeguse väärtuse. Aliased ja sildid asendavad alal olemasolevad. Korruse, ikooni, pildi ja andurid saab tühjendada, määrates need väärtuseks null."
+        },
+        "homeassistant_update_device": {
+            "name": "Uuenda seadet",
+            "description": "Uuendab olemasolevat seadet käigu pealt. Kõik, mille välja jätad, säilitab oma praeguse väärtuse. Sildid asendavad seadmel olemasolevad. Nime ja ala saab tühjendada, määrates need väärtuseks null, mis annab seadmele tagasi nime, mille selle sidumine talle andis.",
+            "fields": {
+                "device_id": {
+                    "name": "Seadme ID",
+                    "description": "Uuendatava seadme ID. Home Assistanti seadmevalija ei näita keelatud seadmeid, kasuta nende ID andmiseks YAML-režiimi."
+                },
+                "name_by_user": {
+                    "description": "Seadme uus nimi.",
+                    "name": "Nimi"
+                },
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala ID, kus seade asub."
+                },
+                "labels": {
+                    "name": "Sildid",
+                    "description": "Seadme siltide ID-d. Asendab olemasolevad, tühi loend eemaldab need kõik."
+                },
+                "disabled_by": {
+                    "name": "Keelaja",
+                    "description": "Määra väärtuseks user, et seade keelata, või null, et see uuesti lubada. See töötab nagu seadme keelamise ja lubamise toimingud."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Uuenda korrust",
+            "description": "Uuendab olemasolevat korrust käigu pealt. Kõik, mille välja jätad, säilitab oma praeguse väärtuse. Aliased asendavad korrusel olemasolevad. Ikooni ja taseme saab tühjendada, määrates need väärtuseks null.",
+            "fields": {
+                "floor_id": {
+                    "name": "Korruse ID",
+                    "description": "Uuendatava korruse ID."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Korruse uus nimi."
+                },
+                "aliases": {
+                    "name": "Aliased",
+                    "description": "Korruse aliased. Asendab olemasolevad, tühi loend eemaldab need kõik."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Korruse jaoks kasutatav uus ikoon."
+                },
+                "level": {
+                    "name": "Tase",
+                    "description": "Tase, millel korrus sinu kodus asub."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Kustuta ajakava",
+            "description": "Kustutab kasutajaliideses loodud ajakava abilised. YAML-is seadistatud ajakavasid Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) ajakava(d)."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Määra päeva ajaplokid",
+            "description": "Asendab kasutajaliideses loodud ajakava abilise ühe või mitme päeva ajaplokid. YAML-is seadistatud ajakavasid Spook muuta ei saa.",
+            "fields": {
+                "day": {
+                    "name": "Päev",
+                    "description": "Nädalapäev või -päevad, mille ajaplokid määrata."
+                },
+                "blocks": {
+                    "name": "Ajaplokid",
+                    "description": "Ajaplokid, mille ajal ajakava neil päevadel sees on, igaühel algus- ja lõpuaeg ning valikulised andmed, mida see sees olles atribuutidena näitab. Need asendavad päevade senised plokid. Tühi loend jätab päevad terveks päevaks välja."
                 }
             }
         }
