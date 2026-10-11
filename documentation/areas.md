@@ -84,6 +84,104 @@ data:
 
 :::
 
+### Update an area
+
+Updates an existing area in your Home Assistant instance. Anything you leave
+out keeps the value it already has, so you can change an icon without
+touching the name, the floor or anything else.
+
+Setting `floor_id`, `icon`, `picture`, `temperature_entity_id` or
+`humidity_entity_id` to `null` clears it. The `aliases` and `labels` you give
+replace the ones the area has, and an empty list removes them all. To add or
+remove a single alias or label instead, use the actions made for that.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Update an area 👻
+* - {term}`Action name`
+  - `homeassistant.update_area`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `area_id`
+  - {term}`string <string>`
+  - Yes
+  - `living_room`
+* - `name`
+  - {term}`string <string>`
+  - No
+  - `Living room`
+* - `aliases`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["Lounge", "Sitting area"]`
+* - `floor_id`
+  - {term}`string <string>` or `null`
+  - No
+  - `ground_floor`
+* - `icon`
+  - {term}`string <string>` or `null`
+  - No
+  - `mdi:sofa`
+* - `picture`
+  - {term}`string <string>` or `null`
+  - No
+  - `/local/living_room.jpg`
+* - `labels`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["cozy"]`
+* - `temperature_entity_id`
+  - {term}`string <string>` or `null`
+  - No
+  - `sensor.living_room_temperature`
+* - `humidity_entity_id`
+  - {term}`string <string>` or `null`
+  - No
+  - `sensor.living_room_humidity`
+```
+
+:::{note}
+You need to give at least one thing to change. A call with only an `area_id`
+is refused, so a misspelled parameter cannot pass for a successful update that
+quietly did nothing.
+
+The floor, labels and sensors you give have to exist, and the sensors have to
+measure temperature and humidity. Renaming an area to a name another area
+already carries is refused too, since Home Assistant keeps area names unique.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.update_area
+data:
+  area_id: "living_room"
+  floor_id: "ground_floor"
+  icon: "mdi:sofa"
+```
+
+:::
+
 ### Delete an area
 
 Adds a new area to your Home Assistant instance.

@@ -16,6 +16,12 @@ Instantly create new rooms in your home. _#BobTheBuilder_
 
 `homeassistant.create_area`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area), [documentation](areas#create-an-area) 📚
 
+## Areas: Update an area
+
+Changes an area without deleting it first, so everything in it stays put. _#makeover_
+
+`homeassistant.update_area`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_area), [documentation](areas#update-an-area) 📚
+
 ## Areas: Delete an area
 
 Just like that, you made an area of your home disappear. _#DemolitionMan_
