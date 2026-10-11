@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from functools import partial
 from typing import TYPE_CHECKING
 
 from homeassistant.components import script
@@ -11,7 +12,6 @@ from ....entity_filtering import async_filter_known_label_ids, async_get_all_lab
 from ....reference_extraction import (
     async_raw_config_references,
     core_references,
-    extract_targets_from_config,
     only_in_disabled_steps,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
@@ -47,13 +47,11 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         # references nested in some step types, like repeat sequences.
         if raw_config := getattr(entity, "raw_config", None):
             # Templates that look up a label that is not there are read too.
-            label_ids.update(
-                async_raw_config_references(self.hass, raw_config, "labels")
-            )
+            references = partial(async_raw_config_references, self.hass, kind="labels")
+            label_ids.update(references(raw_config))
             # A disabled step does nothing, so what only it names is left out.
-            label_ids -= only_in_disabled_steps(
-                raw_config, lambda found: extract_targets_from_config(found).label_ids
-            )
+            # Read the same way, or a template there still counts.
+            label_ids -= only_in_disabled_steps(raw_config, references)
 
         return async_filter_known_label_ids(
             self.hass,

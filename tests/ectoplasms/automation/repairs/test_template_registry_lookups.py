@@ -45,6 +45,13 @@ _KIND_OF = {
     "label_entities": "label",
 }
 
+# A lookup of each kind.
+_LOOKUP_OF = {
+    "area": "area_entities",
+    "floor": "floor_areas",
+    "label": "label_entities",
+}
+
 _NOT_FOUND = {
     "area": async_template_areas_not_found,
     "floor": async_template_floors_not_found,
@@ -393,25 +400,33 @@ async def test_lookup_filter_the_configuration_names_is_read(
 
 @pytest.mark.parametrize("domain", ["automation", "script"])
 @pytest.mark.parametrize(
-    ("kind", "function"),
-    [("area", "area_entities"), ("floor", "floor_areas"), ("label", "label_entities")],
+    ("kind", "parked"),
+    [
+        ("area", "{{ area_entities('Parked') }}"),
+        ("floor", "{{ floor_areas('Parked') }}"),
+        ("label", "{{ label_entities('Parked') }}"),
+        # Read the way the lookups are read, not as quoted text.
+        ("area", '{{ area_entities("Kid\'s Room") }}'),
+        ("floor", "{{ '' ~ floor_areas('Parked') | count }}"),
+        ("label", '{{ label_entities("Mom\'s") }}'),
+    ],
 )
 @pytest.mark.usefixtures("house")
 async def test_lookup_only_in_a_disabled_step_is_left_out(
-    hass: HomeAssistant, domain: str, kind: str, function: str
+    hass: HomeAssistant, domain: str, kind: str, parked: str
 ) -> None:
     """A disabled step does nothing, so what only it looks up is not reported."""
     disabled = {
         "enabled": False,
         "action": "persistent_notification.create",
-        "data": {"message": f"{{{{ {function}('Parked') }}}}"},
+        "data": {"message": parked},
     }
 
     unknown = await _unknown(
         hass,
         domain,
         kind,
-        f"{{{{ {function}('Ghost') }}}}",
+        f"{{{{ {_LOOKUP_OF[kind]}('Ghost') }}}}",
         {"steps": [disabled]},
     )
 
