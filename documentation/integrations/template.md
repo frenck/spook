@@ -2,7 +2,7 @@
 subject: Enhanced integrations
 title: Template helpers
 subtitle: Keep template helpers and template entities free of ghosts. 👻
-description: Spook raises repair issues for Template helpers that reference unavailable entities, actions or attributes, and for template entities from YAML that reference unavailable entities or attributes.
+description: Spook raises repair issues for Template helpers that reference unavailable entities, actions or attributes, and for template entities from YAML that reference unavailable entities, actions or attributes.
 date: 2026-08-03T00:00:00+02:00
 ---
 
@@ -11,7 +11,7 @@ lets you create helpers whose values and actions are based on templates. Spook
 inspects Template helpers created in the Home Assistant user interface and
 raises repair issues when it finds references that are no longer available.
 
-Template entities set up in YAML, under `template:` in your configuration, are inspected for unknown entities and attributes too. That includes trigger based template entities, with the triggers, conditions, actions and variables of their section.
+Template entities set up in YAML, under `template:` in your configuration, are inspected for unknown entities, actions and attributes too. That includes trigger based template entities, with the triggers, conditions, actions and variables of their section.
 
 ## Devices & entities
 
@@ -51,6 +51,8 @@ by Home Assistant, or restore the integration or script that provided it.
 Templated action names are ignored because their value is determined at runtime.
 Actions of an integration you disabled are ignored too, until you enable it again.
 Spook automatically removes the repair issue once it is fixed.
+
+Template entities from YAML are inspected the same way: every action of their own, like the `turn_on` and `turn_off` of a template switch, the `press` of a template button or the `set_value` of a template number, and for a trigger based template entity the actions of its section. Each template entity gets an issue of its own. There is no editor for YAML, so the repair issue names the template entity and its entity ID. To resolve the issue, edit it under `template:` in your configuration and reload your template entities. Spook removes the repair issue once it is fixed.
 
 ### Unknown referenced attributes
 
