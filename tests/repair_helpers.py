@@ -114,6 +114,39 @@ async def async_setup_template_automation(
     await hass.async_block_till_done()
 
 
+async def async_setup_haunted_automation(
+    hass: HomeAssistant,
+    triggers: Any,
+    *,
+    conditions: list[Any] | None = None,
+    actions: list[Any] | None = None,
+    **extra: Any,
+) -> None:
+    """Set up the haunted automation, and check it loaded and is on.
+
+    A repair skips an automation that failed to load, so a test that forgot
+    to check would pass on a broken fixture.
+    """
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "triggers": triggers,
+                    "conditions": conditions or [],
+                    "actions": actions or [],
+                    **extra,
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get("automation.haunted").state == "on"
+
+
 async def async_removed_user_id(hass: HomeAssistant) -> str:
     """Return the ID of a user that existed, and was removed.
 

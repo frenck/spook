@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
-from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 
 from custom_components.spook.draft_checking import async_check_draft
@@ -16,7 +15,11 @@ from custom_components.spook.ectoplasms.automation.repairs.unknown_user_referenc
     SpookRepair,
 )
 import pytest
-from tests.repair_helpers import async_issue_about, async_removed_user_id
+from tests.repair_helpers import (
+    async_issue_about,
+    async_removed_user_id,
+    async_setup_haunted_automation,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -48,24 +51,9 @@ async def _reported(
     **extra: Any,
 ) -> str | None:
     """Set up the haunted automation, inspect it, and return the users reported."""
-    assert await async_setup_component(
-        hass,
-        "automation",
-        {
-            "automation": [
-                {
-                    "id": "haunted",
-                    "alias": "Haunted",
-                    "triggers": triggers,
-                    "conditions": conditions or [],
-                    "actions": actions or [],
-                    **extra,
-                }
-            ]
-        },
+    await async_setup_haunted_automation(
+        hass, triggers, conditions=conditions, actions=actions, **extra
     )
-    await hass.async_block_till_done()
-    assert hass.states.get("automation.haunted").state == "on"
 
     await SpookRepair(hass).async_inspect()
 
