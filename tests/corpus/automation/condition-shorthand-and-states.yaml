@@ -1,0 +1,41 @@
+source: tests/test_shorthand_conditions.py and tests/test_state_references.py (#1881)
+note: >-
+  State conditions with a list of states, the `not` shorthand, a numeric
+  state trigger on an attribute, and a state written with a capital that a
+  `person` is never in. The pairs are what the state repair would check.
+  The `not` shorthand is not reported as a condition key; it is built in,
+  so it can never be unknown, and the state condition inside it is read.
+expect:
+  states:
+    find:
+      - person.alex: not_home
+      - alarm_control_panel.house: armed_away
+      - alarm_control_panel.house: armed_night
+      - person.sam: Home
+  attributes:
+    find:
+      - climate.bedroom: current_temperature
+  conditions:
+    find: [state]
+---
+alias: Alarm reminder
+triggers:
+  - trigger: numeric_state
+    entity_id: climate.bedroom
+    attribute: current_temperature
+    below: 16
+conditions:
+  - condition: state
+    entity_id: person.alex
+    state: not_home
+  - not:
+      - condition: state
+        entity_id: alarm_control_panel.house
+        state: [armed_away, armed_night]
+  - condition: state
+    entity_id: person.sam
+    state: Home
+actions:
+  - action: notify.notify
+    data:
+      message: Arm the alarm

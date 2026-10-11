@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/uneven-layouts-with-bubble-card-pop-ups-and-separators/1005584/2
+note: >-
+  A Bubble Card pop-up opened by URL hash, and a button navigating to that
+  hash. The hash is not an entity or area, and the pop-up holds normal cards.
+expect:
+  entities:
+    find: [light.living_room_floor_lamp]
+---
+type: vertical-stack
+cards:
+  - type: custom:bubble-card
+    card_type: pop-up
+    hash: "#lights"
+    button_type: name
+    name: Lights
+    icon: mdi:lamps
+  - type: tile
+    entity: light.living_room_floor_lamp
+  - type: button
+    name: Open lights
+    tap_action:
+      action: navigate
+      navigation_path: "#lights"

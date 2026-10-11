@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/humidity-not-displaying/650987/2
+note: >-
+  simple-thermostat with sensor rows that are attributes of the climate
+  entity, and one that is another entity. Attribute names are not entities.
+expect:
+  entities:
+    find: [climate.basement, sensor.basement_humidity]
+    not_find: [current_humidity]
+---
+type: custom:simple-thermostat
+entity: climate.basement
+step_size: 1
+sensors:
+  - attribute: current_humidity
+    name: Humidity
+    unit: " %"
+  - attribute: fan_mode
+  - entity: sensor.basement_humidity
+    name: Sensor

@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/apollo-msr-2-tuning-dashboard/970413/2
+note: >-
+  streamline-card instances handing a device base name to a template; the
+  template builds entity IDs from it elsewhere. Nothing on the card itself is
+  an entity, an area or an action.
+expect:
+  entities:
+    not_find: [apollo_msr_bedroom]
+---
+type: sections
+path: bedroom
+sections:
+  - type: grid
+    cards:
+      - type: custom:streamline-card
+        template: ld2410_controls
+        variables:
+          device_base_name: apollo_msr_bedroom
+      - type: custom:streamline-card
+        template: ld2410_zone_configuration
+        variables:
+          device_base_name: apollo_msr_bedroom

@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/820029
+note: >-
+  A condition on the rising attribute of the sun, with "true" in quotes, the
+  way the visual editor wrote it for a while. The attribute holds a boolean,
+  and text never equals it. The quoted value is reported as text, and the
+  unquoted boolean of the fix is a different value.
+expect:
+  states:
+    find:
+      - sun.sun[rising]: '"true"'
+    not_find:
+      - sun.sun[rising]: "true"
+  attributes:
+    find:
+      - sun.sun: rising
+---
+alias: Morning blinds
+triggers:
+  - trigger: time_pattern
+    minutes: /15
+conditions:
+  - condition: state
+    entity_id: sun.sun
+    attribute: rising
+    state: "true"
+actions:
+  - action: cover.open_cover
+    target:
+      entity_id: cover.bedroom_blinds

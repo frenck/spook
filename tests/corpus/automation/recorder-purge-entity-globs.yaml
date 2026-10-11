@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/purge-not-working/893198/1
+note: >-
+  recorder.purge_entities with entity_globs as a list and a plain entity list.
+  A glob is not an entity; the exact ones are.
+expect:
+  entities:
+    find: [sensor.energy_meter_power]
+    not_find: ["sensor.energy_meter_*"]
+---
+alias: Purge noisy sensors
+triggers:
+  - trigger: time
+    at: "04:00:00"
+actions:
+  - action: recorder.purge_entities
+    data:
+      keep_days: 3
+      entity_globs:
+        - sensor.energy_meter_*
+        - sensor.192_168_0_103_*
+    target:
+      entity_id: sensor.energy_meter_power

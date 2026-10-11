@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/ios-critical-notification/971389/3
+note: >-
+  The persistent_notification trigger with an update type and a notification
+  ID. The ID is a notification, not an entity, area or label.
+expect:
+  triggers:
+    find: [persistent_notification]
+  entities:
+    not_find: [changedetection]
+---
+alias: Forward change detection
+triggers:
+  - trigger: persistent_notification
+    update_type:
+      - added
+    notification_id: changedetection
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      title: "{{ trigger.notification.title }}"
+      message: "{{ trigger.notification.message }}"

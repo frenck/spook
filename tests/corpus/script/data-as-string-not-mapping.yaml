@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/error-rendering-data-template-result-is-not-a-dictionary-in-automation-solved/947679
+note: >-
+  data written as a folded string containing value:>- and quoted states()
+  calls, so it renders to text instead of a mapping. Without template markers
+  Home Assistant never evaluates the states() calls, so they are no lookups.
+expect:
+  entities:
+    find: [input_datetime.freezer_last_closed, input_number.freezer_open_seconds_today]
+    not_find: [input_datetime.freezer_opened_at]
+  services:
+    find: [input_datetime.set_datetime, input_number.set_value]
+---
+alias: Freezer open time
+sequence:
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.freezer_last_closed
+    data:
+      timestamp: "{{ as_timestamp(now()) }}"
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.freezer_open_seconds_today
+    data: >-
+      value:>- "states('input_datetime.freezer_last_closed') -
+      states('input_datetime.freezer_opened_at')"

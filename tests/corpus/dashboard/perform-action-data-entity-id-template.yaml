@@ -1,0 +1,18 @@
+source: https://community.home-assistant.io/t/mushroom-cards-build-a-beautiful-dashboard-easily-part-2/693055/2
+note: >-
+  A tap action whose data carries entity_id as a Jinja template. The frontend
+  does not render templates in action data, but nothing here is a plain
+  entity either; the walk keeps only valid IDs.
+expect:
+  services:
+    find: [light.toggle]
+  entities:
+    find: [light.hallway]
+---
+type: custom:mushroom-entity-card
+entity: light.hallway
+hold_action:
+  action: perform-action
+  perform_action: light.toggle
+  data:
+    entity_id: "{{ 'light.' ~ 'hallway' }}"

@@ -1,0 +1,32 @@
+source: https://community.home-assistant.io/t/list-names-of-input-number-counters-that-have-a-numeric-state-less-than-set-threshold/936572
+note: >-
+  Announcing low counters by name: expand a group and several input_numbers,
+  compare states as strings with selectattr lt. The quoted '12' is a
+  threshold, not a state of any listed entity.
+out_of_scope: >-
+  `group.`, `device_tracker.` and `persistent_notification.` entities are
+  left out of the unknown entity repairs on purpose
+  (`IGNORED_ENTITY_DOMAINS`): an action can create them on the fly, so one
+  that does not exist yet is not necessarily broken.
+expect:
+  entities:
+    find: [input_number.left_tap_counter, input_number.right_tap_counter]
+    not_find: [group.keg_counters]
+  states:
+    not_find:
+      - group.keg_counters: "12"
+---
+alias: Announce low kegs
+sequence:
+  - variables:
+      minimum: 12
+  - action: tts.speak
+    target:
+      entity_id: tts.home_assistant_cloud
+    data:
+      media_player_entity_id: media_player.kitchen_speaker
+      message: >-
+        Running low:
+        {{ expand('group.keg_counters') | selectattr('state', 'is_number') | selectattr('state', 'lt', '12') | map(attribute='name') | list | join(', ') }}.
+        Counts above minimum:
+        {{ expand('input_number.left_tap_counter', 'input_number.right_tap_counter') | map(attribute='state') | map('int') | select('gt', minimum) | list | join(', ') }}

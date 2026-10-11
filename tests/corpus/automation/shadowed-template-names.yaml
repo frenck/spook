@@ -1,0 +1,30 @@
+source: tests/template_configs.py::shadowing_configs (#1880)
+note: >-
+  Templates that give `states` or `state_attr` a meaning of their own, through
+  a variable, a set statement or a macro. What looks like a lookup there is
+  none, so nothing in those templates names an attribute or a state.
+expect:
+  attributes:
+    not_find:
+      - light.kitchen: brightness
+      - light.hallway: Brightness
+  states:
+    not_find:
+      - light.kitchen: "On"
+---
+alias: Shadowed names
+variables:
+  state_attr: "{{ {'light.kitchen': 1} }}"
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.hallway_motion
+actions:
+  - wait_template: >-
+      {% set states = {'light': 1} %}
+      {{ states.light.kitchen.attributes.brightness }}
+  - wait_template: >-
+      {% macro is_state(a, b) %}{{ a }}{% endmacro %}
+      {{ is_state('light.kitchen', 'On') }}
+  - action: notify.notify
+    data:
+      message: "{{ state_attr('light.hallway', 'Brightness') }}"

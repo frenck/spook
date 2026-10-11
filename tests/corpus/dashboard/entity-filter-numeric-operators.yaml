@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/adjust-multiple-thermostats-offsets-with-external-temp-sensors/651141/1
+note: >-
+  entity-filter with two numeric operators written with and without quotes
+  (`<=` unquoted is a valid YAML string) and a nested entities card.
+expect:
+  entities:
+    find: [sensor.thermostat_offset_hall, sensor.thermostat_offset_office]
+---
+type: entity-filter
+entities:
+  - sensor.thermostat_offset_hall
+  - sensor.thermostat_offset_office
+state_filter:
+  - operator: ">="
+    value: 0.2
+  - operator: <=
+    value: -0.2
+card:
+  type: entities
+  title: Offsets to correct
+show_empty: false

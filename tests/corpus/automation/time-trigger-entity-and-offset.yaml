@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/multiple-triggers-and-multiple-actions-in-one-automation/868713/4
+note: >-
+  Time trigger at an input_datetime, once bare and once as a mapping with an
+  offset. Home Assistant's own reading takes both forms.
+expect:
+  entities:
+    find: [input_datetime.bike_charging_reminder]
+---
+alias: Bike charging reminder
+triggers:
+  - trigger: time
+    id: at_time
+    at: input_datetime.bike_charging_reminder
+  - trigger: time
+    id: hour_later
+    at:
+      entity_id: input_datetime.bike_charging_reminder
+      offset: "01:00:00"
+actions:
+  - action: notify.notify
+    data:
+      message: Charge the bike ({{ trigger.id }})

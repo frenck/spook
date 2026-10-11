@@ -1,0 +1,27 @@
+source: custom_components/spook/reference_extraction.py (_without_never_rendered, #1880)
+note: >-
+  A template in the description of an automation and in the alias of a step.
+  Home Assistant never renders either, so the entity named only there cannot
+  break anything. The attribute and state readers leave these out already.
+out_of_scope: >-
+  Names, descriptions and field examples are never rendered, so an entity
+  named only there is left out on purpose.
+expect:
+  entities:
+    find: [switch.heater]
+    not_find: [sensor.old_power_meter]
+  attributes:
+    not_find:
+      - sensor.old_power_meter: power
+---
+alias: Heater off at night
+description: >-
+  Used to log {{ state_attr('sensor.old_power_meter', 'power') }} as well.
+triggers:
+  - trigger: time
+    at: "23:30:00"
+actions:
+  - alias: "Was {{ states('sensor.old_power_meter') }} W"
+    action: switch.turn_off
+    target:
+      entity_id: switch.heater

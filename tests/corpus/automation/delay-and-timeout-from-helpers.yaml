@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/helper-based-time-switch-fail-backup-strategy/649574/2
+note: >-
+  A delay built from an input_number in minutes, and a wait_for_trigger whose
+  timeout comes from another helper. Both helpers are referenced in templates.
+expect:
+  entities:
+    find: [input_number.fan_run_minutes, input_number.fan_max_wait, switch.bathroom_fan]
+---
+alias: Bathroom fan run time
+triggers:
+  - trigger: state
+    entity_id: switch.bathroom_fan
+    to: "on"
+actions:
+  - delay:
+      minutes: "{{ states('input_number.fan_run_minutes') | int(10) }}"
+  - wait_for_trigger:
+      - trigger: state
+        entity_id: binary_sensor.bathroom_humidity_high
+        to: "off"
+    timeout: "{{ states('input_number.fan_max_wait') | int(30) * 60 }}"
+  - action: switch.turn_off
+    target:
+      entity_id: switch.bathroom_fan

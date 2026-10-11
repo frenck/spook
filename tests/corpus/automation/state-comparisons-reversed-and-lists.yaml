@@ -1,0 +1,25 @@
+source: tests/test_state_references.py (#1881)
+note: >-
+  State lookups written the other way round ('open' == states(...)) and with
+  is_state over a list of states, which core's is_state takes. Each pairs a
+  real entity with real state values.
+expect:
+  states:
+    find:
+      - cover.garage_door: open
+      - alarm_control_panel.home: armed_away
+      - alarm_control_panel.home: armed_night
+---
+alias: Garage open while armed
+triggers:
+  - trigger: time_pattern
+    minutes: /10
+conditions:
+  - condition: template
+    value_template: >-
+      {{ 'open' == states('cover.garage_door')
+         and is_state('alarm_control_panel.home', ['armed_away', 'armed_night']) }}
+actions:
+  - action: notify.notify
+    data:
+      message: Garage is open

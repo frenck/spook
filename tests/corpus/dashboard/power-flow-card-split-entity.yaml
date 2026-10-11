@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/power-flow-card-plus/552326/3
+note: >-
+  power-flow-card-plus: `entities` is a mapping, not a list. The solar entity
+  is a plain `entity` (read). The grid and battery `entity` are mappings of
+  consumption and production, and the battery charge sits under
+  state_of_charge.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+expect:
+  entities:
+    find: [sensor.solar_power]
+    not_find: [sensor.grid_import_power, sensor.battery_charge_power, sensor.battery_level]
+---
+type: custom:power-flow-card-plus
+title: Power Flow
+entities:
+  grid:
+    entity:
+      consumption: sensor.grid_import_power
+      production: sensor.grid_export_power
+  solar:
+    entity: sensor.solar_power
+  battery:
+    entity:
+      consumption: sensor.battery_discharge_power
+      production: sensor.battery_charge_power
+    state_of_charge: sensor.battery_level
+watt_threshold: 1000

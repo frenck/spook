@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/entities-not-marked-as-used-in-automations-when-part-of-ui-block-of-actions/827705/1
+note: >-
+  The editor's "sequence" building block: a step that is nothing but a nested
+  `sequence:`. The entities inside are found, the entity walk recurses into
+  every key. The script version is the same step, so it has no case of its
+  own.
+expect:
+  services:
+    find: [cover.open_cover, light.turn_off]
+  entities:
+    find: [cover.garage_door, light.garage]
+---
+alias: Garage opens when arriving
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.car_arrived
+    to: "on"
+actions:
+  - sequence:
+      - action: cover.open_cover
+        target:
+          entity_id: cover.garage_door
+      - delay: "00:02:00"
+      - action: light.turn_off
+        target:
+          entity_id: light.garage

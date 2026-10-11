@@ -1,0 +1,30 @@
+source: https://github.com/frenck/spook/pull/1949
+note: >-
+  A Home dashboard somebody took control of. The frontend writes out a view
+  for every area then, with the area under its home-area strategy, and that
+  view only says unknown area once the area is removed. The overview view
+  takes no area, so a word under `area` there is the near miss.
+expect:
+  areas:
+    find: [kitchen, garage]
+    not_find: [Garaj]
+---
+views:
+  - path: home
+    strategy:
+      type: home-overview
+      area: Garaj
+  - title: Kitchen
+    path: areas-kitchen
+    subview: true
+    strategy:
+      type: home-area
+      area: kitchen
+      home_panel: true
+  - title: Garage
+    path: areas-garage
+    subview: true
+    strategy:
+      type: home-area
+      area: garage
+      home_panel: true

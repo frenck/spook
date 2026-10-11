@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/hue-scenes-without-hue-bridge/623711/1
+note: >-
+  Fields with select selectors and defaults that are scene names and LED
+  names, not entities. Nothing in fields may come out as a reference.
+expect:
+  entities:
+    not_find: [scene.savanna_sunset]
+---
+alias: Hue style scene
+fields:
+  scene:
+    name: Scene
+    required: true
+    default: Savanna Sunset
+    selector:
+      select:
+        options:
+          - Savanna Sunset
+          - Tropical Twilight
+  only_on:
+    default: false
+    selector:
+      boolean: null
+sequence:
+  - action: scene.turn_on
+    target:
+      entity_id: "scene.{{ scene | lower | replace(' ', '_') }}"

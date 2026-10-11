@@ -1,0 +1,43 @@
+source: https://github.com/frenck/spook/issues/1395
+note: >-
+  Blueprint style script that loops over integration variants; a bare template
+  condition halts each iteration when nothing matched, so actions for an
+  integration that is not installed are never reached. They are still literal
+  references.
+expect:
+  services:
+    find: [zha.issue_zigbee_cluster_command, mqtt.publish]
+---
+alias: Set switch LED colour
+fields:
+  switches:
+    selector:
+      entity:
+        multiple: true
+sequence:
+  - repeat:
+      for_each:
+        - kind: zha
+          entities: "{{ switches | select('match', 'light.zha_') | list }}"
+        - kind: mqtt
+          entities: "{{ switches | select('match', 'light.z2m_') | list }}"
+      sequence:
+        - condition: template
+          value_template: "{{ repeat.item.entities | count > 0 }}"
+        - if:
+            - condition: template
+              value_template: "{{ repeat.item.kind == 'zha' }}"
+          then:
+            - action: zha.issue_zigbee_cluster_command
+              data:
+                ieee: "{{ repeat.item.entities[0] }}"
+                endpoint_id: 1
+                cluster_id: 64561
+                command: 1
+                command_type: server
+                params: {}
+          else:
+            - action: mqtt.publish
+              data:
+                topic: "zigbee2mqtt/{{ repeat.item.entities[0] }}/set"
+                payload: '{"led_effect": "solid"}'

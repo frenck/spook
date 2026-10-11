@@ -1,0 +1,14 @@
+source: https://community.home-assistant.io/t/can-i-create-a-parametrized-dashboard-where-i-set-a-variable-at-the-top-of-the-dashboard-and-the-rest-of-the-definition-refers-to-it/618192/11
+note: >-
+  config-template-card with JavaScript placeholders reading the URL hash, and
+  a heartbeat entity in its update list. The JavaScript reads only the URL hash, no entity.
+expect:
+  entities:
+    find: [sensor.heartbeat]
+---
+type: custom:config-template-card
+entities:
+  - sensor.heartbeat
+card:
+  type: markdown
+  content: ${window.location.hash.slice(1)}

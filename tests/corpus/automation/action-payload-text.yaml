@@ -1,0 +1,30 @@
+source: tests/ectoplasms/automation/repairs/test_unknown_entity_references.py::test_a_notification_tag_is_just_text
+note: >-
+  Text in action data that happens to look like an entity ID: a notification
+  tag a phone uses to replace an earlier message, and a logger name. Neither
+  is a reference. The light in the target is.
+expect:
+  entities:
+    find: [light.kettle_indicator]
+    not_find:
+      - notify.kettle_is_on
+      - homeassistant.components.kettle
+---
+alias: Kettle notification
+triggers:
+  - trigger: state
+    entity_id: switch.kettle
+    to: "on"
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: The kettle is on
+      data:
+        tag: notify.kettle_is_on
+  - action: system_log.write
+    data:
+      logger: homeassistant.components.kettle
+      message: Kettle turned on
+  - action: light.turn_on
+    target:
+      entity_id: light.kettle_indicator

@@ -1,0 +1,51 @@
+source: https://community.home-assistant.io/t/newbie-asked-chatgpt-for-an-automatization-tell-me-why-it-doesnt-work-one-button-toggle-on-off-and-dimming/670841/14
+note: >-
+  A dim up automation for a wall button, with a second choose copied from the
+  dim down one. That branch asks for an ID none of these triggers has, so it
+  can never run, and Home Assistant loads it without a word. The `until` of
+  the repeat asks for an ID that is there. The button's device triggers are
+  written as events here, so the case loads in an empty house.
+expect:
+  trigger_ids:
+    find: [dim-down-doublepress]
+    not_find: [dim-up-longpress, dim-up-release]
+---
+alias: Living room dimmer up
+triggers:
+  - trigger: event
+    event_type: shelly.click
+    event_data:
+      click_type: long
+    id: dim-up-longpress
+  - trigger: event
+    event_type: shelly.click
+    event_data:
+      click_type: btn_up
+    id: dim-up-release
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: [dim-up-longpress]
+        sequence:
+          - repeat:
+              sequence:
+                - action: light.turn_on
+                  target:
+                    entity_id: light.living_room
+                  data:
+                    brightness_step_pct: 10
+                - delay:
+                    milliseconds: 500
+              until:
+                - condition: trigger
+                  id: [dim-up-release]
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: [dim-down-doublepress]
+        sequence:
+          - action: light.turn_off
+            target:
+              entity_id: light.living_room
+mode: restart

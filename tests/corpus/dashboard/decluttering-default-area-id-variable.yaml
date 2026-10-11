@@ -1,0 +1,44 @@
+source: https://community.home-assistant.io/t/getting-creative-with-lovelace-heading-cards/778794/1
+note: >-
+  Decluttering template with variables named area_id and area_name, pasted
+  into entity IDs with [[area_id]]. decluttering-card swaps every [[key]] for
+  its value as plain text and does nothing else with a variable, so `study`
+  only ever becomes part of sensor.climate_study_temperature: no card is
+  handed an area. The area walk reads `area_id` on any node, so the card's
+  `variables` entry is looked up as an area anyway (the template's own
+  default sits outside the views and is not read). The templated entity ID
+  itself is not valid and dropped.
+known_issue: >-
+  A decluttering variable is read by its name, not by where the template puts
+  it. A variable called `entity` gets away with that because its value has to
+  look like an entity ID; an area ID has no shape, so any word passes.
+  Telling `study` apart from a real area target needs the template filled in
+  first, so it is reported as an area today.
+expect:
+  areas:
+    not_find: [study]
+---
+decluttering_templates:
+  area_heading:
+    default:
+      - area_id: study
+      - area_name: Study
+    card:
+      type: heading
+      heading: "[[area_name]]"
+      heading_style: subtitle
+      badges:
+        - type: entity
+          entity: "sensor.climate_[[area_id]]_temperature"
+          visibility:
+            - condition: numeric_state
+              entity: "sensor.climate_[[area_id]]_temperature"
+              above: 0
+views:
+  - title: Rooms
+    cards:
+      - type: custom:decluttering-card
+        template: area_heading
+        variables:
+          - area_id: study
+          - area_name: Study

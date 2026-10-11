@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/custom-button-card/386807/15
+note: >-
+  button-card with a custom field holding a whole mini-graph-card under
+  `card`, colour thresholds with comments. The nested card's entity rows are
+  found by recursion.
+expect:
+  entities:
+    find: [sensor.indoor_temperature]
+---
+type: custom:button-card
+name: Indoor
+custom_fields:
+  graph:
+    card:
+      type: custom:mini-graph-card
+      entities:
+        - entity: sensor.indoor_temperature
+      color_thresholds:
+        - value: -20
+          color: "#0000FF" # very cold
+        - value: 25
+          color: "#FF0000"
+      show:
+        name: false
+        state: false

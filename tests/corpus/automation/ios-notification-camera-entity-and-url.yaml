@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/ios-notification-uri-minimizing-app/573826/1
+note: >-
+  iOS notification with a live camera attached through data.entity_id, a URI
+  action button, and a camera proxy image path. The entity_id is a real
+  reference; the path names the camera too, as part of a URL, which is no reference.
+expect:
+  entities:
+    find: [camera.gate]
+---
+alias: Gate camera notification
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.gate_motion
+    to: "on"
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: Motion at the gate
+      data:
+        image: /api/camera_proxy/camera.gate
+        entity_id: camera.gate
+        push:
+          category: camera
+        actions:
+          - action: URI
+            title: Open security
+            uri: /lovelace/security

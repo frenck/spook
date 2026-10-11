@@ -3,3 +3,7 @@
 # wins, and the churn buries the one line a pull request actually changed.
 custom_components/**/translations/*.json
 !custom_components/**/translations/en.json
+
+# A corpus case keeps the configuration the way people write it: the quoting,
+# the folding and the odd shapes are the point, so it is not reformatted.
+tests/corpus/**/*.yaml

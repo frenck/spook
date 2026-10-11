@@ -1,0 +1,38 @@
+source: https://community.home-assistant.io/t/help-with-automation-condition-for-unavailable-states/944497
+note: >-
+  A template condition with no braces at all, so it is the text
+  `trigger.from_state.state != "unknown"` and never `true`. The automation
+  never notified, which looked like the condition being wrong. The fix from
+  the thread, is_number in braces, is the near miss.
+expect:
+  templates:
+    find: ['trigger.from_state.state != "unknown"']
+    not_find: ["{{ is_number(trigger.from_state.state) }}"]
+  entities:
+    find: [sensor.washing_machine_power, sensor.dishwasher_power]
+---
+alias: Machine done alerts
+description: ""
+triggers:
+  - trigger: numeric_state
+    entity_id: sensor.washing_machine_power
+    below: 3
+    for:
+      minutes: 5
+  - trigger: numeric_state
+    entity_id: sensor.dishwasher_power
+    below: 1
+    for:
+      minutes: 5
+conditions:
+  - condition: or
+    conditions:
+      - condition: template
+        value_template: trigger.from_state.state != "unknown"
+      - condition: template
+        value_template: "{{ is_number(trigger.from_state.state) }}"
+actions:
+  - action: notify.notify
+    data:
+      message: "{{ trigger.to_state.name }} is done!"
+mode: single

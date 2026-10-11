@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/navbar-card-easily-navigate-through-dashboards/832917/16
+note: >-
+  navbar-card routes: each a URL with an icon, one with a badge template
+  counting something, and one that opens more-info for an entity.
+out_of_scope: >-
+  The badge is JavaScript the card runs in the browser; Spook does not read
+  JavaScript. The more-info target is a regular tap action and is read.
+expect:
+  entities:
+    find: [alarm_control_panel.home]
+    not_find: [light.living_room]
+---
+type: custom:navbar-card
+routes:
+  - url: /lovelace/home
+    icon: mdi:home
+    label: Home
+  - url: /lovelace/lights
+    icon: mdi:lightbulb
+    label: Lights
+    badge:
+      show: "[[[ return states['light.living_room'].state === 'on' ]]]"
+  - icon: mdi:shield-home
+    label: Alarm
+    tap_action:
+      action: more-info
+      entity: alarm_control_panel.home

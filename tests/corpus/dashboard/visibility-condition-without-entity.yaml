@@ -1,0 +1,41 @@
+source: https://github.com/frenck/spook/pull/1919
+note: >-
+  A visibility condition without an entity is about the entity of the card
+  it is on. A section has no entity to hand, and neither does the conditional
+  card to its own conditions, so those name nothing. A state shaped like an
+  entity ID is compared with the state of that entity, as the dashboard
+  documentation says, so it is no state of its own.
+expect:
+  states:
+    find:
+      - cover.garage_door: open
+    not_find:
+      - cover.garage_door: input_select.garage_mode
+      - light.porch: input_select.garage_mode
+      - light.porch: "on"
+---
+type: sections
+path: garage
+sections:
+  - type: grid
+    visibility:
+      - condition: state
+        state: "on"
+    cards:
+      - type: tile
+        entity: cover.garage_door
+        visibility:
+          - condition: state
+            state: open
+      - type: tile
+        entity: light.porch
+        visibility:
+          - condition: state
+            state: input_select.garage_mode
+      - type: conditional
+        conditions:
+          - condition: state
+            state: "on"
+        card:
+          type: tile
+          entity: light.porch

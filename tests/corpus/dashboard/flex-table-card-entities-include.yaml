@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/rest-api-sensor-for-openligadb/1013821/13
+note: >-
+  flex-table-card: `entities` is a mapping with include and exclude, each a
+  pattern or a plain entity ID. A pattern is no entity; the exact
+  `include: sensor.league_table` names one, under a key of the card's own.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+expect:
+  entities:
+    not_find: ["sensor.*_battery", sensor.league_table]
+---
+type: vertical-stack
+cards:
+  - type: custom:flex-table-card
+    entities:
+      include: sensor.league_table
+    columns:
+      - name: Place
+        data: result
+  - type: custom:flex-table-card
+    entities:
+      include: sensor.*_battery
+      exclude:
+        - sensor.phone_battery
+    columns:
+      - name: Level
+        data: state

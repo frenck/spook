@@ -1,0 +1,25 @@
+source: https://github.com/aneisch/home-assistant-config/blob/master/packages/christmas.yaml
+note: >-
+  Same action sent twice with a delay in between, each step tolerating
+  failures with continue_on_error. Plain and boring, which makes it a baseline.
+expect:
+  entities:
+    find: [cover.office_blind, cover.dining_room_blind]
+  services:
+    find: [cover.close_cover]
+---
+alias: Close the blinds twice
+sequence:
+  - action: cover.close_cover
+    continue_on_error: true
+    target:
+      entity_id:
+        - cover.office_blind
+        - cover.dining_room_blind
+  - delay: "00:01:30"
+  - action: cover.close_cover
+    continue_on_error: true
+    target:
+      entity_id:
+        - cover.office_blind
+        - cover.dining_room_blind

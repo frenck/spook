@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/error-in-automation-using-notify/759543
+note: >-
+  An hourly CSV log through a YAML file notifier that went away when the file
+  integration moved to the UI. Six sensors concatenated in one message template.
+expect:
+  services:
+    find: [notify.energy_log]
+  entities:
+    find:
+      - sensor.electricity_import_tariff_1
+      - sensor.electricity_export_tariff_1
+      - sensor.gas_consumption
+      - sensor.solar_production_energy
+---
+alias: Log energy usage
+description: ""
+trigger:
+  - platform: time_pattern
+    minutes: "0"
+    seconds: "0"
+condition: []
+action:
+  - action: notify.energy_log
+    data:
+      message: >-
+        {{ states('sensor.electricity_import_tariff_1') }},{{
+        states('sensor.electricity_export_tariff_1') }},{{
+        states('sensor.solar_production_energy') }},{{
+        states('sensor.gas_consumption') }}
+mode: single

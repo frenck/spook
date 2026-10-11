@@ -1,0 +1,32 @@
+source: https://www.home-assistant.io/docs/scripts/#for-each
+note: >-
+  for_each over mappings that pair a weather condition with a scene. The item
+  key `condition` is data, not a condition, and the values are weather states.
+  Distilled from the documented for_each mapping form; no public sighting of
+  this exact key found yet.
+out_of_scope: >-
+  Variables and for_each items are values somebody hands over. A literal under
+  a reference key like entity_id is read; a plain string under a key of
+  somebody's own is data until a template uses it, and Spook does not follow
+  that use.
+expect:
+  conditions:
+    not_find: [rainy, sunny]
+  entities:
+    find: [weather.home]
+    not_find: [scene.cosy, scene.bright]
+---
+alias: Weather scene
+sequence:
+  - repeat:
+      for_each:
+        - condition: rainy
+          scene: scene.cosy
+        - condition: sunny
+          scene: scene.bright
+      sequence:
+        - if: "{{ is_state('weather.home', repeat.item.condition) }}"
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: "{{ repeat.item.scene }}"

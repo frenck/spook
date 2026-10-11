@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/798890
+note: >-
+  A card hidden while a power sensor reads zero, written as the dashboard shows
+  the number in a locale with a decimal comma. The state is 0.0, never 0,000,
+  so the card is always shown. The fix compares the number instead, which
+  names no state.
+expect:
+  states:
+    find:
+      - sensor.heater_power: "0,000"
+    not_find:
+      - sensor.heater_power: "0"
+---
+type: vertical-stack
+cards:
+  - type: tile
+    entity: switch.heater
+    visibility:
+      - condition: state
+        entity: sensor.heater_power
+        state_not: 0,000
+  - type: tile
+    entity: switch.heater
+    visibility:
+      - condition: numeric_state
+        entity: sensor.heater_power
+        above: 0

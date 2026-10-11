@@ -1,0 +1,16 @@
+source: https://community.home-assistant.io/t/modify-badge-color-dynamically-with-new-color-attribute/975136/1
+note: >-
+  An entity badge whose `color` is a Jinja template with `#` lines meant as
+  comments (they are output text in Jinja). Dashboards do not render templates
+  in this key; the only entity it names is the badge entity, read through its key.
+expect:
+  entities:
+    find: [sensor.home_battery_level]
+---
+type: entity
+entity: sensor.home_battery_level
+name: Battery
+color: |
+  # weight from the level
+  {% set weight = states('sensor.home_battery_level') | int / 100 %}
+  {{ 'red' if weight < 0.2 else 'green' }}

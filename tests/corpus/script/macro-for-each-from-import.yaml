@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/reusing-data-in-scripts-and-automations/581399/1
+note: >-
+  for_each whose list comes from a macro in custom_templates. The list the
+  macro returns is invisible to every reader, and the loop body only uses
+  repeat.item; the fixed lock target is read.
+expect:
+  entities:
+    find: [lock.front_door]
+  services:
+    find: [lock.set_usercode]
+---
+alias: Program door codes
+sequence:
+  - repeat:
+      for_each: "{% from 'doorcodes.jinja' import door_codes %}{{ door_codes() }}"
+      sequence:
+        - action: lock.set_usercode
+          target:
+            entity_id: lock.front_door
+          data:
+            code_slot: "{{ repeat.item.slot }}"
+            usercode: "{{ repeat.item.code }}"

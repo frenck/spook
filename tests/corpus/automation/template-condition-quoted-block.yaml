@@ -1,0 +1,37 @@
+source: https://community.home-assistant.io/t/why-is-my-condition-template-not-evaulating-to-true/738044
+note: >-
+  A template condition written as a folded block that also wraps the template
+  in double quotes. The quotes are output, so the render is `"True"` with the
+  quotes, never `true`, and the condition never passes. The same comparison
+  as a template trigger, written without the quotes, is fine.
+expect:
+  templates:
+    find:
+      - >-
+        "{{ states('sensor.solar_output_last_5_minutes') | float(0) >
+        states('input_number.solar_peak_today') | float(0) }}"
+    not_find:
+      - >-
+        {{ states('sensor.solar_output_last_5_minutes') | float(0) >
+        states('input_number.solar_peak_today') | float(0) }}
+  entities:
+    find: [sensor.solar_output_last_5_minutes, input_number.solar_peak_today]
+---
+alias: Record the solar peak of today
+triggers:
+  - trigger: template
+    value_template: >-
+      {{ states('sensor.solar_output_last_5_minutes') | float(0) >
+      states('input_number.solar_peak_today') | float(0) }}
+actions:
+  - if:
+      - condition: template
+        value_template: >-
+          "{{ states('sensor.solar_output_last_5_minutes') | float(0) >
+          states('input_number.solar_peak_today') | float(0) }}"
+    then:
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.solar_peak_today
+        data:
+          value: "{{ states('sensor.solar_output_last_5_minutes') | float(0) }}"

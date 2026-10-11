@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/add-once-a-day-automation-option/595655/5
+note: >-
+  Run-once-a-day guard on this.attributes.last_triggered. `this` is the
+  automation itself, so neither an entity nor an attribute pair to look up.
+expect:
+  attributes:
+    not_find:
+      - this.attributes: last_triggered
+---
+alias: Morning coffee once a day
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.kitchen_motion
+    to: "on"
+conditions:
+  - condition: template
+    value_template: >-
+      {{ this.attributes.last_triggered | default(as_datetime(0), true)
+         < today_at('05:00') }}
+actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.coffee_maker

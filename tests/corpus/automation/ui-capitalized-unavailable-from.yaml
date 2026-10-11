@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/triggers-unavailable-unavailable/829600
+note: >-
+  The UI offered the display form of the state, so the trigger stored "Unavailable"
+  with a capital U. State triggers compare case sensitively and it never fired.
+expect:
+  entities:
+    find: [binary_sensor.garage_controller_status]
+  states:
+    find:
+      - binary_sensor.garage_controller_status: Unavailable
+---
+alias: Garage controller came back online
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.garage_controller_status
+    from: Unavailable
+conditions: []
+actions:
+  - action: notify.notify
+    data:
+      message: The garage controller is back.
+mode: single

@@ -1,0 +1,20 @@
+source: https://community.home-assistant.io/t/command-queueing-for-roborock/686779/3
+note: >-
+  A markdown card with its own entity_id option (which entity changes
+  re-render it), read, and content templates naming another sensor.
+out_of_scope: >-
+  The dashboard repairs read keys that name a reference, never templates:
+  the frontend or a custom card renders those, and what they turn into is
+  not something to look up ahead of time.
+expect:
+  entities:
+    find: [input_text.vacuum_queue]
+    not_find: [sensor.vacuum_battery]
+---
+type: markdown
+entity_id:
+  - input_text.vacuum_queue
+content: >-
+  {% set rooms = states('input_text.vacuum_queue') %}
+  Queue: {{ rooms.replace('button.vacuum_kitchen', 'kitchen') }},
+  battery {{ states('sensor.vacuum_battery') }}%

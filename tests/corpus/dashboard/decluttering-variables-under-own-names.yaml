@@ -1,0 +1,43 @@
+source: https://github.com/johnkoht/hassio-config/blob/master/dashboards/kohbo/rooms/main_floor/foyer.yaml
+note: >-
+  Layout card subview whose layout comes from !include, decluttering cards fed
+  entity IDs under variable names the template chose (occupancy, mode), a
+  navigation path in a variable, and tile cards with inline features.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+expect:
+  entities:
+    find: [light.hallway_ceiling, light.hallway_chandelier]
+    not_find: [input_boolean.hallway_occupied, input_select.hallway_mode]
+---
+type: custom:vertical-layout
+title: Hallway
+path: rooms-hallway
+subview: true
+layout: !include /config/dashboards/templates/layouts/page_layout.yaml
+cards:
+  - type: custom:decluttering-card
+    template: room_page_toolbar
+    variables:
+      - name: Hallway
+      - navigation_path: /dashboard-home/rooms-ground-floor
+      - settings_path: "#hallway_settings_popup"
+  - type: custom:decluttering-card
+    template: room_overview
+    variables:
+      - occupancy: input_boolean.hallway_occupied
+      - mode: input_select.hallway_mode
+  - type: tile
+    entity: light.hallway_ceiling
+    name: Ceiling
+    features:
+      - type: light-brightness
+    features_position: inline
+  - type: tile
+    entity: light.hallway_chandelier
+    name: Chandelier
+    features:
+      - type: light-brightness
+    features_position: inline

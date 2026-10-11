@@ -1,0 +1,47 @@
+source: https://community.home-assistant.io/t/my-conditions-does-not-seems-to-work/887583
+note: >-
+  Template conditions in a choose, written with parentheses where the braces
+  go. Without braces it is plain text, so neither option ever runs. The
+  original set the mode through device actions; plain actions here. The fixed
+  form, braces and a float filter, is the near miss.
+expect:
+  templates:
+    find:
+      - >-
+        ((states("sensor.living_room_temperature")>(state_attr('climate.living_room','temperature')
+        +0.7)))
+    not_find:
+      - >-
+        {{ states('sensor.living_room_temperature') | float(0) <
+        state_attr('climate.living_room', 'temperature') - 0.7 }}
+---
+alias: Living room heat or cool
+triggers:
+  - trigger: state
+    entity_id: sensor.living_room_temperature
+conditions:
+  - condition: state
+    entity_id: input_boolean.living_room_hvac_allowed
+    state: "on"
+actions:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: ((states("sensor.living_room_temperature")>(state_attr('climate.living_room','temperature') +0.7)))
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: climate.living_room
+            data:
+              hvac_mode: cool
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ states('sensor.living_room_temperature') | float(0) <
+              state_attr('climate.living_room', 'temperature') - 0.7 }}
+        sequence:
+          - action: climate.set_hvac_mode
+            target:
+              entity_id: climate.living_room
+            data:
+              hvac_mode: heat

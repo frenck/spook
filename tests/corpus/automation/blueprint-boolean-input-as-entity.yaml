@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/how-to-check-for-boolean-input-in-if-condition/868902
+note: >-
+  A blueprint boolean input used as if it were an entity, states(boolean.has_nightlight).
+  boolean is not a domain and there is no entity behind it. Written here as the
+  expanded automation the user ended up with.
+expect:
+  entities:
+    find: [fan.bedroom_ceiling, binary_sensor.bedroom_motion]
+    not_find: [boolean.has_nightlight]
+---
+alias: Bedroom fan with nightlight option
+variables:
+  has_nightlight: true
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.bedroom_motion
+    to: "off"
+    for:
+      minutes: 10
+conditions:
+  - condition: template
+    value_template: "{{ states(boolean.has_nightlight) == true }}"
+actions:
+  - action: fan.turn_off
+    target:
+      entity_id: fan.bedroom_ceiling

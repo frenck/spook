@@ -1,0 +1,26 @@
+source: https://www.home-assistant.io/dashboards/thermostat/
+note: >-
+  Thermostat and humidifier cards with features listing modes; the modes are
+  not entities.
+expect:
+  entities:
+    find: [climate.living_room, humidifier.bedroom]
+---
+type: grid
+cards:
+  - type: thermostat
+    entity: climate.living_room
+    features:
+      - type: climate-preset-modes
+        style: dropdown
+        preset_modes:
+          - home
+          - eco
+  - type: humidifier
+    entity: humidifier.bedroom
+    features:
+      - type: humidifier-modes
+        style: icons
+        modes:
+          - normal
+          - sleep

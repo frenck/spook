@@ -1,0 +1,21 @@
+source: https://www.home-assistant.io/dashboards/map/
+note: >-
+  A map card labelling one tracker with its battery level. The attribute is
+  only shown with label_mode attribute, so the one written next to label_mode
+  state is not shown by the card and names nothing.
+expect:
+  attributes:
+    find:
+      - device_tracker.alex_phone: battery_level
+    not_find:
+      - device_tracker.sam_phone: battery_level
+---
+type: map
+entities:
+  - entity: device_tracker.alex_phone
+    label_mode: attribute
+    attribute: battery_level
+  - entity: device_tracker.sam_phone
+    label_mode: state
+    attribute: battery_level
+hours_to_show: 24

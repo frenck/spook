@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/845737
+note: >-
+  A state trigger on an old style group of persons, waiting for it to leave
+  Home, capitalised the way the dashboard shows it. The group is home or
+  not_home, so the trigger never fires. The empty to, which means any new
+  state, names no state.
+expect:
+  states:
+    find:
+      - group.family: Home
+    not_find:
+      - group.family: home
+      - group.family: None
+---
+alias: Everybody left
+triggers:
+  - trigger: state
+    entity_id:
+      - group.family
+    to: null
+    from: Home
+actions:
+  - action: climate.set_preset_mode
+    target:
+      entity_id: climate.living_room
+    data:
+      preset_mode: away

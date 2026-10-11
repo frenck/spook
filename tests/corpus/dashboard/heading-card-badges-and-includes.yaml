@@ -1,0 +1,32 @@
+source: https://github.com/jazzyisj/home-assistant-config/blob/master/ui/card/light/kitchen_lights.yaml
+note: >-
+  Heading card with its own entity and an entity badge, styled through card_mod
+  with a Jinja macro import, followed by a grid of cards each pulled in by
+  !include. The includes stay opaque strings, so the cards in those files are
+  not part of the case.
+expect:
+  entities:
+    find: [light.kitchen]
+---
+type: vertical-stack
+cards:
+  - type: heading
+    icon: mdi:lightbulb-group
+    heading: Kitchen lighting
+    entity: light.kitchen
+    heading_style: subtitle
+    badges:
+      - type: entity
+        entity: light.kitchen
+    tap_action:
+      action: more-info
+    card_mod:
+      style: |
+        {% from 'styles.jinja' import subtitle_style %}
+        {{ subtitle_style() }}
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - !include /config/ui/card/light/kitchen_spots.yaml
+      - !include /config/ui/card/light/kitchen_sink.yaml

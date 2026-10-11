@@ -1,0 +1,28 @@
+source: https://www.home-assistant.io/triggers/temperature.crossed_threshold/
+note: >-
+  Core's new temperature trigger with a comfort band whose lower end comes from
+  a helper and whose upper end is a plain number. With the helper gone the
+  trigger never fires, and Home Assistant does not list it among what the
+  automation references. The number on the other end is no entity.
+expect:
+  entities:
+    find: [input_number.comfort_minimum, sensor.living_room_temperature]
+---
+alias: Living room left the comfort band
+triggers:
+  - trigger: temperature.crossed_threshold
+    target:
+      entity_id: sensor.living_room_temperature
+    options:
+      behavior: each
+      threshold:
+        type: outside
+        value_min:
+          entity: input_number.comfort_minimum
+        value_max:
+          number: 22
+          unit_of_measurement: "°C"
+actions:
+  - action: notify.notify
+    data:
+      message: The living room left its comfort band.

@@ -1,0 +1,27 @@
+source: https://www.home-assistant.io/docs/automation/trigger/#numeric-state-trigger
+note: >-
+  numeric_state with value_template working on `state.attributes`, the
+  trigger's own state object, next to the attribute key form.
+expect:
+  entities:
+    find: [climate.living_room]
+  attributes:
+    find:
+      - climate.living_room: current_temperature
+---
+alias: Living room too warm
+triggers:
+  - trigger: numeric_state
+    entity_id: climate.living_room
+    value_template: "{{ state.attributes.current_temperature - state.attributes.temperature }}"
+    above: 2
+  - trigger: numeric_state
+    entity_id: climate.living_room
+    attribute: current_temperature
+    above: 25
+actions:
+  - action: climate.set_hvac_mode
+    target:
+      entity_id: climate.living_room
+    data:
+      hvac_mode: cool

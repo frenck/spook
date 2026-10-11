@@ -1,0 +1,43 @@
+source: https://www.home-assistant.io/triggers/illuminance.crossed_threshold/
+note: >-
+  The editor keeps both a number and an entity on a threshold, and
+  active_choice says which one counts. The first trigger switched back to a
+  number, so the helper still written next to it is never compared against
+  and is no reference. The second one uses its helper, in mixed case as typed,
+  which Home Assistant takes in lower case.
+out_of_scope: >-
+  A threshold keeps the entity it no longer uses, and active_choice says it is
+  not compared against, so that entity is left out on purpose.
+expect:
+  entities:
+    find: [input_number.dusk_level, sensor.garden_illuminance]
+    not_find: [input_number.old_dusk_level]
+---
+alias: Garden lights at dusk
+triggers:
+  - trigger: illuminance.crossed_threshold
+    target:
+      entity_id: sensor.garden_illuminance
+    options:
+      behavior: first
+      threshold:
+        type: below
+        value:
+          active_choice: number
+          number: 40
+          entity: input_number.old_dusk_level
+          unit_of_measurement: lx
+  - trigger: illuminance.crossed_threshold
+    target:
+      entity_id: sensor.garden_illuminance
+    options:
+      behavior: first
+      threshold:
+        type: below
+        value:
+          active_choice: entity
+          entity: input_number.Dusk_Level
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.garden

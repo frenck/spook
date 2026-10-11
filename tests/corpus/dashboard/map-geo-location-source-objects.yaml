@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/map-card-add-entity-options-to-geo-location-sources/761061/1
+note: >-
+  Map card with the object form of a geo location source (source, label_mode,
+  focus) next to an entity row with a name. Only the entity rows name entities.
+expect:
+  entities:
+    find: [zone.home, sensor.car_position]
+---
+type: map
+theme_mode: dark
+entities:
+  - entity: zone.home
+  - entity: sensor.car_position
+    name: Car
+    label_mode: icon
+geo_location_sources:
+  - source: gdacs
+    label_mode: state
+    focus: false
+default_zoom: 15
+hours_to_show: 24

@@ -1,0 +1,17 @@
+source: https://community.home-assistant.io/t/conditional-card-not-working-always-shows-card/667844
+note: >-
+  Conditional card that looked broken because edit mode always shows the inner
+  card. The condition entity and the card entity are different, both real
+  references.
+expect:
+  entities:
+    find: [sensor.tv_power_state, media_player.living_room_tv]
+---
+type: conditional
+conditions:
+  - condition: state
+    entity: sensor.tv_power_state
+    state: "on"
+card:
+  type: media-control
+  entity: media_player.living_room_tv

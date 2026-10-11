@@ -1,0 +1,35 @@
+source: custom_components/spook/dashboard_extraction.py (Bubble Card keys and _CARD_PLACEHOLDERS)
+note: >-
+  Bubble Card names entities under keys of its own, a pop-up trigger and
+  numbered buttons with a motion sensor each. A template entity row uses
+  `config.entity` for its own entity, which is shaped like an entity ID and
+  is none.
+expect:
+  entities:
+    find:
+      - binary_sensor.hallway_motion
+      - light.hallway
+      - binary_sensor.bedroom_motion
+      - light.bedroom
+      - fan.bedroom
+    not_find: [config.entity]
+---
+type: vertical-stack
+cards:
+  - type: custom:bubble-card
+    card_type: pop-up
+    hash: "#hallway"
+    trigger_entity: binary_sensor.hallway_motion
+  - type: custom:bubble-card
+    card_type: horizontal-buttons-stack
+    1_entity: light.hallway
+    1_pir_sensor: binary_sensor.hallway_motion
+    2_entity: light.bedroom
+    2_pir_sensor: binary_sensor.bedroom_motion
+  - type: entities
+    entities:
+      - type: custom:template-entity-row
+        entity: fan.bedroom
+        state: "{{ states(config.entity) }}"
+      - type: custom:template-entity-row
+        entity: config.entity

@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/area-card-does-not-allow-hex-colours/984657/1
+note: >-
+  Area card with the area-controls feature listing one entity by entity_id,
+  an empty alert class list and a navigate tap action. The navigation path is
+  a URL, not an area.
+expect:
+  areas:
+    find: [nursery]
+  entities:
+    find: [switch.nursery_camera]
+---
+type: area
+area: nursery
+display_type: compact
+vertical: false
+tap_action:
+  action: navigate
+  navigation_path: /dashboard-nursery
+features_position: bottom
+features:
+  - type: area-controls
+    controls:
+      - entity_id: switch.nursery_camera
+alert_classes: []

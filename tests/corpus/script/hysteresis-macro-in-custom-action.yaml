@@ -1,0 +1,20 @@
+source: https://community.home-assistant.io/t/best-way-to-signal-aqara-trvs-are-calling-for-heat-to-a-heat-pump-ashp/821529/4
+note: >-
+  A custom action whose data has its own `entity_id` and `attribute` fields,
+  with a macro import computing the value from the same entity.
+expect:
+  entities:
+    find: [climate.office_trv]
+  attributes:
+    not_find:
+      - climate.office_trv: hysteresis_state
+---
+alias: Office TRV hysteresis
+sequence:
+  - action: python_script.set_state
+    data:
+      entity_id: climate.office_trv
+      attribute: hysteresis_state
+      value: >-
+        {% from 'macros.jinja' import trv_hysteresis %}
+        {{ trv_hysteresis('climate.office_trv', 0.5) }}

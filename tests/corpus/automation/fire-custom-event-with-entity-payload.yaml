@@ -1,0 +1,20 @@
+source: https://www.home-assistant.io/docs/scripts/#fire-an-event
+note: >-
+  An event step firing somebody's own event with an entity_id in event_data,
+  for another automation to pick up. Reported by design: unlike listening to
+  somebody else's event (#1883), this value is written here, so a typo in it
+  is this automation's to fix. Decided with the maintainer.
+expect:
+  entities:
+    find: [light.office]
+---
+alias: Ask the light manager
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.office_motion
+    to: "on"
+actions:
+  - event: light_manager_request
+    event_data:
+      entity_id: light.office
+      brightness_pct: 70

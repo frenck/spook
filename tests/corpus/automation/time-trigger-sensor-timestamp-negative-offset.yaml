@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/trigger-using-input-datetime-with-time-offset/799710/6
+note: >-
+  Wake-up light twenty minutes before a phone's next alarm sensor, a timestamp
+  sensor in a time trigger with a negative offset; a time condition before an
+  input_datetime.
+expect:
+  entities:
+    find: [sensor.phone_next_alarm, input_datetime.latest_wake_up, light.bedroom]
+---
+alias: Wake up light
+triggers:
+  - trigger: time
+    at:
+      entity_id: sensor.phone_next_alarm
+      offset: "-00:20:00"
+conditions:
+  - condition: time
+    before: input_datetime.latest_wake_up
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.bedroom
+    data:
+      brightness: 5
+      transition: 1200

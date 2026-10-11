@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/836802
+note: >-
+  A watch battery sensor whose state is the level, triggered on an attribute
+  called battery it does not have. The trigger waits for an attribute that
+  never comes. A template asking state_attr for an attribute that is not
+  there quietly gets nothing, so the one in the condition counts too. The
+  text it is compared with is no attribute.
+expect:
+  attributes:
+    find:
+      - sensor.watch_battery: battery
+      - sensor.watch_battery: battery_status
+    not_find:
+      - sensor.watch_battery: Charging
+---
+alias: Charge the watch
+triggers:
+  - trigger: numeric_state
+    entity_id:
+      - sensor.watch_battery
+    attribute: battery
+    below: 90
+conditions:
+  - condition: template
+    value_template: >
+      {{ state_attr('sensor.watch_battery', 'battery_status') != 'Charging' }}
+actions:
+  - action: notify.notify
+    data:
+      message: Put the watch on its charger.

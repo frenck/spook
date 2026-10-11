@@ -1,0 +1,15 @@
+source: https://www.home-assistant.io/dashboards/energy/
+note: >-
+  Energy cards read from the energy preferences, not from entities in the
+  card; only the collection key appears. Nothing may be reported.
+expect:
+  entities:
+    not_find: [energy_dashboard]
+---
+type: vertical-stack
+cards:
+  - type: energy-date-selection
+    collection_key: energy_dashboard
+  - type: energy-distribution
+    link_dashboard: true
+  - type: energy-usage-graph

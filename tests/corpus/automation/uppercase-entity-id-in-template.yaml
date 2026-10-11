@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/trigger-template-not-valid/987743
+note: >-
+  A template that refers to an entity using its display name casing,
+  states('sensor.Pump_Interval'). Home Assistant's state machine lowercases
+  what it is asked for, so this works and reads sensor.pump_interval.
+expect:
+  entities:
+    find: [sensor.pump_power, sensor.pump_interval]
+---
+alias: Pump interval notice
+triggers:
+  - trigger: state
+    entity_id: sensor.pump_power
+conditions:
+  - condition: template
+    value_template: >-
+      {% set last = states('sensor.Pump_Interval') %}
+      {{ last not in ['unknown', 'unavailable', None] and trigger.to_state.state | float(0) > 0 }}
+actions:
+  - action: notify.notify
+    data:
+      message: "Pump started, previous interval {{ states('sensor.Pump_Interval') }}"

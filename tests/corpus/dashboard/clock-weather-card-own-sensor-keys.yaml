@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/clock-weather-card-help-with-styling-needed/918616/7
+note: >-
+  clock-weather-card names its sun and sensors under keys of its own
+  (sun_entity, temperature_sensor, humidity_sensor). Only `entity` is read.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+expect:
+  entities:
+    find: [weather.home]
+    not_find: [sun.sun, sensor.outdoor_temperature, sensor.outdoor_humidity]
+---
+type: custom:clock-weather-card
+entity: weather.home
+title: null
+sun_entity: sun.sun
+temperature_sensor: sensor.outdoor_temperature
+humidity_sensor: sensor.outdoor_humidity
+weather_icon_type: line
+animated_icon: true
+forecast_rows: 5

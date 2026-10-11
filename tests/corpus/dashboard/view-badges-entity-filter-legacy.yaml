@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/conditional-badge-how/419352/2
+note: >-
+  Masonry view badges as a mix of a bare entity ID and the old entity-filter
+  badge with its own entities and state filter, one value unquoted (`on`
+  becomes a boolean). A group badge is in the ignored domains.
+out_of_scope: >-
+  `group.`, `device_tracker.` and `persistent_notification.` entities are
+  left out of the unknown entity repairs on purpose
+  (`IGNORED_ENTITY_DOMAINS`): an action can create them on the fly, so one
+  that does not exist yet is not necessarily broken.
+expect:
+  entities:
+    find: [light.kitchen, light.bed_light, light.ceiling]
+    not_find: [group.inside_lights]
+---
+title: Home
+views:
+  - title: Home
+    badges:
+      - light.kitchen
+      - type: entity-filter
+        entities:
+          - entity: light.bed_light
+            name: Bed
+          - light.ceiling
+          - entity: group.inside_lights
+        state_filter:
+          - on
+        show_empty: false
+    cards: []

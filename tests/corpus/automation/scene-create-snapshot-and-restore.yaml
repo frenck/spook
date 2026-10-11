@@ -1,0 +1,32 @@
+source: https://community.home-assistant.io/t/flashing-lights-script/827417/13
+note: >-
+  scene.create snapshots lights into a scene that only exists at runtime, then
+  scene.turn_on restores it. The created scene must not be reported, the
+  snapshotted lights are real.
+expect:
+  entities:
+    find: [light.living_room]
+    not_find: [scene.flash_restore_state]
+---
+alias: Flash on doorbell
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.doorbell
+    to: "on"
+actions:
+  - action: scene.create
+    data:
+      scene_id: flash_restore_state
+      snapshot_entities:
+        - light.living_room
+  - repeat:
+      count: 3
+      sequence:
+        - action: light.toggle
+          target:
+            entity_id: light.living_room
+        - delay:
+            milliseconds: 400
+  - action: scene.turn_on
+    target:
+      entity_id: scene.flash_restore_state

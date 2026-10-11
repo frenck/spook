@@ -1,0 +1,38 @@
+source: https://github.com/golles/Home-Assistant-Config/blob/main/lovelace/views/weer.yaml
+note: >-
+  Map card listing a zone plus geo_location_sources, which names an integration
+  platform rather than an entity, and a grid shown when either of two warning
+  sensors is on through an or visibility condition.
+expect:
+  entities:
+    find: [zone.home, binary_sensor.weather_warning, binary_sensor.storm_alert]
+---
+type: grid
+cards:
+  - type: heading
+    heading: Lightning strikes
+    heading_style: subtitle
+  - type: map
+    entities:
+      - entity: zone.home
+    geo_location_sources:
+      - blitzortung
+    hours_to_show: 24
+    default_zoom: 10
+    auto_fit: true
+  - type: grid
+    visibility:
+      - condition: or
+        conditions:
+          - condition: state
+            entity: binary_sensor.weather_warning
+            state: "on"
+          - condition: state
+            entity: binary_sensor.storm_alert
+            state: "on"
+    cards:
+      - type: picture
+        image: https://example.com/warnings/map.gif
+        tap_action:
+          action: url
+          url_path: https://example.com/warnings/map.gif

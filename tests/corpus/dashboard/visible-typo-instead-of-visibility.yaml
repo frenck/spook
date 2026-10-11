@@ -1,0 +1,16 @@
+source: https://community.home-assistant.io/t/dashboard-visibility-settings/755129/1
+note: >-
+  `visible:` instead of `visibility:` on a section, so the condition never
+  applies. Harmless for references; the condition holds no entity anyway.
+expect:
+  entities:
+    find: [sensor.power_usage]
+---
+type: grid
+visible:
+  - condition: screen
+    media_query: "(min-width: 1024px)"
+cards:
+  - type: sensor
+    entity: sensor.power_usage
+    graph: line

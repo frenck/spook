@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/variables-problem-on-a-trigger-in-an-automation/654097/5
+note: >-
+  Template trigger whose `for` is itself a template reading an input_number,
+  in minutes. Both the trigger template and the duration template reference
+  entities.
+expect:
+  entities:
+    find: [sensor.hallway_illuminance, input_number.dark_delay_minutes, light.hallway]
+---
+alias: Hallway dark for a while
+triggers:
+  - trigger: template
+    value_template: "{{ states('sensor.hallway_illuminance') | float(0) < 20 }}"
+    for:
+      minutes: "{{ states('input_number.dark_delay_minutes') | int(5) }}"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.hallway

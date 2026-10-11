@@ -1,0 +1,36 @@
+source: https://github.com/frenck/spook/pull/1956
+note: >-
+  Spook's own state trigger following an attribute. It makes text of the
+  attribute and of what it waits for, so `Heating` waits for a value the
+  thermostat never has, in any case. An unquoted `off` is a boolean to YAML,
+  and the trigger waits for the text `False`, never the swing mode `off`.
+  Both pull requests that taught the state repair this, #1952 and #1956,
+  are distilled here.
+expect:
+  states:
+    find:
+      - climate.hall[hvac_action]: '"Heating"'
+      - climate.hall[swing_mode]: "false"
+  attributes:
+    find:
+      - climate.hall: hvac_action
+      - climate.hall: swing_mode
+---
+alias: Hall heating starts
+triggers:
+  - trigger: spook.state_changed
+    target:
+      entity_id: climate.hall
+    options:
+      attribute: hvac_action
+      to: Heating
+  - trigger: spook.state_changed
+    target:
+      entity_id: climate.hall
+    options:
+      attribute: swing_mode
+      from: off
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.hallway

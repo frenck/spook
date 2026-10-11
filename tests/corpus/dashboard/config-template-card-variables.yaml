@@ -1,0 +1,21 @@
+source: https://github.com/kloggy/HA-Irrigation-Version2/blob/master/lovelace/garden_irrigation/settings/general/item_settings_notify_users.yaml
+note: >-
+  Config template card whose variables hold JavaScript that reads
+  states['...'].state, an entities list it watches for redraws, and a nested
+  card whose name is a ${...} JavaScript expression using the variable. The entity the JavaScript reads
+  is in the entities list too.
+expect:
+  entities:
+    find: [input_text.notify_user_name, input_boolean.notify_user]
+---
+type: custom:config-template-card
+variables:
+  USER_NAME: states['input_text.notify_user_name'].state
+entities:
+  - input_text.notify_user_name
+  - input_boolean.notify_user
+card:
+  type: entities
+  entities:
+    - entity: input_boolean.notify_user
+      name: "${'Notify ' + USER_NAME + ' of events'}"

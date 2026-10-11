@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/how-to-use-a-variable-in-a-script-when-using-a-template/768918/1
+note: >-
+  script.turn_on handing entity IDs to the script inside data.variables. The
+  same values passed straight to the script as action data
+  (`action: script.google_location`, `data: {sensor: ...}`) are read, since
+  every plain entity ID in action data is.
+expect:
+  entities:
+    find: [script.google_location, sensor.member_one_address]
+---
+alias: Log location
+triggers:
+  - trigger: state
+    entity_id: person.member_one
+actions:
+  - action: script.turn_on
+    target:
+      entity_id: script.google_location
+    data:
+      variables:
+        worksheet: LocationLog
+        person: person.member_one
+        sensor: sensor.member_one_address

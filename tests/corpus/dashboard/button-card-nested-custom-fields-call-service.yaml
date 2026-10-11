@@ -1,0 +1,63 @@
+source: https://community.home-assistant.io/t/problem-with-operator-template-in-custom-button-card/745485
+note: >-
+  Button card with JavaScript reading entity.attributes, then the same card
+  nested inside another button card's custom_fields, where entity was undefined.
+  Actions are performed from inside the nested cards. The JavaScript only
+  reads each card's own entity.
+expect:
+  entities:
+    find: [media_player.living_room_soundbar, switch.tv_antenna, media_player.living_room_tv]
+  services:
+    find: [script.mute_soundbar, media_player.media_previous_track, media_player.media_play_pause]
+---
+type: custom:button-card
+show_icon: false
+show_name: false
+custom_fields:
+  mute:
+    card:
+      type: custom:button-card
+      entity: media_player.living_room_soundbar
+      icon: mdi:volume-high
+      show_name: false
+      state:
+        - operator: template
+          value: "[[[ return entity.attributes.is_volume_muted == true ]]]"
+          icon: mdi:volume-off
+      tap_action:
+        action: call-service
+        service: script.mute_soundbar
+  antenna:
+    card:
+      type: custom:button-card
+      entity: switch.tv_antenna
+      icon: mdi:television
+      state:
+        - value: "on"
+          icon: mdi:television-shimmer
+      tap_action:
+        action: toggle
+  previous:
+    card:
+      type: custom:button-card
+      entity: media_player.living_room_tv
+      icon: mdi:skip-previous
+      tap_action:
+        action: call-service
+        service: media_player.media_previous_track
+        data:
+          entity_id: media_player.living_room_tv
+  play_pause:
+    card:
+      type: custom:button-card
+      entity: media_player.living_room_tv
+      state:
+        - value: paused
+          icon: mdi:play
+        - value: playing
+          icon: mdi:pause
+      tap_action:
+        action: call-service
+        service: media_player.media_play_pause
+        data:
+          entity_id: media_player.living_room_tv

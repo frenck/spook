@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/878855
+note: >-
+  The UI editor rewrites the template into a single quoted YAML string with
+  doubled quotes inside; it imports a macro from a custom template file and
+  passes entity IDs to it as plain arguments.
+expect:
+  entities:
+    find: [input_datetime.sleep_duration, input_datetime.fell_asleep, input_datetime.woke_up]
+  services:
+    find: [input_datetime.set_datetime]
+---
+alias: Store last sleep duration
+sequence:
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.sleep_duration
+    data:
+      time: '{% from ''easy_time.jinja'' import time_between %}{{ time_between(''input_datetime.fell_asleep'',
+        ''input_datetime.woke_up'') }}'

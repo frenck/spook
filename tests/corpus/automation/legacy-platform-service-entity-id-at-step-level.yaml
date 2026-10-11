@@ -1,0 +1,41 @@
+source: https://community.home-assistant.io/t/why-automation-does-not-trigger/941616
+note: >-
+  Old style list entry with initial_state, singular trigger and service keys, and
+  entity_id placed directly on the service step and inside data.
+expect:
+  entities:
+    find:
+      - sensor.living_room_remote_activity
+      - input_number.blinds_position
+      - light.tv_backlight
+      - light.desk_lamp
+      - sensor.daylight_percentage
+  services:
+    find: [shell_command.blinds_up, input_number.decrement, light.turn_on]
+  states:
+    find:
+      - sensor.living_room_remote_activity: PowerOff
+---
+alias: Lights up when the TV powers off
+initial_state: true
+trigger:
+  platform: state
+  entity_id: sensor.living_room_remote_activity
+  to: "PowerOff"
+condition:
+  - condition: numeric_state
+    entity_id: sensor.daylight_percentage
+    below: 10
+  - condition: template
+    value_template: "{{ trigger.from_state.state != none }}"
+action:
+  - service: shell_command.blinds_up
+  - service: input_number.decrement
+    entity_id: input_number.blinds_position
+  - service: light.turn_on
+    data:
+      entity_id:
+        - light.tv_backlight
+        - light.desk_lamp
+      brightness: 100
+      transition: 3

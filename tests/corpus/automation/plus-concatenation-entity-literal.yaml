@@ -1,0 +1,20 @@
+source: https://community.home-assistant.io/t/dynamic-state-access-for-dynamic-script-fields/692911/1
+note: >-
+  String building with `+` instead of `~`. A literal that is a whole entity
+  ID on its own and then gets a suffix glued on reads like a reference to the
+  shorter ID, which nobody meant. The `~` form of the same is recognised.
+expect:
+  entities:
+    not_find: [sensor.room]
+---
+alias: Room temperature report
+triggers:
+  - trigger: time
+    at: "07:00:00"
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        {% set suffix = '_bedroom_temperature' %}
+        Bedroom: {{ states('sensor.room' + suffix) }},
+        hall: {{ states('sensor.room' ~ '_hall_temperature') }}
