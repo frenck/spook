@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "Tätä vyöhykettä ei voi muokata: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Määrä {amount} ei sovi entiteetille {entity_id}, joka liikkuu {step}:n askelin. Käytä luvun {step} monikertaa, tai jätä määrä pois, niin liikutaan yksi askel."
+        },
+        "area_cannot_update": {
+            "message": "Aluetta {area_id} ei voi muuttaa noin: {error}."
+        },
+        "area_name_taken": {
+            "message": "Nimi {name} on jo alueen {area_id} käytössä."
+        },
+        "area_nothing_to_update": {
+            "message": "Alueessa {area_id} ei ole mitään päivitettävää: anna ainakin yksi näistä: {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Nimi {name} on jo kerroksen {floor_id} käytössä."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Nuo aikalohkot eivät toimi aikataululle {entity_id}: {error}. Mitään ei ole muutettu."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} on YAML-määrityksistäsi peräisin oleva aikataulu, jota Spook ei voi muuttaa. Muokkaa sitä sen sijaan määrityksissäsi."
+        },
+        "device_nothing_to_update": {
+            "message": "Laitteessa {device_id} ei ole mitään päivitettävää: anna ainakin yksi näistä: {fields}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Kerroksessa {floor_id} ei ole mitään päivitettävää: anna ainakin yksi näistä: {fields}."
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "Nämä sensorit ovat palanneet, tai asetukset osoittavat nyt muualle, sen jälkeen kun Spook katsoi. Joten mitään ei tyhjennetty. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "description": "Spook on löytänyt kummituksen ääniavustajistasi 👻\n\nSeuraavat entiteetit on tuotu Assistin saataville, ja kaikki vastaavat nimeen {name}:\n\n{entities}\n\nKun nimet ovat samat, Assist erottaa ne toisistaan vain alueen perusteella: sen, jonka nimeät, tai sen, jossa puhesatelliittisi on. Osa näistä on samalla alueella tai ei millään alueella, joten Assist ei pysty poimimaan niitä tällä nimellä mistään. Pyyntö {name} epäonnistuu silloin, eikä mikään kerro, mitkä entiteetit ovat tiellä.\n\nKorjataksesi tämän, anna jokaiselle oma nimi tai alias, tai siirrä ne eri alueille. Entiteetin aliaksia, ja sitä näkeekö Assist sen lainkaan, voit muuttaa kohdassa [Saataville tuodut entiteetit](/config/voice-assistants/expose). Alueet asetetaan [Alueet-sivulla](/config/areas/dashboard).\n\nSpook 👻 Kamusi.",
+            "title": "Assist ei erota näitä toisistaan: {name}"
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio käyttää seuraavia attribuutteja, joita niiden entiteeteillä ei ole. Ei juuri nyt, ei sellaisena, jota tämänkaltainen entiteetti tarjoaa, eikä missään, mitä tallennin niistä muistaa:\n\n{attributes}\n\n\n\nLaukaisin tai ehto, joka odottaa attribuuttia, joka ei koskaan ilmesty, ei koskaan laukea, eikä kerro siitä. Mallipohja, joka lukee sellaista, ei saa mitään. Korjataksesi tämän, [muokkaa automaatiota]({edit}) ja käytä attribuuttia, joka entiteetillä on.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia attribuutteja käytetty: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio odottaa tai tarkistaa seuraavia tiloja, joissa niiden entiteetit eivät koskaan ole. Ei sellaisena, jona tämänkaltainen entiteetti voi olla, ei entiteetin tarjoamien vaihtoehtojen joukossa, eikä missään, mitä tallennin niistä muistaa:\n\n{states}\n\n\n\nLaukaisin, joka odottaa tilaa, joka ei koskaan tule, ei koskaan laukea, ehto, joka tarkistaa sellaista, ei koskaan toteudu, eikä kumpikaan kerro siitä. Tilat ovat kirjainkokoherkkiä: `On` ei ole `on`. Korjataksesi tämän, [muokkaa automaatiota]({edit}) ja käytä tilaa, jossa entiteetti voi olla.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia tiloja käytetty: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio tarkistaa seuraavia laukaisimien ID:itä, joita millään sen omista laukaisimista ei ole:\n\n{trigger_ids}\n\n\n\nTarkistus ID:lle, jota mikään laukaisin ei anna, päättyy aina samalla tavalla: laukaisinehto, joka kysyy sitä, ei koskaan toteudu, joten sen vartioima osa ei koskaan suoritu, eikä mikään kerro siitä. Laukaisimien ID:t ovat kirjainkokoherkkiä, ja laukaisin ilman omaa ID:tä tunnetaan sijainnistaan listassa, laskettuna alkaen `0`. Korjataksesi tämän, [muokkaa automaatiota]({edit}) ja käytä jonkin sen laukaisimen ID:tä, tai anna laukaisimelle ID, jota automaatio kysyy.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia laukaisimien ID:itä käytetty: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä kojelauta näyttää tai tarkistaa seuraavia attribuutteja, joita niiden entiteeteillä ei ole. Ei juuri nyt, ei sellaisena, jota tämänkaltainen entiteetti tarjoaa, eikä missään, mitä tallennin niistä muistaa:\n\n{attributes}\n\n\n\nKortti, joka näyttää attribuuttia, joka ei koskaan ilmesty, pysyy tyhjänä, ja näkyvyysehto tai suodatin, joka tarkistaa sellaista, ei koskaan toteudu. Kumpikaan ei kerro siitä. Korjataksesi tämän, [muokkaa kojelautaa]({edit}) ja käytä attribuuttia, joka entiteetillä on.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia attribuutteja kojelaudalla: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä kojelauta tarkistaa seuraavia tiloja, joissa niiden entiteetit eivät koskaan ole. Ei sellaisena, jona tämänkaltainen entiteetti voi olla, ei entiteetin tarjoamien vaihtoehtojen joukossa, eikä missään, mitä tallennin niistä muistaa:\n\n{states}\n\n\n\nNäkyvyysehto tai suodatin, joka tarkistaa tilaa, joka ei koskaan tule, ei koskaan toteudu, eikä sellaiselle asetettua kuvaa koskaan näytetä. Mikään niistä ei kerro siitä. Tilat ovat kirjainkokoherkkiä: `On` ei ole `on`. Korjataksesi tämän, [muokkaa kojelautaa]({edit}) ja käytä tilaa, jossa entiteetti voi olla.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia tiloja kojelaudalla: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä kojelauta siirtyy seuraaviin näkymiin, joita ei ole olemassa:\n\n{paths}\n\n\n\nPainike tai kortti, joka siirtyy johonkin näistä, avaa sen sijaan kojelaudan ensimmäisen näkymän, sanomatta mitään. Näin käy usein, kun näkymä on nimetty uudelleen, siirretty tai poistettu. Korjataksesi tämän ongelman, [muokkaa kojelautaa]({edit}) ja osoita nämä näkymään, joka on olemassa.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia näkymiä kojelaudalla: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook on löytänyt kummituksen skripteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan skriptiin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä skripti käyttää seuraavia attribuutteja, joita niiden entiteeteillä ei ole. Ei juuri nyt, ei sellaisena, jota tämänkaltainen entiteetti tarjoaa, eikä missään, mitä tallennin niistä muistaa:\n\n{attributes}\n\n\n\nLaukaisin tai ehto, joka odottaa attribuuttia, joka ei koskaan ilmesty, ei koskaan laukea, eikä kerro siitä. Mallipohja, joka lukee sellaista, ei saa mitään. Korjataksesi tämän, [muokkaa skriptiä]({edit}) ja käytä attribuuttia, joka entiteetillä on.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia attribuutteja käytetty: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook on löytänyt kummituksen skripteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan skriptiin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä skripti odottaa tai tarkistaa seuraavia tiloja, joissa niiden entiteetit eivät koskaan ole. Ei sellaisena, jona tämänkaltainen entiteetti voi olla, ei entiteetin tarjoamien vaihtoehtojen joukossa, eikä missään, mitä tallennin niistä muistaa:\n\n{states}\n\n\n\nLaukaisin, joka odottaa tilaa, joka ei koskaan tule, ei koskaan laukea, ehto, joka tarkistaa sellaista, ei koskaan toteudu, eikä kumpikaan kerro siitä. Tilat ovat kirjainkokoherkkiä: `On` ei ole `on`. Korjataksesi tämän, [muokkaa skriptiä]({edit}) ja käytä tilaa, jossa entiteetti voi olla.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia tiloja käytetty: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "title": "Tuntemattomia attribuutteja mallipohja-avustajassa: {helper}",
+            "description": "Spook on löytänyt kummituksen mallipohja-avustajistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohja-avustajaan:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTämä mallipohja-avustaja käyttää seuraavia attribuutteja, joita niiden entiteeteillä ei ole. Ei juuri nyt, ei sellaisena, jota tämänkaltainen entiteetti tarjoaa, eikä missään, mitä tallennin niistä muistaa:\n\n{attributes}\n\n\n\nMallipohja, joka lukee attribuuttia, joka ei koskaan ilmesty, ei saa mitään, ja sen toiminnoissa oleva ehto, joka odottaa sellaista, ei koskaan toteudu. Kumpikaan ei kerro siitä. Korjataksesi tämän, [muokkaa mallipohja-avustajaa]({edit}) ja käytä attribuuttia, joka entiteetillä on.\n\nSpook 👻 Kamusi."
+        },
+        "automation_never_true_templates": {
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTässä automaatiossa on seuraavat mallipohjat, jotka eivät voi koskaan toteutua, tapahtui kodissasi mitä tahansa:\n\n{templates}\n\n\n\nMallipohjaehto toteutuu vain, kun se tuottaa `true`, ja niin myös `wait_template`, ellei se myöhemmin muutu joksikin, joka luetaan todeksi. Mallipohjalaukaisin laukeaa, kun sen mallipohja muuttuu joksikin, joka luetaan todeksi, kuten `true`, `on`, `yes` tai `1`. Nämä mallipohjat tuottavat aina jotain muuta, koska ne on kirjoitettu niin. Tavalliset syyt:\n\n- Lainausmerkit mallipohjan ympärillä. `>-`-lohko ottaa ne tekstinä, joten ne päätyvät tulokseen.\n- Ei mallipohjan erottimia lainkaan, joten teksti otetaan sellaisenaan.\n- Mallipohjakenttään liitetty YAML.\n- YAML-kommentti `#` Jinjan sisällä, jonka Jinja tulostaa tekstinä.\n- Ehto, joka tuottaa `on` eikä `true`.\n\nMikään ei kerro siitä: ehto ei koskaan toteudu, odotus päättyy vain aikakatkaisuunsa, eikä laukaisin koskaan laukea. Korjataksesi tämän, [muokkaa automaatiota]({edit}) ja saa mallipohja tuottamaan `true`, kun sen pitää toteutua.\n\nSpook 👻 Kamusi.",
+            "title": "Mallipohjia, jotka eivät voi koskaan toteutua: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio antaa toiminnoilleen seuraavat integraatiomerkinnät, jotka ovat Home Assistantille tuntemattomia tai kuuluvat eri integraatioon kuin toiminto pyytää:\n\n{config_entries}\n\nHome Assistant hylkää nämä, kun vaihe suoritetaan. Näin käy yleensä, kun integraatio on poistettu ja lisätty uudelleen: se sai uuden integraatiomerkinnän, jolla on uusi ID.\n\nKorjataksesi tämän ongelman, [muokkaa automaatiota]({edit}) ja valitse integraatiomerkintä uudelleen näissä toiminnoissa.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia integraatiomerkintöjä käytetty: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio antaa seuraavia kuvakkeita, joita ei ole Home Assistantin mukana tulevissa Material Design Icons -kuvakkeissa:\n\n{icons}\n\n\n\nJokainen näistä näkyy tyhjänä kohtana, sanaakaan sanomatta. Näin käy usein, kun kuvakkeen nimi on kirjoitettu väärin, kuvake on nimetty uudelleen tai poistettu, tai se on valittu uudemmasta Material Design Icons -versiosta kuin se, joka Home Assistantin mukana tulee. Korjataksesi tämän ongelman, [muokkaa automaatiota]({edit}) ja korvaa nämä kuvakkeilla, jotka ovat olemassa.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia kuvakkeita käytetty: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio mainitsee seuraavat käyttäjät, joita ei enää ole:\n\n{users}\n\n\n\nHome Assistant ei koskaan anna samaa käyttäjän ID:tä kahdesti, joten nämä käyttäjät on poistettu. Laukaisin, joka odottaa jotakuta heistä, ei koskaan laukea heidän kohdallaan, eikä mallipohja, joka vertaa johonkuhun heistä, koskaan täsmää, sanomatta mitään. Korjataksesi tämän, [muokkaa automaatiota]({edit}) ja käytä olemassa olevan käyttäjän ID:tä, tai poista tarkistus.\n\nSpook 👻 Kamusi.",
+            "title": "Poistettuja käyttäjiä mainittu: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä kojelauta käyttää seuraavia kuvakkeita, joita ei ole Home Assistantin mukana tulevissa Material Design Icons -kuvakkeissa (versio {version}):\n\n{icons}\n\n\n\nJokainen näistä näkyy tyhjänä kohtana, sanaakaan sanomatta. Näin käy usein, kun kuvakkeen nimi on kirjoitettu väärin, kuvake on nimetty uudelleen tai poistettu, tai se on valittu uudemmasta Material Design Icons -versiosta kuin se, joka Home Assistantin mukana tulee. Korjataksesi tämän ongelman, [muokkaa kojelautaa]({edit}) ja korvaa nämä kuvakkeilla, jotka ovat olemassa. Kojelaudan kuvake sivupalkissa vaihdetaan kojelautojesi asetuksissa.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia kuvakkeita kojelaudalla: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä kojelauta mainitsee seuraavat käyttäjät, joita ei enää ole:\n\n{users}\n\n\n\nHome Assistant ei koskaan anna samaa käyttäjän ID:tä kahdesti, joten nämä käyttäjät on poistettu. Kortti, merkki, osio tai näkymä, joka näytetään vain heille, ei nyt näy kenellekään, sanomatta mitään. Heille annettu vapautus vahvistuksesta ei enää tee mitään. Korjataksesi tämän, [muokkaa kojelautaa]({edit}) ja valitse käyttäjät, joiden pitäisi nähdä se, tai poista ehto.\n\nSpook 👻 Kamusi.",
+            "title": "Poistettuja käyttäjiä mainittu kojelaudalla: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "title": "Tuntemattomia teemoja kojelaudalla: {dashboard}",
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä kojelauta käyttää seuraavia teemoja, joita ei ole olemassa:\n\n{themes}\n\n\n\nKortti, osio tai näkymä, jolla on jokin näistä teemoista, saa sen sijaan oletusulkoasun, sanomatta mitään. Näin käy usein, kun teema on nimetty uudelleen tai poistettu. Korjataksesi tämän ongelman, [muokkaa kojelautaa]({edit}) ja valitse teema, joka on olemassa, tai lisää teema takaisin.\n\nSpook 👻 Kamusi."
+        },
+        "script_never_true_templates": {
+            "description": "Spook on löytänyt kummituksen skripteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan skriptiin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTässä skriptissä on seuraavat mallipohjat, jotka eivät voi koskaan toteutua, tapahtui kodissasi mitä tahansa:\n\n{templates}\n\n\n\nMallipohjaehto toteutuu vain, kun se tuottaa `true`, ja niin myös `wait_template`, ellei se myöhemmin muutu joksikin, joka luetaan todeksi. Mallipohjalaukaisin `wait_for_trigger`-vaiheessa laukeaa, kun sen mallipohja muuttuu joksikin, joka luetaan todeksi, kuten `true`, `on`, `yes` tai `1`. Nämä mallipohjat tuottavat aina jotain muuta, koska ne on kirjoitettu niin. Tavalliset syyt:\n\n- Lainausmerkit mallipohjan ympärillä. `>-`-lohko ottaa ne tekstinä, joten ne päätyvät tulokseen.\n- Ei mallipohjan erottimia lainkaan, joten teksti otetaan sellaisenaan.\n- Mallipohjakenttään liitetty YAML.\n- YAML-kommentti `#` Jinjan sisällä, jonka Jinja tulostaa tekstinä.\n- Ehto, joka tuottaa `on` eikä `true`.\n\nMikään ei kerro siitä: ehto ei koskaan toteudu, ja odotus päättyy vain aikakatkaisuunsa. Korjataksesi tämän, [muokkaa skriptiä]({edit}) ja saa mallipohja tuottamaan `true`, kun sen pitää toteutua.\n\nSpook 👻 Kamusi.",
+            "title": "Mallipohjia, jotka eivät voi koskaan toteutua: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook on löytänyt kummituksen skripteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan skriptiin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä skripti antaa toiminnoilleen seuraavat integraatiomerkinnät, jotka ovat Home Assistantille tuntemattomia tai kuuluvat eri integraatioon kuin toiminto pyytää:\n\n{config_entries}\n\nHome Assistant hylkää nämä, kun vaihe suoritetaan. Näin käy yleensä, kun integraatio on poistettu ja lisätty uudelleen: se sai uuden integraatiomerkinnän, jolla on uusi ID.\n\nKorjataksesi tämän ongelman, [muokkaa skriptiä]({edit}) ja valitse integraatiomerkintä uudelleen näissä toiminnoissa.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia integraatiomerkintöjä käytetty: {script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook on löytänyt kummituksen skripteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan skriptiin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä skripti käyttää tai antaa seuraavia kuvakkeita, joita ei ole Home Assistantin mukana tulevissa Material Design Icons -kuvakkeissa:\n\n{icons}\n\n\n\nJokainen näistä näkyy tyhjänä kohtana, sanaakaan sanomatta. Näin käy usein, kun kuvakkeen nimi on kirjoitettu väärin, kuvake on nimetty uudelleen tai poistettu, tai se on valittu uudemmasta Material Design Icons -versiosta kuin se, joka Home Assistantin mukana tulee. Korjataksesi tämän ongelman, [muokkaa skriptiä]({edit}) ja korvaa nämä kuvakkeilla, jotka ovat olemassa.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia kuvakkeita käytetty: {script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook on löytänyt kummituksen skripteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan skriptiin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä skripti mainitsee seuraavat käyttäjät, joita ei enää ole:\n\n{users}\n\n\n\nHome Assistant ei koskaan anna samaa käyttäjän ID:tä kahdesti, joten nämä käyttäjät on poistettu. Mallipohja, joka vertaa johonkuhun heistä, ei koskaan täsmää, eikä laukaisin, joka odottaa jotakuta heistä, koskaan laukea heidän kohdallaan, sanomatta mitään. Korjataksesi tämän, [muokkaa skriptiä]({edit}) ja käytä olemassa olevan käyttäjän ID:tä, tai poista tarkistus.\n\nSpook 👻 Kamusi.",
+            "title": "Poistettuja käyttäjiä mainittu: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook on löytänyt kummituksen mallipohjaentiteeteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohjaentiteettiin:\n\n{name} (`{entity_id}`)\n\nTämä mallipohjaentiteetti käyttää seuraavia attribuutteja, joita niiden entiteeteillä ei ole. Ei juuri nyt, ei sellaisena, jota tämänkaltainen entiteetti tarjoaa, eikä missään, mitä tallennin niistä muistaa:\n\n{attributes}\n\n\n\nMallipohja, joka lukee attribuuttia, joka ei koskaan ilmesty, ei saa mitään, ja laukaisin tai ehto, joka odottaa sellaista, ei koskaan laukea tai toteudu. Mikään niistä ei kerro siitä.\n\nTämä mallipohjaentiteetti on määritetty YAML-määrityksissäsi. Korjataksesi tämän, muokkaa sitä määritystesi `template:`-osiossa, käytä attribuuttia, joka entiteetillä on, ja lataa mallipohjaentiteettisi uudelleen.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia attribuutteja mallipohjaentiteetissä: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook on löytänyt kummituksen mallipohjaentiteeteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohjaentiteettiin:\n\n{name} (`{entity_id}`)\n\nSen määritys viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nNäin käy usein, kun entiteetti on nimetty uudelleen tai poistettu. Mallipohja, joka lukee sellaista, ei saa mitään, eikä laukaisin, joka odottaa sellaista, koskaan laukea.\n\nTämä mallipohjaentiteetti on määritetty YAML-määrityksissäsi. Korjataksesi tämän ongelman, muokkaa sitä määritystesi `template:`-osiossa, viittaa olemassa oleviin entiteetteihin, ja lataa mallipohjaentiteettisi uudelleen.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia entiteettejä mallipohjaentiteetissä: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook on löytänyt kummituksen mallipohjaentiteeteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohjaentiteettiin:\n\n{name} (`{entity_id}`)\n\nSe viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\n\n\nNäin käy usein, kun toiminnon tarjonnut integraatio on poistettu tai skripti on nimetty uudelleen tai poistettu.\n\nTämä mallipohjaentiteetti on määritetty YAML-määrityksissäsi. Korjataksesi tämän ongelman, muokkaa sitä määritystesi `template:`-osiossa, käytä olemassa olevia toimintoja, ja lataa mallipohjaentiteettisi uudelleen.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia toimintoja mallipohjaentiteetissä: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook on löytänyt kummituksen asetuksistasi 👻\n\nSeuraavia kuvakkeita ei ole Home Assistantin mukana tulevissa Material Design Icons -kuvakkeissa (versio {version}):\n\n{icons}\n\n\n\nJokainen näistä näkyy tyhjänä kohtana, sanaakaan sanomatta. Näin käy usein, kun kuvakkeen nimi on kirjoitettu väärin, kuvake on nimetty uudelleen tai poistettu, tai se on valittu uudemmasta Material Design Icons -versiosta kuin se, joka Home Assistantin mukana tulee. Korjataksesi tämän ongelman, anna jokaiselle näistä kuvake, joka on olemassa: entiteetille, apurille tai vyöhykkeelle sen asetuksissa, alueelle, kerrokselle tai tunnisteelle alueiden, tunnisteiden ja vyöhykkeiden asetuksissa, kategorialle siellä, missä sitä käytetään, ja `customize:` määrityksissäsi.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia kuvakkeita asetuksissasi"
         }
     },
     "services": {
@@ -2667,6 +2794,170 @@
             },
             "description": "Korvaa käyttöliittymän kautta luodun ryhmän jäsenet annetuilla, Home Assistantin ollessa käynnissä.",
             "name": "Aseta ryhmän jäsenet"
+        },
+        "homeassistant_update_area": {
+            "name": "Päivitä alue",
+            "description": "Päivittää olemassa olevan alueen lennossa. Kaikki minkä jätät pois säilyttää arvon, joka sillä jo oli. Aliakset ja tunnisteet korvaavat alueen nykyiset. Kerroksen, kuvakkeen, kuvan ja sensorit voi tyhjentää asettamalla ne arvoon null.",
+            "fields": {
+                "area_id": {
+                    "name": "Alueen ID",
+                    "description": "Päivitettävän alueen ID."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Alueen uusi nimi."
+                },
+                "aliases": {
+                    "name": "Aliakset",
+                    "description": "Alueen aliakset. Korvaa sen nykyiset, tyhjä lista poistaa ne kaikki."
+                },
+                "floor_id": {
+                    "name": "Kerroksen ID",
+                    "description": "Sen kerroksen ID, jolla alue on."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Alueen uusi kuvake."
+                },
+                "picture": {
+                    "name": "Kuva",
+                    "description": "Alueen kuvan URL-osoite tai polku."
+                },
+                "labels": {
+                    "name": "Tunnisteet",
+                    "description": "Alueen tunnisteiden ID:t. Korvaa sen nykyiset, tyhjä lista poistaa ne kaikki."
+                },
+                "temperature_entity_id": {
+                    "name": "Lämpötila-anturi",
+                    "description": "Sensori, joka mittaa alueen lämpötilaa."
+                },
+                "humidity_entity_id": {
+                    "name": "Kosteusanturi",
+                    "description": "Sensori, joka mittaa alueen kosteutta."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Päivitä laite",
+            "description": "Päivittää olemassa olevan laitteen lennossa. Kaikki minkä jätät pois säilyttää arvon, joka sillä jo oli. Tunnisteet korvaavat laitteen nykyiset. Nimen ja alueen voi tyhjentää asettamalla ne arvoon null, jolloin laite saa takaisin integraationsa antaman nimen.",
+            "fields": {
+                "device_id": {
+                    "name": "Laitteen ID",
+                    "description": "Päivitettävän laitteen ID. Home Assistantin laitevalitsin ei näytä käytöstä poistettuja laitteita, joten anna niiden ID YAML-tilassa."
+                },
+                "name_by_user": {
+                    "name": "Nimi",
+                    "description": "Laitteen uusi nimi."
+                },
+                "area_id": {
+                    "name": "Alueen ID",
+                    "description": "Sen alueen ID, jossa laite on."
+                },
+                "labels": {
+                    "name": "Tunnisteet",
+                    "description": "Laitteen tunnisteiden ID:t. Korvaa sen nykyiset, tyhjä lista poistaa ne kaikki."
+                },
+                "disabled_by": {
+                    "name": "Poistanut käytöstä",
+                    "description": "Aseta arvoon user poistaaksesi laitteen käytöstä, tai arvoon null ottaaksesi sen taas käyttöön. Tämä toimii samoin kuin laitteen käytöstä poisto- ja käyttöönottotoiminnot."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Päivitä kerros",
+            "description": "Päivittää olemassa olevan kerroksen lennossa. Kaikki minkä jätät pois säilyttää arvon, joka sillä jo oli. Aliakset korvaavat kerroksen nykyiset. Kuvakkeen ja tason voi tyhjentää asettamalla ne arvoon null.",
+            "fields": {
+                "floor_id": {
+                    "name": "Kerroksen ID",
+                    "description": "Päivitettävän kerroksen ID."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Kerroksen uusi nimi."
+                },
+                "aliases": {
+                    "name": "Aliakset",
+                    "description": "Kerroksen aliakset. Korvaa sen nykyiset, tyhjä lista poistaa ne kaikki."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Kerroksen uusi kuvake."
+                },
+                "level": {
+                    "name": "Taso",
+                    "description": "Kerroksen järjestysnumero talossasi."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Luo aikataulu",
+            "description": "Luo lennossa uuden aikatauluapurin, joka on päällä kullekin viikonpäivälle annettujen aikalohkojen ajan. Palauttaa uuden aikataulun entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden aikataulun nimi."
+                },
+                "schedule_id": {
+                    "name": "Aikataulun entiteetin ID",
+                    "description": "Uuden aikataulun entiteetin ID. Etuliite schedule. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden aikataulun kuvake."
+                },
+                "monday": {
+                    "name": "Maanantai",
+                    "description": "Milloin aikataulu on päällä maanantaisin: lista aikalohkoja, joilla kullakin on alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Jos jätetään pois, se on pois päältä koko päivän."
+                },
+                "tuesday": {
+                    "name": "Tiistai",
+                    "description": "Milloin aikataulu on päällä tiistaisin: lista aikalohkoja, joilla kullakin on alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Jos jätetään pois, se on pois päältä koko päivän."
+                },
+                "wednesday": {
+                    "name": "Keskiviikko",
+                    "description": "Milloin aikataulu on päällä keskiviikkoisin: lista aikalohkoja, joilla kullakin on alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Jos jätetään pois, se on pois päältä koko päivän."
+                },
+                "thursday": {
+                    "name": "Torstai",
+                    "description": "Milloin aikataulu on päällä torstaisin: lista aikalohkoja, joilla kullakin on alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Jos jätetään pois, se on pois päältä koko päivän."
+                },
+                "friday": {
+                    "name": "Perjantai",
+                    "description": "Milloin aikataulu on päällä perjantaisin: lista aikalohkoja, joilla kullakin on alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Jos jätetään pois, se on pois päältä koko päivän."
+                },
+                "saturday": {
+                    "name": "Lauantai",
+                    "description": "Milloin aikataulu on päällä lauantaisin: lista aikalohkoja, joilla kullakin on alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Jos jätetään pois, se on pois päältä koko päivän."
+                },
+                "sunday": {
+                    "name": "Sunnuntai",
+                    "description": "Milloin aikataulu on päällä sunnuntaisin: lista aikalohkoja, joilla kullakin on alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Jos jätetään pois, se on pois päältä koko päivän."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Poista aikataulu",
+            "description": "Poistaa käyttöliittymässä tehtyjä aikatauluapureita. YAML:issa määritettyjä aikatauluja Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava aikataulu tai aikataulut."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Aseta päivän aikalohkot",
+            "description": "Korvaa käyttöliittymässä tehdyn aikatauluapurin yhden tai useamman päivän aikalohkot. YAML:issa määritettyjä aikatauluja Spook ei voi muuttaa.",
+            "fields": {
+                "day": {
+                    "name": "Päivä",
+                    "description": "Viikonpäivä tai viikonpäivät, joiden aikalohkot asetetaan."
+                },
+                "blocks": {
+                    "name": "Aikalohkot",
+                    "description": "Aikalohkot, joiden ajan aikataulu on päällä noina päivinä, kullakin alku- ja loppuaika sekä valinnaiset tiedot, jotka se näyttää attribuutteina ollessaan päällä. Nämä korvaavat päivien nykyiset lohkot. Tyhjä lista jättää päivät pois päältä koko päiväksi."
+                }
+            }
         }
     },
     "conditions": {
@@ -2755,6 +3046,16 @@
         "not_triggered_by_user": {
             "name": "Ei käyttäjän käynnistämä",
             "description": "Toteutuu, kun tätä suoritusta ei voi panna kenenkään nimiin: aikataulu, aurinko, omin päin toimiva integraatio tai Suorita-painike. Tässä ei ole tarkoituksella valintoja. Jos haluat sulkea pois tiettyjä henkilöitä, pane \"Käyttäjän käynnistämä\" Ei-ehdon sisään."
+        },
+        "is_available": {
+            "name": "Entiteetti on saatavilla",
+            "description": "Toteutuu, kun entiteetti on tavoitettavissa: mikä tahansa muu kuin ei saatavilla tai tuntematon. Kaiuttimelle tai älypistorasialle, jossa ei aina ole virtaa.",
+            "fields": {
+                "behavior": {
+                    "name": "Toiminta",
+                    "description": "Riittääkö, että yksi entiteeteistä on saatavilla, vai pitääkö kaikkien olla."
+                }
+            }
         }
     },
     "triggers": {
@@ -2975,6 +3276,92 @@
         "device_discovered": {
             "name": "Laite löydetty",
             "description": "Laukeaa, kun Home Assistant löytää jotain uutta, jonka se voisi määrittää, kuten laitteen, joka juuri ilmestyi verkkoosi."
+        },
+        "state_changed": {
+            "name": "Spookin tilalaukaisin",
+            "description": "Laukeaa, kun entiteetin tila muuttuu, kaikelle mitä kohde kattaa: entiteeteille, laitteille, alueille, kerroksille ja tunnisteille. Rajaa sitä toimialueen, integraation tai laiteluokan mukaan, tai jätä kohde tyhjäksi ja anna niiden poimia entiteetit kaikesta. Sulje asioita taas pois, ja päätä, kuinka kauan muutoksen on pysyttävä ennen kuin se lasketaan.",
+            "fields": {
+                "domain": {
+                    "name": "Toimialueet",
+                    "description": "Vain näiden toimialueiden entiteetit, kuten binary_sensor tai cover. Ilman kohdetta poimii ne kaikesta."
+                },
+                "integration": {
+                    "name": "Integraatiot",
+                    "description": "Vain näiden integraatioiden tarjoamat entiteetit, kuten zha tai hue. Ilman kohdetta poimii ne kaikesta."
+                },
+                "config_entry": {
+                    "name": "Integraatiomerkintä",
+                    "description": "Vain tämän integraatiomerkinnän entiteetit. Ilman kohdetta poimii ne kaikesta."
+                },
+                "device_class": {
+                    "name": "Laiteluokat",
+                    "description": "Vain näiden laiteluokkien entiteetit, kuten door tai window. Ilman kohdetta poimii ne kaikesta."
+                },
+                "exclude_target": {
+                    "name": "Jätä pois",
+                    "description": "Pois jätettävät entiteetit, laitteet, alueet, kerrokset tai tunnisteet. Kaikki niissä jätetään pois, myös diagnostiikkaentiteetit."
+                },
+                "exclude_domain": {
+                    "name": "Jätä pois toimialueet",
+                    "description": "Jättää pois näiden toimialueiden entiteetit. Jos kohdassa Jätä pois ei ole mitään, tämä koskee kaikkea, mitä kohde kattaa."
+                },
+                "exclude_integration": {
+                    "name": "Jätä pois integraatiot",
+                    "description": "Jättää pois näiden integraatioiden tarjoamat entiteetit."
+                },
+                "exclude_config_entry": {
+                    "name": "Jätä pois integraatiomerkintä",
+                    "description": "Jättää pois tämän integraatiomerkinnän entiteetit."
+                },
+                "exclude_device_class": {
+                    "name": "Jätä pois laiteluokat",
+                    "description": "Jättää pois näiden laiteluokkien entiteetit."
+                },
+                "attribute": {
+                    "name": "Attribuutti",
+                    "description": "Seuraa tätä attribuuttia tilan sijaan."
+                },
+                "from": {
+                    "name": "Tilasta",
+                    "description": "Vain muutokset, jotka tulevat jostakin näistä tiloista."
+                },
+                "not_from": {
+                    "name": "Ei tilasta",
+                    "description": "Vain muutokset, jotka eivät tule mistään näistä tiloista."
+                },
+                "to": {
+                    "name": "Tilaan",
+                    "description": "Vain muutokset, jotka menevät johonkin näistä tiloista."
+                },
+                "not_to": {
+                    "name": "Ei tilaan",
+                    "description": "Vain muutokset, jotka eivät mene mihinkään näistä tiloista."
+                },
+                "ignore_unavailable": {
+                    "name": "Ohita ei saatavilla ja tuntematon",
+                    "description": "Jättää pois muutokset tiloista ei saatavilla ja tuntematon tai niihin, jotta uudelleenkäynnistys tai reitittimen uudelleenkäynnistys ei laukaise kaikkea. Kytke pois päältä, jos haluat käyttää niitä kohdissa Tilasta tai Tilaan."
+                },
+                "attribute_changes": {
+                    "name": "Laske attribuuttien muutokset",
+                    "description": "Laukeaa myös, kun vain attribuutti muuttui ja tila pysyi samana. Ei tee mitään, kun seurataan attribuuttia."
+                },
+                "behavior": {
+                    "description": "Laukeaa jokaiselle entiteetille, kohteen ensimmäiselle perille ehtivälle, tai kun kaikki ovat perillä. Ensimmäinen ja kaikki tarvitsevat kohdan Tilaan tai Ei tilaan. Kun ei saatavilla ja tuntematon ohitetaan, niissä tiloissa olevat entiteetit eivät ole mukana.",
+                    "name": "Toiminta"
+                },
+                "for": {
+                    "name": "Ajan",
+                    "description": "Laukeaa vasta, kun uusi tila on pysynyt näin kauan. Mikä tahansa muu muutos välissä peruu sen."
+                },
+                "blip_tolerance": {
+                    "name": "Katkossieto",
+                    "description": "Kun odotetaan kohdan Ajan aikaa, tilaan ei saatavilla tai tuntematon käyminen ja ennallaan palaaminen tämän ajan sisällä ei aloita odotusta alusta. Toimii vain yhdessä kohdan Ajan kanssa."
+                },
+                "delay": {
+                    "name": "Viive",
+                    "description": "Odottaa näin kauan ennen laukeamista, tapahtui välissä mitä tahansa. Kuin viive toimintojen alussa."
+                }
+            }
         }
     },
     "selector": {
@@ -2989,6 +3376,17 @@
             "options": {
                 "bottom": "Alimmaiseksi",
                 "top": "Ylimmäiseksi"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Maanantai",
+                "tuesday": "Tiistai",
+                "wednesday": "Keskiviikko",
+                "thursday": "Torstai",
+                "sunday": "Sunnuntai",
+                "friday": "Perjantai",
+                "saturday": "Lauantai"
             }
         }
     },
