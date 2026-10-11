@@ -613,6 +613,44 @@ async def test_custom_views_and_sections_keep_their_own_theme(
     )
 
 
+async def test_only_grid_sections_have_their_content_checked(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a section of an unknown layout keeps its theme, not its content.
+
+    The frontend only knows the grid layout, and a section without a type
+    gets it. Any other type turns into an error card that draws nothing that
+    is in the section, but the section wrapper still puts on its theme.
+    """
+    config = {
+        "views": [
+            {
+                "path": "home",
+                "type": "sections",
+                "sections": [
+                    {
+                        "theme": "Gone untyped section",
+                        "cards": [{"type": "markdown", "theme": "Gone untyped card"}],
+                    },
+                    {
+                        "type": "masonry",
+                        "theme": "Gone broken section",
+                        "cards": [{"type": "markdown", "theme": "Broken card"}],
+                        "sections": [{"type": "grid", "theme": "Broken inner"}],
+                    },
+                ],
+            },
+        ]
+    }
+
+    assert await _async_reported(hass, issue_registry, config) == _bulleted(
+        "Gone broken section",
+        "Gone untyped card",
+        "Gone untyped section",
+    )
+
+
 async def test_strategies_are_left_alone(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

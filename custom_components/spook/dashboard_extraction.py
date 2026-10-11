@@ -924,6 +924,10 @@ _VIEWS_WITH_CARDS = frozenset({_MASONRY_VIEW, "sidebar"})
 _PANEL_VIEW = "panel"
 _SECTIONS_VIEW = "sections"
 
+# The one section layout the frontend draws. A section without a type gets it,
+# any other core type turns into an error card that shows none of its content.
+_GRID_SECTION = "grid"
+
 
 def _view_type(view: dict[str, Any]) -> Any:
     """Return the layout the frontend picks for a view."""
@@ -993,8 +997,8 @@ def _collect_section_themes(sections: Any, themes: set[str]) -> None:
 
     The section wrapper puts on a section's theme whatever its type, so a
     custom section's own theme counts, and the cards and sections in it are
-    left to it. A strategy section makes its config when it opens, so none of
-    it is known up front.
+    left to it. Only the grid layout draws what is in it. A strategy section
+    makes its config when it opens, so none of it is known up front.
     """
     if not isinstance(sections, list):
         return
@@ -1004,7 +1008,7 @@ def _collect_section_themes(sections: Any, themes: set[str]) -> None:
             continue
 
         _collect_theme(section, themes)
-        if not _is_custom(section):
+        if (section.get("type") or _GRID_SECTION) == _GRID_SECTION:
             _collect_cards_themes(section.get("cards"), themes)
             _collect_section_themes(section.get("sections"), themes)
 
