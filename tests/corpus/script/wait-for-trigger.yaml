@@ -7,6 +7,11 @@ expect:
     find:
       - cover.living_room: current_position
       - cover.bedroom: current_position
+  states:
+    find:
+      - cover.living_room[current_position]: "0"
+    not_find:
+      - cover.living_room[current_position]: '"0"'
   triggers:
     find: [state]
   entities:

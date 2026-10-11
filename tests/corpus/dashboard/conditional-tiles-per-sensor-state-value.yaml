@@ -6,6 +6,10 @@ note: >-
 expect:
   entities:
     find: [sensor.air_quality_status]
+  states:
+    find:
+      - sensor.air_quality_status: Good
+      - sensor.air_quality_status: Fair
 ---
 type: grid
 cards:

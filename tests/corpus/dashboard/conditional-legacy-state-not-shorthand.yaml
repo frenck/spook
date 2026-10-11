@@ -6,6 +6,9 @@ note: >-
 expect:
   entities:
     find: [fan.bedroom, sun.sun]
+  states:
+    find:
+      - sun.sun: foo
 ---
 type: grid
 square: true

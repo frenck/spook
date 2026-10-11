@@ -79,7 +79,12 @@ reference it reads. Three types are taken one step earlier:
 - `triggers` and `conditions`: every key the repair reads, because Home
   Assistant's own platforms always exist.
 - `attributes` and `states`: the pairs the repair would ask the recorder about,
-  as `entity_id: value`.
+  as `entity_id: value`. That holds for dashboards too: the attributes and
+  states their cards, conditions and filters name. A value of an attribute,
+  waited for in place of a state, is written the way the issue writes it:
+  `climate.hall[hvac_action]: "heating"`, quotes and all, since `0` and `"0"`
+  are not the same value to an attribute. In an `expect` rule that is
+  `climate.hall[hvac_action]: '"heating"'`.
 
 And one is said apart from the rest:
 

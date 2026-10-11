@@ -19,7 +19,10 @@ one. Three types cannot be asked that way, and are taken one step earlier:
   the check against them is left out and every key the repair reads counts;
 - attributes and states: what an entity has comes from history, which an
   empty house does not have, so these are the pairs the repair would ask the
-  recorder about.
+  recorder about. A value of an attribute, waited for in place of a state,
+  is written the way the issue writes it, `climate.hall[hvac_action]:
+  "heating"`, since a number and the same digits as text are not the same
+  value to an attribute.
 
 The entity repairs report what is no entity ID at all, like
 `cover.blind.current_position`, together with the entities that do not
@@ -29,6 +32,7 @@ exist, and the issue says them apart. So does the result: those are under
 
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
@@ -42,10 +46,13 @@ from custom_components.spook.dashboard_extraction import (
 from custom_components.spook.draft_checking import DRAFT_REPAIRS
 from custom_components.spook.ectoplasms.lovelace.repairs import (
     unknown_area_references as dashboard_areas,
+    unknown_attribute_references as dashboard_attributes,
     unknown_entity_references as dashboard_entities,
     unknown_service_references as dashboard_services,
+    unknown_state_references as dashboard_states,
 )
 from custom_components.spook.entity_filtering import is_not_an_entity_id
+from custom_components.spook.reference_extraction import AttributeValue
 from custom_components.spook.repairs import AbstractSpookUnknownEntityNamesRepair
 
 if TYPE_CHECKING:
@@ -67,6 +74,13 @@ DASHBOARD_REPAIRS: dict[str, ModuleType] = {
     "entities": dashboard_entities,
     "areas": dashboard_areas,
     "services": dashboard_services,
+}
+
+# The repairs reading dashboards for what their entities never have. Like
+# the automation ones, they are taken one step before asking the recorder.
+DASHBOARD_NAME_REPAIRS: dict[str, ModuleType] = {
+    "attributes": dashboard_attributes,
+    "states": dashboard_states,
 }
 
 # Where a repair asks whether an integration can provide a trigger or a
@@ -93,7 +107,7 @@ NOT_ENTITY_IDS = "not_entity_ids"
 def reference_types(kind: str) -> frozenset[str]:
     """Return the reference types the harness reports for a kind."""
     if kind == "dashboard":
-        labels = set(DASHBOARD_REPAIRS)
+        labels = {*DASHBOARD_REPAIRS, *DASHBOARD_NAME_REPAIRS}
     else:
         repairs = AUTOMATION_REPAIRS if kind == "automation" else SCRIPT_REPAIRS
         labels = {_reference_label(module) for module in repairs}
@@ -111,6 +125,13 @@ def _say_apart(result: dict[str, Any], is_no_entity_id: Callable[[str], bool]) -
     result[NOT_ENTITY_IDS] = [value for value in reported if is_no_entity_id(value)]
 
 
+def _named(entity_id: str, name: str | AttributeValue) -> str:
+    """Return one attribute or state an entity is named with, as a line."""
+    if isinstance(name, AttributeValue):
+        return f"{entity_id}[{name.attribute}]: {json.dumps(name.value)}"
+    return f"{entity_id}: {name}"
+
+
 async def _async_setup_house(hass: HomeAssistant) -> None:
     """Set up what every house has before anything is read.
 
@@ -123,6 +144,11 @@ async def _async_setup_house(hass: HomeAssistant) -> None:
 async def _every_key(_hass: HomeAssistant, keys: Iterable[str]) -> set[str]:
     """Count every trigger or condition key, known platform or not."""
     return set(keys)
+
+
+async def _every_pair_unknown(pairs: set[tuple[str, str]]) -> dict[Any, None]:
+    """Count every pair a dashboard repair would ask about as unknown."""
+    return dict.fromkeys(pairs)
 
 
 async def _async_round_findings(
@@ -204,7 +230,7 @@ async def async_component_references(
             if isinstance(raw_config, dict) and repair._is_inspected(entity):  # noqa: SLF001
                 # pylint: disable-next=protected-access
                 named = repair._named_in(entity, raw_config)  # noqa: SLF001
-            result[label] = sorted(f"{entity_id}: {name}" for entity_id, name in named)
+            result[label] = sorted(_named(entity_id, name) for entity_id, name in named)
             continue
 
         result[label] = await _async_round_findings(repair, module)
@@ -277,6 +303,16 @@ async def async_dashboard_references(
         # pylint: disable-next=protected-access
         repair._dashboards = {dashboard.url_path: dashboard}  # noqa: SLF001
         result[label] = await _async_round_findings(repair, module)
+
+    for label, module in DASHBOARD_NAME_REPAIRS.items():
+        repair = module.SpookRepair(hass)
+        # pylint: disable-next=protected-access
+        repair._dashboards = {dashboard.url_path: dashboard}  # noqa: SLF001
+        # The recorder is never asked: every pair the round reads is unknown.
+        with patch.object(repair, "_async_unknown", _every_pair_unknown):
+            findings = await _async_round_findings(repair, module)
+        # Written down as `entity_id:name`, like the issue does.
+        result[label] = sorted(_named(*finding.split(":", 1)) for finding in findings)
 
     # The dashboard issue says apart what its own reader finds, not whatever
     # looks like no entity ID, so that reader decides here too.

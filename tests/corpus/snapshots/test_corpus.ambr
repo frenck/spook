@@ -742,6 +742,7 @@
       'script.announce_dryer_done',
     ]),
     'states': list([
+      'event.laundry_scene_controller_button_1[event_type]: "KeyPressed"',
     ]),
     'trigger_ids': list([
     ]),
@@ -1226,6 +1227,10 @@
       'switch.turn_on',
     ]),
     'states': list([
+      'climate.bedroom_valve[hvac_action]: "Heating"',
+      'climate.bedroom_valve[hvac_action]: "Idle"',
+      'climate.kitchen_valve[hvac_action]: "Heating"',
+      'climate.kitchen_valve[hvac_action]: "Idle"',
       'switch.boiler_relay: off',
     ]),
     'trigger_ids': list([
@@ -1709,6 +1714,8 @@
       'light.turn_on',
     ]),
     'states': list([
+      'media_player.living_room_tv[source]: "HDMI 1"',
+      'media_player.living_room_tv[source]: "HDMI 2"',
     ]),
     'trigger_ids': list([
     ]),
@@ -2989,6 +2996,8 @@
     'states': list([
       'binary_sensor.window_bedroom: on',
       'binary_sensor.window_kitchen: on',
+      'climate.house[hvac_action]: "heating"',
+      'climate.house[hvac_action]: "preheating"',
     ]),
     'trigger_ids': list([
     ]),
@@ -4524,17 +4533,23 @@
   dict({
     'areas': list([
     ]),
+    'attributes': list([
+    ]),
     'entities': list([
     ]),
     'not_entity_ids': list([
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[alarm-panel-and-media-control]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'alarm_control_panel.home',
@@ -4544,12 +4559,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[area-card-area-controls-feature]
   dict({
     'areas': list([
       'nursery',
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'switch.nursery_camera',
@@ -4558,6 +4577,8 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[area-card-classes-type-last]
@@ -4565,11 +4586,15 @@
     'areas': list([
       'living_room',
     ]),
+    'attributes': list([
+    ]),
     'entities': list([
     ]),
     'not_entity_ids': list([
     ]),
     'services': list([
+    ]),
+    'states': list([
     ]),
   })
 # ---
@@ -4579,12 +4604,16 @@
       'garden_shed',
       'kitchen',
     ]),
+    'attributes': list([
+    ]),
     'entities': list([
       'sensor.garage_temperature',
     ]),
     'not_entity_ids': list([
     ]),
     'services': list([
+    ]),
+    'states': list([
     ]),
   })
 # ---
@@ -4596,6 +4625,8 @@
       'kitchen',
       'office',
     ]),
+    'attributes': list([
+    ]),
     'entities': list([
       'light.office_ceiling',
       'light.office_desk_lamp',
@@ -4605,11 +4636,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[auto-entities-exclude-by-name-regex]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -4617,11 +4652,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[auto-entities-filter]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.low_battery_alert',
@@ -4631,11 +4670,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[auto-entities-options-this-entity-id]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -4644,11 +4687,15 @@
     'services': list([
       'scene.turn_on',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[auto-entities-template-builds-cards]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -4656,11 +4703,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[battery-state-card-own-filter]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.phone_battery_level',
@@ -4669,11 +4720,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[browser-mod-popup-apexcharts-data-generator]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.body_weight',
@@ -4682,11 +4737,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[bubble-card-pop-up-hash-navigation]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.living_room_floor_lamp',
@@ -4695,11 +4754,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[bubble-card-popup-trigger-entity]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'camera.192_168_1_20',
@@ -4711,11 +4774,16 @@
     'services': list([
       'input_boolean.turn_off',
     ]),
+    'states': list([
+      'light.study: off',
+    ]),
   })
 # ---
 # name: test_dashboard_case[bubble-card-sub-button-mapping-and-list]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'script.night_mode',
@@ -4726,11 +4794,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-action-outside-tap-action]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_select.game_room_scene',
@@ -4740,11 +4812,15 @@
     'services': list([
       'input_select.select_option',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-custom-field-mini-graph]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.indoor_temperature',
@@ -4753,11 +4829,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-js-compares-other-entity]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.installed_version',
@@ -4767,11 +4847,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-js-state-display-attribute]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.home_server',
@@ -4780,11 +4864,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-nested-custom-fields-call-service]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'media_player.living_room_soundbar',
@@ -4798,11 +4886,15 @@
       'media_player.media_previous_track',
       'script.mute_soundbar',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-template-variable-called-entity]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.living_room_temperature',
@@ -4811,11 +4903,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-triggers-update-javascript]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.vibration_sensor_battery',
@@ -4824,11 +4920,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[button-card-variables-name-entities]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -4837,11 +4937,15 @@
     'services': list([
       'scene.turn_on',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[call-service-removed-fan-set-speed]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'fan.bedroom',
@@ -4852,11 +4956,15 @@
       'fan.set_speed',
       'fan.turn_off',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[call-service-typed-with-unicode-dash]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_select.season',
@@ -4865,11 +4973,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[card-mod-config-entity-and-secret]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_number.alarm_volume',
@@ -4879,11 +4991,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[clock-weather-card-own-sensor-keys]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'weather.home',
@@ -4892,11 +5008,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[conditional-card-always-shown-in-edit-mode]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'media_player.living_room_tv',
@@ -4906,11 +5026,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'sensor.tv_power_state: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[conditional-card-folded-entity-picture-elements]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.car_charger_intelligent_dispatching',
@@ -4920,11 +5045,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'binary_sensor.car_charger_intelligent_dispatching: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[conditional-card-template-condition-not-supported]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_boolean.waste_reminder',
@@ -4935,11 +5065,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'input_boolean.waste_reminder: on',
+      'sensor.waste_next_type: paper',
+    ]),
   })
 # ---
 # name: test_dashboard_case[conditional-cards]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.washing_machine_running',
@@ -4951,11 +5087,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'binary_sensor.washing_machine_running: on',
+      'person.alex: home',
+    ]),
   })
 # ---
 # name: test_dashboard_case[conditional-legacy-state-not-shorthand]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'fan.bedroom',
@@ -4965,11 +5107,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'fan.bedroom: unavailable',
+      'sun.sun: foo',
+    ]),
   })
 # ---
 # name: test_dashboard_case[conditional-tiles-per-sensor-state-value]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.air_quality_status',
@@ -4978,11 +5126,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'sensor.air_quality_status: Fair',
+      'sensor.air_quality_status: Good',
+    ]),
   })
 # ---
 # name: test_dashboard_case[config-template-card-js-hash]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.heartbeat',
@@ -4991,11 +5145,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[config-template-card-variables]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_boolean.notify_user',
@@ -5005,11 +5163,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[core-cards-attribute-in-entity-field]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'weather.home: temperature',
     ]),
     'entities': list([
       'weather.home',
@@ -5021,11 +5184,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[custom-card-placeholders]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.bedroom_motion',
@@ -5038,6 +5205,8 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[decluttering-default-area-id-variable]
@@ -5045,17 +5214,23 @@
     'areas': list([
       'study',
     ]),
+    'attributes': list([
+    ]),
     'entities': list([
     ]),
     'not_entity_ids': list([
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[decluttering-templates-placeholders]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.house_power',
@@ -5064,11 +5239,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[decluttering-variables-under-own-names]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.hallway_ceiling',
@@ -5078,11 +5257,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[energy-cards-without-entities]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -5090,11 +5273,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[entities-card-rows]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'climate.living_room: current_temperature',
     ]),
     'entities': list([
       'climate.living_room',
@@ -5107,11 +5295,16 @@
     'services': list([
       'script.goodnight',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[entities-card-special-rows]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'sun.sun: next_rising',
     ]),
     'entities': list([
       'binary_sensor.back_door',
@@ -5124,11 +5317,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'binary_sensor.back_door: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[entity-badge-color-template-with-hash-lines]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.home_battery_level',
@@ -5137,11 +5335,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[entity-card-attribute-with-visibility]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'sensor.media_server_process: name',
     ]),
     'entities': list([
       'sensor.media_server_process',
@@ -5150,11 +5353,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'sensor.media_server_process: unavailable',
+    ]),
   })
 # ---
 # name: test_dashboard_case[entity-filter-attribute-in-entity-id]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'cover.bedroom_blind: current_position',
     ]),
     'entities': list([
       'cover.bedroom_blind',
@@ -5164,11 +5373,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[entity-filter-numeric-operators]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.thermostat_offset_hall',
@@ -5178,11 +5391,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[entity-filter-state-filter-in-list]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'climate.bedroom: hvac_action',
+      'climate.living_room: hvac_action',
     ]),
     'entities': list([
       'climate.bedroom',
@@ -5192,11 +5411,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[entity-filter-state-filter-placement]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_boolean.show_hidden_cards',
@@ -5206,11 +5429,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'input_boolean.show_hidden_cards: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[fire-dom-event-browser-mod-command-card]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.washer_state',
@@ -5221,11 +5449,15 @@
     'services': list([
       'switch.turn_off',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[flex-table-card-entities-include]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -5233,11 +5465,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[fold-entity-row-head-entity]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'cover.ground_floor',
@@ -5249,11 +5485,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[fold-entity-row-head-string]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.driveway',
@@ -5263,11 +5503,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[glance-and-picture-glance-images]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.driveway_motion',
@@ -5280,11 +5524,17 @@
     'services': list([
       'light.toggle',
     ]),
+    'states': list([
+      'binary_sensor.driveway_motion: off',
+      'binary_sensor.driveway_motion: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[heading-card-badges-and-includes]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.kitchen',
@@ -5293,11 +5543,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[history-graph-entity-rows-with-names]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'climate.living_room',
@@ -5308,17 +5562,23 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[logbook-card-label-target]
   dict({
     'areas': list([
     ]),
+    'attributes': list([
+    ]),
     'entities': list([
     ]),
     'not_entity_ids': list([
     ]),
     'services': list([
+    ]),
+    'states': list([
     ]),
   })
 # ---
@@ -5327,6 +5587,8 @@
     'areas': list([
       'hallway',
     ]),
+    'attributes': list([
+    ]),
     'entities': list([
       'binary_sensor.front_door',
     ]),
@@ -5334,11 +5596,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[logbook-card-pseudo-entity-from-logbook-log]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -5346,11 +5612,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[map-geo-location-source-objects]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.car_position',
@@ -5360,11 +5630,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[map-geo-location-sources-plain-strings]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'zone.home',
@@ -5373,11 +5647,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[map-geo-location-sources-visibility-or]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.storm_alert',
@@ -5388,11 +5666,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'binary_sensor.storm_alert: on',
+      'binary_sensor.weather_warning: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[markdown-card-entity-id-option]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_text.vacuum_queue',
@@ -5401,11 +5685,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[markdown-namespace-loop-over-states-by-label]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -5413,11 +5701,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[multiple-entity-row-template-name]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.lounge_humidity',
@@ -5427,11 +5719,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[mushroom-chips-conditional-chip]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.waste_pickup_today',
@@ -5441,12 +5737,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[mushroom-template-card-area-key]
   dict({
     'areas': list([
       'kitchen',
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.kitchen',
@@ -5455,11 +5755,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[navbar-card-routes]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'alarm_control_panel.home',
@@ -5468,11 +5772,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[perform-action-data-entity-id-template]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.hallway',
@@ -5482,11 +5790,15 @@
     'services': list([
       'light.toggle',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[perform-action-floor-and-label-target]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -5495,11 +5807,16 @@
     'services': list([
       'light.turn_off',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[picture-elements-conditional-elements]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'climate.office: current_temperature',
     ]),
     'entities': list([
       'climate.office',
@@ -5509,11 +5826,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'input_select.office_heating_colour: heating',
+      'input_select.office_heating_colour: off',
+    ]),
   })
 # ---
 # name: test_dashboard_case[picture-elements-conditional-with-card-key]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'switch.pool_light',
@@ -5523,11 +5846,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'switch.pool_pump: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[picture-elements-image-attribute-in-entity]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'climate.office',
@@ -5537,11 +5865,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'climate.office: heat',
+      'climate.office: off',
+    ]),
   })
 # ---
 # name: test_dashboard_case[picture-elements-legacy-service-button]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_select.floorplan_floor',
@@ -5552,11 +5886,15 @@
     'services': list([
       'input_select.select_option',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[picture-elements-state-icon-script-with-card-mod]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'climate.living_room',
@@ -5566,11 +5904,15 @@
     'services': list([
       'script.toggle_air_conditioning',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[power-flow-card-split-entity]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.solar_power',
@@ -5579,11 +5921,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[room-card-info-entities]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'cover.bedroom_blinds',
@@ -5595,11 +5941,15 @@
     'services': list([
       'script.bedroom_blinds_tilt',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[sankey-chart-children-strings]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.dishwasher_power',
@@ -5610,11 +5960,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[sections-view-headings-badges]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'cover.garage_door',
@@ -5627,11 +5981,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[sections-view-visibility-and-include]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.show_holiday_section',
@@ -5643,11 +6001,16 @@
     'services': list([
       'light.turn_off',
     ]),
+    'states': list([
+      'binary_sensor.show_holiday_section: on',
+    ]),
   })
 # ---
 # name: test_dashboard_case[sections-visibility-screen-and-user]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'script.play_music',
@@ -5657,11 +6020,15 @@
     'services': list([
       'script.turn_on',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[simple-thermostat-sensors-attributes]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'climate.basement',
@@ -5671,11 +6038,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[statistic-card-period-calendar]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.energy_consumption',
@@ -5684,11 +6055,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[statistics-graphs-stacked-in-vertical-stack]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.rain_today',
@@ -5699,11 +6074,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[status-card-content-mixes-domains-and-entities]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.washer_door',
@@ -5713,11 +6092,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[streamline-card-variables-without-entities]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
     ]),
@@ -5725,11 +6108,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[subview-with-back-path]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.attic',
@@ -5738,11 +6125,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[swipe-card-layout-card-nesting]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.shopping_list_items',
@@ -5752,12 +6143,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[tap-actions]
   dict({
     'areas': list([
       'living_room',
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.hallway',
@@ -5769,11 +6164,15 @@
       'light.toggle',
       'scene.turn_on',
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[template-entity-row-config-entity-in-filter]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.pending_updates',
@@ -5782,11 +6181,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[thermostat-and-humidifier-features]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'climate.living_room',
@@ -5796,11 +6199,17 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[tile-features-and-state-content]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
+      'light.front_door: brightness',
+      'light.front_door: color_temp_kelvin',
     ]),
     'entities': list([
       'climate.hall',
@@ -5812,11 +6221,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[tile-select-options-feature]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'input_select.house_mode',
@@ -5825,11 +6238,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[todo-and-calendar-cards]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'calendar.family',
@@ -5840,11 +6257,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[uppercase-entity-in-card]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'binary_sensor.Car_Charger_Dispatching',
@@ -5854,11 +6275,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[vacuum-card-map-camera]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'vacuum.downstairs',
@@ -5867,11 +6292,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[view-badges-entity-filter-legacy]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.bed_light',
@@ -5882,11 +6311,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[visibility-or-and-nested-conditions]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'alarm_control_panel.home',
@@ -5897,11 +6330,16 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+      'person.alex: home',
+    ]),
   })
 # ---
 # name: test_dashboard_case[visible-typo-instead-of-visibility]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'sensor.power_usage',
@@ -5910,11 +6348,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[weather-chart-card-sensor-keys]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'weather.home',
@@ -5923,11 +6365,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[whole-dashboard-with-tags]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'light.garden',
@@ -5938,11 +6384,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[xiaomi-vacuum-map-card-camera-source]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'vacuum.robot_cleaner',
@@ -5951,11 +6401,15 @@
     ]),
     'services': list([
     ]),
+    'states': list([
+    ]),
   })
 # ---
 # name: test_dashboard_case[yaml-anchors-and-merge-keys]
   dict({
     'areas': list([
+    ]),
+    'attributes': list([
     ]),
     'entities': list([
       'switch.poe_port_garden',
@@ -5964,6 +6418,8 @@
     'not_entity_ids': list([
     ]),
     'services': list([
+    ]),
+    'states': list([
     ]),
   })
 # ---
@@ -7258,6 +7714,8 @@
     ]),
     'states': list([
       'binary_sensor.window: off',
+      'cover.bedroom[current_position]: 0',
+      'cover.living_room[current_position]: 0',
     ]),
     'triggers': list([
       'state',

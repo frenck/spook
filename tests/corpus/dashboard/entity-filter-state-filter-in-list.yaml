@@ -5,6 +5,10 @@ note: >-
 expect:
   entities:
     find: [climate.living_room, climate.bedroom]
+  attributes:
+    find:
+      - climate.living_room: hvac_action
+      - climate.bedroom: hvac_action
 ---
 type: entity-filter
 state_filter:

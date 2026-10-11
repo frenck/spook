@@ -6,6 +6,13 @@ note: >-
 expect:
   entities:
     find: [light.front_door, cover.garage_door, fan.bedroom, climate.hall]
+  attributes:
+    find:
+      - light.front_door: brightness
+      - light.front_door: color_temp_kelvin
+    not_find:
+      - light.front_door: last-changed
+      - light.front_door: state
 ---
 type: grid
 cards:

@@ -5,6 +5,12 @@ note: >-
 expect:
   entities:
     find: [binary_sensor.window_kitchen, binary_sensor.window_bedroom, climate.house]
+  states:
+    find:
+      - binary_sensor.window_kitchen: "on"
+      - climate.house[hvac_action]: '"preheating"'
+    not_find:
+      - climate.house: heating
 ---
 alias: Heating off when a window opens
 triggers:
