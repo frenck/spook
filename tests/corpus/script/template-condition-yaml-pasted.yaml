@@ -1,0 +1,48 @@
+source: https://community.home-assistant.io/t/help-with-value-template-not-working/886273
+note: >-
+  YAML for a whole template condition pasted into the template field of
+  one, so the leading `- condition: template` and `value_template: >` are
+  output and the render is never `true`. The template as it was meant,
+  printing `true` in one branch, is the near miss: Home Assistant strips the
+  whitespace around it.
+expect:
+  templates:
+    find:
+      # The issue shows a template on one line, and so does the result.
+      - >-
+        - condition: template value_template: > {% set last_off =
+        states('input_datetime.last_manual_light_off') %} {{ last_off ==
+        'unknown' or now() - last_off | as_datetime | as_local >
+        timedelta(hours=4) }}
+    not_find:
+      - >-
+        {% set last_off = states('input_datetime.last_manual_light_off') %} {%
+        if last_off == 'unknown' %} true {% else %} {{ (now() -
+        as_local(as_datetime(last_off))).total_seconds() > 14400 }} {% endif %}
+---
+alias: Hall light back on
+sequence:
+  - if:
+      - condition: template
+        value_template: |-
+          - condition: template
+            value_template: >
+              {% set last_off = states('input_datetime.last_manual_light_off') %}
+              {{ last_off == 'unknown' or now() - last_off | as_datetime | as_local > timedelta(hours=4) }}
+    then:
+      - action: light.turn_on
+        target:
+          entity_id: light.hallway
+  - if:
+      - condition: template
+        value_template: |-
+          {% set last_off = states('input_datetime.last_manual_light_off') %}
+          {% if last_off == 'unknown' %}
+            true
+          {% else %}
+            {{ (now() - as_local(as_datetime(last_off))).total_seconds() > 14400 }}
+          {% endif %}
+    then:
+      - action: light.turn_on
+        target:
+          entity_id: light.porch

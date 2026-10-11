@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/nfc-tag-how-to-check-who-scanned-it/744225
+note: >-
+  Telling who scanned a tag with the trigger's `context`, listing user IDs.
+  Those are the users behind the event, so a removed one never matches. A
+  `user_id` in `event_data` is whatever the event carries, like a Telegram
+  user, and is the near miss even when it looks like a user ID.
+expect:
+  users:
+    find: [3f1c9a7be2d04c6a9b8e7d6c5b4a3921, 8a7b6c5d4e3f40a1b2c3d4e5f6a7b8c9]
+    not_find: [0f9e8d7c6b5a49382716a5b4c3d2e1f0]
+---
+alias: Front door tag
+triggers:
+  - trigger: event
+    event_type: tag_scanned
+    event_data:
+      tag_id: front_door
+    context:
+      user_id:
+        - 3f1c9a7be2d04c6a9b8e7d6c5b4a3921
+        - 8a7b6c5d4e3f40a1b2c3d4e5f6a7b8c9
+  - trigger: event
+    event_type: doorbell_app_unlock
+    event_data:
+      user_id: 0f9e8d7c6b5a49382716a5b4c3d2e1f0
+actions:
+  - action: lock.unlock
+    target:
+      entity_id: lock.front_door

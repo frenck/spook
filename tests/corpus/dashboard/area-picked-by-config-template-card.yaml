@@ -1,0 +1,23 @@
+source: https://github.com/iantrich/config-template-card
+note: >-
+  An area card whose area is picked from a dropdown helper by
+  config-template-card, which fills in `${ }` before the card sees it. The
+  placeholder is no area. The plain area card next to it is the near miss
+  the other way.
+expect:
+  areas:
+    find: [living_room]
+    not_find: ["${states['input_select.room'].state}"]
+  entities:
+    find: [input_select.room]
+---
+type: vertical-stack
+cards:
+  - type: custom:config-template-card
+    entities:
+      - input_select.room
+    card:
+      type: area
+      area: "${states['input_select.room'].state}"
+  - type: area
+    area: living_room

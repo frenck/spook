@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/school-bus-annoucement-automation-does-not-trigger-automatically-it-works-when-triggered-manually/925854
+note: >-
+  A template condition missing its opening braces but keeping the closing
+  ones. Jinja reads that as plain text, so it never renders `true`: the
+  automation only worked when run by hand, which skips conditions.
+expect:
+  templates:
+    find:
+      - >-
+        state_attr('sensor.phone_last_notification' , 'package') ==
+        'com.example.schoolbus' }}
+---
+alias: School bus announcement
+description: ""
+triggers:
+  - trigger: state
+    entity_id: sensor.phone_last_notification
+conditions:
+  - condition: template
+    value_template: >-
+      state_attr('sensor.phone_last_notification' , 'package') ==
+      'com.example.schoolbus' }}
+actions:
+  - action: tts.speak
+    target:
+      entity_id: tts.google_translate_en_com
+    data:
+      media_player_entity_id: media_player.kitchen_speaker
+      message: "{{ state_attr('sensor.phone_last_notification', 'android.title') }}"

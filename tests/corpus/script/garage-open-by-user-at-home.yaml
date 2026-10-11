@@ -1,0 +1,33 @@
+source: https://community.home-assistant.io/t/allow-garage-door-opening-only-if-user-that-activates-is-at-home/780293
+note: >-
+  A script behind a dashboard button that opens the garage only for whoever
+  pressed it, when at home. One branch compares the user behind the run with
+  a written out ID; the other asks the person for theirs, which names no ID
+  and is the near miss.
+expect:
+  users:
+    find: [6b5a49382716f0e1d2c3b4a5968778a9]
+  entities:
+    find: [person.alex, person.sam, cover.garage_door]
+---
+alias: Open the garage for whoever is home
+sequence:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ context.user_id == '6b5a49382716f0e1d2c3b4a5968778a9'
+                 and is_state('person.alex', 'home') }}
+        sequence:
+          - action: cover.open_cover
+            target:
+              entity_id: cover.garage_door
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ context.user_id == state_attr('person.sam', 'user_id')
+                 and is_state('person.sam', 'home') }}
+        sequence:
+          - action: cover.open_cover
+            target:
+              entity_id: cover.garage_door

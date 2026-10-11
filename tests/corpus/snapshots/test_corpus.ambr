@@ -2079,6 +2079,50 @@
     ]),
   })
 # ---
+# name: test_automation_case[manual-change-by-user-context]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'input_boolean.attic_fan_manual',
+      'switch.attic_fan',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'input_boolean.turn_on',
+    ]),
+    'states': list([
+      'switch.attic_fan: on',
+    ]),
+    'templates': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+    'users': list([
+      '5e4d3c2b1a0948f7e6d5c4b3a2918070',
+    ]),
+  })
+# ---
 # name: test_automation_case[media-player-join-group-members]
   dict({
     'areas': list([
@@ -3620,6 +3664,51 @@
     ]),
   })
 # ---
+# name: test_automation_case[spook-state-changed-attribute-value]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'climate.hall: hvac_action',
+      'climate.hall: swing_mode',
+    ]),
+    'conditions': list([
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'climate.hall',
+      'light.hallway',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'light.turn_on',
+    ]),
+    'states': list([
+      'climate.hall[hvac_action]: "Heating"',
+      'climate.hall[swing_mode]: false',
+    ]),
+    'templates': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'spook.state_changed',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
 # name: test_automation_case[startswith-prefix-namespace-loop]
   dict({
     'areas': list([
@@ -4312,6 +4401,48 @@
     ]),
   })
 # ---
+# name: test_automation_case[tag-scanned-by-user-context]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'lock.front_door',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'lock.unlock',
+    ]),
+    'states': list([
+    ]),
+    'templates': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'event',
+    ]),
+    'users': list([
+      '3f1c9a7be2d04c6a9b8e7d6c5b4a3921',
+      '8a7b6c5d4e3f40a1b2c3d4e5f6a7b8c9',
+    ]),
+  })
+# ---
 # name: test_automation_case[tag-trigger-with-scanner-devices]
   dict({
     'areas': list([
@@ -4429,6 +4560,228 @@
     ]),
     'triggers': list([
       'temperature.crossed_threshold',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_automation_case[template-condition-closing-braces-only]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'sensor.phone_last_notification: android.title',
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'media_player.kitchen_speaker',
+      'sensor.phone_last_notification',
+      'tts.google_translate_en_com',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'tts.speak',
+    ]),
+    'states': list([
+    ]),
+    'templates': list([
+      "state_attr('sensor.phone_last_notification' , 'package') == 'com.example.schoolbus' }}",
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_automation_case[template-condition-in-parentheses]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'climate.living_room: temperature',
+    ]),
+    'conditions': list([
+      'state',
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'climate.living_room',
+      'input_boolean.living_room_hvac_allowed',
+      'sensor.living_room_temperature',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'climate.set_hvac_mode',
+    ]),
+    'states': list([
+      'input_boolean.living_room_hvac_allowed: on',
+    ]),
+    'templates': list([
+      '((states("sensor.living_room_temperature")>(state_attr(\'climate.living_room\',\'temperature\') +0.7)))',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_automation_case[template-condition-quoted-block]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'input_number.solar_peak_today',
+      'sensor.solar_output_last_5_minutes',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'input_number.set_value',
+    ]),
+    'states': list([
+    ]),
+    'templates': list([
+      '"{{ states(\'sensor.solar_output_last_5_minutes\') | float(0) > states(\'input_number.solar_peak_today\') | float(0) }}"',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'template',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_automation_case[template-condition-renders-state]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'input_number.cheap_power_hours',
+      'switch.car_charger',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'switch.turn_off',
+      'switch.turn_on',
+    ]),
+    'states': list([
+    ]),
+    'templates': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'time_pattern',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_automation_case[template-condition-without-braces]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'or',
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'sensor.dishwasher_power',
+      'sensor.washing_machine_power',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'notify.notify',
+    ]),
+    'states': list([
+    ]),
+    'templates': list([
+      'trigger.from_state.state != "unknown"',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'numeric_state',
     ]),
     'users': list([
     ]),
@@ -6033,6 +6386,28 @@
     ]),
   })
 # ---
+# name: test_dashboard_case[area-picked-by-config-template-card]
+  dict({
+    'areas': list([
+      'living_room',
+    ]),
+    'attributes': list([
+    ]),
+    'entities': list([
+      'input_select.room',
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+    ]),
+    'themes': list([
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
 # name: test_dashboard_case[areas-strategy-options-keyed-by-area]
   dict({
     'areas': list([
@@ -6490,6 +6865,30 @@
     'states': list([
     ]),
     'themes': list([
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_dashboard_case[card-themes-only-some-cards-apply]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'entities': list([
+      'sensor.moon_phase',
+      'sun.sun',
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+    ]),
+    'themes': list([
+      'black_background_theme',
+      'no_background_theme',
     ]),
     'users': list([
     ]),
@@ -7199,6 +7598,28 @@
       'climate.living_room',
       'sensor.indoor_temperature',
       'sensor.outdoor_temperature',
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+    ]),
+    'themes': list([
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_dashboard_case[home-dashboard-taken-over-area-views]
+  dict({
+    'areas': list([
+      'garage',
+      'kitchen',
+    ]),
+    'attributes': list([
+    ]),
+    'entities': list([
     ]),
     'not_entity_ids': list([
     ]),
@@ -8147,6 +8568,30 @@
     ]),
   })
 # ---
+# name: test_dashboard_case[view-visible-to-some-users]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'entities': list([
+      'alarm_control_panel.home',
+      'camera.driveway',
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+    ]),
+    'themes': list([
+    ]),
+    'users': list([
+      'a1b2c3d4e5f60718293a4b5c6d7e8f90',
+      'b2c3d4e5f60718293a4b5c6d7e8f90a1',
+    ]),
+  })
+# ---
 # name: test_dashboard_case[visibility-condition-without-entity]
   dict({
     'areas': list([
@@ -8932,6 +9377,50 @@
     'triggers': list([
     ]),
     'users': list([
+    ]),
+  })
+# ---
+# name: test_script_case[garage-open-by-user-at-home]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'person.sam: user_id',
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'cover.garage_door',
+      'person.alex',
+      'person.sam',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'cover.open_cover',
+    ]),
+    'states': list([
+      'person.alex: home',
+      'person.sam: home',
+    ]),
+    'templates': list([
+    ]),
+    'triggers': list([
+    ]),
+    'users': list([
+      '6b5a49382716f0e1d2c3b4a5968778a9',
     ]),
   })
 # ---
@@ -9729,6 +10218,47 @@
     'states': list([
     ]),
     'templates': list([
+    ]),
+    'triggers': list([
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_script_case[template-condition-yaml-pasted]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'input_datetime.last_manual_light_off',
+      'light.hallway',
+      'light.porch',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'light.turn_on',
+    ]),
+    'states': list([
+    ]),
+    'templates': list([
+      "- condition: template value_template: > {% set last_off = states('input_datetime.last_manual_light_off') %} {{ last_off == 'unknown' or now() - last_off | as_datetime | as_local > timedelta(hours=4) }}",
     ]),
     'triggers': list([
     ]),

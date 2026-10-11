@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/how-to-overrule-a-global-theme-for-a-specific-card/960222
+note: >-
+  Themes from a folder of playground themes, put on single cards. The
+  entities and button cards put on the theme they name, so a theme that is
+  gone is a reference. The tile card does nothing with a `theme` key, so the
+  one there changes nothing either way and is the near miss.
+expect:
+  themes:
+    find: [black_background_theme, no_background_theme]
+    not_find: [tile_theme]
+  entities:
+    find: [sun.sun, sensor.moon_phase]
+---
+type: vertical-stack
+cards:
+  - type: entities
+    title: Playground theme
+    entities:
+      - sun.sun
+      - sensor.moon_phase
+    theme: black_background_theme
+  - type: button
+    entity: sun.sun
+    theme: no_background_theme
+  - type: tile
+    entity: sun.sun
+    theme: tile_theme

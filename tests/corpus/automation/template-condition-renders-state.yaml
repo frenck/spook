@@ -1,0 +1,48 @@
+source: https://community.home-assistant.io/t/template-evaluates-correctly-in-developer-but-fails-in-conditional-code/778736
+note: >-
+  A template condition that prints the state of a binary sensor picked by
+  number. It renders `on`, and a condition only passes on `true`, so the
+  default always ran. Comparing that state with `on` is the fix.
+out_of_scope: >-
+  The never-true template repair judges a template by its text alone. What
+  states() hands back is a state, only known while running, so a condition
+  printing one is never judged, even though a binary sensor is never `true`.
+expect:
+  templates:
+    not_find:
+      - >-
+        {{ states('binary_sensor.cheap_power_' ~
+        '{:02d}'.format(states('input_number.cheap_power_hours') | int)) }}
+      - >-
+        {{ states('binary_sensor.cheap_power_' ~
+        '{:02d}'.format(states('input_number.cheap_power_hours') | int)) == 'on' }}
+---
+alias: Charge the car on cheap power
+triggers:
+  - trigger: time_pattern
+    minutes: "/30"
+actions:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ states('binary_sensor.cheap_power_' ~
+              '{:02d}'.format(states('input_number.cheap_power_hours') | int)) }}
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.car_charger
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ states('binary_sensor.cheap_power_' ~
+              '{:02d}'.format(states('input_number.cheap_power_hours') | int)) == 'on' }}
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.car_charger
+    default:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.car_charger
+mode: single
