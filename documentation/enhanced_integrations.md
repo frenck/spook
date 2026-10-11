@@ -175,6 +175,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/scene/icon.png)](integrations/scene)
 :::
 
+:::{card} Schedule
+:footer: 📚 [Learn more](integrations/schedule)
+[![](https://brands.home-assistant.io/schedule/icon.png)](integrations/schedule)
+:::
+
 :::{card} Script
 :footer: 📚 [Learn more](integrations/script)
 [![](https://brands.home-assistant.io/script/icon.png)](integrations/script)
