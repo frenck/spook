@@ -131,6 +131,24 @@ To resolve the raised issue, edit the dashboard and point these to a view that e
 - A path that is a template, or uses a card's own variables, is not checked. Where it ends up cannot be known without running it.
   :::
 
+### Unknown icons
+
+Dashboards are inspected for the icons they show: on cards, rows, badges, picture elements and views, and the icon of the dashboard in the sidebar. An `mdi:` icon that is not in the Material Design Icons that come with Home Assistant is drawn as an empty spot. No error, nothing in the logs. Spook raises a repair issue naming the dashboard and the icons that do not exist, and suggests the icon you most likely meant when it is nearly certain.
+
+This usually happens with a typo, an icon that was renamed or removed, or one picked from the Material Design Icons website that is newer than the version Home Assistant comes with. The issue says which version that is.
+
+To resolve the raised issue, edit the dashboard and replace these with icons that exist. The icon in the sidebar is changed in the settings of your dashboards. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only icons starting with `mdi:` are checked. The older `hass:` prefix, and icons from sets you added, like those from HACS, are left alone.
+- Icons inside a third-party card are left alone: what that card does with them is up to the card. A card of Home Assistant's own inside one, like in a custom stack, is checked.
+- An icon that is a template is not checked. What it ends up as cannot be known without running it. That includes the JavaScript templates of button-card.
+- An icon in the data a button hands to an action is not checked here.
+- The list of icons is read from the frontend Home Assistant has installed. A frontend run from a development build is not taken into account, and a frontend without that list means nothing is checked.
+  :::
+
 ### Missing dashboard resources
 
 Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks the ones it can: a resource served from `/local/` or `/hacsfiles/` maps to a file on disk, so Spook can see whether that file is there. If it is not, it will raise a repair issue listing the resources in question.

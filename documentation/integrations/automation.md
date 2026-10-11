@@ -297,6 +297,23 @@ Actions of an integration you disabled are not reported: switched off on purpose
 
 To resolve the raised issue, you can either remove the reference to the non-existing actions. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown icons
+
+Automations are inspected for the icons their actions hand out. Only actions that say they take an icon are looked at, like `group.set`, and the actions of Spook that create areas, labels or helpers. When one of those is handed an `mdi:` icon that is not in the Material Design Icons that come with Home Assistant, whatever it sets is drawn with an empty spot for an icon. Spook raises a repair issue naming the automation and the icons, and suggests the icon you most likely meant when it is nearly certain.
+
+This usually happens with a typo, an icon that was renamed or removed, or one picked from the Material Design Icons website that is newer than the version Home Assistant comes with.
+
+To resolve the raised issue, edit the automation and replace these with icons that exist. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only icons starting with `mdi:` are checked. The older `hass:` prefix, and icons from sets you added, like those from HACS, are left alone.
+- An icon that is a template is not checked. What it ends up as cannot be known without running it.
+- Actions that are turned off are not checked: they never run.
+- The list of icons is read from the frontend Home Assistant has installed. A frontend run from a development build is not taken into account, and a frontend without that list means nothing is checked.
+  :::
+
 ### Unknown referenced floors
 
 Automations are inspected for the use of {term}`floors <floor>`. If an automation is targeting a floor in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the floor that is referenced but not found.

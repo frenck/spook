@@ -68,6 +68,23 @@ A min/max helper combines several entities into one number. Spook reads its conf
 
 This one is fixable by pruning rather than removing: Spook can drop the missing members so the helper carries on with the ones that remain. A min/max helper needs at least two members, though, so if removing the missing ones would leave fewer than that, Spook says so and sends you to the Helpers page instead of quietly breaking the helper a different way.
 
+### Unknown icons
+
+The icons you set in Home Assistant itself are checked against the Material Design Icons that come with it: the icon you gave an {term}`entity` in its settings, the icon of a {term}`helper` or a zone, of an {term}`area`, {term}`floor`, {term}`label` or category, and the icons in `customize:` and `customize_domain:`. An `mdi:` icon that does not exist is drawn as an empty spot, without a word. Spook raises one repair issue listing each of these with where it was set, and suggests the icon you most likely meant when it is nearly certain.
+
+This usually happens with a typo, an icon that was renamed or removed, or one picked from the Material Design Icons website that is newer than the version Home Assistant comes with. The issue says which version that is.
+
+To resolve the raised issue, give each of these an icon that exists, in the place it was set. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only icons starting with `mdi:` are checked. The older `hass:` prefix, and icons from sets you added, like those from HACS, are left alone.
+- The icon an integration gives its own entities is not checked. That is the integration's to fix, not yours.
+- `customize_glob:` is not checked. Home Assistant only keeps the patterns it turns those into, which do not say which part of your configuration they came from.
+- The list of icons is read from the frontend Home Assistant has installed. A frontend run from a development build is not taken into account, and a frontend without that list means nothing is checked.
+  :::
+
 ### Empty areas
 
 An {term}`area` with no devices, no entities, no vacuum cleaning it, and no mention anywhere in an automation or script is not doing anything.
