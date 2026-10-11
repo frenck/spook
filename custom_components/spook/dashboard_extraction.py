@@ -930,14 +930,18 @@ _GRID_SECTION = "grid"
 
 
 def _view_type(view: dict[str, Any]) -> Any:
-    """Return the layout the frontend picks for a view."""
-    if view_type := view.get("type"):
+    """Return the layout the frontend picks for a view.
+
+    Its `getViewType` asks JavaScript whether each key is set, and to
+    JavaScript an empty list is: `sections: []` makes a sections view.
+    """
+    if (view_type := view.get("type")) not in _JAVASCRIPT_FALSY:
         return view_type
-    if view.get("panel"):
+    if view.get("panel") not in _JAVASCRIPT_FALSY:
         return _PANEL_VIEW
-    if view.get("sections"):
+    if view.get("sections") not in _JAVASCRIPT_FALSY:
         return _SECTIONS_VIEW
-    if view.get("cards"):
+    if view.get("cards") not in _JAVASCRIPT_FALSY:
         return _MASONRY_VIEW
     return _SECTIONS_VIEW
 

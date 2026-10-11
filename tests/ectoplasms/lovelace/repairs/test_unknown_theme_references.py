@@ -368,6 +368,13 @@ async def test_only_what_the_view_layout_draws_is_checked(
                 "sections": [],
                 "cards": [{"type": "markdown", "theme": "Imported card"}],
             },
+            # No type, and an empty list of sections: to the frontend that
+            # is a sections view, so the loose cards are only imported ones.
+            {
+                "path": "untyped",
+                "sections": [],
+                "cards": [{"type": "markdown", "theme": "Imported untyped card"}],
+            },
             {
                 "path": "unknown",
                 "type": "no-such-layout",
