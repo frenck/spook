@@ -17,7 +17,11 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from .entity_filtering import is_not_an_entity_id, split_comma_separated_entity_ids
+from .entity_filtering import (
+    FILLED_IN_LATER,
+    is_not_an_entity_id,
+    split_comma_separated_entity_ids,
+)
 from .reference_extraction import is_pattern_reference
 from .template_extraction import KNOWN_DOMAINS
 
@@ -529,8 +533,9 @@ def _collect_plain(value: Any, out: set[str]) -> None:
     """Collect plain string IDs from a key's string or list value.
 
     A pattern is not a name, so `area: KG/*` is left where it is. Neither is
-    a template: no area ID has braces in it, and what a template turns into
-    is not something to look up ahead of time.
+    a template or a card's own placeholder, like decluttering-card's
+    `[[area_id]]`: what those turn into is not something to look up ahead of
+    time.
     """
     values = [value] if isinstance(value, str) else value
     if not isinstance(values, list):
@@ -541,13 +546,8 @@ def _collect_plain(value: Any, out: set[str]) -> None:
         for item in values
         if isinstance(item, str)
         and not is_pattern_reference(item)
-        and not _is_template(item)
+        and not any(mark in item for mark in FILLED_IN_LATER)
     )
-
-
-def _is_template(value: str) -> bool:
-    """Return whether a value is a Jinja template rather than a name."""
-    return "{{" in value or "{%" in value
 
 
 def _walk_areas(node: Any, areas: set[str]) -> None:
