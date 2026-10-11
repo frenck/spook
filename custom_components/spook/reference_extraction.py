@@ -632,10 +632,14 @@ class AttributeValue:
     Taken as it was written: an attribute keeps whatever its integration
     puts in it, so a trigger compares it with the number or the boolean
     YAML made of the text, not with the text.
+
+    Spook's own state trigger is the exception: it makes text of both, its
+    values and the attribute, and compares those. That is `as_text`.
     """
 
     attribute: str
     value: str | int | float | bool
+    as_text: bool = False
 
     # Python holds `False` equal to `0`, and `1` to `1.0`. In a configuration
     # those are different entries, each with its own mistake, so the type of
@@ -644,15 +648,15 @@ class AttributeValue:
         """Return whether both name the same attribute, and the same value."""
         if not isinstance(other, AttributeValue):
             return NotImplemented
-        return (self.attribute, type(self.value), self.value) == (
-            other.attribute,
-            type(other.value),
-            other.value,
-        )
+        return self._key() == other._key()
 
     def __hash__(self) -> int:
         """Return a hash that tells the type of the value apart too."""
-        return hash((self.attribute, type(self.value), self.value))
+        return hash(self._key())
+
+    def _key(self) -> tuple[str, type, str | int | float | bool, bool]:
+        """Return what makes this value the one it is."""
+        return (self.attribute, type(self.value), self.value, self.as_text)
 
 
 @dataclass(frozen=True, slots=True)
@@ -662,10 +666,11 @@ class NamedReferences:
     # Written out: the entity, or a registry ID, and the attribute or state.
     # For states, that can also be a value of one of the entity's attributes.
     pairs: frozenset[tuple[str, str | AttributeValue]]
-    # Spook's own state triggers, and the attribute or state each names.
-    # Which entities that is depends on the house as it is right now, so it
-    # is left to the caller to resolve, the way the trigger does.
-    followed: tuple[tuple[dict[str, Any], str], ...]
+    # Spook's own state triggers, and the attribute, state or attribute
+    # value each names. Which entities that is depends on the house as it is
+    # right now, so it is left to the caller to resolve, the way the trigger
+    # does.
+    followed: tuple[tuple[dict[str, Any], str | AttributeValue], ...]
 
 
 def _attribute_reference(config: dict[str, Any]) -> tuple[Any, Any] | None:
@@ -929,29 +934,44 @@ def _state_reference(
     return None
 
 
-def _followed_states(config: dict[str, Any]) -> list[str]:
+def _followed_states(config: dict[str, Any]) -> list[str | AttributeValue]:
     """Return the states a Spook state trigger names, if it is one.
 
     Following an attribute, its `to` and `from` are that attribute's values.
+    The trigger makes text of those, and of the attribute, and compares
+    that. So a boolean or a number counts too, as the text it becomes: a
+    `to: false` YAML made a boolean waits for `False`, a slip in case of
+    `false`. A `to: off` is `False` as well, which is no slip of `off`.
     """
     trigger = config.get("trigger") or config.get("platform")
     if trigger != _SPOOK_STATE_CHANGED or "condition" in config:
         return []
 
     options = config.get("options")
-    if not isinstance(options, dict) or "attribute" in options:
+    if not isinstance(options, dict):
+        return []
+
+    if "attribute" not in options:
+        return [
+            state
+            for key in _STATE_TRIGGER_KEYS
+            for state in _literal_states(options.get(key))
+        ]
+
+    attribute = options["attribute"]
+    if not _is_literal_attribute(attribute):
         return []
     return [
-        state
+        AttributeValue(attribute, value, as_text=True)
         for key in _STATE_TRIGGER_KEYS
-        for state in _literal_states(options.get(key))
+        for value in _literal_attribute_values(options.get(key))
     ]
 
 
 def _walk_state_references(
     config: Any,
     found: set[tuple[str, str | AttributeValue]],
-    followed: list[tuple[dict[str, Any], str]],
+    followed: list[tuple[dict[str, Any], str | AttributeValue]],
 ) -> None:
     """Recursively collect the states triggers and conditions wait for."""
     if isinstance(config, list):
@@ -984,8 +1004,9 @@ def extract_state_references_from_config(config: Any) -> NamedReferences:
     The `to`, `from`, `not_to` and `not_from` of every state trigger and the
     `state` of every state condition, wherever they nest. With an
     `attribute:`, each is a value of that attribute instead. Spook's own
-    state trigger is handed back as it is, with each state it names. In
-    templates, only a literal `is_state` and a state compared to text.
+    state trigger is handed back as it is, with each state or attribute
+    value it names. In templates, only a literal `is_state` and a state
+    compared to text.
 
     Disabled steps, triggers and conditions are left out, and an entity can
     be a registry ID, and a call by a name the configuration gives a meaning
@@ -995,7 +1016,7 @@ def extract_state_references_from_config(config: Any) -> NamedReferences:
     shadowed = names_given_to_templates(config)
 
     found: set[tuple[str, str | AttributeValue]] = set()
-    followed: list[tuple[dict[str, Any], str]] = []
+    followed: list[tuple[dict[str, Any], str | AttributeValue]] = []
     _walk_state_references(pruned, found, followed)
 
     for template in extract_template_strings_from_config(

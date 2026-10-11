@@ -720,3 +720,208 @@ async def test_text_yaml_would_not_keep_is_shown_in_quotes(
         'preset_mode of climate.living_room: "false" (did you mean "False"?)',
         'preset_mode of climate.living_room: false (did you mean "False"?)',
     ]
+
+
+# Spook's own state trigger, following an attribute. It makes text of the
+# attribute and compares that with its values, so only case is a slip.
+
+
+def _spook_trigger(**options: Any) -> dict[str, Any]:
+    """Return Spook's state trigger, following the hvac action of the thermostat."""
+    return {
+        "trigger": "spook.state_changed",
+        "target": {"entity_id": CLIMATE},
+        "options": {"attribute": "hvac_action", **options},
+    }
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_case_slip_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a value of Spook's trigger in another case is reported.
+
+    The trigger compares `Heating` with the text of the attribute, which is
+    `heating` once the thermostat heats, so it never fires.
+    """
+    await _climate(hass, {"hvac_action": "idle"})
+    await _automation(hass, triggers=[_spook_trigger(to=["Heating"])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        "- `hvac_action` of `climate.living_room`: `Heating` (did you mean `heating`?)"
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_names_values_for_what_it_watches(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the values go with the entities the trigger watches right now.
+
+    Picked by domain here, with no entity named at all.
+    """
+    await _climate(hass, {"hvac_action": "idle"})
+    await _automation(
+        hass,
+        triggers=[
+            {
+                "trigger": "spook.state_changed",
+                "options": {
+                    "domain": ["climate"],
+                    "attribute": "hvac_action",
+                    "not_from": "Idle",
+                },
+            }
+        ],
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        "- `hvac_action` of `climate.living_room`: `Idle` (did you mean `idle`?)"
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_case_slip_of_a_boolean_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test text in another case than the text the trigger makes of a boolean.
+
+    The trigger makes `False` of the boolean, which `"false"` never is.
+    """
+    await _climate(hass, {"hvac_action": False}, {"hvac_action": "idle"})
+    await _automation(hass, triggers=[_spook_trigger(to=["false"])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `hvac_action` of `climate.living_room`: `"false"` (did you mean `"False"`?)'
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_draft_check_names_the_attribute(
+    hass: HomeAssistant,
+) -> None:
+    """Test a draft with Spook's trigger gets the attribute value back."""
+    await _climate(hass, {"hvac_action": "idle"})
+    draft = SimpleNamespace(
+        entity_id="automation.draft",
+        raw_config={"triggers": [_spook_trigger(to=["Heating"])]},
+    )
+
+    assert await SpookRepair(hass).async_check_draft(draft) == [
+        "hvac_action of climate.living_room: Heating (did you mean heating?)"
+    ]
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_boolean_is_no_slip(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `off` is not reported for Spook's trigger.
+
+    Home Assistant's own trigger waits for the boolean then, which is a
+    slip. Spook's trigger takes it as the text `False`, which is no slip in
+    case of `off`.
+    """
+    await _climate(hass, {"preset_modes": ["off", "eco"], "preset_mode": "eco"})
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_boolean_in_another_case_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `false` is reported against a mode `false`.
+
+    Spook's trigger makes the text `False` of it, which the mode `false`
+    never is. Shown the way it was written, without quotes.
+    """
+    await _climate(hass, {"preset_modes": ["false", "eco"], "preset_mode": "eco"})
+    await _automation(
+        hass, triggers=[_spook_trigger(attribute="preset_mode", to=[False])]
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) == (
+        '- `preset_mode` of `climate.living_room`: `false` (did you mean `"false"`?)'
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_yaml_number_is_the_same_text(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an unquoted `2` is fine against a fan mode `"2"`.
+
+    Spook's trigger makes the text `2` of it, exactly the mode.
+    """
+    await _climate(hass, {"fan_modes": ["1", "2"], "fan_mode": "1"})
+    await _automation(hass, triggers=[_spook_trigger(attribute="fan_mode", to=[2])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_value_differing_in_type_alone_is_fine(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test text the same as the text of a boolean in history is fine.
+
+    The attribute was the boolean false, which the trigger makes `False`
+    of: exactly what it waits for.
+    """
+    await _climate(hass, {"hvac_action": False}, {"hvac_action": "idle"})
+    await _automation(hass, triggers=[_spook_trigger(to=["False"])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_value_in_history_is_fine(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a value of Spook's trigger the attribute once had is fine."""
+    await _climate(hass, {"hvac_action": "Heating"}, {"hvac_action": "idle"})
+    await _automation(hass, triggers=[_spook_trigger(to=["Heating"])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None
+
+
+async def test_spook_trigger_nothing_without_a_recorder(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a case slip of Spook's trigger needs the whole history too."""
+    give_entity_objects(hass, CLIMATE, kind=ClimateEntity)
+    hass.states.async_set(CLIMATE, "heat", {"hvac_action": "idle"})
+    await _automation(hass, triggers=[_spook_trigger(to=["Heating"])])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _found(issue_registry) is None

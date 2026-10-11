@@ -285,29 +285,81 @@ def test_attribute_values_left_alone(config: dict[str, Any]) -> None:
 def test_spook_state_trigger_is_handed_back_whole() -> None:
     """Test Spook's own trigger comes back as it is, with each state it names.
 
-    Following an attribute, its `to` names that attribute's values. Text
-    only, like Home Assistant's own trigger.
+    Text only, like Home Assistant's own trigger.
     """
     named = {
         "trigger": "spook.state_changed",
         "options": {"domain": ["light"], "to": ["On"], "not_from": "off"},
-    }
-    following = {
-        "trigger": "spook.state_changed",
-        "options": {"domain": ["light"], "attribute": "mode", "to": ["On"]},
     }
     not_text = {
         "trigger": "spook.state_changed",
         "options": {"domain": ["light"], "to": [True]},
     }
 
-    references = extract_state_references_from_config(
-        {"triggers": [named, following, not_text]}
-    )
+    references = extract_state_references_from_config({"triggers": [named, not_text]})
 
     assert sorted(state for _config, state in references.followed) == ["On", "off"]
     assert all(config == named for config, _state in references.followed)
     assert not references.pairs
+
+
+def test_spook_state_trigger_following_an_attribute_names_its_values() -> None:
+    """Test Spook's own trigger following an attribute names values of it.
+
+    Compared as text, the way the trigger compares them. A boolean or a
+    number is kept as YAML read it: the checker makes the same text of it
+    the trigger does, and shows it the way it was written.
+    """
+    following = {
+        "trigger": "spook.state_changed",
+        "options": {
+            "domain": ["climate"],
+            "attribute": "hvac_action",
+            "to": ["Heating", False, 2],
+            "not_from": "Idle",
+        },
+    }
+
+    references = extract_state_references_from_config({"triggers": [following]})
+
+    assert {name for _config, name in references.followed} == {
+        AttributeValue("hvac_action", "Heating", as_text=True),
+        AttributeValue("hvac_action", value=False, as_text=True),
+        AttributeValue("hvac_action", 2, as_text=True),
+        AttributeValue("hvac_action", "Idle", as_text=True),
+    }
+    assert all(config == following for config, _name in references.followed)
+    assert not references.pairs
+
+
+@pytest.mark.parametrize(
+    "attribute",
+    [
+        pytest.param("{{ which }}", id="template"),
+        pytest.param("", id="empty"),
+        pytest.param(["hvac_action"], id="not text"),
+    ],
+)
+def test_spook_state_trigger_attribute_not_written_out(attribute: Any) -> None:
+    """Test a followed attribute that is not written out names no values."""
+    following = {
+        "trigger": "spook.state_changed",
+        "options": {"domain": ["climate"], "attribute": attribute, "to": "Heating"},
+    }
+
+    assert not extract_state_references_from_config({"triggers": [following]}).followed
+
+
+def test_as_text_tells_values_apart() -> None:
+    """Test a value compared as text is another one than the same as it is.
+
+    Each comes with its own way of being compared, so a set keeps both.
+    """
+    as_it_is = AttributeValue("mode", "On")
+    as_text = AttributeValue("mode", "On", as_text=True)
+
+    assert as_it_is != as_text
+    assert {as_it_is, as_text} - {as_it_is} == {as_text}
 
 
 @pytest.mark.parametrize(
@@ -556,3 +608,21 @@ def test_what_an_action_is_handed_names_nothing_here() -> None:
     }
 
     assert extract_state_references_from_config(config).pairs == PAIR
+
+
+def test_a_value_compared_as_text_is_written_down_apart() -> None:
+    """Test core's and Spook's own reading of one value stay two findings.
+
+    Each can have another best guess, and which one the issue shows must not
+    depend on the order a set happens to give.
+    """
+    # pylint: disable-next=import-outside-toplevel,protected-access
+    from custom_components.spook.repairs import _finding_reference  # noqa: PLC0415
+
+    core = _finding_reference("climate.hall", AttributeValue("hvac_action", "TRUE"))
+    spook = _finding_reference(
+        "climate.hall", AttributeValue("hvac_action", "TRUE", as_text=True)
+    )
+
+    assert core == 'climate.hall[hvac_action]:"TRUE"'
+    assert spook != core

@@ -16,6 +16,9 @@ differs from a known one in how it is written is reported, and only when
 the whole history agrees it never was that value. Case, like `Heating` for
 `heating`, or YAML reading the text as something else, like `off` as a
 boolean.
+
+Spook's own state trigger makes text of the attribute and compares that
+with its values, which are text too. There, only case is a slip.
 """
 
 from __future__ import annotations
@@ -157,6 +160,8 @@ class UnknownAttributeValue:
     attribute: str
     value: Value
     suggestion: str | None
+    # Asked by Spook's own trigger, which compares as text.
+    as_text: bool = False
 
     # Like the values asked about: `False` and `0` are two findings, each
     # with its own suggestion, even though Python holds them equal.
@@ -170,7 +175,7 @@ class UnknownAttributeValue:
         """Return a hash that tells the type of the value apart too."""
         return hash(self._key())
 
-    def _key(self) -> tuple[str, str, type, Value, str | None]:
+    def _key(self) -> tuple[str, str, type, Value, str | None, bool]:
         """Return what makes this finding the one it is."""
         return (
             self.entity_id,
@@ -178,6 +183,7 @@ class UnknownAttributeValue:
             type(self.value),
             self.value,
             self.suggestion,
+            self.as_text,
         )
 
 
@@ -474,9 +480,32 @@ async def _async_look(
             asked_value
             for asked_value in asked
             if asked_value.attribute in known
-            and asked_value.value not in known[asked_value.attribute]
+            and _compared(asked_value)
+            not in _compared_with(asked_value, known[asked_value.attribute])
         },
     )
+
+
+def _compared(asked: AttributeValue) -> Value:
+    """Return the asked value the way it is compared.
+
+    As it is, or as text for Spook's own trigger, which makes text of what
+    YAML read: a `to: false` without quotes waits for the text `False`.
+    """
+    if asked.as_text:
+        return str(asked.value)
+    return asked.value
+
+
+def _compared_with(asked: AttributeValue, known: set[Value]) -> set[Value]:
+    """Return the known values the way the asked value is compared with them.
+
+    As they are, or as text for Spook's own trigger, which makes text of
+    whatever the attribute holds: a number 2 is `"2"` to it.
+    """
+    if asked.as_text:
+        return {str(candidate) for candidate in known}
+    return known
 
 
 def _yaml_reads(text: str) -> Value:
@@ -489,13 +518,18 @@ def _yaml_reads(text: str) -> Value:
     return text
 
 
-def _written_as(value: Value, known: set[Value]) -> set[str]:
+def _written_as(asked: AttributeValue, known: set[Value]) -> set[str]:
     """Return the known values the same as this one but for how it is written.
 
     Text in another case, or text that YAML read as a boolean or a number
     because it had no quotes. A number is never a slip of another number.
     """
-    texts = {candidate for candidate in known if isinstance(candidate, str)}
+    value = _compared(asked)
+    texts = {
+        candidate
+        for candidate in _compared_with(asked, known)
+        if isinstance(candidate, str)
+    }
     if isinstance(value, str):
         folded = value.casefold()
         return {text for text in texts if text.casefold() == folded}
@@ -627,13 +661,14 @@ async def _async_findings(
             ):
                 continue
 
-            if written_as := _written_as(asked_value.value, look.known[attribute]):
+            if written_as := _written_as(asked_value, look.known[attribute]):
                 found.add(
                     UnknownAttributeValue(
                         entity_id=entity_id,
                         attribute=attribute,
                         value=asked_value.value,
                         suggestion=_suggestion(written_as),
+                        as_text=asked_value.as_text,
                     )
                 )
 

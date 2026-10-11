@@ -204,3 +204,54 @@ async def test_attribute_value_is_reported(
     assert issue.translation_placeholders["states"] == (
         "- `hvac_action` of `climate.living_room`: `Heating` (did you mean `heating`?)"
     )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_spook_trigger_attribute_value_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a script waiting on Spook's trigger for a value in another case.
+
+    The trigger compares as text, so `Heating` is never the `heating` the
+    thermostat writes. An unquoted `off` is the text `False` to it, which
+    is no slip in case, so that one is not reported.
+    """
+    give_entity_objects(hass, "climate.living_room", kind=ClimateEntity)
+    hass.states.async_set("climate.living_room", "heat", {"hvac_action": "idle"})
+    await async_wait_recording_done(hass)
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "haunted": {
+                    "alias": "Haunted",
+                    "sequence": [
+                        {
+                            "wait_for_trigger": [
+                                {
+                                    "trigger": "spook.state_changed",
+                                    "target": {"entity_id": "climate.living_room"},
+                                    "options": {
+                                        "attribute": "hvac_action",
+                                        "to": ["Heating", False],
+                                    },
+                                }
+                            ]
+                        }
+                    ],
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["states"] == (
+        "- `hvac_action` of `climate.living_room`: `Heating` (did you mean `heating`?)"
+    )

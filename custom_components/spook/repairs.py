@@ -743,10 +743,13 @@ def _finding_reference(entity_id: str, name: str | AttributeValue) -> str:
     """Return how an unknown attribute or state is written down in an issue.
 
     A value of an attribute keeps its type: `2` and `"2"` are not the same
-    thing to an attribute.
+    thing to an attribute. One compared as text, like Spook's own trigger
+    does, is kept apart too: it can have another best guess than the same
+    value compared the way core does, and both belong in the issue.
     """
     if isinstance(name, AttributeValue):
-        return f"{entity_id}[{name.attribute}]:{json.dumps(name.value)}"
+        reference = f"{entity_id}[{name.attribute}]:{json.dumps(name.value)}"
+        return f"{reference}:as-text" if name.as_text else reference
     return f"{entity_id}:{name}"
 
 
@@ -1030,7 +1033,9 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         unknown.update(
             _UnknownName(
                 finding.entity_id,
-                AttributeValue(finding.attribute, finding.value),
+                AttributeValue(
+                    finding.attribute, finding.value, as_text=finding.as_text
+                ),
                 finding.suggestion,
             )
             for finding in await async_unknown_attribute_values(self.hass, values)
