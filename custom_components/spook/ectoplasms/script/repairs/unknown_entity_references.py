@@ -10,20 +10,16 @@ from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
     async_extract_entities_from_action_config,
-    extract_not_entity_ids_from_config,
+    async_unknown_entities_named,
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
     core_references,
-    harmless_entity_mentions,
-    mentioned_only_in_disabled_steps,
-    without_disabled_steps,
     without_never_rendered,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
     async_extract_entities_from_config,
-    async_filter_known_entity_ids_with_templates,
 )
 
 if TYPE_CHECKING:
@@ -136,38 +132,11 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             )
         )
 
-        if isinstance(raw_config, dict):
-            named = await self._async_named_in(raw_config)
-
-            # Home Assistant's own list takes the `entity_id` of somebody's
-            # own event waited for in a step, which is data from the sender,
-            # and the made-up entity `logbook.log` files an entry under.
-            # Neither has to exist. Left out, unless this repair finds it
-            # named somewhere else too.
-            all_entities -= harmless_entity_mentions(raw_config) - named
-
-            # It includes disabled steps too. A step parked that way does
-            # nothing, so what only it names is left out: whatever this repair
-            # finds in the configuration, and no longer finds once those are
-            # pruned.
-            # Home Assistant's own list also reads keys this repair does not,
-            # like the `zone` of a zone trigger. Whatever only a disabled part
-            # holds goes as well, whichever key it sits under.
-            still_named = await self._async_named_in(without_disabled_steps(raw_config))
-            all_entities -= (
-                named | mentioned_only_in_disabled_steps(raw_config)
-            ) - still_named
-
-        unknown = await async_filter_known_entity_ids_with_templates(
+        return await async_unknown_entities_named(
             self.hass,
-            entity_ids=all_entities,
+            all_entities,
+            raw_config,
+            named_in=self._async_named_in,
             known_entity_ids=self._known_entity_ids,
             known_services=self._known_services,
         )
-
-        # Where an entity ID goes, something that is no entity ID at all finds
-        # nothing, whatever exists. Listed with the rest, said apart.
-        if isinstance(raw_config, dict):
-            unknown |= extract_not_entity_ids_from_config(self.hass, raw_config)
-
-        return unknown

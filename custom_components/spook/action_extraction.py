@@ -18,6 +18,8 @@ from .entity_filtering import (
 from .reference_extraction import (
     VALUE_KEYS,
     event_payload_keys_to_leave_alone,
+    harmless_entity_mentions,
+    mentioned_only_in_disabled_steps,
     names_given_to_templates,
     numeric_state_threshold_entities,
     without_disabled_steps,
@@ -26,12 +28,13 @@ from .reference_extraction import (
 from .template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_template_string,
+    async_filter_known_entity_ids_with_templates,
     extract_not_entity_ids_from_template,
     is_template_string,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
+    from collections.abc import Awaitable, Callable, Mapping
 
     from homeassistant.core import HomeAssistant
 
@@ -571,3 +574,54 @@ def extract_not_entity_ids_from_config(hass: HomeAssistant, config: Any) -> set[
         found,
     )
     return found
+
+
+async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-many-arguments
+    hass: HomeAssistant,
+    entity_ids: set[str],
+    raw_config: Any,
+    *,
+    named_in: Callable[[dict[str, Any]], Awaitable[set[str]]],
+    known_entity_ids: set[str],
+    known_services: set[str],
+) -> set[str]:
+    """Return which of what an automation or script names does not exist.
+
+    `entity_ids` is everything gathered for it, Home Assistant's own list
+    included, and `named_in` reads a configuration the way the repair does.
+    Shared by the automation and script repairs, which settle it the same way.
+    """
+    entity_ids = set(entity_ids)
+    if isinstance(raw_config, dict):
+        named = await named_in(raw_config)
+
+        # Home Assistant's own list takes the `entity_id` of somebody's own
+        # event too, which is data from the sender, and the made-up entity
+        # `logbook.log` files an entry under. Neither has to exist. Left out,
+        # unless the repair finds it named somewhere else too.
+        entity_ids -= harmless_entity_mentions(raw_config) - named
+
+        # It includes disabled steps, triggers and conditions too. Something
+        # parked that way does nothing, so what only it names is left out:
+        # whatever the repair finds in the configuration, and no longer finds
+        # once those are pruned. Home Assistant's own list also reads keys
+        # the repair does not, like the `at` of a time trigger. Whatever only
+        # a disabled part holds goes as well, whichever key it sits under.
+        still_named = await named_in(without_disabled_steps(raw_config))
+        entity_ids -= (
+            named | mentioned_only_in_disabled_steps(raw_config)
+        ) - still_named
+
+    unknown = await async_filter_known_entity_ids_with_templates(
+        hass,
+        entity_ids=entity_ids,
+        known_entity_ids=known_entity_ids,
+        known_services=known_services,
+    )
+
+    # Where an entity ID goes, something that is no entity ID at all finds
+    # nothing, whatever exists. Listed with the rest, said apart.
+    if isinstance(raw_config, dict):
+        unknown |= extract_not_entity_ids_from_config(hass, raw_config)
+
+    return unknown
