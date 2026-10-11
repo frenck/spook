@@ -281,6 +281,106 @@ async def test_view_and_section_themes_are_checked(
     )
 
 
+async def test_sections_inside_a_section_are_checked(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a section in a section, and its cards, are read like any other."""
+    config = {
+        "views": [
+            {
+                "path": "home",
+                "type": "sections",
+                "sections": [
+                    {
+                        "type": "grid",
+                        "sections": [
+                            {
+                                "type": "grid",
+                                "theme": "Gone inner section",
+                                "cards": [
+                                    {"type": "markdown", "theme": "Gone inner card"}
+                                ],
+                            },
+                            {"strategy": {"type": "x"}, "theme": "Strategy"},
+                        ],
+                    },
+                    {
+                        "type": "custom:my-section",
+                        "sections": [{"type": "grid", "theme": "Custom's own"}],
+                    },
+                ],
+            },
+        ]
+    }
+
+    assert await _async_reported(hass, issue_registry, config) == _bulleted(
+        "Gone inner card",
+        "Gone inner section",
+    )
+
+
+async def test_only_what_the_view_layout_draws_is_checked(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test leftovers of another view layout are left alone.
+
+    A panel view draws its first card. A masonry or sidebar view draws no
+    sections, header or footer. A sections view only shows its loose cards
+    while editing, to be moved into a section.
+    """
+    leftovers = {
+        "sections": [{"type": "grid", "theme": "Leftover section"}],
+        "sidebar": {"sections": [{"type": "grid", "theme": "Leftover sidebar"}]},
+        "header": {"card": {"type": "markdown", "theme": "Leftover header"}},
+        "footer": {"card": {"type": "markdown", "theme": "Leftover footer"}},
+    }
+    config = {
+        "views": [
+            {
+                "path": "home",
+                "panel": True,
+                "cards": [
+                    {"type": "markdown", "theme": "Gone panel card"},
+                    {"type": "markdown", "theme": "Second panel card"},
+                ],
+                **leftovers,
+            },
+            {
+                "path": "masonry",
+                "type": "masonry",
+                "cards": [{"type": "markdown", "theme": "Gone masonry card"}],
+                **leftovers,
+            },
+            {
+                "path": "sidebar",
+                "type": "sidebar",
+                "cards": [{"type": "markdown", "theme": "Gone sidebar card"}],
+                **leftovers,
+            },
+            {
+                "path": "sections",
+                "type": "sections",
+                "sections": [],
+                "cards": [{"type": "markdown", "theme": "Imported card"}],
+            },
+            {
+                "path": "unknown",
+                "type": "no-such-layout",
+                "cards": [{"type": "markdown", "theme": "Error card"}],
+                **leftovers,
+            },
+        ]
+    }
+
+    assert await _async_reported(hass, issue_registry, config) == _bulleted(
+        "Gone masonry card",
+        "Gone panel card",
+        "Gone sidebar card",
+    )
+
+
 async def test_nested_cards_are_checked(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

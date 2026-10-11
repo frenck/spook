@@ -179,6 +179,7 @@ To resolve the raised issue, edit the dashboard and pick a theme that exists, or
 :class: dropdown
 
 - Only the cards that put on a theme are checked. A theme on any other card, like a tile card or a stack, does nothing either way.
+- Only what the view's layout draws is checked. A panel view shows its first card only, and the sections, header and footer of a view that is not a sections view are never shown.
 - Custom cards, and the cards inside them, are not checked. What a custom card does with a `theme` is up to the card. The theme of a custom view or section is checked, as the frontend puts that one on itself.
 - A theme that is a template, or uses a card's own variables, is not checked.
 - Views, sections and dashboards run by a strategy are not checked. Those are only made when they open.

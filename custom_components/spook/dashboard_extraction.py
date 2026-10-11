@@ -917,6 +917,26 @@ _ENTITY_FILTER_DEFAULT_CARD = "entities"
 # The two parts of a sections view that each hold a card.
 _VIEW_PARTS_WITH_A_CARD = ("header", "footer")
 
+# The view layouts, as the frontend's `getViewType` picks them. The cards of a
+# sections view are only shown while editing, to be moved into a section.
+_MASONRY_VIEW = "masonry"
+_VIEWS_WITH_CARDS = frozenset({_MASONRY_VIEW, "sidebar"})
+_PANEL_VIEW = "panel"
+_SECTIONS_VIEW = "sections"
+
+
+def _view_type(view: dict[str, Any]) -> Any:
+    """Return the layout the frontend picks for a view."""
+    if view_type := view.get("type"):
+        return view_type
+    if view.get("panel"):
+        return _PANEL_VIEW
+    if view.get("sections"):
+        return _SECTIONS_VIEW
+    if view.get("cards"):
+        return _MASONRY_VIEW
+    return _SECTIONS_VIEW
+
 
 def _collect_theme(node: dict[str, Any], themes: set[str]) -> None:
     """Collect the theme a dashboard node names, if it names one.
@@ -969,12 +989,12 @@ def _collect_cards_themes(cards: Any, themes: set[str]) -> None:
 
 
 def _collect_section_themes(sections: Any, themes: set[str]) -> None:
-    """Collect the themes a list of sections, and the cards in them, put on.
+    """Collect the themes a list of sections, and what is in them, put on.
 
     The section wrapper puts on a section's theme whatever its type, so a
-    custom section's own theme counts, and the cards in it are left to it. A
-    strategy section makes its config when it opens, so none of it is known
-    up front.
+    custom section's own theme counts, and the cards and sections in it are
+    left to it. A strategy section makes its config when it opens, so none of
+    it is known up front.
     """
     if not isinstance(sections, list):
         return
@@ -986,6 +1006,7 @@ def _collect_section_themes(sections: Any, themes: set[str]) -> None:
         _collect_theme(section, themes)
         if not _is_custom(section):
             _collect_cards_themes(section.get("cards"), themes)
+            _collect_section_themes(section.get("sections"), themes)
 
 
 def extract_themes_from_dashboard_view(view: Any) -> set[str]:
@@ -1003,14 +1024,22 @@ def extract_themes_from_dashboard_view(view: Any) -> set[str]:
     if _is_custom(view):
         return themes
 
-    _collect_cards_themes(view.get("cards"), themes)
-    _collect_section_themes(view.get("sections"), themes)
-    if isinstance(sidebar := view.get("sidebar"), dict):
-        _collect_section_themes(sidebar.get("sections"), themes)
+    # Each layout only draws its own part of the config. Whatever another
+    # layout would use is left lying around and changes nothing.
+    view_type = _view_type(view)
+    if view_type in _VIEWS_WITH_CARDS:
+        _collect_cards_themes(view.get("cards"), themes)
+    elif view_type == _PANEL_VIEW and isinstance(cards := view.get("cards"), list):
+        # A panel view shows its first card, and only warns about the rest.
+        _collect_cards_themes(cards[:1], themes)
+    elif view_type == _SECTIONS_VIEW:
+        _collect_section_themes(view.get("sections"), themes)
+        if isinstance(sidebar := view.get("sidebar"), dict):
+            _collect_section_themes(sidebar.get("sections"), themes)
 
-    for part in _VIEW_PARTS_WITH_A_CARD:
-        if isinstance(holder := view.get(part), dict):
-            _collect_card_themes(holder.get("card"), themes)
+        for part in _VIEW_PARTS_WITH_A_CARD:
+            if isinstance(holder := view.get(part), dict):
+                _collect_card_themes(holder.get("card"), themes)
 
     return themes
 
