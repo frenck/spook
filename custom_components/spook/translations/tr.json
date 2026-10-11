@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Kullanıcı eklendi",
             "description": "Birine Home Assistant'ta oturum açma hakkı verildiğinde tetiklenir. Home Assistant'ın kendi entegrasyonları için oluşturduğu kullanıcılar hariç tutulur."
+        },
+        "state_changed": {
+            "name": "Spook'un durum tetikleyicisi",
+            "description": "Bir varlık durum değiştirdiğinde tetiklenir; bir hedefin kapsadığı her şey için: varlıklar, cihazlar, alanlar, katlar ve etiketler. Alan adına, entegrasyona ya da cihaz sınıfına göre daraltın veya hedefi boş bırakıp bunların varlıkları her şeyin içinden seçmesine izin verin. Bazı şeyleri yeniden hariç tutun ve bir değişikliğin sayılması için ne kadar sürmesi gerektiğine karar verin.",
+            "fields": {
+                "domain": {
+                    "name": "Alan adları",
+                    "description": "Sadece bu alan adlarındaki varlıklar, örneğin binary_sensor ya da cover. Hedef yoksa onları her şeyin içinden seçer."
+                },
+                "integration": {
+                    "description": "Sadece bu entegrasyonların sağladığı varlıklar, örneğin zha ya da hue. Hedef yoksa onları her şeyin içinden seçer.",
+                    "name": "Entegrasyonlar"
+                },
+                "config_entry": {
+                    "name": "Entegrasyon girişi",
+                    "description": "Sadece bu entegrasyon girişinin varlıkları. Hedef yoksa onları her şeyin içinden seçer."
+                },
+                "device_class": {
+                    "name": "Cihaz sınıfları",
+                    "description": "Sadece bu cihaz sınıflarındaki varlıklar, örneğin door ya da window. Hedef yoksa onları her şeyin içinden seçer."
+                },
+                "exclude_target": {
+                    "name": "Hariç tut",
+                    "description": "Hariç tutulacak varlıklar, cihazlar, alanlar, katlar ya da etiketler. İçlerindeki her şey hariç tutulur, tanılama varlıkları da."
+                },
+                "exclude_domain": {
+                    "name": "Alan adlarını hariç tut",
+                    "description": "Bu alan adlarındaki varlıkları hariç tutar. Hariç tut boşsa bu, hedefin kapsadığı her şey için geçerlidir."
+                },
+                "exclude_integration": {
+                    "name": "Entegrasyonları hariç tut",
+                    "description": "Bu entegrasyonların sağladığı varlıkları hariç tutar."
+                },
+                "exclude_config_entry": {
+                    "name": "Entegrasyon girişini hariç tut",
+                    "description": "Bu entegrasyon girişinin varlıklarını hariç tutar."
+                },
+                "exclude_device_class": {
+                    "name": "Cihaz sınıflarını hariç tut",
+                    "description": "Bu cihaz sınıflarındaki varlıkları hariç tutar."
+                },
+                "attribute": {
+                    "description": "Durum yerine bu özniteliği izle.",
+                    "name": "Öznitelik"
+                },
+                "from": {
+                    "name": "Önceki durum",
+                    "description": "Sadece bu durumlardan birinden gelen değişiklikler."
+                },
+                "not_from": {
+                    "name": "Önceki durum değil",
+                    "description": "Sadece bu durumların hiçbirinden gelmeyen değişiklikler."
+                },
+                "to": {
+                    "name": "Yeni durum",
+                    "description": "Sadece bu durumlardan birine giden değişiklikler."
+                },
+                "not_to": {
+                    "name": "Yeni durum değil",
+                    "description": "Sadece bu durumların hiçbirine gitmeyen değişiklikler."
+                },
+                "ignore_unavailable": {
+                    "name": "Kullanım dışı ve bilinmiyor durumlarını yoksay",
+                    "description": "Kullanım dışı ve bilinmiyor durumlarından gelen ya da onlara giden değişiklikleri dışarıda bırakır; böylece bir yeniden başlatma ya da modemin yeniden açılması her şey için tetiklenmez. Bunları Önceki durum ya da Yeni durum içinde kullanmak için kapatın."
+                },
+                "attribute_changes": {
+                    "name": "Öznitelik değişikliklerini say",
+                    "description": "Durum aynı kalıp sadece bir öznitelik değiştiğinde de tetiklenir. Bir öznitelik izlenirken hiçbir şey yapmaz."
+                },
+                "behavior": {
+                    "name": "Davranış",
+                    "description": "Her varlık için mi, hedefin oraya ilk varan varlığı için mi, yoksa hepsi oraya vardığında bir kez mi tetiklensin. İlk ve tümü için Yeni durum ya da Yeni durum değil gerekir. Kullanım dışı ve bilinmiyor yoksayılırken bu durumlardaki varlıklar hesaba katılmaz."
+                },
+                "for": {
+                    "name": "Süre",
+                    "description": "Sadece yeni durum bu kadar süre korunduğunda tetiklenir. Arada gelen başka herhangi bir değişiklik bunu iptal eder."
+                },
+                "blip_tolerance": {
+                    "name": "Kıpırtı toleransı",
+                    "description": "Süre beklenirken, kullanım dışı ya da bilinmiyor olup bu süre içinde eski haline dönmek beklemeyi baştan başlatmaz. Sadece Süre ile birlikte çalışır."
+                },
+                "delay": {
+                    "name": "Gecikme",
+                    "description": "Arada ne olursa olsun, tetiklenmeden önce bu kadar bekler. Eylemlerin başındaki bir gecikme gibi."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "En alt",
                 "top": "En üst"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Pazartesi",
+                "tuesday": "Salı",
+                "wednesday": "Çarşamba",
+                "saturday": "Cumartesi",
+                "thursday": "Perşembe",
+                "friday": "Cuma",
+                "sunday": "Pazar"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Süre",
                     "description": "Bu koşulun yeniden geçmesi için son çalışmadan sonra ne kadar bekleneceği."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Varlık kullanılabilir",
+            "description": "Bir varlık konuşulabilir durumdayken geçer: kullanım dışı ya da bilinmiyor dışındaki her şey. Her zaman elektriği olmayan bir hoparlör ya da akıllı priz için.",
+            "fields": {
+                "behavior": {
+                    "name": "Davranış",
+                    "description": "Varlıklardan herhangi birinin orada olması yeterli mi, yoksa hepsinin mi olması gerekiyor."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Bu bölge düzenlenemez: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "{amount} miktarı {entity_id} için uygun değil, çünkü {step} adımlarla ilerliyor. {step} değerinin bir katını kullanın ya da bir adım ilerlemek için miktarı boş bırakın."
+        },
+        "area_cannot_update": {
+            "message": "{area_id} alanı bu şekilde değiştirilemez: {error}."
+        },
+        "area_name_taken": {
+            "message": "{name} adı zaten {area_id} alanı tarafından kullanılıyor."
+        },
+        "area_nothing_to_update": {
+            "message": "{area_id} alanında güncellenecek bir şey yok: {fields} alanlarından en az birini verin."
+        },
+        "device_nothing_to_update": {
+            "message": "{device_id} cihazında güncellenecek bir şey yok: {fields} alanlarından en az birini verin."
+        },
+        "floor_name_taken": {
+            "message": "{name} adı zaten {floor_id} katı tarafından kullanılıyor."
+        },
+        "floor_nothing_to_update": {
+            "message": "{floor_id} katında güncellenecek bir şey yok: {fields} alanlarından en az birini verin."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id}, YAML yapılandırmanızdan gelen bir zamanlama ve Spook onu değiştiremez. Bunun yerine yapılandırmanızda düzenleyin."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Bu zaman blokları {entity_id} için işe yaramıyor: {error}. Hiçbir şey değiştirilmedi."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Spook baktığından beri bu sensörler geri geldi ya da ayarlar artık başka bir yeri gösteriyor. Bu yüzden hiçbir şey temizlenmedi. Spook kendi başına yeniden bakar ve bu onarımı günceller."
                 }
             }
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, varlıklarında olmayan şu öznitelikleri kullanıyor. Ne şu anda, ne o tür bir varlığın sunduğu bir şey olarak, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{attributes}\n\n\n\nHiç ortaya çıkmayan bir özniteliği bekleyen bir tetikleyici ya da koşul hiç tetiklenmez ve bunu size söylemez. Onu okuyan bir şablon hiçbir şey almaz. Bunu düzeltmek için [otomasyonu düzenleyin]({edit}) ve varlığın sahip olduğu bir öznitelik kullanın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen öznitelikler kullanılıyor: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, varlıklarının hiçbir zaman içinde olmadığı şu durumları bekliyor ya da kontrol ediyor. Ne o tür bir varlığın olabileceği bir şey olarak, ne varlığın sunduğu seçenekler arasında, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{states}\n\n\n\nHiç gelmeyen bir durumu bekleyen bir tetikleyici hiç tetiklenmez, onu kontrol eden bir koşul hiç geçmez ve ikisi de bunu size söylemez. Durumlar büyük/küçük harfe duyarlıdır: `On`, `on` değildir. Bunu düzeltmek için [otomasyonu düzenleyin]({edit}) ve varlığın içinde olabileceği bir durum kullanın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen durumlar kullanılıyor: {automation}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, varlıklarında olmayan şu öznitelikleri kullanıyor. Ne şu anda, ne o tür bir varlığın sunduğu bir şey olarak, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{attributes}\n\n\n\nHiç ortaya çıkmayan bir özniteliği bekleyen bir tetikleyici ya da koşul hiç tetiklenmez ve bunu size söylemez. Onu okuyan bir şablon hiçbir şey almaz. Bunu düzeltmek için [senaryoyu düzenleyin]({edit}) ve varlığın sahip olduğu bir öznitelik kullanın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen öznitelikler kullanılıyor: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, varlıklarının hiçbir zaman içinde olmadığı şu durumları bekliyor ya da kontrol ediyor. Ne o tür bir varlığın olabileceği bir şey olarak, ne varlığın sunduğu seçenekler arasında, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{states}\n\n\n\nHiç gelmeyen bir durumu bekleyen bir tetikleyici hiç tetiklenmez, onu kontrol eden bir koşul hiç geçmez ve ikisi de bunu size söylemez. Durumlar büyük/küçük harfe duyarlıdır: `On`, `on` değildir. Bunu düzeltmek için [senaryoyu düzenleyin]({edit}) ve varlığın içinde olabileceği bir durum kullanın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen durumlar kullanılıyor: {script}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, varlıklarında olmayan şu öznitelikleri gösteriyor ya da kontrol ediyor. Ne şu anda, ne o tür bir varlığın sunduğu bir şey olarak, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{attributes}\n\n\n\nHiç ortaya çıkmayan bir özniteliği gösteren bir kart boş kalır, onu kontrol eden bir görünürlük koşulu ya da filtre de hiç geçmez. İkisi de bunu size söylemez. Bunu düzeltmek için [gösterge panelini düzenleyin]({edit}) ve varlığın sahip olduğu bir öznitelik kullanın.\n\nSpook 👻 Kankan.",
+            "title": "Gösterge panelinde bilinmeyen öznitelikler kullanılıyor: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, varlıklarının hiçbir zaman içinde olmadığı şu durumları kontrol ediyor. Ne o tür bir varlığın olabileceği bir şey olarak, ne varlığın sunduğu seçenekler arasında, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{states}\n\n\n\nHiç gelmeyen bir durumu kontrol eden bir görünürlük koşulu ya da filtre hiç geçmez, onun için ayarlanmış bir resim de hiç gösterilmez. Hiçbiri bunu size söylemez. Durumlar büyük/küçük harfe duyarlıdır: `On`, `on` değildir. Bunu düzeltmek için [gösterge panelini düzenleyin]({edit}) ve varlığın içinde olabileceği bir durum kullanın.\n\nSpook 👻 Kankan.",
+            "title": "Gösterge panelinde bilinmeyen durumlar kullanılıyor: {dashboard}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Bilinmeyen tetikleyici kimlikleri kullanılıyor: {automation}",
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, kendi tetikleyicilerinden hiçbirinde olmayan şu tetikleyici kimliklerini kontrol ediyor:\n\n{trigger_ids}\n\n\n\nHiçbir tetikleyicinin vermediği bir kimliği kontrol etmek her zaman aynı sonucu verir: onu soran bir tetikleyici koşulu hiç geçmez, yani koruduğu kısım hiç çalışmaz ve bunu size hiçbir şey söylemez. Tetikleyici kimlikleri büyük/küçük harfe duyarlıdır ve kendi kimliği olmayan bir tetikleyici, `0`'dan başlayarak listedeki sırasıyla anılır. Bunu düzeltmek için [otomasyonu düzenleyin]({edit}) ve tetikleyicilerinden birinin kimliğini kullanın ya da tetikleyiciye otomasyonun istediği kimliği verin.\n\nSpook 👻 Kankan."
+        },
+        "lovelace_unknown_view_references": {
+            "title": "Gösterge panelinde bilinmeyen görünümlere gidiliyor: {dashboard}",
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, var olmayan şu görünümlere gidiyor:\n\n{paths}\n\n\n\nBunlardan birine giden bir düğme ya da kart, bunu söylemeden onun yerine o gösterge panelinin ilk görünümünü açar. Bu genelde bir görünüm yeniden adlandırıldığında, taşındığında ya da kaldırıldığında olur. Bu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve bunları var olan bir görünüme yönlendirin.\n\nSpook 👻 Kankan."
+        },
+        "template_unknown_attribute_references": {
+            "title": "Şablon yardımcısında bilinmeyen öznitelikler kullanılıyor: {helper}",
+            "description": "Spook şablon yardımcılarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu şablon yardımcısıyla kesişti:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nBu şablon yardımcısı, varlıklarında olmayan şu öznitelikleri kullanıyor. Ne şu anda, ne o tür bir varlığın sunduğu bir şey olarak, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{attributes}\n\n\n\nHiç ortaya çıkmayan bir özniteliği okuyan bir şablon hiçbir şey almaz, eylemlerinden birinde onu bekleyen bir koşul da hiç geçmez. İkisi de bunu size söylemez. Bunu düzeltmek için [şablon yardımcısını düzenleyin]({edit}) ve varlığın sahip olduğu bir öznitelik kullanın.\n\nSpook 👻 Kankan."
+        },
+        "automation_never_true_templates": {
+            "title": "Asla geçemeyecek şablonlar: {automation}",
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyonda, evinizde ne olursa olsun asla geçemeyecek şu şablonlar var:\n\n{templates}\n\n\n\nBir şablon koşulu sadece `true` ürettiğinde geçer; bir `wait_template` de öyle, meğer ki sonradan doğru sayılan bir şeye dönüşsün. Bir şablon tetikleyicisi, şablonu `true`, `on`, `yes` ya da `1` gibi doğru sayılan bir şeye dönüştüğünde tetiklenir. Bu şablonlar, yazılış biçimleri yüzünden her zaman başka bir şey üretir. Genel sebepler:\n\n- Şablonun etrafında tırnak işaretleri. Bir `>-` bloğu onları metin olarak alır, böylece sonuca girerler.\n- Hiç şablon ayırıcısı yok, bu yüzden metin olduğu gibi alınır.\n- Şablon alanına yapıştırılmış YAML.\n- Jinja içinde bir YAML `#` yorumu; Jinja bunu metin olarak yazdırır.\n- `true` yerine `on` üreten bir koşul.\n\nHiçbir şey size söylemez: koşul hiç geçmez, bekleme sadece zaman aşımında biter ve tetikleyici hiç tetiklenmez. Bunu düzeltmek için [otomasyonu düzenleyin]({edit}) ve şablonun geçmesi gerektiğinde `true` üretmesini sağlayın.\n\nSpook 👻 Kankan."
+        },
+        "automation_unknown_config_entry_references": {
+            "title": "Bilinmeyen entegrasyon girişleri kullanılıyor: {automation}",
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, eylemlerine Home Assistant'ın bilmediği ya da eylemin istediğinden başka bir entegrasyona ait şu entegrasyon girişlerini veriyor:\n\n{config_entries}\n\nHome Assistant, adım çalıştığında bunları reddeder. Bu genelde bir entegrasyon kaldırılıp yeniden eklendikten sonra olur: yeni bir kimlikle yeni bir entegrasyon girişi almıştır.\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve bu eylemlerde entegrasyon girişini yeniden seçin.\n\nSpook 👻 Kankan."
+        },
+        "automation_unknown_icons": {
+            "title": "Bilinmeyen simgeler kullanılıyor: {automation}",
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant ile birlikte gelen Material Design Icons içinde olmayan şu simgeleri dağıtıyor:\n\n{icons}\n\n\n\nBunların her biri tek kelime etmeden boş bir yer olarak görünür. Bu genelde bir simge yanlış yazıldığında, yeniden adlandırıldığında ya da kaldırıldığında veya Home Assistant'ın birlikte geldiğinden daha yeni bir Material Design Icons sürümünden seçildiğinde olur. Bu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve bunları var olan simgelerle değiştirin.\n\nSpook 👻 Kankan."
+        },
+        "automation_unknown_user_references": {
+            "title": "Kaldırılmış kullanıcılar adlandırılıyor: {automation}",
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, artık var olmayan şu kullanıcıları adlandırıyor:\n\n{users}\n\n\n\nHome Assistant bir kullanıcı kimliğini asla iki kez vermez, yani bu kullanıcılar kaldırılmış. Onlardan birini bekleyen bir tetikleyici onlar için hiç tetiklenmez, onlardan biriyle karşılaştırma yapan bir şablon da hiç eşleşmez ve bunu söylemez. Bunu düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olan bir kullanıcının kimliğini kullanın ya da kontrolü kaldırın.\n\nSpook 👻 Kankan."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Gösterge panelinde kaldırılmış kullanıcılar adlandırılıyor: {dashboard}",
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, artık var olmayan şu kullanıcıları adlandırıyor:\n\n{users}\n\n\n\nHome Assistant bir kullanıcı kimliğini asla iki kez vermez, yani bu kullanıcılar kaldırılmış. Sadece onlara gösterilen bir kart, rozet, bölüm ya da görünüm artık bunu söylemeden kimseye gösterilmiyor. Onlar için bir onaydan muafiyet de artık hiçbir şey yapmıyor. Bunu düzeltmek için [gösterge panelini düzenleyin]({edit}) ve onu görmesi gereken kullanıcıları seçin ya da koşulu kaldırın.\n\nSpook 👻 Kankan."
+        },
+        "lovelace_unknown_theme_references": {
+            "title": "Gösterge panelinde bilinmeyen temalar kullanılıyor: {dashboard}",
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, var olmayan şu temaları kullanıyor:\n\n{themes}\n\n\n\nBu temalardan birini kullanan bir kart, bölüm ya da görünüm, bunu söylemeden onun yerine varsayılan görünümü alır. Bu genelde bir tema yeniden adlandırıldığında ya da kaldırıldığında olur. Bu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve var olan bir tema seçin ya da temayı geri ekleyin.\n\nSpook 👻 Kankan."
+        },
+        "script_never_true_templates": {
+            "title": "Asla geçemeyecek şablonlar: {script}",
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryoda, evinizde ne olursa olsun asla geçemeyecek şu şablonlar var:\n\n{templates}\n\n\n\nBir şablon koşulu sadece `true` ürettiğinde geçer; bir `wait_template` de öyle, meğer ki sonradan doğru sayılan bir şeye dönüşsün. Bir `wait_for_trigger` içindeki şablon tetikleyicisi, şablonu `true`, `on`, `yes` ya da `1` gibi doğru sayılan bir şeye dönüştüğünde tetiklenir. Bu şablonlar, yazılış biçimleri yüzünden her zaman başka bir şey üretir. Genel sebepler:\n\n- Şablonun etrafında tırnak işaretleri. Bir `>-` bloğu onları metin olarak alır, böylece sonuca girerler.\n- Hiç şablon ayırıcısı yok, bu yüzden metin olduğu gibi alınır.\n- Şablon alanına yapıştırılmış YAML.\n- Jinja içinde bir YAML `#` yorumu; Jinja bunu metin olarak yazdırır.\n- `true` yerine `on` üreten bir koşul.\n\nHiçbir şey size söylemez: koşul hiç geçmez ve bekleme sadece zaman aşımında biter. Bunu düzeltmek için [senaryoyu düzenleyin]({edit}) ve şablonun geçmesi gerektiğinde `true` üretmesini sağlayın.\n\nSpook 👻 Kankan."
+        },
+        "script_unknown_icons": {
+            "title": "Bilinmeyen simgeler kullanılıyor: {script}",
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant ile birlikte gelen Material Design Icons içinde olmayan şu simgeleri kullanıyor ya da dağıtıyor:\n\n{icons}\n\n\n\nBunların her biri tek kelime etmeden boş bir yer olarak görünür. Bu genelde bir simge yanlış yazıldığında, yeniden adlandırıldığında ya da kaldırıldığında veya Home Assistant'ın birlikte geldiğinden daha yeni bir Material Design Icons sürümünden seçildiğinde olur. Bu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve bunları var olan simgelerle değiştirin.\n\nSpook 👻 Kankan."
+        },
+        "script_unknown_user_references": {
+            "title": "Kaldırılmış kullanıcılar adlandırılıyor: {script}",
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, artık var olmayan şu kullanıcıları adlandırıyor:\n\n{users}\n\n\n\nHome Assistant bir kullanıcı kimliğini asla iki kez vermez, yani bu kullanıcılar kaldırılmış. Onlardan biriyle karşılaştırma yapan bir şablon hiç eşleşmez, onlardan birini bekleyen bir tetikleyici de onlar için hiç tetiklenmez ve bunu söylemez. Bunu düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olan bir kullanıcının kimliğini kullanın ya da kontrolü kaldırın.\n\nSpook 👻 Kankan."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "title": "Şablon varlığında bilinmeyen öznitelikler kullanılıyor: {name}",
+            "description": "Spook şablon varlıklarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu şablon varlığıyla kesişti:\n\n{name} (`{entity_id}`)\n\nBu şablon varlığı, varlıklarında olmayan şu öznitelikleri kullanıyor. Ne şu anda, ne o tür bir varlığın sunduğu bir şey olarak, ne de kaydedicinin onlar hakkında hatırladığı herhangi bir yerde:\n\n{attributes}\n\n\n\nHiç ortaya çıkmayan bir özniteliği okuyan bir şablon hiçbir şey almaz, onu bekleyen bir tetikleyici ya da koşul da hiç tetiklenmez veya geçmez. Hiçbiri bunu size söylemez.\n\nBu şablon varlığı YAML yapılandırmanızda kurulmuş. Bunu düzeltmek için yapılandırmanızın `template:` bölümünde onu düzenleyin, varlığın sahip olduğu bir öznitelik kullanın ve şablon varlıklarınızı yeniden yükleyin.\n\nSpook 👻 Kankan."
+        },
+        "template_unknown_entity_references_yaml": {
+            "title": "Şablon varlığında bilinmeyen varlıklar kullanılıyor: {name}",
+            "description": "Spook şablon varlıklarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu şablon varlığıyla kesişti:\n\n{name} (`{entity_id}`)\n\nYapılandırması, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu genelde bir varlık yeniden adlandırıldığında ya da kaldırıldığında olur. Onlardan birini okuyan bir şablon hiçbir şey almaz, onlardan birini bekleyen bir tetikleyici de hiç tetiklenmez.\n\nBu şablon varlığı YAML yapılandırmanızda kurulmuş. Bu hatayı düzeltmek için yapılandırmanızın `template:` bölümünde onu düzenleyin, var olan varlıklara başvurun ve şablon varlıklarınızı yeniden yükleyin.\n\nSpook 👻 Kankan."
+        },
+        "template_unknown_service_references_yaml": {
+            "title": "Şablon varlığında bilinmeyen eylemler kullanılıyor: {name}",
+            "description": "Spook şablon varlıklarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu şablon varlığıyla kesişti:\n\n{name} (`{entity_id}`)\n\nHome Assistant'ın bilmediği şu eylemlere başvuruyor:\n\n{services}\n\n\n\nBu genelde bir eylem sağlayıcısı kaldırıldığında ya da bir senaryo yeniden adlandırıldığında veya silindiğinde olur.\n\nBu şablon varlığı YAML yapılandırmanızda kurulmuş. Bu hatayı düzeltmek için yapılandırmanızın `template:` bölümünde onu düzenleyin, var olan eylemleri kullanın ve şablon varlıklarınızı yeniden yükleyin.\n\nSpook 👻 Kankan."
+        },
+        "unknown_icons": {
+            "title": "Ayarlarınızda bilinmeyen simgeler",
+            "description": "Spook ayarlarınızda bir hayalet buldu 👻\n\nŞu simgeler, Home Assistant ile birlikte gelen Material Design Icons içinde (sürüm {version}) yok:\n\n{icons}\n\n\n\nBunların her biri tek kelime etmeden boş bir yer olarak görünür. Bu genelde bir simge yanlış yazıldığında, yeniden adlandırıldığında ya da kaldırıldığında veya Home Assistant'ın birlikte geldiğinden daha yeni bir Material Design Icons sürümünden seçildiğinde olur. Bu hatayı düzeltmek için bunların her birine var olan bir simge verin: bir varlığa, yardımcıya ya da bölgeye kendi ayarlarında, bir alana, kata ya da etikete alanlarınızın, etiketlerinizin ve bölgelerinizin ayarlarında, bir kategoriye kullanıldığı yerde ve yapılandırmanızdaki `customize:` içinde.\n\nSpook 👻 Kankan."
+        },
+        "assist_duplicate_names": {
+            "title": "Assist bunları birbirinden ayıramıyor: {name}",
+            "description": "Spook sesli asistanlarınızda bir hayalet buldu 👻\n\nŞu varlıklar Assist'e açılmış ve hepsi {name} adına yanıt veriyor:\n\n{entities}\n\nAdlar aynı olduğunda Assist onları sadece alana göre ayırır: sizin söylediğiniz alan ya da ses uydunuzun bulunduğu alan. Bunlardan bazıları aynı alanı paylaşıyor ya da hiç alanları yok, bu yüzden Assist onları hiçbir yerden bu adla seçemez. Bu durumda {name} istemek başarısız olur ve hangi varlıkların engel olduğunu hiçbir şey söylemez.\n\nBunu düzeltmek için her birine kendine ait bir ad ya da takma ad verin veya onları farklı alanlara taşıyın. Bir varlığın takma adlarını ve Assist'in onu görüp görmediğini [Açılan varlıklar](/config/voice-assistants/expose) altında değiştirebilirsiniz. Alanlar [Alanlar sayfasında](/config/areas/dashboard) ayarlanır.\n\nSpook 👻 Kankan."
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, eylemlerine Home Assistant'ın bilmediği ya da eylemin istediğinden başka bir entegrasyona ait şu entegrasyon girişlerini veriyor:\n\n{config_entries}\n\nHome Assistant, adım çalıştığında bunları reddeder. Bu genelde bir entegrasyon kaldırılıp yeniden eklendikten sonra olur: yeni bir kimlikle yeni bir entegrasyon girişi almıştır.\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve bu eylemlerde entegrasyon girişini yeniden seçin.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen entegrasyon girişleri kullanılıyor: {script}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, Home Assistant ile birlikte gelen Material Design Icons içinde (sürüm {version}) olmayan şu simgeleri kullanıyor:\n\n{icons}\n\n\n\nBunların her biri tek kelime etmeden boş bir yer olarak görünür. Bu genelde bir simge yanlış yazıldığında, yeniden adlandırıldığında ya da kaldırıldığında veya Home Assistant'ın birlikte geldiğinden daha yeni bir Material Design Icons sürümünden seçildiğinde olur. Bu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve bunları var olan simgelerle değiştirin. Kenar çubuğundaki gösterge paneli simgesi, gösterge panellerinizin ayarlarında değiştirilir.\n\nSpook 👻 Kankan.",
+            "title": "Gösterge panelinde bilinmeyen simgeler kullanılıyor: {dashboard}"
         }
     },
     "system_health": {
@@ -2998,6 +3232,170 @@
                     "description": "Listenin en üstüne ya da en altına taşır. Bunu ya da arkasına konulacağı bir öğe verin."
                 }
             }
+        },
+        "schedule_create": {
+            "fields": {
+                "monday": {
+                    "name": "Pazartesi",
+                    "description": "Zamanlamanın Pazartesi günleri açık olduğu zamanlar: her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içeren zaman bloklarının listesi. Boş bırakılırsa bütün gün kapalıdır."
+                },
+                "tuesday": {
+                    "name": "Salı",
+                    "description": "Zamanlamanın Salı günleri açık olduğu zamanlar: her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içeren zaman bloklarının listesi. Boş bırakılırsa bütün gün kapalıdır."
+                },
+                "wednesday": {
+                    "name": "Çarşamba",
+                    "description": "Zamanlamanın Çarşamba günleri açık olduğu zamanlar: her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içeren zaman bloklarının listesi. Boş bırakılırsa bütün gün kapalıdır."
+                },
+                "thursday": {
+                    "name": "Perşembe",
+                    "description": "Zamanlamanın Perşembe günleri açık olduğu zamanlar: her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içeren zaman bloklarının listesi. Boş bırakılırsa bütün gün kapalıdır."
+                },
+                "saturday": {
+                    "name": "Cumartesi",
+                    "description": "Zamanlamanın Cumartesi günleri açık olduğu zamanlar: her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içeren zaman bloklarının listesi. Boş bırakılırsa bütün gün kapalıdır."
+                },
+                "sunday": {
+                    "name": "Pazar",
+                    "description": "Zamanlamanın Pazar günleri açık olduğu zamanlar: her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içeren zaman bloklarının listesi. Boş bırakılırsa bütün gün kapalıdır."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni zamanlamanın adı."
+                },
+                "schedule_id": {
+                    "name": "Zamanlama varlık kimliği",
+                    "description": "Yeni zamanlamanın varlık kimliği. schedule. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni zamanlamanın simgesi."
+                },
+                "friday": {
+                    "name": "Cuma",
+                    "description": "Zamanlamanın Cuma günleri açık olduğu zamanlar: her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içeren zaman bloklarının listesi. Boş bırakılırsa bütün gün kapalıdır."
+                }
+            },
+            "name": "Zamanlama oluştur",
+            "description": "Anında yeni bir zamanlama yardımcısı oluşturur; haftanın her günü için verilen zaman bloklarında açıktır. Yeni zamanlamanın varlık kimliğini döndürür."
+        },
+        "homeassistant_update_area": {
+            "name": "Alanı güncelle",
+            "description": "Mevcut bir alanı anında günceller. Boş bıraktığınız her şey mevcut değerini korur. Takma adlar ve etiketler, alanın sahip olduklarının yerini alır. Kat, simge, resim ve sensörler null yapılarak temizlenebilir.",
+            "fields": {
+                "aliases": {
+                    "description": "Alanın takma adları. Sahip olduklarının yerini alır, boş bir liste hepsini kaldırır.",
+                    "name": "Takma adlar"
+                },
+                "floor_id": {
+                    "name": "Kat kimliği",
+                    "description": "Alanın bulunduğu katın kimliği."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Alan için kullanılacak yeni simge."
+                },
+                "picture": {
+                    "name": "Resim",
+                    "description": "Alan için bir resmin URL'si ya da yolu."
+                },
+                "labels": {
+                    "name": "Etiketler",
+                    "description": "Alanın etiketlerinin kimlikleri. Sahip olduklarının yerini alır, boş bir liste hepsini kaldırır."
+                },
+                "temperature_entity_id": {
+                    "name": "Sıcaklık sensörü",
+                    "description": "Alandaki sıcaklığı ölçen sensör."
+                },
+                "humidity_entity_id": {
+                    "name": "Nem sensörü",
+                    "description": "Alandaki nemi ölçen sensör."
+                },
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Güncellenecek alanın kimliği."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Alanın yeni adı."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Cihazı güncelle",
+            "description": "Mevcut bir cihazı anında günceller. Boş bıraktığınız her şey mevcut değerini korur. Etiketler, cihazın sahip olduklarının yerini alır. Ad ve alan null yapılarak temizlenebilir; bu, cihaza entegrasyonunun verdiği adı geri verir.",
+            "fields": {
+                "device_id": {
+                    "name": "Cihaz kimliği",
+                    "description": "Güncellenecek cihazın kimliği. Devre dışı cihazlar Home Assistant'ın cihaz seçicisinde gösterilmez; kimliklerini vermek için YAML modunu kullanın."
+                },
+                "name_by_user": {
+                    "name": "Ad",
+                    "description": "Cihazın yeni adı."
+                },
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Cihazın bulunduğu alanın kimliği."
+                },
+                "labels": {
+                    "name": "Etiketler",
+                    "description": "Cihazın etiketlerinin kimlikleri. Sahip olduklarının yerini alır, boş bir liste hepsini kaldırır."
+                },
+                "disabled_by": {
+                    "name": "Devre dışı bırakan",
+                    "description": "Cihazı devre dışı bırakmak için user, yeniden etkinleştirmek için null olarak ayarlayın. Bu, cihazı devre dışı bırakma ve etkinleştirme eylemleri gibi çalışır."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Katı güncelle",
+            "description": "Mevcut bir katı anında günceller. Boş bıraktığınız her şey mevcut değerini korur. Takma adlar, katın sahip olduklarının yerini alır. Simge ve düzey null yapılarak temizlenebilir.",
+            "fields": {
+                "floor_id": {
+                    "name": "Kat kimliği",
+                    "description": "Güncellenecek katın kimliği."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Katın yeni adı."
+                },
+                "aliases": {
+                    "name": "Takma adlar",
+                    "description": "Katın takma adları. Sahip olduklarının yerini alır, boş bir liste hepsini kaldırır."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Kat için kullanılacak yeni simge."
+                },
+                "level": {
+                    "name": "Düzey",
+                    "description": "Katın evinizde bulunduğu düzey."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Zamanlamayı sil",
+            "description": "Arayüzde yapılmış zamanlama yardımcılarını siler. YAML ile kurulmuş zamanlamalar Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek zamanlama(lar)."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Bir günün zaman bloklarını ayarla",
+            "fields": {
+                "day": {
+                    "name": "Gün",
+                    "description": "Zaman bloklarının ayarlanacağı haftanın günü ya da günleri."
+                },
+                "blocks": {
+                    "name": "Zaman blokları",
+                    "description": "Zamanlamanın o günlerde açık olduğu zaman blokları; her biri bir başlangıç ve bir bitiş saati ile, açıkken öznitelik olarak gösterdiği isteğe bağlı verileri içerir. Bunlar günlerin sahip olduğu blokların yerini alır. Boş bir liste günleri bütün gün kapalı bırakır."
+                }
+            },
+            "description": "Arayüzde yapılmış bir zamanlama yardımcısının bir ya da daha fazla gününün zaman bloklarını değiştirir. YAML ile kurulmuş zamanlamalar Spook tarafından değiştirilemez."
         }
     }
 }
