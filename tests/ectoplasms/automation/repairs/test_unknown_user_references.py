@@ -160,13 +160,18 @@ async def test_a_wait_for_a_removed_user_is_reported(
     "template",
     [
         "{{ trigger.to_state.context.user_id == 'USER' }}",
+        "{{ trigger.from_state.context.user_id == 'USER' }}",
+        "{{ trigger.zone.context.user_id == 'USER' }}",
         "{{ 'USER' == trigger.event.context.user_id }}",
         "{{ trigger.event.context.user_id in ['USER'] }}",
         "{{ trigger['to_state'].context['user_id'] != 'USER' }}",
         "{{ context.user_id == 'USER' }}",
         "{{ this.context.user_id == 'USER' }}",
         "{{ wait.trigger.event.context.user_id == 'USER' }}",
+        "{{ wait.trigger.to_state.context.user_id == 'USER' }}",
         "{{ states.light.kitchen.context.user_id == 'USER' }}",
+        "{{ states['light.kitchen'].context.user_id == 'USER' }}",
+        "{{ states['light']['kitchen'].context.user_id == 'USER' }}",
         "{{ state_attr('person.casper', 'user_id') == 'USER' }}",
         "{{ states.person.casper.attributes.user_id == 'USER' }}",
         "{{ is_state_attr('person.casper', 'user_id', 'USER') }}",
@@ -194,6 +199,42 @@ async def test_templates_comparing_a_user_id_are_read(
     ("template", "extra"),
     [
         pytest.param("{{ trigger.event.data.user_id == 'USER' }}", {}, id="event-data"),
+        pytest.param(
+            "{{ trigger.event.data.context.user_id == 'USER' }}",
+            {},
+            id="context-in-event-data",
+        ),
+        pytest.param(
+            "{{ wait.trigger.event.data.context.user_id == 'USER' }}",
+            {},
+            id="context-in-waited-event-data",
+        ),
+        pytest.param(
+            "{{ states.sensor.casper.attributes.context.user_id == 'USER' }}",
+            {},
+            id="context-in-attributes",
+        ),
+        pytest.param(
+            "{{ states['sensor.casper'].attributes.context.user_id == 'USER' }}",
+            {},
+            id="context-in-attributes-by-entity-id",
+        ),
+        pytest.param(
+            "{{ trigger.to_state.attributes.context.user_id == 'USER' }}",
+            {},
+            id="context-in-trigger-attributes",
+        ),
+        pytest.param(
+            "{{ this.attributes.context.user_id == 'USER' }}",
+            {},
+            id="context-in-own-attributes",
+        ),
+        pytest.param(
+            "{{ trigger.context.user_id == 'USER' }}", {}, id="trigger-has-no-context"
+        ),
+        pytest.param(
+            "{{ context.parent.user_id == 'USER' }}", {}, id="deeper-in-the-context"
+        ),
         pytest.param(
             "{{ state_attr('sensor.casper', 'user_id') == 'USER' }}",
             {},
@@ -347,6 +388,30 @@ async def test_a_draft_names_the_removed_users(hass: HomeAssistant) -> None:
         "automation",
         {
             "triggers": [_waiting_for(removed)],
+            "actions": [{"event": "boo"}],
+        },
+    )
+
+    assert found == {"users": [removed]}
+
+
+async def test_a_draft_with_a_mapping_for_a_user_is_still_checked(
+    hass: HomeAssistant,
+) -> None:
+    """Test a context user that cannot be one does not stop a draft check.
+
+    Only the actions of a draft are validated, so a trigger can hold anything.
+    """
+    removed = await async_removed_user_id(hass)
+
+    found = await async_check_draft(
+        hass,
+        "automation",
+        {
+            "triggers": [
+                {**BOO, "context": {"user_id": {"boo": removed}}},
+                {**BOO, "context": {"user_id": [removed, {"boo": removed}]}},
+            ],
             "actions": [{"event": "boo"}],
         },
     )

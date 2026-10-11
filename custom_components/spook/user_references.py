@@ -173,7 +173,14 @@ def _add_event_trigger_users(config: Any, found: set[str]) -> None:
         isinstance(context := config.get("context"), dict)
     ):
         users = context.get(_USER_ID)
-        found.update(users if isinstance(users, list) else [users])
+
+        # A draft is not validated, so this can hold anything. Only a string
+        # can be a user ID, and a mapping cannot even go in a set.
+        found.update(
+            user
+            for user in (users if isinstance(users, list) else [users])
+            if isinstance(user, str)
+        )
 
     for key, value in config.items():
         if key not in VALUE_KEYS:

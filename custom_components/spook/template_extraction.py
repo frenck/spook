@@ -2228,17 +2228,42 @@ def _lookup_path(tokens: list[_Token], index: int) -> tuple[list[str], int]:
             return path, position
 
 
-def _is_user_id_path(root: str, path: list[str]) -> bool:
-    """Return whether a lookup from this root reads the ID of a user."""
-    if root == _CONTEXT:
-        return path == [_USER_ID]
+# What a trigger hands over that is a state or an event, and so has a
+# context of its own. The rest of it, like the data of an event or the
+# attributes of a state, is whatever its maker put in there.
+_TRIGGER_CONTEXT_HOLDERS = frozenset({"event", "from_state", "to_state", "zone"})
 
-    if path[-2:] == [_CONTEXT, _USER_ID]:
-        return True
 
+def _is_trigger_user_id_path(path: list[str]) -> bool:
+    """Return whether a lookup in a trigger reads the user behind it."""
     match path:
-        case ["person", _, "attributes", "user_id"]:
-            return root == _STATES
+        case [holder, "context", "user_id"]:
+            return holder in _TRIGGER_CONTEXT_HOLDERS
+    return False
+
+
+def _is_user_id_path(root: str, path: list[str]) -> bool:
+    """Return whether a lookup from this root reads the ID of a user.
+
+    Only where Home Assistant puts a context itself. The same names further
+    down a payload are someone else's.
+    """
+    match root, path:
+        case "trigger", _:
+            return _is_trigger_user_id_path(path)
+        case "wait", ["trigger", *rest]:
+            return _is_trigger_user_id_path(rest)
+        case (
+            ("context", ["user_id"])
+            | ("this", ["context", "user_id"])
+            | ("states", ["person", _, "attributes", "user_id"])
+        ):
+            return True
+        # `states.light.kitchen` and `states['light.kitchen']` are the same.
+        case "states", [domain, _, "context", "user_id"] if "." not in domain:
+            return True
+        case "states", [entity_id, "context", "user_id"] if "." in entity_id:
+            return True
     return False
 
 
