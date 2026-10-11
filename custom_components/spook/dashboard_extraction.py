@@ -902,6 +902,13 @@ _CARDS_WITH_THEME = frozenset(
     }
 )
 
+# The core cards that put the cards in their `cards` on the dashboard. Any
+# other card leaves such a key alone.
+_CARDS_WITH_CARDS = frozenset({"grid", "horizontal-stack", "vertical-stack"})
+
+# The conditional card puts the one card in its `card` on the dashboard.
+_CONDITIONAL_CARD = "conditional"
+
 # The entity filter card hands its rows to an entities card, unless its own
 # `card` names another type.
 _ENTITY_FILTER_CARD = "entity-filter"
@@ -914,12 +921,12 @@ _VIEW_PARTS_WITH_A_CARD = ("header", "footer")
 def _collect_theme(node: dict[str, Any], themes: set[str]) -> None:
     """Collect the theme a dashboard node names, if it names one.
 
-    The frontend looks the name up exactly as written. An empty one is no
-    theme at all, and a template is no name until it runs.
+    The frontend looks the name up exactly as written, spaces and all. Only
+    an empty one is no theme at all, and a template is no name until it runs.
     """
     if (
         isinstance(theme := node.get("theme"), str)
-        and theme.strip()
+        and theme
         and not any(marker in theme for marker in TEMPLATE_MARKERS)
     ):
         themes.add(theme)
@@ -940,12 +947,16 @@ def _collect_card_themes(card: Any, themes: set[str]) -> None:
 
     # The stacks and the grid hold cards, the conditional and the entity
     # filter card hold one.
-    _collect_cards_themes(card.get("cards"), themes)
-
-    inner_card = card.get("card")
-    if card_type == _ENTITY_FILTER_CARD and isinstance(inner_card, dict):
-        inner_card = {"type": _ENTITY_FILTER_DEFAULT_CARD, **inner_card}
-    _collect_card_themes(inner_card, themes)
+    if card_type in _CARDS_WITH_CARDS:
+        _collect_cards_themes(card.get("cards"), themes)
+    elif card_type == _CONDITIONAL_CARD:
+        _collect_card_themes(card.get("card"), themes)
+    elif card_type == _ENTITY_FILTER_CARD and isinstance(
+        inner_card := card.get("card"), dict
+    ):
+        _collect_card_themes(
+            {"type": _ENTITY_FILTER_DEFAULT_CARD, **inner_card}, themes
+        )
 
 
 def _collect_cards_themes(cards: Any, themes: set[str]) -> None:

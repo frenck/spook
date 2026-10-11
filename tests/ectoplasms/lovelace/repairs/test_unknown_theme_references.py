@@ -208,6 +208,42 @@ async def test_cards_that_ignore_a_theme_are_left_alone(
     )
 
 
+async def test_cards_only_containers_put_on_are_left_alone(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a `cards` or `card` key on a card that holds no cards is not read.
+
+    Only the stacks, the grid, the conditional and the entity filter card put
+    on the cards they hold. Any other card leaves such a key alone.
+    """
+    assert (
+        await _async_reported(
+            hass,
+            issue_registry,
+            _with(
+                {
+                    "type": "entities",
+                    "entities": [],
+                    "cards": [{"type": "markdown", "theme": "Gone"}],
+                    "card": {"type": "markdown", "theme": "Gone"},
+                },
+                {
+                    "type": "grid",
+                    "cards": [],
+                    "card": {"type": "markdown", "theme": "Gone"},
+                },
+                {
+                    "type": "conditional",
+                    "conditions": [],
+                    "cards": [{"type": "markdown", "theme": "Gone"}],
+                },
+            ),
+        )
+        is None
+    )
+
+
 async def test_view_and_section_themes_are_checked(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
@@ -269,6 +305,10 @@ async def test_nested_cards_are_checked(
                         "conditions": [],
                         "card": {"type": "gauge", "theme": "Gone conditional"},
                     },
+                    {
+                        "type": "horizontal-stack",
+                        "cards": [{"type": "light", "theme": "Gone horizontal"}],
+                    },
                 ],
             },
             {
@@ -287,7 +327,11 @@ async def test_nested_cards_are_checked(
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["themes"] == _bulleted(
-        "Gone conditional", "Gone footer", "Gone grid", "Gone header"
+        "Gone conditional",
+        "Gone footer",
+        "Gone grid",
+        "Gone header",
+        "Gone horizontal",
     )
     assert issue.translation_placeholders["edit"] == "/lovelace/home?edit=1"
 
@@ -330,7 +374,6 @@ async def test_entity_filter_card_hands_its_rows_to_an_entities_card(
         "Sunrise",
         # No theme at all.
         "",
-        "   ",
         None,
         42,
     ],
@@ -357,6 +400,7 @@ async def test_themes_that_are_there_are_fine(
         # The frontend looks a theme up exactly as written.
         "midnight",
         "Midnight ",
+        "   ",
         "Default",
         "None",
         # The variants are modes inside a theme, never a theme of their own.
