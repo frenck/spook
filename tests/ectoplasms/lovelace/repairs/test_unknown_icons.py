@@ -126,6 +126,18 @@ async def test_view_and_badge_icons_are_looked_at(
     assert reported["icons"] == "- `mdi:ghost-badge`\n- `mdi:ghost-view`"
 
 
+async def test_the_tab_icon_of_a_custom_layout_view_is_looked_at(
+    hass: HomeAssistant, issue_registry: ir.IssueRegistry
+) -> None:
+    """The frontend draws the tab, whatever lays out the view itself."""
+    dashboard = _dashboard(type="custom:grid-layout", icon="mdi:ghost-view")
+
+    reported = await _async_reported(hass, issue_registry, dashboard)
+
+    assert reported
+    assert reported["icons"] == "- `mdi:ghost-view`"
+
+
 async def test_the_sidebar_icon_points_at_the_dashboard_settings(
     hass: HomeAssistant, issue_registry: ir.IssueRegistry
 ) -> None:

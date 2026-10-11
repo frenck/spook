@@ -100,8 +100,12 @@ async def test_every_place_with_an_icon_is_looked_at(
     ar.async_get(hass).async_create("Living room", icon="mdi:sofa")
     fr.async_get(hass).async_create("Attic", icon="mdi:attic-ghost")
     lr.async_get(hass).async_create("Holiday", icon="mdi:holiday-ghost")
+    # The same name in two scopes, told apart by the scope.
     cr.async_get(hass).async_create(
         scope="automation", name="Night", icon="mdi:night-ghost"
+    )
+    cr.async_get(hass).async_create(
+        scope="script", name="Night", icon="mdi:night-ghost"
     )
     hass.data[DATA_CUSTOMIZE] = EntityValues(
         exact={
@@ -121,7 +125,8 @@ async def test_every_place_with_an_icon_is_looked_at(
             "- `mdi:kitchen-ghost` on the area Kitchen",
             "- `mdi:attic-ghost` on the floor Attic",
             "- `mdi:holiday-ghost` on the label Holiday",
-            "- `mdi:night-ghost` on the category Night",
+            "- `mdi:night-ghost` on the category Night (automation)",
+            "- `mdi:night-ghost` on the category Night (script)",
             "- `mdi:customize-ghost` in `customize:` for `light.porch`",
             "- `mdi:domain-ghost` in `customize_domain:` for `sensor`",
         ]
@@ -258,6 +263,20 @@ async def test_a_list_with_a_part_missing_means_nothing_is_judged(
     folder = install_frontend(monkeypatch, tmp_path)
     (folder / "chunk1.json").unlink()
     _area_with_icon(hass, "mdi:lightbulb")
+
+    assert await _async_reported(hass, issue_registry) is None
+
+
+async def test_a_list_with_an_empty_part_means_nothing_is_judged(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """An empty part is a broken one, and its names would all look unknown."""
+    folder = install_frontend(monkeypatch, tmp_path)
+    (folder / "chunk1.json").write_text("{}")
+    _area_with_icon(hass, "mdi:sofa")
 
     assert await _async_reported(hass, issue_registry) is None
 

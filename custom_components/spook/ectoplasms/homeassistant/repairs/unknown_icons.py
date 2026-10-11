@@ -173,9 +173,10 @@ class SpookRepair(AbstractSpookRepair):
         for label in lr.async_get(self.hass).labels.values():
             yield f"on the label {label.name}", label.icon
 
-        for categories in cr.async_get(self.hass).categories.values():
+        # A name can be taken once per scope, so the scope says which one.
+        for scope, categories in cr.async_get(self.hass).categories.items():
             for category in categories.values():
-                yield f"on the category {category.name}", category.icon
+                yield f"on the category {category.name} ({scope})", category.icon
 
     def _icons_in_customize(self) -> Iterator[tuple[str, Any]]:
         """Yield the icons `customize:` and `customize_domain:` give out.

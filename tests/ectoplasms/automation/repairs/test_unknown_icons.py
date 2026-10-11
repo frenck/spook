@@ -122,6 +122,15 @@ async def test_a_near_miss_suggests_the_icon_it_meant(
         # Only a field that says it takes an icon. `notify.html5` takes the
         # address of a picture under `icon`, and so do others.
         {"action": "notify.ghost", "data": {"icon": "mdi:ghost-group"}},
+        # Values shaped like a step are only handed over, never run.
+        {"variables": {"later": _set_group("mdi:ghost-group")}},
+        {"event": "boo", "event_data": {"next": _set_group("mdi:ghost-group")}},
+        {
+            "repeat": {
+                "for_each": [_set_group("mdi:ghost-group")],
+                "sequence": [],
+            }
+        },
     ],
 )
 async def test_what_is_not_judged(

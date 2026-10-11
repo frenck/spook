@@ -122,6 +122,13 @@ class SpookRepair(AbstractSpookRepair):
             if not isinstance(view, dict):
                 continue
             view_path: int | str = view.get("path") or view_index
-            for icon in sorted(extract_icons_from_dashboard_node(view)):
+            found = extract_icons_from_dashboard_node(view)
+
+            # The frontend draws the tab of a view, whatever lays it out. A
+            # custom layout only owns what is inside it.
+            if isinstance(view_icon := view.get("icon"), str):
+                found.add(view_icon)
+
+            for icon in sorted(found):
                 icons.setdefault(icon, view_path)
         return icons

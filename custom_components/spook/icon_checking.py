@@ -25,6 +25,7 @@ from homeassistant.util.hass_dict import HassKey
 
 from .attribute_checking import suggest_name
 from .const import LOGGER
+from .reference_extraction import VALUE_KEYS
 
 if TYPE_CHECKING:
     import asyncio
@@ -128,7 +129,9 @@ def _load_mdi_icons() -> MdiIcons | None:
         version = str(metadata["version"])
         for part in metadata["parts"]:
             chunk = json.loads((folder / f"{part['file']}.json").read_text("utf-8"))
-            if not isinstance(chunk, dict):
+            # The frontend's build never writes an empty part, so one is
+            # broken, and the names it should hold would all look unknown.
+            if not isinstance(chunk, dict) or not chunk:
                 return None
             names.update(chunk)
     except OSError, ValueError, KeyError, TypeError:
@@ -194,7 +197,9 @@ def icons_in_actions(
 
     Walks the configuration as written, so every kind of nested block is
     covered without naming them. A step that is turned off never runs, so
-    neither does anything inside it.
+    neither does anything inside it. Variables, event data and the rest of
+    what only holds values are not walked: a mapping in there shaped like a
+    step is data somebody hands over, not something that runs.
     """
     icons: set[str] = set()
 
@@ -218,7 +223,7 @@ def icons_in_actions(
                 icons.add(icon)
 
     for key, value in config.items():
-        if key not in _ACTION_DATA_KEYS:
+        if key not in VALUE_KEYS:
             icons |= icons_in_actions(value, icon_fields)
 
     return icons
