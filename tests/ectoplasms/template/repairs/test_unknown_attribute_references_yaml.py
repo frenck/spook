@@ -216,6 +216,31 @@ async def test_known_attributes_are_fine(
     assert _issue(issue_registry, "sensor.fine_trigger") is None
 
 
+async def test_attributes_named_like_a_condition_are_not_one(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test attributes the entity is given are not read as a condition."""
+    await _setup(
+        hass,
+        {
+            "sensor": {
+                "name": "Haunted",
+                "state": "1",
+                "attributes": {
+                    "condition": "state",
+                    "entity_id": "light.kitchen",
+                    "attribute": "Brightness",
+                },
+            }
+        },
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _issue(issue_registry, "sensor.haunted") is None
+
+
 async def test_this_and_trigger_are_not_read(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

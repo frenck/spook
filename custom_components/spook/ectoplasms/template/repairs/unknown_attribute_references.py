@@ -6,6 +6,7 @@ import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from homeassistant.components.template.const import CONF_ATTRIBUTES
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
@@ -46,6 +47,20 @@ def _finding_line(finding: UnknownAttribute) -> str:
     if finding.suggestion is not None:
         line += f" (did you mean `{finding.suggestion}`?)"
     return line
+
+
+def _references_in_template_entity(config: dict[str, Any]) -> NamedReferences:
+    """Return what the configuration of a template entity names.
+
+    The attributes it gives its entity are named by whoever writes them. An
+    attribute called `condition` next to ones called `entity_id` and
+    `attribute` is not a condition, so only their templates are read.
+    """
+    config = dict(config)
+    attributes = config.pop(CONF_ATTRIBUTES, None)
+    if isinstance(attributes, dict):
+        attributes = list(attributes.values())
+    return extract_attribute_references_from_config([config, attributes])
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -112,7 +127,7 @@ class SpookRepair(AbstractSpookRepair):
         if named is None or not named[0].is_read_from(template_entity):
             named = (
                 template_entity,
-                extract_attribute_references_from_config(template_entity.config),
+                _references_in_template_entity(template_entity.config),
             )
         self._named_in_yaml[template_entity.entity_id] = named
         return named[1]
