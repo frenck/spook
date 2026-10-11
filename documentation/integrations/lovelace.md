@@ -149,6 +149,22 @@ To resolve the raised issue, edit the dashboard and replace these with icons tha
 - The list of icons is read from the frontend Home Assistant has installed. A frontend run from a development build is not taken into account, and a frontend without that list means nothing is checked.
   :::
 
+### Removed users
+
+Dashboards are inspected for the users they name: the users of a user condition in the visibility of a card, badge or section (also nested in `and`, `or` or `not`), in the conditions of a conditional card, row or element, the users a view is visible to, and the users exempted from the confirmation of an action. When one of those users no longer exists, Spook raises a repair issue naming the dashboard and the user IDs it cannot find.
+
+Home Assistant gives every user a random ID and never hands the same one out twice, so an ID no user has belongs to a user that was removed. The frontend does not tell you. A card, badge, section or view that was only shown to removed users is now shown to nobody, and an exemption for a removed user does nothing.
+
+To resolve the raised issue, edit the dashboard and pick the users that should see it, or remove the condition. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only something shaped like a user ID is checked. A user written down by name never matched anybody, and is not a user that was removed.
+- Custom cards are not checked inside, as their keys can mean anything. The visibility you give a custom card is checked, as the frontend handles that for every card.
+- A dashboard run by a strategy, like the areas dashboard, is not checked.
+  :::
+
 ### Missing dashboard resources
 
 Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks the ones it can: a resource served from `/local/` or `/hacsfiles/` maps to a file on disk, so Spook can see whether that file is there. If it is not, it will raise a repair issue listing the resources in question.

@@ -25,6 +25,7 @@ from .dashboard_extraction import (
     extract_areas_from_dashboard_node,
     extract_entities_from_dashboard_node,
     extract_not_entity_ids_from_dashboard_node,
+    is_view_node,
 )
 from .ectoplasms.automation.repairs import (
     never_true_templates as automation_templates,
@@ -69,6 +70,11 @@ from .entity_filtering import (
 )
 from .entity_suggestions import async_warm_rename_suggestions
 from .repairs import AbstractSpookUnknownEntityNamesRepair
+from .user_references import (
+    async_get_user_ids,
+    extract_user_ids_from_dashboard_node,
+    extract_user_ids_from_view,
+)
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -255,6 +261,25 @@ def _check_scene(hass: HomeAssistant, config: dict[str, Any]) -> dict[str, list[
     return {"entities": sorted(unknown)} if unknown else {}
 
 
+def _extract_draft_user_ids(config: dict[str, Any]) -> set[str]:
+    """Return the user IDs a draft card, view or dashboard names.
+
+    A view handed over on its own has its own `visible` too, which a card
+    does not have and the dashboard reader only reads below `views`. Like
+    the repair, a dashboard run by a strategy has no users of its own: the
+    views left stored next to it are never shown. A card has a type and a
+    dashboard does not, so a custom card with options of those names is
+    still read as a card.
+    """
+    if "type" not in config and "views" in config and "strategy" in config:
+        return set()
+
+    if "views" not in config and is_view_node(config):
+        return extract_user_ids_from_view(config)
+
+    return extract_user_ids_from_dashboard_node(config)
+
+
 async def _async_check_dashboard(
     hass: HomeAssistant, config: dict[str, Any]
 ) -> dict[str, list[str]]:
@@ -280,6 +305,7 @@ async def _async_check_dashboard(
         "services": async_filter_known_services(
             hass, services=extract_actions_from_dashboard_node(config)
         ),
+        "users": _extract_draft_user_ids(config) - await async_get_user_ids(hass),
     }
     return {
         **{label: sorted(found) for label, found in checks.items() if found},
