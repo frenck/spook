@@ -724,6 +724,12 @@ Extends the existing restart action with a "force" option. Because forcing is al
 
 `homeassistant.restart`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart), [documentation](misc#restart) 📚
 
+## Schedule: Create
+
+Creates a schedule helper, with its whole week of time blocks, without a trip to the helpers page. _#outofthinair_
+
+`schedule.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=schedule.create), [documentation](integrations/schedule#create-a-schedule) 📚
+
 ## Schedule: Delete
 
 Deletes schedule helpers made in the UI, without a trip to the helpers page. _#clearedcalendar_

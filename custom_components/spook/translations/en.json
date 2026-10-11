@@ -2918,6 +2918,52 @@
         }
       }
     },
+    "schedule_create": {
+      "name": "Create a schedule",
+      "description": "Creates a new schedule helper on the fly, on during the time blocks given for each day of the week. Returns the entity ID of the new schedule.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "The name of the new schedule."
+        },
+        "schedule_id": {
+          "name": "Schedule entity ID",
+          "description": "The entity ID for the new schedule. The schedule. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "The icon for the new schedule."
+        },
+        "monday": {
+          "name": "Monday",
+          "description": "When the schedule is on, on Mondays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+        },
+        "tuesday": {
+          "name": "Tuesday",
+          "description": "When the schedule is on, on Tuesdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+        },
+        "wednesday": {
+          "name": "Wednesday",
+          "description": "When the schedule is on, on Wednesdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+        },
+        "thursday": {
+          "name": "Thursday",
+          "description": "When the schedule is on, on Thursdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+        },
+        "friday": {
+          "name": "Friday",
+          "description": "When the schedule is on, on Fridays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+        },
+        "saturday": {
+          "name": "Saturday",
+          "description": "When the schedule is on, on Saturdays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+        },
+        "sunday": {
+          "name": "Sunday",
+          "description": "When the schedule is on, on Sundays: a list of time blocks, each with a from and a to time, and optional data it shows as attributes while it is on. Left out, it is off all day."
+        }
+      }
+    },
     "schedule_delete": {
       "name": "Delete a schedule",
       "description": "Deletes schedule helpers made in the UI. Schedules set up in YAML cannot be deleted by Spook.",
