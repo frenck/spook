@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Brûker tafoege",
             "description": "Giet ôf as ien in oanmelding foar Home Assistant krijt. Brûkers dy't Home Assistant foar syn eigen yntegraasjes oanmakket, wurde oerslein."
+        },
+        "state_changed": {
+            "name": "Spook syn steattrigger",
+            "description": "Giet ôf as in entiteit fan steat feroaret, foar alles wat in doel beslacht: entiteiten, apparaten, romten, ferdjippings en labels. Beheine it op domein, yntegraasje of apparaatklasse, of lit it doel leech en lit dy de entiteiten út alles kieze. Slút dingen wer út, en bepaal hoe lang in feroaring hâlde moat foardat er telt.",
+            "fields": {
+                "domain": {
+                    "name": "Domeinen",
+                    "description": "Allinnich entiteiten fan dizze domeinen, lykas binary_sensor of cover. Sûnder doel kiest it se út alles."
+                },
+                "integration": {
+                    "name": "Yntegraasjes",
+                    "description": "Allinnich entiteiten fan dizze yntegraasjes, lykas zha of hue. Sûnder doel kiest it se út alles."
+                },
+                "config_entry": {
+                    "name": "Yntegraasje-item",
+                    "description": "Allinnich entiteiten fan dit yntegraasje-item. Sûnder doel kiest it se út alles."
+                },
+                "device_class": {
+                    "name": "Apparaatklassen",
+                    "description": "Allinnich entiteiten fan dizze apparaatklassen, lykas door of window. Sûnder doel kiest it se út alles."
+                },
+                "exclude_target": {
+                    "name": "Útslute",
+                    "description": "Entiteiten, apparaten, romten, ferdjippings of labels om út te sluten. Alles dêryn wurdt útsletten, de diagnostyske entiteiten ek."
+                },
+                "exclude_domain": {
+                    "description": "Slút entiteiten fan dizze domeinen út. Mei neat yn Útslute jildt dit foar alles wat it doel beslacht.",
+                    "name": "Domeinen útslute"
+                },
+                "exclude_integration": {
+                    "description": "Slút entiteiten fan dizze yntegraasjes út.",
+                    "name": "Yntegraasjes útslute"
+                },
+                "exclude_config_entry": {
+                    "name": "Yntegraasje-item útslute",
+                    "description": "Slút de entiteiten fan dit yntegraasje-item út."
+                },
+                "exclude_device_class": {
+                    "description": "Slút entiteiten fan dizze apparaatklassen út.",
+                    "name": "Apparaatklassen útslute"
+                },
+                "attribute": {
+                    "name": "Attribút",
+                    "description": "Folgje dit attribút ynstee fan de steat."
+                },
+                "from": {
+                    "name": "Fan",
+                    "description": "Allinnich feroarings dy't fan ien fan dizze steaten komme."
+                },
+                "not_from": {
+                    "name": "Net fan",
+                    "description": "Allinnich feroarings dy't net fan ien fan dizze steaten komme."
+                },
+                "to": {
+                    "name": "Nei",
+                    "description": "Allinnich feroarings dy't nei ien fan dizze steaten gean."
+                },
+                "not_to": {
+                    "name": "Net nei",
+                    "description": "Allinnich feroarings dy't net nei ien fan dizze steaten gean."
+                },
+                "ignore_unavailable": {
+                    "name": "Net beskikber en ûnbekend negearje",
+                    "description": "Lit feroarings fan of nei net beskikber en ûnbekend wei, sadat in herstart of in router dy't opnij opstart net foar alles ôfgiet. Skeakelje út om se yn Fan of Nei te brûken."
+                },
+                "attribute_changes": {
+                    "name": "Attribútferoarings telle",
+                    "description": "Gean ek ôf as allinnich in attribút feroare is en de steat itselde bleaun is. Docht neat wylst der in attribút folge wurdt."
+                },
+                "behavior": {
+                    "description": "Gean ôf foar elke entiteit, foar de earste fan it doel dy't der komt, of as se der allegear binne. Earste en allegear hawwe Nei of Net nei nedich. Wylst net beskikber en ûnbekend negearre wurde, dogge entiteiten yn dy steaten net mei.",
+                    "name": "Gedrach"
+                },
+                "for": {
+                    "description": "Gean pas ôf as de nije steat sa lang hâlden hat. Elke oare feroaring dertusken blaast it ôf.",
+                    "name": "Foar"
+                },
+                "blip_tolerance": {
+                    "name": "Flikkertolerânsje",
+                    "description": "Wylst Foar ôfwachte wurdt, begjint it wachtsjen net opnij as de entiteit binnen dizze tiid net beskikber of ûnbekend wurdt en weromkomt sa't er wie. Wurket allinnich tegearre mei Foar."
+                },
+                "delay": {
+                    "name": "Fertraging",
+                    "description": "Wachtsje sa lang foardat it ôfgiet, wat der dertusken ek bart. Lykas in fertraging oan it begjin fan de aksjes."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Ûnderoan",
                 "top": "Boppe-oan"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Moandei",
+                "tuesday": "Tiisdei",
+                "wednesday": "Woansdei",
+                "thursday": "Tongersdei",
+                "friday": "Freed",
+                "saturday": "Sneon",
+                "sunday": "Snein"
             }
         }
     },
@@ -320,6 +417,16 @@
                     "description": "Hoe lang der nei de lêste run wachte wurdt foardat dizze betingst wer wier is."
                 }
             }
+        },
+        "is_available": {
+            "description": "Is wier as in entiteit der is om mei te praten: alles behalve net beskikber of ûnbekend. Foar in lûdspearker of in tûke stekker dy't net altyd stroom hat.",
+            "fields": {
+                "behavior": {
+                    "description": "Oft it genôch is dat ien fan de entiteiten der is, of dat se der allegear wêze moatte.",
+                    "name": "Gedrach"
+                }
+            },
+            "name": "Entiteit is beskikber"
         }
     },
     "config": {
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Dizze sône kin net bewurke wurde: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "It oantal {amount} past net by {entity_id}, dat yn stappen fan {step} giet. Brûk in mearfâld fan {step}, of lit it oantal leech om ien stap te setten."
+        },
+        "area_cannot_update": {
+            "message": "Romte {area_id} kin net sa feroare wurde: {error}."
+        },
+        "area_name_taken": {
+            "message": "De namme {name} is al yn gebrûk by romte {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Neat om by te wurkjen oan romte {area_id}: jou op syn minst ien fan {fields}."
+        },
+        "floor_name_taken": {
+            "message": "De namme {name} is al yn gebrûk by ferdjipping {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Neat om by te wurkjen oan ferdjipping {floor_id}: jou op syn minst ien fan {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Dy tiidblokken wurkje net foar {entity_id}: {error}. Der is neat feroare."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} is in skema út dyn YAML-konfiguraasje, en dat kin Spook net feroarje. Bewurkje it ynstee yn dyn konfiguraasje."
+        },
+        "device_nothing_to_update": {
+            "message": "Neat om by te wurkjen oan apparaat {device_id}: jou op syn minst ien fan {fields}."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Dizze sensoren binne werom, of de ynstellingen wize no earne oars hinne, sûnt Spook seach. Dêrom is der neat leechmakke. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist kin dizze net útinoar hâlde: {name}",
+            "description": "Spook hat in spoek fûn yn dyn spraakassistinten 👻\n\nDe folgjende entiteiten binne bleatsteld oan Assist, en harkje allegear nei de namme {name}:\n\n{entities}\n\nAs nammen itselde binne, hâldt Assist se allinnich útinoar op romte: dejinge dy'tst neamst, of dejinge dêr't dyn spraaksatellyt yn stiet. Guon fan dizze diele in romte, of hawwe hielendal gjin romte, dus Assist kin se net fan oeral mei dizze namme útkieze. Freegje om {name} mislearret dan, en neat seit hokker entiteiten yn 'e wei sitte.\n\nOm dit op te lossen, jou elk in eigen namme of alias, of set se yn ferskillende romten. Do kinst de aliassen fan in entiteit feroarje, en oft Assist him überhaupt sjocht, ûnder [Bleatstelde entiteiten](/config/voice-assistants/expose). Romten stelst yn op de [side Romten](/config/areas/dashboard).\n\nSpook 👻 Dyn maat."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring brûkt de folgjende attributen, dy't harren entiteiten net hawwe. No net, net as eat dat soks in entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{attributes}\n\n\n\nIn trigger of betingst dy't wachtet op in attribút dat noait opdûkt, giet noait ôf, en seit dy dat net. In sjabloan dat ien lêst, krijt neat. Om dit op te lossen, [bewurkje de automatisearring]({edit}) en brûk in attribút dat de entiteit hat.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende attributen brûkt yn: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring wachtet op, of kontrolearret, de folgjende steaten, dêr't harren entiteiten noait yn binne. Net as eat dat soks in entiteit wêze kin, net ûnder de opsjes dy't de entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{states}\n\n\n\nIn trigger dy't wachtet op in steat dy't noait komt, giet noait ôf, in betingst dy't op ien kontrolearret, is noait wier, en gjinien fan beide seit dy dat. Steaten binne gefoelich foar haadletters: `On` is net `on`. Om dit op te lossen, [bewurkje de automatisearring]({edit}) en brûk in steat dêr't de entiteit yn wêze kin.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende steaten brûkt yn: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Ûnbekende trigger-ID's brûkt yn: {automation}",
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring kontrolearret op de folgjende trigger-ID's, dy't gjinien fan syn eigen triggers hat:\n\n{trigger_ids}\n\n\n\nIn kontrôle op in ID dat gjin trigger trochjout, komt altyd itselde út: in triggerbetingst dy't dernei freget, is noait wier, dus it diel dat er beskermet, rint noait, en neat seit dy dat. Trigger-ID's binne gefoelich foar haadletters, en in trigger sûnder eigen ID giet op syn plak yn de list, teld fan `0` ôf. Om dit op te lossen, [bewurkje de automatisearring]({edit}) en brûk de ID fan ien fan syn triggers, of jou de trigger de ID dêr't de automatisearring om freget.\n\nSpook 👻 Dyn maat."
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd toant of kontrolearret de folgjende attributen, dy't harren entiteiten net hawwe. No net, net as eat dat soks in entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{attributes}\n\n\n\nIn kaart dy't in attribút toant dat noait opdûkt, bliuwt leech, en in sichtberensbetingst of filter dy't op ien kontrolearret, is noait wier. Gjinien fan beide seit dy dat. Om dit op te lossen, [bewurkje it dashboerd]({edit}) en brûk in attribút dat de entiteit hat.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende attributen brûkt yn dashboerd: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd kontrolearret op de folgjende steaten, dêr't harren entiteiten noait yn binne. Net as eat dat soks in entiteit wêze kin, net ûnder de opsjes dy't de entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{states}\n\n\n\nIn sichtberensbetingst of filter dy't op in steat kontrolearret dy't noait komt, is noait wier, en in ôfbylding dy't foar ien ynsteld is, wurdt noait toand. Gjinien fan harren seit dy dat. Steaten binne gefoelich foar haadletters: `On` is net `on`. Om dit op te lossen, [bewurkje it dashboerd]({edit}) en brûk in steat dêr't de entiteit yn wêze kin.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende steaten brûkt yn dashboerd: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd navigearret nei de folgjende werjeften, dy't net besteane:\n\n{paths}\n\n\n\nIn knop of kaart dy't nei ien fan dizze navigearret, iepenet ynstee de earste werjefte fan dat dashboerd, sûnder dat te sizzen. Dit bart faak as in werjefte omneamd, ferpleatst of fuortsmiten is. Om dizze flater op te lossen, [bewurkje it dashboerd]({edit}) en lit dizze nei in werjefte wize dy't bestiet.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende werjeften dêr't nei navigearre wurdt yn dashboerd: {dashboard}"
+        },
+        "template_unknown_attribute_references": {
+            "title": "Ûnbekende attributen brûkt yn sjabloanhelper: {helper}",
+            "description": "Spook hat in spoek fûn yn dyn sjabloanhelpers 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sjabloanhelper tsjin:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDizze sjabloanhelper brûkt de folgjende attributen, dy't harren entiteiten net hawwe. No net, net as eat dat soks in entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{attributes}\n\n\n\nIn sjabloan dat in attribút lêst dat noait opdûkt, krijt neat, en in betingst yn ien fan syn aksjes dy't op ien wachtet, is noait wier. Gjinien fan beide seit dy dat. Om dit op te lossen, [bewurkje de sjabloanhelper]({edit}) en brûk in attribút dat de entiteit hat.\n\nSpook 👻 Dyn maat."
+        },
+        "automation_never_true_templates": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring hat de folgjende sjabloanen, dy't noait wier wêze kinne, wat der yn dyn hûs ek bart:\n\n{templates}\n\n\n\nIn sjabloanbetingst is allinnich wier as er `true` jout, en in `wait_template` ek, útsein as er letter feroaret yn eat dat as wier lêzen wurdt. In sjabloantrigger giet ôf as syn sjabloan feroaret yn eat dat as wier lêzen wurdt, lykas `true`, `on`, `yes` of `1`. Dizze sjabloanen jouwe altyd eat oars, troch hoe't se skreaun binne. De gewoane oarsaken:\n\n- Oanhalingstekens om it sjabloan hinne. In `>-`-blok nimt se as tekst, dus se komme yn it resultaat telâne.\n- Hielendal gjin sjabloan-skiedingstekens, dus de tekst wurdt nommen sa't er is.\n- YAML dy't yn it sjabloanfjild plakt is.\n- In YAML-opmerking mei `#` yn de Jinja, dy't Jinja as tekst printet.\n- In betingst dy't `on` jout ynstee fan `true`.\n\nNeat seit dy it: de betingst is noait wier, it wachtsjen hâldt allinnich op by syn tiidslimyt, en de trigger giet noait ôf. Om dit op te lossen, [bewurkje de automatisearring]({edit}) en soargje dat it sjabloan `true` jout as it wier wêze moat.\n\nSpook 👻 Dyn maat.",
+            "title": "Sjabloanen dy't noait wier wêze kinne yn: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring jout syn aksjes de folgjende yntegraasje-items, dy't Home Assistant net ken, of dy't by in oare yntegraasje hearre as dêr't de aksje om freget:\n\n{config_entries}\n\nHome Assistant wegeret dizze as de stap rint. Dit bart meastal nei't in yntegraasje fuortsmiten en wer tafoege is: dy krige in nij yntegraasje-item, mei in nije ID.\n\nOm dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en kies it yntegraasje-item opnij yn dizze aksjes.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende yntegraasje-items brûkt yn: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring dielt de folgjende piktogrammen út, dy't net besteane yn de Material Design Icons dy't mei Home Assistant meikomme:\n\n{icons}\n\n\n\nElk fan dizze ferskynt as in leech plak, sûnder in wurd. Dit bart faak as in piktogram ferkeard typt, omneamd of fuortsmiten is, of keazen is út in nijere ferzje fan Material Design Icons as dy't mei Home Assistant meikomt. Om dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en ferfang dizze troch piktogrammen dy't besteane.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende piktogrammen brûkt yn: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring neamt de folgjende brûkers, dy't net mear besteane:\n\n{users}\n\n\n\nHome Assistant jout noait twa kear deselde brûkers-ID út, dus dizze brûkers binne fuortsmiten. In trigger dy't op ien fan harren wachtet, giet foar harren noait ôf, en in sjabloan dat mei ien fan harren ferliket, komt noait oerien, sûnder dat te sizzen. Om dit op te lossen, [bewurkje de automatisearring]({edit}) en brûk de ID fan in brûker dy't bestiet, of smyt de kontrôle fuort.\n\nSpook 👻 Dyn maat.",
+            "title": "Fuortsmiten brûkers neamd yn: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd brûkt de folgjende piktogrammen, dy't net besteane yn de Material Design Icons dy't mei Home Assistant meikomme (ferzje {version}):\n\n{icons}\n\n\n\nElk fan dizze ferskynt as in leech plak, sûnder in wurd. Dit bart faak as in piktogram ferkeard typt, omneamd of fuortsmiten is, of keazen is út in nijere ferzje fan Material Design Icons as dy't mei Home Assistant meikomt. Om dizze flater op te lossen, [bewurkje it dashboerd]({edit}) en ferfang dizze troch piktogrammen dy't besteane. It piktogram fan it dashboerd yn de sydbalke feroarest yn de ynstellings fan dyn dashboerden.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende piktogrammen brûkt yn dashboerd: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd neamt de folgjende brûkers, dy't net mear besteane:\n\n{users}\n\n\n\nHome Assistant jout noait twa kear deselde brûkers-ID út, dus dizze brûkers binne fuortsmiten. In kaart, badge, seksje of werjefte dy't allinnich oan harren toand wurdt, wurdt no oan nimmen toand, sûnder dat te sizzen. In útsûndering op in befêstiging foar harren docht neat mear. Om dit op te lossen, [bewurkje it dashboerd]({edit}) en kies de brûkers dy't it sjen moatte, of smyt de betingst fuort.\n\nSpook 👻 Dyn maat.",
+            "title": "Fuortsmiten brûkers neamd yn dashboerd: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd brûkt de folgjende tema's, dy't net besteane:\n\n{themes}\n\n\n\nIn kaart, seksje of werjefte mei ien fan dizze tema's krijt ynstee it standertuterlik, sûnder dat te sizzen. Dit bart faak as in tema omneamd of fuortsmiten is. Om dizze flater op te lossen, [bewurkje it dashboerd]({edit}) en kies in tema dat bestiet, of set it tema werom.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende tema's brûkt yn dashboerd: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script hat de folgjende sjabloanen, dy't noait wier wêze kinne, wat der yn dyn hûs ek bart:\n\n{templates}\n\n\n\nIn sjabloanbetingst is allinnich wier as er `true` jout, en in `wait_template` ek, útsein as er letter feroaret yn eat dat as wier lêzen wurdt. In sjabloantrigger yn in `wait_for_trigger` giet ôf as syn sjabloan feroaret yn eat dat as wier lêzen wurdt, lykas `true`, `on`, `yes` of `1`. Dizze sjabloanen jouwe altyd eat oars, troch hoe't se skreaun binne. De gewoane oarsaken:\n\n- Oanhalingstekens om it sjabloan hinne. In `>-`-blok nimt se as tekst, dus se komme yn it resultaat telâne.\n- Hielendal gjin sjabloan-skiedingstekens, dus de tekst wurdt nommen sa't er is.\n- YAML dy't yn it sjabloanfjild plakt is.\n- In YAML-opmerking mei `#` yn de Jinja, dy't Jinja as tekst printet.\n- In betingst dy't `on` jout ynstee fan `true`.\n\nNeat seit dy it: de betingst is noait wier, en it wachtsjen hâldt allinnich op by syn tiidslimyt. Om dit op te lossen, [bewurkje it script]({edit}) en soargje dat it sjabloan `true` jout as it wier wêze moat.\n\nSpook 👻 Dyn maat.",
+            "title": "Sjabloanen dy't noait wier wêze kinne yn: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script jout syn aksjes de folgjende yntegraasje-items, dy't Home Assistant net ken, of dy't by in oare yntegraasje hearre as dêr't de aksje om freget:\n\n{config_entries}\n\nHome Assistant wegeret dizze as de stap rint. Dit bart meastal nei't in yntegraasje fuortsmiten en wer tafoege is: dy krige in nij yntegraasje-item, mei in nije ID.\n\nOm dizze flater op te lossen, [bewurkje it script]({edit}) en kies it yntegraasje-item opnij yn dizze aksjes.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende yntegraasje-items brûkt yn: {script}"
+        },
+        "script_unknown_icons": {
+            "title": "Ûnbekende piktogrammen brûkt yn: {script}",
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script brûkt of dielt de folgjende piktogrammen út, dy't net besteane yn de Material Design Icons dy't mei Home Assistant meikomme:\n\n{icons}\n\n\n\nElk fan dizze ferskynt as in leech plak, sûnder in wurd. Dit bart faak as in piktogram ferkeard typt, omneamd of fuortsmiten is, of keazen is út in nijere ferzje fan Material Design Icons as dy't mei Home Assistant meikomt. Om dizze flater op te lossen, [bewurkje it script]({edit}) en ferfang dizze troch piktogrammen dy't besteane.\n\nSpook 👻 Dyn maat."
+        },
+        "script_unknown_user_references": {
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script neamt de folgjende brûkers, dy't net mear besteane:\n\n{users}\n\n\n\nHome Assistant jout noait twa kear deselde brûkers-ID út, dus dizze brûkers binne fuortsmiten. In sjabloan dat mei ien fan harren ferliket, komt noait oerien, en in trigger dy't op ien fan harren wachtet, giet foar harren noait ôf, sûnder dat te sizzen. Om dit op te lossen, [bewurkje it script]({edit}) en brûk de ID fan in brûker dy't bestiet, of smyt de kontrôle fuort.\n\nSpook 👻 Dyn maat.",
+            "title": "Fuortsmiten brûkers neamd yn: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook hat in spoek fûn yn dyn sjabloanentiteiten 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sjabloanentiteit tsjin:\n\n{name} (`{entity_id}`)\n\nDizze sjabloanentiteit brûkt de folgjende attributen, dy't harren entiteiten net hawwe. No net, net as eat dat soks in entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{attributes}\n\n\n\nIn sjabloan dat in attribút lêst dat noait opdûkt, krijt neat, en in trigger of betingst dy't op ien wachtet, giet noait ôf of is noait wier. Gjinien fan harren seit dy dat.\n\nDizze sjabloanentiteit is ynsteld yn dyn YAML-konfiguraasje. Om dit op te lossen, bewurkje him yn de seksje `template:` fan dyn konfiguraasje, brûk in attribút dat de entiteit hat, en laad dyn sjabloanentiteiten opnij.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende attributen brûkt yn sjabloanentiteit: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook hat in spoek fûn yn dyn sjabloanentiteiten 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sjabloanentiteit tsjin:\n\n{name} (`{entity_id}`)\n\nSyn konfiguraasje ferwiist nei de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nDit bart faak as in entiteit omneamd of fuortsmiten is. In sjabloan dat ien lêst, krijt neat, en in trigger dy't op ien wachtet, giet noait ôf.\n\nDizze sjabloanentiteit is ynsteld yn dyn YAML-konfiguraasje. Om dizze flater op te lossen, bewurkje him yn de seksje `template:` fan dyn konfiguraasje, ferwiis nei besteande entiteiten, en laad dyn sjabloanentiteiten opnij.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn sjabloanentiteit: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook hat in spoek fûn yn dyn sjabloanentiteiten 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sjabloanentiteit tsjin:\n\n{name} (`{entity_id}`)\n\nHy ferwiist nei de folgjende aksjes, dy't Home Assistant net ken:\n\n{services}\n\n\n\nDit bart faak as in leveransier fan aksjes fuortsmiten is, of in script omneamd of fuortsmiten is.\n\nDizze sjabloanentiteit is ynsteld yn dyn YAML-konfiguraasje. Om dizze flater op te lossen, bewurkje him yn de seksje `template:` fan dyn konfiguraasje, brûk besteande aksjes, en laad dyn sjabloanentiteiten opnij.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende aksjes brûkt yn sjabloanentiteit: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook hat in spoek fûn yn dyn ynstellings 👻\n\nDe folgjende piktogrammen besteane net yn de Material Design Icons dy't mei Home Assistant meikomme (ferzje {version}):\n\n{icons}\n\n\n\nElk fan dizze ferskynt as in leech plak, sûnder in wurd. Dit bart faak as in piktogram ferkeard typt, omneamd of fuortsmiten is, of keazen is út in nijere ferzje fan Material Design Icons as dy't mei Home Assistant meikomt. Om dizze flater op te lossen, jou elk fan dizze in piktogram dat bestiet: in entiteit, helper of sône yn syn ynstellings, in romte, ferdjipping of label yn de ynstellings fan dyn romten, labels en sônes, in kategory dêr't er brûkt wurdt, en `customize:` yn dyn konfiguraasje.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende piktogrammen yn dyn ynstellings"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script brûkt de folgjende attributen, dy't harren entiteiten net hawwe. No net, net as eat dat soks in entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{attributes}\n\n\n\nIn trigger of betingst dy't wachtet op in attribút dat noait opdûkt, giet noait ôf, en seit dy dat net. In sjabloan dat ien lêst, krijt neat. Om dit op te lossen, [bewurkje it script]({edit}) en brûk in attribút dat de entiteit hat.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende attributen brûkt yn: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script wachtet op, of kontrolearret, de folgjende steaten, dêr't harren entiteiten noait yn binne. Net as eat dat soks in entiteit wêze kin, net ûnder de opsjes dy't de entiteit oanbiedt, en nearne yn wat de recorder fan har ûnthâldt:\n\n{states}\n\n\n\nIn trigger dy't wachtet op in steat dy't noait komt, giet noait ôf, in betingst dy't op ien kontrolearret, is noait wier, en gjinien fan beide seit dy dat. Steaten binne gefoelich foar haadletters: `On` is net `on`. Om dit op te lossen, [bewurkje it script]({edit}) en brûk in steat dêr't de entiteit yn wêze kin.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende steaten brûkt yn: {script}"
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Posysje",
                     "description": "Ferpleats it nei boppe-oan of ûnderoan de list. Jou dit of in item dêr't it efter set wurdt."
+                }
+            }
+        },
+        "homeassistant_update_area": {
+            "name": "In romte bywurkje",
+            "description": "Wurket daliks in besteande romte by. Alles watst leech litst, hâldt de wearde dy't it al hat. Aliassen en labels ferfange dy't de romte hat. De ferdjipping, it piktogram, de ôfbylding en de sensoren kinne leechmakke wurde troch se op null te setten.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dy't bywurke wurdt."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "Nije namme foar de romte."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen foar de romte. Ferfangt dy't er hat, in lege list smyt se allegear fuort."
+                },
+                "floor_id": {
+                    "name": "Ferdjipping-ID",
+                    "description": "De ID fan de ferdjipping dêr't de romte op leit."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Nij piktogram foar de romte."
+                },
+                "picture": {
+                    "name": "Ôfbylding",
+                    "description": "De URL of it paad fan in ôfbylding foar de romte."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "De ID's fan de labels foar de romte. Ferfangt dy't er hat, in lege list smyt se allegear fuort."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperatuersensor",
+                    "description": "De sensor dy't de temperatuer yn de romte mjit."
+                },
+                "humidity_entity_id": {
+                    "name": "Fochtigenssensor",
+                    "description": "De sensor dy't de fochtigens yn de romte mjit."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "In apparaat bywurkje",
+            "description": "Wurket daliks in besteand apparaat by. Alles watst leech litst, hâldt de wearde dy't it al hat. Labels ferfange dy't it apparaat hat. De namme en romte kinne leechmakke wurde troch se op null te setten, dan krijt it apparaat de namme werom dy't syn yntegraasje it joech.",
+            "fields": {
+                "device_id": {
+                    "name": "Apparaat-ID",
+                    "description": "De ID fan it apparaat dat bywurke wurdt. Útskeakele apparaten wurde net toand yn de apparaatkiezer fan Home Assistant, brûk de YAML-modus om harren ID te jaan."
+                },
+                "name_by_user": {
+                    "name": "Namme",
+                    "description": "Nije namme foar it apparaat."
+                },
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dêr't it apparaat yn stiet."
+                },
+                "labels": {
+                    "name": "Labels",
+                    "description": "De ID's fan de labels foar it apparaat. Ferfangt dy't it hat, in lege list smyt se allegear fuort."
+                },
+                "disabled_by": {
+                    "name": "Útskeakele troch",
+                    "description": "Set op user om it apparaat út te skeakeljen, of op null om it wer yn te skeakeljen. Dit wurket lykas de aksjes om in apparaat út en yn te skeakeljen."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "In ferdjipping bywurkje",
+            "description": "Wurket daliks in besteande ferdjipping by. Alles watst leech litst, hâldt de wearde dy't it al hat. Aliassen ferfange dy't de ferdjipping hat. It piktogram en it nivo kinne leechmakke wurde troch se op null te setten.",
+            "fields": {
+                "floor_id": {
+                    "name": "Ferdjipping-ID",
+                    "description": "De ID fan de ferdjipping dy't bywurke wurdt."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "Nije namme foar de ferdjipping."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen foar de ferdjipping. Ferfangt dy't er hat, in lege list smyt se allegear fuort."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Nij piktogram foar de ferdjipping."
+                },
+                "level": {
+                    "name": "Nivo",
+                    "description": "It nivo dêr't de ferdjipping op leit yn dyn hûs."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "In skema oanmeitsje",
+            "description": "Makket daliks in nije skemahelper oan, oan yn de tiidblokken dy't foar elke dei fan de wike jûn binne. Jout de entiteits-ID fan it nije skema werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan it nije skema."
+                },
+                "schedule_id": {
+                    "name": "Entiteits-ID fan it skema",
+                    "description": "De entiteits-ID foar it nije skema. It foarheaksel schedule. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar it nije skema."
+                },
+                "monday": {
+                    "name": "Moandei",
+                    "description": "Wannear't it skema oan is, op moandeis: in list mei tiidblokken, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Litst it leech, dan is it de hiele dei út."
+                },
+                "tuesday": {
+                    "name": "Tiisdei",
+                    "description": "Wannear't it skema oan is, op tiisdeis: in list mei tiidblokken, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Litst it leech, dan is it de hiele dei út."
+                },
+                "wednesday": {
+                    "name": "Woansdei",
+                    "description": "Wannear't it skema oan is, op woansdeis: in list mei tiidblokken, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Litst it leech, dan is it de hiele dei út."
+                },
+                "thursday": {
+                    "name": "Tongersdei",
+                    "description": "Wannear't it skema oan is, op tongersdeis: in list mei tiidblokken, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Litst it leech, dan is it de hiele dei út."
+                },
+                "friday": {
+                    "name": "Freed",
+                    "description": "Wannear't it skema oan is, op freeds: in list mei tiidblokken, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Litst it leech, dan is it de hiele dei út."
+                },
+                "saturday": {
+                    "name": "Sneon",
+                    "description": "Wannear't it skema oan is, op sneons: in list mei tiidblokken, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Litst it leech, dan is it de hiele dei út."
+                },
+                "sunday": {
+                    "name": "Snein",
+                    "description": "Wannear't it skema oan is, op sneins: in list mei tiidblokken, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Litst it leech, dan is it de hiele dei út."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "In skema fuortsmite",
+            "description": "Smyt skemahelpers fuort dy't yn de brûkersinterface makke binne. Skema's dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "It skema of de skema's dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "De tiidblokken fan in dei ynstelle",
+            "description": "Ferfangt de tiidblokken fan ien of mear dagen fan in skemahelper dy't yn de brûkersinterface makke is. Skema's dy't yn YAML ynsteld binne, kin Spook net feroarje.",
+            "fields": {
+                "day": {
+                    "name": "Dei",
+                    "description": "De dei of dagen fan de wike dêr't de tiidblokken fan ynsteld wurde."
+                },
+                "blocks": {
+                    "name": "Tiidblokken",
+                    "description": "De tiidblokken dat it skema op dy dagen oan is, elk mei in fan- en in oant-tiid, en opsjonele gegevens dy't it as attributen toant wylst it oan is. Dizze ferfange de blokken dy't de dagen hiene. In lege list lit de dagen de hiele dei út."
                 }
             }
         }
