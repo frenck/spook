@@ -157,6 +157,90 @@ data:
 
 :::
 
+### Update a device
+
+Updates an existing device in your Home Assistant instance. Anything you leave
+out keeps the value it already has, so you can rename a device without moving
+it to another area.
+
+Only what you can change on a device in the UI is offered. Everything else,
+like its manufacturer or model, belongs to the integration that made the
+device, and it would write its own values back the next time it sets up.
+
+Setting `name_by_user` to `null` gives the device back the name its
+integration gave it, and setting `area_id` to `null` takes it out of its area.
+The `labels` you give replace the ones the device has, and an empty list
+removes them all. Setting `disabled_by` to `user` disables the device, setting
+it to `null` enables it again, the same way the disable and enable device
+actions above do.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Update a device 👻
+* - {term}`Action name`
+  - `homeassistant.update_device`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_device)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_device)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `device_id`
+  - {term}`string <string>`
+  - Yes
+  - `dc23e666e6100f184e642a0ac345d3eb`
+* - `name_by_user`
+  - {term}`string <string>` or `null`
+  - No
+  - `Living room speaker`
+* - `area_id`
+  - {term}`string <string>` or `null`
+  - No
+  - `living_room`
+* - `labels`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["battery_powered"]`
+* - `disabled_by`
+  - `user` or `null`
+  - No
+  - `user`
+```
+
+:::{note}
+You need to give at least one thing to change. A call with only a `device_id`
+is refused, so a misspelled parameter cannot pass for a successful update that
+quietly did nothing. The area and labels you give have to exist.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.update_device
+data:
+  device_id: "dc23e666e6100f184e642a0ac345d3eb"
+  name_by_user: "Living room speaker"
+  area_id: "living_room"
+```
+
+:::
+
 ## Blueprints & tutorials
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for these features. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).

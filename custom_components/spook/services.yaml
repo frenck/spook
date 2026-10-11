@@ -671,6 +671,55 @@ homeassistant_enable_device:
       selector:
         text:
 
+homeassistant_update_device:
+  name: Update a device 👻
+  description: >-
+    Updates an existing device on the fly. Anything you leave out keeps the
+    value it already has. Labels replace the ones the device has. The name
+    and area can be cleared by setting them to null, which gives the device
+    the name its integration gave it back.
+  fields:
+    device_id:
+      name: Device ID
+      description: >-
+        The ID of the device to update. Disabled devices are not shown by Home
+        Assistant's device selector, use YAML mode to give their ID.
+      required: true
+      selector:
+        device:
+    name_by_user:
+      name: Name
+      description: New name for the device.
+      required: false
+      selector:
+        text:
+    area_id:
+      name: Area ID
+      description: The ID of the area the device is in.
+      required: false
+      selector:
+        area:
+    labels:
+      name: Labels
+      description: >-
+        The IDs of the labels for the device. Replaces the ones it has, an
+        empty list removes them all.
+      required: false
+      selector:
+        label:
+          multiple: true
+    disabled_by:
+      name: Disabled by
+      description: >-
+        Set to user to disable the device, or to null to enable it again. This
+        works like the disable and enable device actions do.
+      required: false
+      selector:
+        select:
+          options:
+            - label: User
+              value: user
+
 homeassistant_disable_user:
   name: Disable a user 👻
   description: >-

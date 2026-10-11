@@ -782,6 +782,20 @@ Data:
 
 Documentation: https://spook.boo/categories#update-a-category
 
+### `homeassistant.update_device`: Update a device
+
+Updates an existing device on the fly. Anything you leave out keeps the value it already has. Labels replace the ones the device has. The name and area can be cleared by setting them to null, which gives the device the name its integration gave it back.
+
+Data:
+
+- `device_id` (required, device): The ID of the device to update. Disabled devices are not shown by Home Assistant's device selector, use YAML mode to give their ID.
+- `name_by_user` (optional, text): New name for the device.
+- `area_id` (optional, area): The ID of the area the device is in.
+- `labels` (optional, label, one or a list): The IDs of the labels for the device. Replaces the ones it has, an empty list removes them all.
+- `disabled_by` (optional, one of `user`): Set to user to disable the device, or to null to enable it again. This works like the disable and enable device actions do.
+
+Documentation: https://spook.boo/devices#update-a-device
+
 ### `homeassistant.update_entity_id`: Update an entity's ID
 
 Updates an entity's ID on the fly.
