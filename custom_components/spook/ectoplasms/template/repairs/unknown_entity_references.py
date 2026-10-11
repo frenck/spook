@@ -29,7 +29,9 @@ from ...automation.repairs.unknown_entity_references import (
 )
 from ..configuration import (
     EVENT_TEMPLATE_RELOADED,
+    YamlTemplateEntity,
     async_get_yaml_template_entities,
+    async_is_current,
     own_configuration,
 )
 
@@ -156,6 +158,7 @@ class SpookRepair(AbstractSpookRepair):
                     "name": template_entity.name,
                     "entity_id": template_entity.entity_id,
                 },
+                template_entity=template_entity,
             )
 
     async def _async_named_in_yaml(
@@ -188,6 +191,7 @@ class SpookRepair(AbstractSpookRepair):
         known_entity_ids: set[str],
         translation_key: str | None,
         translation_placeholders: dict[str, str],
+        template_entity: YamlTemplateEntity | None = None,
     ) -> None:
         """Raise an issue for what one template names that does not exist."""
         unknown_entities = async_filter_known_entity_ids(
@@ -207,6 +211,18 @@ class SpookRepair(AbstractSpookRepair):
             active,
             known_entity_ids=known_entity_ids,
         )
+        described = await self._async_describe(
+            unknown_entities, unknown_active, not_entity_ids
+        )
+
+        # Reading and describing it took a while. A template entity reloaded
+        # meanwhile may say something else entirely, and the reload starts
+        # another round that looks at that.
+        if template_entity is not None and not async_is_current(
+            self.hass, template_entity
+        ):
+            return
+
         self.async_create_issue(
             issue_id=issue_id,
             # Carrying which of them nothing running references any more,
@@ -224,9 +240,7 @@ class SpookRepair(AbstractSpookRepair):
             ],
             translation_key=translation_key,
             translation_placeholders={
-                "entities": await self._async_describe(
-                    unknown_entities, unknown_active, not_entity_ids
-                ),
+                "entities": described,
                 **translation_placeholders,
             },
         )

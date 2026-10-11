@@ -67,10 +67,14 @@ class YamlTemplateEntity:
 
     def is_read_from(self, other: YamlTemplateEntity) -> bool:
         """Return whether both were read from the very same configuration."""
-        return len(self.sources) == len(other.sources) and all(
-            mine is theirs
-            for mine, theirs in zip(self.sources, other.sources, strict=True)
-        )
+        return _same(self.sources, other.sources)
+
+
+def _same(mine: tuple[object, ...], theirs: tuple[object, ...]) -> bool:
+    """Return whether two sets of sources are the very same objects."""
+    return len(mine) == len(theirs) and all(
+        one is other for one, other in zip(mine, theirs, strict=True)
+    )
 
 
 def own_configuration(config: Mapping[str, Any]) -> dict[str, Any]:
@@ -109,6 +113,31 @@ def _section_and_own(own: dict[str, Any], section: dict[str, Any]) -> dict[str, 
     return config
 
 
+def _sources(entity: AbstractTemplateEntity) -> tuple[object, ...]:
+    """Return the validated configurations a template entity was set up from."""
+    own = getattr(entity, "_config", None)
+    if isinstance(entity, TriggerEntity):
+        return (own, entity.coordinator.config)
+    return (own,)
+
+
+@callback
+def async_is_current(hass: HomeAssistant, template_entity: YamlTemplateEntity) -> bool:
+    """Return whether a template entity still has what it was read from.
+
+    Without reading it all again: that is what the sources are for.
+    """
+    for platform in async_get_platforms(hass, DOMAIN):
+        if platform.config_entry is not None:
+            continue
+
+        entity = platform.entities.get(template_entity.entity_id)
+        if isinstance(entity, AbstractTemplateEntity):
+            return _same(template_entity.sources, _sources(entity))
+
+    return False
+
+
 @callback
 def async_get_yaml_template_entities(
     hass: HomeAssistant,
@@ -143,7 +172,6 @@ def async_get_yaml_template_entities(
             config = as_written(
                 {key: value for key, value in own.items() if key not in _HANDED_ALONG}
             )
-            sources: tuple[object, ...] = (own,)
             if isinstance(entity, TriggerEntity):
                 section = entity.coordinator.config
                 config = _section_and_own(
@@ -152,7 +180,6 @@ def async_get_yaml_template_entities(
                         {key: section[key] for key in _SECTION_KEYS if key in section}
                     ),
                 )
-                sources = (own, section)
 
             state = hass.states.get(entity_id)
             entities.append(
@@ -160,7 +187,7 @@ def async_get_yaml_template_entities(
                     entity_id=entity_id,
                     name=state.name if state is not None else entity_id,
                     config=config,
-                    sources=sources,
+                    sources=_sources(entity),
                 )
             )
 

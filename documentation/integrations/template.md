@@ -2,7 +2,7 @@
 subject: Enhanced integrations
 title: Template helpers
 subtitle: Keep template helpers and template entities free of ghosts. 👻
-description: Spook inspects Template helpers and template entities from YAML, and raises repair issues for references to unavailable entities and actions, and attributes their entities never have.
+description: Spook raises repair issues for Template helpers that reference unavailable entities, actions or attributes, and for template entities from YAML that reference unavailable entities or attributes.
 date: 2026-08-03T00:00:00+02:00
 ---
 

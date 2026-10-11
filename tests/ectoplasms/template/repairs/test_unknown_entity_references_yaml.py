@@ -17,12 +17,17 @@ from homeassistant.setup import async_setup_component
 from custom_components.spook.ectoplasms.template.configuration import (
     EVENT_TEMPLATE_RELOADED,
 )
+from custom_components.spook.ectoplasms.template.repairs import (
+    unknown_entity_references,
+)
 from custom_components.spook.ectoplasms.template.repairs.unknown_entity_references import (
     SpookRepair,
 )
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
@@ -446,6 +451,41 @@ async def test_reload_is_looked_at(
         await hass.async_block_till_done()
 
     await repair._async_inspect_with_cleanup()
+    assert _issue(issue_registry, "sensor.haunted") is None
+
+
+async def test_reloaded_while_describing_is_not_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an entity reloaded while its findings were described is not reported.
+
+    What was found is about a configuration it no longer has. Reloading
+    starts another round, which looks at the new one.
+    """
+    haunted = {"sensor": {"name": "Haunted", "state": "{{ states('sensor.ghost') }}"}}
+    await _setup(hass, haunted)
+    describe = unknown_entity_references.async_describe_unknown_entities
+
+    async def _describing(
+        hass: HomeAssistant, entity_ids: Iterable[str], **kwargs: Any
+    ) -> str:
+        described = await describe(hass, entity_ids, **kwargs)
+        with patch(
+            "homeassistant.config.load_yaml_config_file",
+            return_value={"template": [haunted]},
+        ):
+            await hass.services.async_call("template", "reload", blocking=True)
+            await hass.async_block_till_done()
+        return described
+
+    monkeypatch.setattr(
+        unknown_entity_references, "async_describe_unknown_entities", _describing
+    )
+
+    await SpookRepair(hass).async_inspect()
+
     assert _issue(issue_registry, "sensor.haunted") is None
 
 
