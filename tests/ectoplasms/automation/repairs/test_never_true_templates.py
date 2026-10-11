@@ -174,6 +174,9 @@ async def test_a_condition_that_says_true_is_left_alone(
         # Whitespace and Jinja's own comments print nothing that matters.
         "{# the hall light #}\n  {{ is_state('light.hall', 'on') }}\n",
         "{%- set hall = is_state('light.hall', 'on') -%}\n{{ hall }}",
+        # A test written as a constant that picks the branch printing `true`.
+        "{{ 'true' if true else 'off' }}",
+        "{% if false %}off{% elif true %}true{% else %}off{% endif %}",
     ],
 )
 async def test_conditions_that_can_pass_are_left_alone(
@@ -238,6 +241,13 @@ async def test_text_in_a_branch_is_left_alone(
         ON_OR_OFF,
         "{% if is_state('light.hall', 'on') %}on{% else %}off{% endif %}",
         "{{ is_state('light.hall', 'on') }} and {{ is_state('light.den', 'on') }}",
+        # A branch behind a test written as a constant that never runs.
+        "{{ 'true' if false else 'off' }}",
+        "{{ 'off' if true else 'true' }}",
+        (
+            "{% if false %}true{% elif is_state('light.hall', 'on') %}on"
+            "{% elif true %}off{% else %}true{% endif %}"
+        ),
     ],
 )
 async def test_a_condition_that_never_renders_true_is_reported(
@@ -388,6 +398,49 @@ async def test_home_assistant_ends_a_wait_reading_as_true_once_rendered_again(
         await running
 
     assert [event.data["completed"] for event in fired] == [True]
+
+
+@pytest.mark.parametrize("template", ["on", "{{ 'on' }}"])
+async def test_home_assistant_never_ends_a_wait_that_is_never_rendered_again(
+    hass: HomeAssistant, template: str
+) -> None:
+    """Test why a wait that reads as true but is never rendered again is reported.
+
+    The watch renders it once to start with, and that render never counts.
+    With nothing in it to track, there is no other render, so it times out.
+    """
+    hass.states.async_set("sensor.load", "0")
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "haunted": {
+                    "sequence": [
+                        {"wait_template": template, "timeout": 0.5},
+                        {
+                            "event": "fired",
+                            "event_data": {"completed": "{{ wait.completed }}"},
+                        },
+                    ]
+                }
+            }
+        },
+    )
+    fired = []
+    hass.bus.async_listen("fired", fired.append)
+
+    running = hass.async_create_task(
+        hass.services.async_call("script", "haunted", blocking=True)
+    )
+    await asyncio.sleep(SETTLE)
+    hass.states.async_set("sensor.load", "0.5")
+
+    async with asyncio.timeout(5):
+        await running
+    await hass.async_block_till_done()
+
+    assert [event.data["completed"] for event in fired] == [False]
 
 
 @pytest.mark.parametrize("template", ["on", "true", "1"])

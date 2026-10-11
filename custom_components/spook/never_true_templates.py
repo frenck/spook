@@ -133,6 +133,9 @@ def _expression(node: nodes.Node) -> _Piece:
         # Without an `else`, the other way prints an undefined value, and Home
         # Assistant prints that as nothing.
         otherwise = frozenset({""}) if node.expr2 is None else _expression(node.expr2)
+        if isinstance(node.test, nodes.Const):
+            # A test written as a constant always goes the same way.
+            return _expression(node.expr1) if node.test.value else otherwise
         if (chosen := _expression(node.expr1)) is None or otherwise is None:
             return None
         return chosen | otherwise
@@ -143,13 +146,26 @@ def _expression(node: nodes.Node) -> _Piece:
 def _branches(node: nodes.If) -> _Piece:
     """Return what an `if` can print, whichever branch it takes.
 
-    Every branch counts, whatever its test says: which one runs is only
-    known while running. Without an `else`, printing nothing is one of them.
+    Which branch runs is mostly only known while running, so each one
+    counts. A test written as a constant is the exception: when false its
+    branch never runs, when true the ones after it never do. Without an
+    `else`, printing nothing is one of them.
     """
-    bodies = [node.body, *(branch.body for branch in node.elif_), node.else_]
+    tests = [node.test, *(branch.test for branch in node.elif_)]
+    bodies = [node.body, *(branch.body for branch in node.elif_)]
+
+    reachable: list[list[nodes.Node]] = []
+    for test, body in zip(tests, bodies, strict=True):
+        if not isinstance(test, nodes.Const):
+            reachable.append(body)
+        elif test.value:
+            reachable.append(body)
+            break
+    else:
+        reachable.append(node.else_)
 
     outputs: set[str] = set()
-    for body in bodies:
+    for body in reachable:
         if (pieces := _pieces(body)) is None or (printed := _combined(pieces)) is None:
             return None
         outputs |= printed
