@@ -26,6 +26,8 @@ from tests.ectoplasms.lovelace.repairs.dashboard_helpers import (
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
@@ -497,6 +499,41 @@ async def test_entity_filter_not_comparing_the_state_is_left_alone(
     assert await _states_found(hass, issue_registry, card) is None
 
 
+@pytest.mark.parametrize("filter_key", ["conditions", "state_filter"])
+@pytest.mark.parametrize("place", ["card", "badge"])
+async def test_entity_filter_own_empty_filter_is_not_the_shared_one(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    filter_key: str,
+    place: str,
+) -> None:
+    """Test an entity with an empty filter of its own does not get the shared one.
+
+    The frontend only falls back on a missing filter (`??`), and an empty
+    list is no such thing. The shared filter applies to the kettle alone.
+    """
+    _kitchen_light(hass)
+    give_entity_objects(hass, "switch.kettle", kind=SwitchEntity)
+    hass.states.async_set("switch.kettle", "off")
+    shared = (
+        [{"condition": "state", "state": "On"}]
+        if filter_key == "conditions"
+        else ["On"]
+    )
+    entity_filter = _entity_filter(
+        {"entity": "light.kitchen", filter_key: []},
+        "switch.kettle",
+        **{filter_key: shared},
+    )
+
+    if place == "card":
+        found = await _states_found(hass, issue_registry, entity_filter)
+    else:
+        found = await _states_found(hass, issue_registry, badges=[entity_filter])
+
+    assert found == "- `On` for `switch.kettle` (did you mean `on`?)"
+
+
 async def _recorded_kitchen_light(hass: HomeAssistant) -> None:
     """Make a light the recorder has the whole history of: on, then off."""
     give_entity_objects(hass, "light.kitchen", kind=LightEntity)
@@ -567,21 +604,89 @@ async def test_values_the_frontend_does_not_compare_as_written_are_fine(
 
 
 @pytest.mark.usefixtures("recorder_mock")
-@pytest.mark.parametrize("value", ["1.0", " 12 ", "0x1f", "-Infinity", 3])
+@pytest.mark.parametrize(
+    "value",
+    ["1.0", " 12 ", "0x1f", "0o17", "0b101", ".5", "1e3", "-Infinity", "Infinity", 3],
+)
+@pytest.mark.parametrize(
+    "as_filter",
+    [
+        lambda value: value,
+        lambda value: {"operator": "==", "value": value},
+        lambda value: {"operator": "!=", "value": value},
+    ],
+    ids=["bare", "equal", "not_equal"],
+)
 async def test_state_filter_numbers_are_fine(
-    hass: HomeAssistant, issue_registry: ir.IssueRegistry, value: Any
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    value: Any,
+    as_filter: Callable[[Any], Any],
 ) -> None:
-    """Test a state filter that might be compared as a number is not read."""
+    """Test a state filter that is compared as a number is not read."""
     await _recorded_kitchen_light(hass)
 
     assert (
         await _states_found(
             hass,
             issue_registry,
-            _entity_filter({"entity": "light.kitchen", "state_filter": [value]}),
+            _entity_filter(
+                {"entity": "light.kitchen", "state_filter": [as_filter(value)]}
+            ),
         )
         is None
     )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+@pytest.mark.parametrize("value", ["NaN", "infinity", "1_0", "0xzz"])
+@pytest.mark.parametrize(
+    "as_filter",
+    [lambda value: value, lambda value: {"operator": "==", "value": value}],
+    ids=["bare", "equal"],
+)
+async def test_state_filter_text_python_reads_as_a_number_is_a_state(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    value: str,
+    as_filter: Callable[[Any], Any],
+) -> None:
+    """Test text that `Number()` makes NaN of is compared as written, so judged.
+
+    Python's `float()` reads `NaN`, `infinity` and `1_0` as numbers, and
+    `0xzz` only starts like one.
+    """
+    await _recorded_kitchen_light(hass)
+
+    found = await _states_found(
+        hass,
+        issue_registry,
+        _entity_filter({"entity": "light.kitchen", "state_filter": [as_filter(value)]}),
+    )
+
+    assert found == f"- `{value}` for `light.kitchen`"
+
+
+@pytest.mark.usefixtures("recorder_mock")
+@pytest.mark.parametrize("operator", ["in", "not in"])
+async def test_state_filter_number_in_a_list_is_a_state(
+    hass: HomeAssistant, issue_registry: ir.IssueRegistry, operator: str
+) -> None:
+    """Test `"1.0"` in a list is judged: membership compares text, never numbers."""
+    await _recorded_kitchen_light(hass)
+
+    found = await _states_found(
+        hass,
+        issue_registry,
+        _entity_filter(
+            {
+                "entity": "light.kitchen",
+                "state_filter": [{"operator": operator, "value": ["on", "1.0"]}],
+            }
+        ),
+    )
+
+    assert found == "- `1.0` for `light.kitchen`"
 
 
 async def test_dashboard_saved_meanwhile_is_left_for_the_next_round(

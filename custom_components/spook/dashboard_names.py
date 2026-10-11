@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import valid_entity_id
 
+from .dashboard_extraction import javascript_number, javascript_trim
 from .reference_extraction import (
     _attribute_reference,
     _is_literal_attribute,
@@ -180,7 +181,9 @@ def _compared_with_an_entity(state: str) -> bool:
     the shape, but the frontend reads it as the number it is
     (`src/common/condition/translate.ts`), and no entity has that ID.
     """
-    return bool(_FRONTEND_ENTITY_ID.fullmatch(state)) and not _looks_numeric(state)
+    return (
+        bool(_FRONTEND_ENTITY_ID.fullmatch(state)) and javascript_number(state) is None
+    )
 
 
 def _condition_leaves(
@@ -233,26 +236,19 @@ def _add_conditions(found: _Found, conditions: Any, contexts: list[str | None]) 
         found.add(kind, pairs)
 
 
-def _looks_numeric(value: str) -> bool:
-    """Return whether JavaScript might read a value as a number.
+def _compared_as_number(value: str) -> bool:
+    """Return whether `==` and `!=` of the entity filter take a value as a number.
 
-    The entity filter compares two numbers as numbers, so `"1.0"` matches a
-    state of `1`. Generous on purpose: anything Python reads as a number, and
-    the spellings only JavaScript does.
+    Two numbers are compared as numbers, so `"1.0"` matches a state of `1`.
+    Blank is no number there, even though `Number()` makes it 0.
     """
-    text = value.strip().lower()
-    if text.startswith(("0x", "0o", "0b")) or text.lstrip("+-") == "infinity":
-        return True
-    try:
-        float(text)
-    except ValueError:
-        return False
-    return True
+    return bool(javascript_trim(value)) and javascript_number(value) is not None
 
 
 # The state filter operators that compare a state as it is written out. `in`
 # with text is a substring check, `"on,off"` matches `n,o`, so only its list
-# form counts. The rest compare by order or pattern.
+# form counts. The rest compare by order or pattern. Only the equality ones
+# compare two numbers as numbers.
 _EQUALITY_OPERATORS = frozenset({"==", "!="})
 _MEMBERSHIP_OPERATORS = frozenset({"in", "not in"})
 
@@ -268,31 +264,24 @@ def _state_filter_names(state_filter: Any) -> Iterator[tuple[int, str, str]]:
         return
 
     for index, item in enumerate(state_filter):
-        if isinstance(item, str):
-            if (state := _name(item)) and not _looks_numeric(state):
-                yield index, _STATES, state
-            continue
-        if not isinstance(item, dict):
-            continue
+        # Text or a number on its own is compared with `==`.
+        config = item if isinstance(item, dict) else {"operator": "==", "value": item}
 
-        if "attribute" in item:
-            if attribute := _name(item["attribute"]):
+        if "attribute" in config:
+            if attribute := _name(config["attribute"]):
                 yield index, _ATTRIBUTES, attribute
             continue
 
-        for state in _compared_values(item):
-            if (state := _name(state)) and not _looks_numeric(state):
+        operator, value = config.get("operator"), config.get("value")
+        if operator in _EQUALITY_OPERATORS:
+            if (state := _name(value)) and not _compared_as_number(state):
                 yield index, _STATES, state
-
-
-def _compared_values(state_filter: dict[str, Any]) -> list[Any]:
-    """Return what a state filter compares the state with, written out."""
-    operator, value = state_filter.get("operator"), state_filter.get("value")
-    if operator in _EQUALITY_OPERATORS:
-        return [value]
-    if operator in _MEMBERSHIP_OPERATORS and isinstance(value, list):
-        return value
-    return []
+        elif operator in _MEMBERSHIP_OPERATORS and isinstance(value, list):
+            # Each member is turned into text and looked for as it is, so
+            # `"1.0"` in a list only ever matches a state of `1.0`.
+            for member in value:
+                if state := _name(member):
+                    yield index, _STATES, state
 
 
 def _add_state_filter(found: _Found, state_filter: Any, contexts: list[str]) -> None:
@@ -315,15 +304,28 @@ def _filters_applied(
     of its own while conditions apply to it as well: the card takes the state
     filter, the badge the conditions.
     """
-    conditions = entity_config.get("conditions") or card.get("conditions")
+    # The card's filter only stands in for a missing one (`??`). An empty
+    # list is a filter of its own, and true to JavaScript like any list.
+    conditions = entity_config.get("conditions")
+    if conditions is None:
+        conditions = card.get("conditions")
     own_state_filter = entity_config.get("state_filter")
-    state_filter = own_state_filter or card.get("state_filter")
+    state_filter = own_state_filter
+    if state_filter is None:
+        state_filter = card.get("state_filter")
 
-    if conditions and (conditions_first or not own_state_filter):
+    if _javascript_truthy(conditions) and (
+        conditions_first or not _javascript_truthy(own_state_filter)
+    ):
         return "conditions", conditions
-    if state_filter:
+    if _javascript_truthy(state_filter):
         return "state_filter", state_filter
     return None
+
+
+def _javascript_truthy(value: Any) -> bool:
+    """Return whether JavaScript takes a value as true, an empty list too."""
+    return value not in _JAVASCRIPT_FALSY
 
 
 def _add_entity_filter(found: _Found, node: dict[str, Any]) -> None:
