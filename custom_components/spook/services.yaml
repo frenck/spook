@@ -414,7 +414,8 @@ homeassistant_update_area:
         removes them all.
       required: false
       selector:
-        object:
+        text:
+          multiple: true
     floor_id:
       name: Floor ID
       description: The ID of the floor the area is on.

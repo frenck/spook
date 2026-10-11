@@ -188,6 +188,19 @@ async def test_aliases_and_labels_are_replaced_and_an_empty_list_clears_them(
     assert updated.labels == set()
 
 
+async def test_aliases_are_trimmed_and_empty_ones_dropped(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+) -> None:
+    """Cleaned the way core cleans the ones the UI sends."""
+    area = area_registry.async_create("Living room")
+    await _setup(hass)
+
+    await _update(hass, area_id=area.id, aliases=[" Lounge ", "", "   ", "Den"])
+
+    assert area_registry.async_get_area(area.id).aliases == {"Lounge", "Den"}
+
+
 async def test_an_area_that_does_not_exist_is_refused(
     hass: HomeAssistant,
 ) -> None:

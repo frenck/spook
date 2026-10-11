@@ -759,7 +759,7 @@ Data:
 
 - `area_id` (required, area): The ID of the area to update.
 - `name` (optional, text): New name for the area.
-- `aliases` (optional, object): The aliases for the area. Replaces the ones it has, an empty list removes them all.
+- `aliases` (optional, text, one or a list): The aliases for the area. Replaces the ones it has, an empty list removes them all.
 - `floor_id` (optional, floor): The ID of the floor the area is on.
 - `icon` (optional, icon): New icon to use for the area.
 - `picture` (optional, text): The URL or path of a picture for the area.

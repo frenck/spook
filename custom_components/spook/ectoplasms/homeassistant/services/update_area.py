@@ -18,6 +18,7 @@ from homeassistant.helpers.typing import UNDEFINED
 from ....const import DOMAIN as SPOOK_DOMAIN
 from ....errors import area_not_found, entity_not_found, floor_not_found
 from ....services import AbstractSpookAdminService
+from ..entity_registry_entries import clean_aliases
 from ..labels import async_check_labels_exist
 
 if TYPE_CHECKING:
@@ -85,8 +86,10 @@ class SpookService(AbstractSpookAdminService):
 
         self._async_check_references(area_id, changes)
 
+        # Trimmed, and the empty ones dropped, like core does for the UI. An
+        # alias of only spaces is one nobody can say or remove from the UI.
         if "aliases" in changes:
-            changes["aliases"] = set(changes["aliases"])
+            changes["aliases"] = set(clean_aliases(changes["aliases"]))
         if "labels" in changes:
             changes["labels"] = set(changes["labels"])
 
