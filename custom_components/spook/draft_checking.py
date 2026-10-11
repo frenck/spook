@@ -42,6 +42,7 @@ from .ectoplasms.automation.repairs import (
     unknown_state_references as automation_states,
     unknown_trigger_id_references as automation_trigger_ids,
     unknown_trigger_references as automation_triggers,
+    unknown_user_references as automation_users,
 )
 from .ectoplasms.lovelace.entity_names import async_check_dashboard_draft
 from .ectoplasms.script.repairs import (
@@ -107,6 +108,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         automation_templates,
         automation_trigger_ids,
         automation_triggers,
+        automation_users,
     ),
     script.DOMAIN: (
         script_areas,
