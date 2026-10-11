@@ -808,6 +808,53 @@ def extract_navigation_paths_from_dashboard_node(node: Any) -> set[str]:
     return paths
 
 
+# Every card, row, badge, element and view of the frontend's own takes its
+# icon under this one key.
+_ICON_KEY = "icon"
+
+
+def _walk_icons(node: Any, icons: set[str], *, in_custom: bool) -> None:
+    """Recursively collect the icons a configuration node shows.
+
+    A third-party card draws its own config, and can do anything with an
+    `icon` it is handed, so that is its business. Whatever has a `type` of
+    the frontend's own inside one, like a card in a custom stack, is drawn by
+    the frontend again and is looked at.
+    """
+    if isinstance(node, list):
+        for item in node:
+            _walk_icons(item, icons, in_custom=in_custom)
+        return
+
+    if not isinstance(node, dict):
+        return
+
+    if isinstance(node_type := node.get("type"), str):
+        in_custom = node_type.startswith(_CUSTOM_PREFIX)
+
+    if not in_custom and isinstance(icon := node.get(_ICON_KEY), str):
+        icons.add(icon)
+
+    # What a performed action hands to Home Assistant is the action's own
+    # data, not something the dashboard draws.
+    if node.get("action") in _PERFORMED_ACTIONS:
+        node = {
+            key: value
+            for key, value in node.items()
+            if key not in _PERFORMED_ACTION_PAYLOAD_KEYS
+        }
+
+    for child in _worth_descending_into(node):
+        _walk_icons(child, icons, in_custom=in_custom)
+
+
+def extract_icons_from_dashboard_node(node: Any) -> set[str]:
+    """Return the icons shown anywhere in a dashboard node."""
+    icons: set[str] = set()
+    _walk_icons(node, icons, in_custom=False)
+    return icons
+
+
 # What `Number()` and `trim()` in JavaScript take for whitespace: tab, line
 # and form feeds, the byte order mark, every space separator and the line
 # terminators. Python's own `\s` and `strip()` take a few more, like the
