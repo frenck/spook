@@ -726,13 +726,13 @@ class CheckReferencesTool(_SpookTool):
         "Check a draft automation, script, scene or dashboard card before "
         "saving it, the way Spook's repairs would check it after: entities, "
         "actions, devices, areas, floors, labels, triggers, conditions and "
-        "integration entries that do not exist, attributes an entity never "
-        "has, and states an entity is never in, or values its attributes "
-        "never have. Missing "
-        "entities come with what Spook knows, like a likely rename, and the "
-        "rest with the one most likely meant. A field that takes an entity "
-        "ID but holds something that is not one is listed under "
-        "not_entity_ids. An empty result means the draft is clean."
+        "integration entries that do not exist, users that were removed, "
+        "attributes an entity never has, and states an entity is never in, "
+        "or values its attributes never have. Missing entities come with what "
+        "Spook knows, like a likely rename, and the rest with the one most "
+        "likely meant. A field that takes an entity ID but holds something "
+        "that is not one is listed under not_entity_ids. An empty result "
+        "means the draft is clean."
     )
     annotations = _READ_ONLY
     parameters = probatio.Schema(

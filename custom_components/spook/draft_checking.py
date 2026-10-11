@@ -65,6 +65,7 @@ from .entity_filtering import (
 )
 from .entity_suggestions import async_warm_rename_suggestions
 from .repairs import AbstractSpookUnknownEntityNamesRepair
+from .user_references import async_get_user_ids, extract_user_ids_from_dashboard_node
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -272,6 +273,8 @@ async def _async_check_dashboard(
         "services": async_filter_known_services(
             hass, services=extract_actions_from_dashboard_node(config)
         ),
+        "users": extract_user_ids_from_dashboard_node(config)
+        - await async_get_user_ids(hass),
     }
     return {
         **{label: sorted(found) for label, found in checks.items() if found},

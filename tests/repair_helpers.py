@@ -112,3 +112,17 @@ async def async_setup_template_automation(
         },
     )
     await hass.async_block_till_done()
+
+
+async def async_removed_user_id(hass: HomeAssistant) -> str:
+    """Return the ID of a user that existed, and was removed.
+
+    The first person Home Assistant gets is its owner, and an owner cannot be
+    removed, so there is one before the user that goes.
+    """
+    if not any(user.is_owner for user in await hass.auth.async_get_users()):
+        await hass.auth.async_create_user("Owner")
+
+    user = await hass.auth.async_create_user("Casper")
+    await hass.auth.async_remove_user(user)
+    return user.id
