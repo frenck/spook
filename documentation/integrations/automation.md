@@ -219,6 +219,10 @@ The same goes for an entity, device, area, floor or label that only disabled ste
 
 Automations are inspected for the use of areas. If an automation is targeting an area in one of its actions that do not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the area that is referenced but not found.
 
+Templates are read as well, for `area_entities` and `area_devices`, called or as a filter. Handed an area that does not exist, these quietly give an empty list, so an action targeting `{{ area_entities('Living room') }}` does nothing at all once the area is renamed. Spook looks the value up the way Home Assistant does: an area ID, or the name or an alias of an area, in any case. An entity or device ID is reported too. These take nothing but an area, so `area_entities('light.kitchen')` never finds anything; `area_entities(area_id('light.kitchen'))` gives what is in the area of that light.
+
+Only a value written out in the template is checked. One worked out while running, from a variable or by joining pieces, is not, and neither is a lookup called by a name the automation gives a meaning of its own, as a variable.
+
 ```{figure} ../images/integrations/automation/unknown_areas.png
 :name: Spook found an issue with an automation that is using a non-existing area.
 :alt: Screenshot showing a repair raised by Spook for an automation.
@@ -330,11 +334,15 @@ To resolve the raised issue, edit the automation and replace these with icons th
 
 Automations are inspected for the use of {term}`floors <floor>`. If an automation is targeting a floor in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the floor that is referenced but not found.
 
+Templates are read as well, for `floor_areas` and `floor_entities`, called or as a filter, in the same way as for areas: a floor ID, or the name or an alias of a floor, in any case. Home Assistant tries the value as an area first, though. When it is the name or an alias of an area that sits on a floor, it is taken as a floor ID, and nothing is found. So with an area called Attic on a floor, `floor_areas('Attic')` finds nothing, even when there is a floor called Attic, and Spook reports it. Use the ID of the floor instead, like `floor_areas('attic')`. An entity or device ID never finds a floor either.
+
 To resolve the raised issue, you can either remove the reference to the non-existing floor or fix the referenced floor. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown referenced labels
 
 Automations are inspected for the use of {term}`labels <label>`. If an automation is targeting a label that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the label that is referenced but not found.
+
+Templates are read as well, for `label_areas`, `label_devices` and `label_entities`, called or as a filter, in the same way as for areas: a label ID, or the name of a label, in any case. Labels have no aliases.
 
 To resolve the raised issue, you can either remove the reference to the non-existing label or fix the referenced label. Spook will automatically remove the repair issue once the issue is fixed.
 

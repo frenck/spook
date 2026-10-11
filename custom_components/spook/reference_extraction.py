@@ -33,9 +33,15 @@ from homeassistant.core import callback, valid_entity_id
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .const import LOGGER
+from .entity_filtering import (
+    async_template_areas_not_found,
+    async_template_floors_not_found,
+    async_template_labels_not_found,
+)
 from .template_extraction import (
     KNOWN_DOMAINS,
     extract_attribute_pairs_from_template,
+    extract_registry_lookups_from_config,
     extract_state_pairs_from_template,
     extract_template_strings_from_config,
     is_template_string,
@@ -813,6 +819,39 @@ def names_given_to_templates(config: Any) -> frozenset[str]:
 
     _collect_names(config, names)
     return frozenset(names)
+
+
+# How each kind of template lookup is resolved, the way Home Assistant does,
+# and where the targets of that kind are kept.
+_TEMPLATE_LOOKUPS_NOT_FOUND = {
+    "areas": async_template_areas_not_found,
+    "floors": async_template_floors_not_found,
+    "labels": async_template_labels_not_found,
+}
+_TARGETS_OF_KIND = {"areas": "area_ids", "floors": "floor_ids", "labels": "label_ids"}
+
+
+@callback
+def async_raw_config_references(
+    hass: HomeAssistant, config: Any, kind: Literal["areas", "floors", "labels"]
+) -> set[str]:
+    """Return the areas, floors or labels a raw configuration names.
+
+    Every target, wherever it nests, like `extract_targets_from_config`.
+    And what its templates hand `area_entities`, `floor_areas`,
+    `label_entities` and friends, as written, when that finds no area, floor
+    or label the way the lookup resolves it. What does find one is left out:
+    a name is no ID, and would read as unknown. A call by a name the
+    configuration gives its templates, as a variable or a field, is not
+    Home Assistant's lookup.
+    """
+    targets: set[str] = getattr(
+        extract_targets_from_config(config), _TARGETS_OF_KIND[kind]
+    )
+    shadowed = names_given_to_templates(config)
+    return targets | _TEMPLATE_LOOKUPS_NOT_FOUND[kind](
+        hass, extract_registry_lookups_from_config(config, kind, shadowed)
+    )
 
 
 def extract_attribute_references_from_config(config: Any) -> NamedReferences:

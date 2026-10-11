@@ -45,6 +45,8 @@ An entity, device, area, floor or label that only disabled steps (`enabled: fals
 
 Scripts are inspected for the use of areas. If a script is targeting an area in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the area that is referenced but not found.
 
+As with automations, templates are read as well, for `area_entities` and `area_devices`: an area ID, or the name or an alias of an area, in any case. An entity or device ID is reported too, as these take nothing but an area; `area_entities(area_id('light.kitchen'))` gives what is in the area of that light. Only a value written out in the template is checked, and not a lookup called by a name the script gives a meaning of its own, as a variable or a field.
+
 ```{figure} ../images/integrations/script/unknown_area.png
 :name: Spook found an issue with a script that is using a non-existing area.
 :alt: Screenshot showing a repair raised by Spook for a script.
@@ -156,11 +158,15 @@ To resolve the raised issue, edit the script and replace these with icons that e
 
 Scripts are inspected for the use of {term}`floors <floor>`. If a script is targeting a floor in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the floor that is referenced but not found.
 
+As with automations, templates are read as well, for `floor_areas` and `floor_entities`: a floor ID, or the name or an alias of a floor, in any case. Home Assistant tries the value as an area first: the name or an alias of an area on a floor is taken as a floor ID, and finds nothing. So with an area called Attic on a floor, `floor_areas('Attic')` finds nothing, even when there is a floor called Attic, and Spook reports it. Use the ID of the floor instead, like `floor_areas('attic')`.
+
 To resolve the raised issue, you can either remove the reference to the non-existing floor or fix the referenced floor. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown referenced labels
 
 Scripts are inspected for the use of {term}`labels <label>`. If a script is targeting a label that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the label that is referenced but not found.
+
+As with automations, templates are read as well, for `label_areas`, `label_devices` and `label_entities`: a label ID, or the name of a label, in any case.
 
 To resolve the raised issue, you can either remove the reference to the non-existing label or fix the referenced label. Spook will automatically remove the repair issue once the issue is fixed.
 
