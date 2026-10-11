@@ -885,6 +885,46 @@
                     "changed": "Ovi senzori su ponovo dostupni ili podešavanja sada ukazuju na drugu lokaciju otkako ih je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             }
+        },
+        "lovelace_unknown_view_references": {
+            "title": "Nepoznati prikazi na koje vodi kontrolna tabla: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla vodi do sledećih prikaza koji ne postoje:\n\n{paths}\n\n\n\nDugme ili kartica koja vodi do nekog od njih će umesto toga otvoriti prvi prikaz te kontrolne table, bez ikakvog upozorenja. Ovo se često dešava kada je prikaz preimenovan, pomeren ili uklonjen. Da biste ispravili ovu grešku, uredite [kontrolnu tablu]({edit}) i usmerite ih na prikaz koji postoji.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_attribute_references": {
+            "title": "Nepoznati atributi u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo unaokolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće atribute koje njeni entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima.\n\n{attributes}\n\nPokretač ili uslov koji čeka atribut koji se nikada ne pojavljuje nikada se neće aktivirati, a da o tome ne dobijate nikakvo obaveštenje. Šablon koji ga čita neće dobiti nikakvu vrednost. Da biste ovo popravili, [uredite automatizaciju]({edit}) i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_attribute_references": {
+            "title": "Nepoznati atributi na kontrolnoj tabli: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla prikazuje ili proverava sledeće atribute koje njeni entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima:\n\n{attributes}\n\n\n\nKartica koja prikazuje atribut koji se nikada ne pojavljuje ostaće prazna, a uslov vidljivosti ili filter koji ga proverava nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Da biste ovo popravili, uredite kontrolnu tablu [{edit}] i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_attribute_references": {
+            "title": "Nepoznati atributi u: {script}",
+            "description": "Spook je pronašao duha u Vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće atribute koje njeni entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima:\n\n{attributes}\n\n\n\nPokretač ili uslov koji čeka atribut koji se nikada ne pojavljuje nikada se neće aktivirati, a da o tome ne dobijate nikakvo obaveštenje. Šablon koji ga čita neće dobiti nikakvu vrednost. Da biste ovo popravili, uredite skriptu [{edit}] i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "template_unknown_attribute_references": {
+            "title": "Nepoznati atributi u šablonskom pomoćniku: {helper}",
+            "description": "Spook je pronašao duha u vašim šablonskim pomoćnicima 👻\n\nDok je lebdeo okolo, Spook je naišao na sledećeg šablonskog pomoćnika:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nOvaj šablonski pomoćnik koristi sledeće atribute koje njegovi entiteti nemaju: ni u ovom trenutku, niti kao opciju koju ta vrsta entiteta uopšte nudi, a nema ih ni bilo gde u istoriji zapisa o njima:\n\n{attributes}\n\n\n\nŠablon koji čita atribut koji se nikada ne pojavljuje neće dobiti nikakvu vrednost, a uslov u jednoj od njegovih akcija koji čeka na taj atribut nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Da biste ovo popravili, [uredite šablonskog pomoćnika]({edit}) i upotrebite atribut koji taj entitet ima.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_state_references": {
+            "title": "Nepoznata stanja u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo unaokolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija čeka ili proverava sledeća stanja u kojima se njeni entiteti nikada ne nalaze: niti ta vrsta entiteta može poprimiti takvo stanje, niti je ono među opcijama koje entitet nudi, a nema ga ni bilo gde u istoriji zapisa o njima:\n\n{states}\n\n\n\nPokretač koji čeka stanje koje se nikada ne aktivira neće se ni izvršiti, uslov koji ga proverava nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Stanja razlikuju velika i mala slova: „On“ nije isto što i „on“. Da biste ovo popravili, [uredite automatizaciju]({edit}) i upotrebite stanje u kojem taj entitet može biti.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_state_references": {
+            "title": "Nepoznata stanja na kontrolnoj tabli: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla proverava sledeća stanja u kojima se njeni entiteti nikada ne nalaze: niti ta vrsta entiteta može poprimiti takvo stanje, niti je ono među opcijama koje entitet nudi, a nema ga ni bilo gde u istoriji zapisa o njima:\n\n{states}\n\n\n\nUslov vidljivosti ili filter koji proverava stanje koje ne postoji nikada neće proći, a slika podešena za to stanje nikada se neće prikazati, a da o tome ne dobijate nikakvo obaveštenje. Stanja razlikuju velika i mala slova: „On“ nije isto što i „on“. Da biste ovo popravili, uredite [kontrolnu tablu]({edit}) i upotrebite stanje u kojem taj entitet može biti.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_state_references": {
+            "title": "Nepoznata stanja u: {script}",
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta čeka ili proverava sledeća stanja u kojima se njeni entiteti nikada ne nalaze: niti ta vrsta entiteta može poprimiti takvo stanje, niti je ono među opcijama koje entitet nudi, a nema ga ni bilo gde u istoriji zapisa o njima:\n\n{states}\n\n\n\nPokretač koji čeka stanje koje se nikada ne aktivira neće se ni izvršiti, uslov koji ga proverava nikada neće proći, a da o tome ne dobijate nikakvo obaveštenje. Stanja razlikuju velika i mala slova: „On“ nije isto što i „on“. Da biste ovo popravili, [uredite skriptu]({edit}) i upotrebite stanje u kojem taj entitet može biti.\n\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Nepoznati ID pokretača u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija proverava sledeće ID-jeve pokretača (trigger ID), koje nijedan od njenih sopstvenih pokretača nema:\n\n{trigger_ids}\n\n\n\nProvera ID-ja koji nijedan pokretač ne prosleđuje uvek daje isti rezultat: uslov pokretača koji se zahteva nikada nije ispunjen, pa se blok koji on štiti nikada ne izvršava, a da o tome ne dobijate nikakvo obaveštenje. ID-jevi pokretača razlikuju velika i mala slova, a pokretač bez sopstvenog ID-ja identifikuje se na osnovu svoje pozicije na listi, počevši od „0“. Da biste ovo popravili, [uredite automatizaciju]]({edit}) i upotrebite ID jednog od njenih pokretača, ili dodelite pokretaču ID koji automatizacija zahteva\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "assist_duplicate_names": {
+            "title": "Asist ne može da ih razlikuje: {name}",
+            "description": "Spook je pronašao duha u vašim glasovnim pomoćnicima 👻\n\nSledeći entiteti su izloženi funkciji Assist i svi odgovaraju na ime {name}:\n\n{entities}\n\nKada su imena ista, Assist ih razlikuje samo po prostoriji: onoj koju navedete ili onoj u kojoj se nalazi vaš glasovni satelit. Neki od njih dele istu prostoriju ili uopšte nemaju dodeljenu prostoriju, pa Asist ne može da ih prepozna po tom imenu sa bilo kog mesta. Zahtev za {name} tada ne uspeva, a da pritom ne dobijate obaveštenje o tome koji entiteti prave problem.\n\nDa biste ovo ispravili, dajte svakom entitetu sopstveno ime ili pseudonim, ili ih premestite u različite prostorije. Pseudonime entiteta, kao i to da li ih Assist uopšte vidi, možete promeniti u odeljku [Izloženi entiteti](/config/voice-assistants/expose). Prostorije se podešavaju na stranici sa [prostorijama](/config/areas/dashboard).\n\nSpook 👻 Vaš pomoćnik."
         }
     },
     "services": {
