@@ -614,19 +614,21 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
     entity_ids: set[str],
     raw_config: Any,
     *,
-    named_in: Callable[[dict[str, Any]], Awaitable[set[str]]],
+    named_in: Callable[[dict[str, Any], frozenset[str]], Awaitable[set[str]]],
     known_entity_ids: set[str],
     known_services: set[str],
 ) -> set[str]:
     """Return which of what an automation or script names does not exist.
 
     `entity_ids` is everything gathered for it, Home Assistant's own list
-    included, and `named_in` reads a configuration the way the repair does.
-    Shared by the automation and script repairs, which settle it the same way.
+    included, and `named_in` reads a configuration the way the repair does,
+    with the names the whole configuration gives its templates. Shared by the
+    automation and script repairs, which settle it the same way.
     """
     entity_ids = set(entity_ids)
+    shadowed = names_given_to_templates(raw_config)
     if isinstance(raw_config, dict):
-        named = await named_in(raw_config)
+        named = await named_in(raw_config, shadowed)
 
         # Home Assistant's own list takes the `entity_id` of somebody's own
         # event too, which is data from the sender, and the made-up entity
@@ -640,7 +642,9 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
         # once those are pruned. Home Assistant's own list also reads keys
         # the repair does not, like the `at` of a time trigger. Whatever only
         # a disabled part holds goes as well, whichever key it sits under.
-        still_named = await named_in(without_disabled_steps(raw_config))
+        # The names stay those of all of it: a variable set in a disabled
+        # step still hides the lookup in a template that runs.
+        still_named = await named_in(without_disabled_steps(raw_config), shadowed)
         entity_ids -= (
             named | mentioned_only_in_disabled_steps(raw_config)
         ) - still_named
@@ -650,7 +654,7 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
         entity_ids=entity_ids,
         known_entity_ids=known_entity_ids,
         known_services=known_services,
-        shadowed=names_given_to_templates(raw_config),
+        shadowed=shadowed,
     )
 
     # Where an entity ID goes, something that is no entity ID at all finds

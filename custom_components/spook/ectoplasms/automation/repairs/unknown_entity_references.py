@@ -323,21 +323,24 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         )
         self._known_services = async_get_all_services(self.hass)
 
-    async def _async_named_in(self, config: dict[str, Any]) -> set[str]:
+    async def _async_named_in(
+        self, config: dict[str, Any], shadowed: frozenset[str]
+    ) -> set[str]:
         """Return the entities a configuration names, the way this repair reads it.
 
         The same reading the report is built from, structure and templates
         alike, so comparing it with and without the disabled steps leaves out
-        exactly what only those name.
+        exactly what only those name. ``shadowed`` comes from the whole
+        configuration, as `config` can be one without its disabled steps.
         """
         named = await extract_entities_from_automation_config(
-            self.hass, config, self._known_services
+            self.hass, config, self._known_services, shadowed
         )
         named |= await async_extract_entities_from_config(
             self.hass,
             without_never_rendered(config),
             self._known_services,
-            names_given_to_templates(config),
+            shadowed,
         )
         return named
 

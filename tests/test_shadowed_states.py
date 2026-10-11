@@ -120,6 +120,28 @@ async def test_spelled_out_after_states_is_read(hass: HomeAssistant, kind: str) 
 
 
 @pytest.mark.parametrize("kind", _KINDS)
+async def test_only_the_root_states_spells_out_an_entity(
+    hass: HomeAssistant, kind: str
+) -> None:
+    """Test `States.` and `obj.states.` are no lookups of Home Assistant's.
+
+    Jinja names are case sensitive, and `obj.states` is an attribute of
+    `obj`. The real `states.` still is, with an object ID in any case: Home
+    Assistant tries that in lower case too.
+    """
+    steps = [
+        _render("{{ States.light.ghost_capital.state }}"),
+        _render(
+            "{% set obj = {'states': " + _OWN_STATES_VALUE + "} %}"
+            "{{ obj.states.light.ghost_attribute.state }}"
+        ),
+        _render("{{ states.light.Ghost_Mixed.state }}"),
+    ]
+
+    assert await _async_reported(hass, kind, steps) == {"light.ghost_mixed"}
+
+
+@pytest.mark.parametrize("kind", _KINDS)
 @pytest.mark.parametrize(
     "template",
     [
@@ -197,6 +219,29 @@ async def test_what_only_a_disabled_step_names_is_still_left_out(
         await _async_reported(hass, kind, steps, variables={"states": _OWN_STATES})
         == set()
     )
+
+
+@pytest.mark.parametrize("kind", _KINDS)
+async def test_a_variable_in_a_disabled_step_hides_the_lookup_when_pruned(
+    hass: HomeAssistant, kind: str
+) -> None:
+    """Test the names come from all of it, read without disabled steps too.
+
+    The only `states` of its own is set in a parked step. Taken from what is
+    left once that is pruned, `states.light.ghost` would bring back the
+    target only the other parked step holds.
+    """
+    steps = [
+        {"variables": {"states": _OWN_STATES}, "enabled": False},
+        _render(_SPELLED_OUT),
+        {
+            "action": "homeassistant.turn_on",
+            "target": {"entity_id": "light.ghost"},
+            "enabled": False,
+        },
+    ]
+
+    assert await _async_reported(hass, kind, steps) == set()
 
 
 @pytest.mark.parametrize("kind", _KINDS)

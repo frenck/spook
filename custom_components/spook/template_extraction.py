@@ -338,42 +338,48 @@ def _is_concatenated_template_match(
     return before_literal.endswith(_GLUE) or after_literal.startswith(_GLUE)
 
 
-def _filter_and_test_name_offsets(template_str: str) -> frozenset[int]:
-    """Return where each name Jinja reads as the name of a filter or test starts.
+def _states_lookup_offsets(template_str: str) -> frozenset[int] | None:
+    """Return where each `states` Jinja reads as Home Assistant's lookup starts.
 
-    That is the name right after a `|`, an `is` or an `is not`. Jinja's
-    parser reads a dotted name there whole, as one filter or test name: in
+    The exact name, as Jinja names are case sensitive, and not right after
+    a dot: `obj.states` is an attribute of `obj`. Not the name right after
+    a `|`, an `is` or an `is not` either. Jinja's parser reads a dotted name
+    there whole, as one filter or test name: in
     `'x' | states.light.kitchen.state` that is a filter called
     `states.light.kitchen.state`, which Home Assistant does not have, and
     no lookup of `light.kitchen`.
+
+    A template Jinja cannot read has no answer, and is read by the source
+    alone.
     """
     lexed = _lexed(template_str)
     if lexed is None:
-        return frozenset()
+        return None
 
     tokens = [token for token in lexed if token[1] != "whitespace"]
     return frozenset(
         start
-        for index, (start, kind, _value) in enumerate(tokens)
+        for index, (start, kind, value) in enumerate(tokens)
         if kind == "name"
-        and (
-            _is_raw(tokens, index - 1, "operator", ("|",))
-            or _is_raw(tokens, index - 1, "name", ("is",))
-            or (
-                _is_raw(tokens, index - 1, "name", ("not",))
-                and _is_raw(tokens, index - 2, "name", ("is",))
-            )
+        and value == _STATES
+        and not _is_raw(tokens, index - 1, "operator", (".", "|"))
+        and not _is_raw(tokens, index - 1, "name", ("is",))
+        and not (
+            _is_raw(tokens, index - 1, "name", ("not",))
+            and _is_raw(tokens, index - 2, "name", ("is",))
         )
     )
 
 
-def _is_filter_or_test_name_match(
-    match: re.Match[str], filter_and_test_name_offsets: frozenset[int]
+def _is_no_states_lookup_match(
+    match: re.Match[str], states_lookup_offsets: frozenset[int] | None
 ) -> bool:
-    """Return if a `states.domain.entity` match is a filter or test name."""
+    """Return if a `states.domain.entity` match starts at no `states` lookup."""
     if len(match.groups()) != _STATES_DOMAIN_ENTITY_GROUPS:
         return False
-    return match.start() in filter_and_test_name_offsets
+    if states_lookup_offsets is None:
+        return False
+    return match.start() not in states_lookup_offsets
 
 
 def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:
@@ -1334,9 +1340,7 @@ def _extract_entity_candidates_from_template(
     )
     text_argument_offsets = _text_argument_offsets(template_without_comments)
     glued_literals = _glued_literals(template_without_comments)
-    filter_and_test_name_offsets = _filter_and_test_name_offsets(
-        template_without_comments
-    )
+    states_lookup_offsets = _states_lookup_offsets(template_without_comments)
     # `states.light.kitchen` is no literal, only names: when `states` is the
     # template's or the configuration's own, it names no entity at all. A
     # literal is still read, whatever it is handed to, just like one in
@@ -1359,7 +1363,7 @@ def _extract_entity_candidates_from_template(
                 or _is_jinja_import_match(template_without_comments, match)
                 or _is_string_method_argument_match(template_without_comments, match)
                 or _is_text_argument_match(match, text_argument_offsets)
-                or _is_filter_or_test_name_match(match, filter_and_test_name_offsets)
+                or _is_no_states_lookup_match(match, states_lookup_offsets)
             ):
                 continue
 
