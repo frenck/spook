@@ -2562,6 +2562,43 @@ schedule_delete:
           filter:
             - domain: schedule
 
+schedule_set_day:
+  name: Set the time blocks of a day 👻
+  description: >-
+    Replaces the time blocks of one or more days of a schedule helper made in
+    the UI. Schedules set up in YAML cannot be changed by Spook.
+  target:
+    entity:
+      domain: schedule
+  fields:
+    day:
+      name: Day
+      description: The day or days of the week to set the time blocks of.
+      required: true
+      selector:
+        select:
+          multiple: true
+          translation_key: schedule_day
+          options:
+            - monday
+            - tuesday
+            - wednesday
+            - thursday
+            - friday
+            - saturday
+            - sunday
+    blocks:
+      name: Time blocks
+      description: >-
+        The time blocks the schedule is on during those days, each with a from
+        and a to time, and optional data it shows as attributes while it is
+        on. These replace the blocks the days had. An empty list leaves the
+        days off all day.
+      required: true
+      example: '[{"from": "07:00:00", "to": "09:00:00"}]'
+      selector:
+        object:
+
 person_add_device_tracker:
   name: Add a device tracker 👻
   description: >-

@@ -1410,6 +1410,19 @@ Data:
 
 Documentation: https://spook.boo/schedule#delete-a-schedule
 
+### `schedule.set_day`: Set the time blocks of a day
+
+Replaces the time blocks of one or more days of a schedule helper made in the UI. Schedules set up in YAML cannot be changed by Spook.
+
+Target: `schedule` entities, or the devices, areas, floors and labels holding them.
+
+Data:
+
+- `day` (required, list, each one of `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`): The day or days of the week to set the time blocks of.
+- `blocks` (required, object): The time blocks the schedule is on during those days, each with a from and a to time, and optional data it shows as attributes while it is on. These replace the blocks the days had. An empty list leaves the days off all day. Example: `[{"from": "07:00:00", "to": "09:00:00"}]`.
+
+Documentation: https://spook.boo/schedule#set-the-time-blocks-of-a-day
+
 ## select
 
 ### `select.random`: Select random option
