@@ -450,3 +450,33 @@ async def test_a_draft_dashboard_names_the_removed_users_of_its_views(
         "dashboard",
         {"views": [{"path": "secret", "visible": [{"user": removed}]}]},
     ) == {"users": [removed]}
+
+
+async def test_a_draft_view_names_the_removed_users_it_is_visible_to(
+    hass: HomeAssistant,
+) -> None:
+    """Test a single draft view has its own `visible` read, like a saved one."""
+    removed = await async_removed_user_id(hass)
+
+    assert await async_check_draft(
+        hass,
+        "dashboard",
+        {"path": "secret", "visible": [{"user": removed}], "cards": []},
+    ) == {"users": [removed]}
+    assert await async_check_draft(
+        hass,
+        "dashboard",
+        {"type": "sections", "visible": [{"user": removed}], "sections": []},
+    ) == {"users": [removed]}
+
+
+async def test_a_draft_card_has_no_visible_to_read(hass: HomeAssistant) -> None:
+    """Test a card on its own is not taken for a view."""
+    removed = await async_removed_user_id(hass)
+
+    assert (
+        await async_check_draft(
+            hass, "dashboard", {"type": "tile", "visible": [{"user": removed}]}
+        )
+        == {}
+    )

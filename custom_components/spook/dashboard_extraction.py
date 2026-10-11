@@ -505,6 +505,13 @@ def _check_view(view: dict[str, Any], found: set[str]) -> None:
     _check_cards(view.get("cards"), found)
 
 
+def is_view_node(node: dict[str, Any]) -> bool:
+    """Return whether a dashboard node handed over on its own is a view."""
+    return (
+        not isinstance(node_type := node.get("type"), str) or node_type in _VIEW_TYPES
+    )
+
+
 def extract_not_entity_ids_from_dashboard_node(node: Any) -> set[str]:
     """Return what a core card's entity field holds that is no entity ID.
 
@@ -525,7 +532,7 @@ def extract_not_entity_ids_from_dashboard_node(node: Any) -> set[str]:
         for view in views:
             if isinstance(view, dict):
                 _check_view(view, found)
-    elif not isinstance(node_type := node.get("type"), str) or node_type in _VIEW_TYPES:
+    elif is_view_node(node):
         _check_view(node, found)
     else:
         _check_card(node, found)
