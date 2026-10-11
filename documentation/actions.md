@@ -724,6 +724,12 @@ Extends the existing restart action with a "force" option. Because forcing is al
 
 `homeassistant.restart`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart), [documentation](misc#restart) 📚
 
+## Schedule: Delete
+
+Deletes schedule helpers made in the UI, without a trip to the helpers page. _#clearedcalendar_
+
+`schedule.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=schedule.delete), [documentation](integrations/schedule#delete-a-schedule) 📚
+
 ## Select: Select random option
 
 This action selects a random option from the list of options of a select entity. Optionally this can be limited to a set of given options. _#random_

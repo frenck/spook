@@ -1345,6 +1345,18 @@ Data:
 
 Documentation: https://spook.boo/repairs#unignore-all-issues
 
+## schedule
+
+### `schedule.delete`: Delete a schedule
+
+Deletes schedule helpers made in the UI. Schedules set up in YAML cannot be deleted by Spook.
+
+Data:
+
+- `entity_id` (required, entity, one or a list): The schedule(s) to delete.
+
+Documentation: https://spook.boo/schedule#delete-a-schedule
+
 ## select
 
 ### `select.random`: Select random option

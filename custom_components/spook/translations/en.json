@@ -2918,6 +2918,16 @@
         }
       }
     },
+    "schedule_delete": {
+      "name": "Delete a schedule",
+      "description": "Deletes schedule helpers made in the UI. Schedules set up in YAML cannot be deleted by Spook.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "The schedule(s) to delete."
+        }
+      }
+    },
     "sensor_set_display_precision": {
       "name": "Set display precision",
       "description": "Sets the number of decimals shown for one or more sensors.",

@@ -2336,6 +2336,22 @@ input_number_delete:
           filter:
             - domain: input_number
 
+schedule_delete:
+  name: Delete a schedule 👻
+  description: >-
+    Deletes schedule helpers made in the UI. Schedules set up in YAML cannot be
+    deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The schedule(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: schedule
+
 person_add_device_tracker:
   name: Add a device tracker 👻
   description: >-
