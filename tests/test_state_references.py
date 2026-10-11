@@ -608,3 +608,21 @@ def test_what_an_action_is_handed_names_nothing_here() -> None:
     }
 
     assert extract_state_references_from_config(config).pairs == PAIR
+
+
+def test_a_value_compared_as_text_is_written_down_apart() -> None:
+    """Test core's and Spook's own reading of one value stay two findings.
+
+    Each can have another best guess, and which one the issue shows must not
+    depend on the order a set happens to give.
+    """
+    # pylint: disable-next=import-outside-toplevel,protected-access
+    from custom_components.spook.repairs import _finding_reference  # noqa: PLC0415
+
+    core = _finding_reference("climate.hall", AttributeValue("hvac_action", "TRUE"))
+    spook = _finding_reference(
+        "climate.hall", AttributeValue("hvac_action", "TRUE", as_text=True)
+    )
+
+    assert core == 'climate.hall[hvac_action]:"TRUE"'
+    assert spook != core
