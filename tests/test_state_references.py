@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 
 from custom_components.spook.reference_extraction import (
+    AttributeValue,
     extract_state_references_from_config,
 )
 from custom_components.spook.template_extraction import (
@@ -153,13 +154,6 @@ def test_every_entity_and_state_makes_a_pair() -> None:
             {"conditions": [_condition(state="input_select.mode")]},
             id="input helper in a condition",
         ),
-        # The values of an attribute, not states.
-        pytest.param(
-            {"triggers": [_trigger(attribute="mode", to="On")]}, id="attribute trigger"
-        ),
-        pytest.param(
-            {"conditions": [_condition(attribute="mode")]}, id="attribute condition"
-        ),
         pytest.param(
             {
                 "triggers": [
@@ -202,6 +196,90 @@ def test_state_references_left_alone(config: dict[str, Any]) -> None:
     references = extract_state_references_from_config(config)
     assert not references.pairs
     assert not references.followed
+
+
+MODE_ON = {("light.kitchen", AttributeValue("mode", "On"))}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        pytest.param({"triggers": [_trigger(attribute="mode", to="On")]}, id="to"),
+        pytest.param(
+            {"triggers": [_trigger(attribute="mode", **{"from": "On"})]}, id="from"
+        ),
+        pytest.param(
+            {"triggers": [_trigger(attribute="mode", not_to=["On"])]}, id="not to"
+        ),
+        pytest.param(
+            {"triggers": [_trigger(attribute="mode", not_from="On")]}, id="not from"
+        ),
+        pytest.param({"conditions": [_condition(attribute="mode")]}, id="condition"),
+        pytest.param(
+            {"conditions": [_condition(attribute="mode", state=["On"])]},
+            id="condition list",
+        ),
+    ],
+)
+def test_attribute_values_are_found(config: dict[str, Any]) -> None:
+    """Test with an `attribute:`, what is waited for is a value of it."""
+    assert extract_state_references_from_config(config).pairs == MODE_ON
+
+
+def test_attribute_values_keep_what_yaml_made_of_them() -> None:
+    """Test a boolean or a number is a value of its own, not left out.
+
+    Home Assistant compares an attribute with whatever YAML read, so an
+    unquoted `off` waits for false.
+    """
+    config = {"triggers": [_trigger(attribute="mode", to=[False, 2, 1.5, "On"])]}
+
+    assert extract_state_references_from_config(config).pairs == {
+        ("light.kitchen", AttributeValue("mode", value=False)),
+        ("light.kitchen", AttributeValue("mode", 2)),
+        ("light.kitchen", AttributeValue("mode", 1.5)),
+        ("light.kitchen", AttributeValue("mode", "On")),
+    }
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        # Any change, or any value.
+        pytest.param({"triggers": [_trigger(attribute="mode", to=None)]}, id="null"),
+        pytest.param(
+            {"triggers": [_trigger(attribute="mode", to=[None])]}, id="null in a list"
+        ),
+        pytest.param({"triggers": [_trigger(attribute="mode", to="*")]}, id="all"),
+        pytest.param({"triggers": [_trigger(attribute="mode", to="")]}, id="empty"),
+        pytest.param(
+            {"triggers": [_trigger(attribute="mode", to="{{ which }}")]},
+            id="templated value",
+        ),
+        pytest.param(
+            {"triggers": [_trigger(attribute="{{ which }}", to="On")]},
+            id="templated attribute",
+        ),
+        pytest.param(
+            {"triggers": [_trigger(attribute="mode", to={"On": 1})]}, id="mapping"
+        ),
+        pytest.param(
+            {"triggers": [_trigger(attribute="mode", to=[["On"]])]}, id="nested list"
+        ),
+        # The state of the helper it names, not something written out.
+        pytest.param(
+            {"conditions": [_condition(attribute="mode", state="input_select.mode")]},
+            id="input helper in a condition",
+        ),
+        pytest.param(
+            {"conditions": [_condition(attribute="mode", enabled=False)]},
+            id="disabled",
+        ),
+    ],
+)
+def test_attribute_values_left_alone(config: dict[str, Any]) -> None:
+    """Test what is not a value written out, or does not run, is left out."""
+    assert not extract_state_references_from_config(config).pairs
 
 
 def test_spook_state_trigger_is_handed_back_whole() -> None:

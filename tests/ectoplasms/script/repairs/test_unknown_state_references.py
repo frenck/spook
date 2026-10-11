@@ -11,6 +11,7 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
     async_wait_recording_done,
 )
 
+from homeassistant.components.climate import ClimateEntity
 from homeassistant.components.cover import CoverEntity
 from homeassistant.components.light import LightEntity
 from homeassistant.helpers.entity_component import DATA_INSTANCES
@@ -162,4 +163,44 @@ async def test_spook_trigger_names_what_it_watches(
     assert issue.translation_placeholders
     assert issue.translation_placeholders["states"] == "\n".join(
         f"- `On` for `{entity_id}` (did you mean `on`?)" for entity_id in expected
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_attribute_value_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a value an attribute never has is reported for a script too."""
+    give_entity_objects(hass, "climate.living_room", kind=ClimateEntity)
+    hass.states.async_set("climate.living_room", "heat", {"hvac_action": "idle"})
+    await async_wait_recording_done(hass)
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "haunted": {
+                    "alias": "Haunted",
+                    "sequence": [
+                        {
+                            "condition": "state",
+                            "entity_id": "climate.living_room",
+                            "attribute": "hvac_action",
+                            "state": "Heating",
+                        }
+                    ],
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["states"] == (
+        "- `hvac_action` of `climate.living_room`: `Heating` (did you mean `heating`?)"
     )
