@@ -1,0 +1,31 @@
+source: https://community.home-assistant.io/t/919314
+note: >-
+  A state condition on the rgb_color of a light, with the colour written as
+  a list. A list in a state condition is a set of choices, so the three
+  numbers are each compared with the whole colour, and none ever matches.
+  They are reported as the numbers they are.
+expect:
+  states:
+    find:
+      - light.desk[rgb_color]: "255"
+      - light.desk[rgb_color]: "0"
+    not_find:
+      - light.desk[rgb_color]: '"255"'
+      - light.desk[rgb_color]: "[255, 0, 0]"
+---
+alias: Red desk light means a meeting
+triggers:
+  - trigger: state
+    entity_id: light.desk
+conditions:
+  - condition: state
+    entity_id: light.desk
+    attribute: rgb_color
+    state:
+      - 255
+      - 0
+      - 0
+actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.in_a_meeting

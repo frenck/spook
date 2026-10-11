@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/783790
+note: >-
+  A person checked for away, the word a phone app shows, where the person is
+  not_home. The trigger is the home zone changing at all, which names no
+  state. The fix triggers on the zone counting zero people, and a zone's state
+  is that count, written as text, so it is a state like any other.
+expect:
+  states:
+    find:
+      - person.max: away
+      - zone.home: "0"
+  entities:
+    find: [person.max, zone.home]
+---
+alias: Nobody home any more
+triggers:
+  - trigger: state
+    entity_id: zone.home
+  - trigger: state
+    entity_id: zone.home
+    to: "0"
+conditions:
+  - condition: state
+    entity_id:
+      - person.max
+    state: away
+actions:
+  - action: alarm_control_panel.alarm_arm_away
+    target:
+      entity_id: alarm_control_panel.home

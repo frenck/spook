@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/704899
+note: >-
+  An MQTT light whose topic says ON and OFF, so the trigger was written with
+  those. The entity itself is on or off, in lower case, so the trigger never
+  fires. Both are reported, and the lower case states the fix uses are not
+  in this case.
+expect:
+  states:
+    find:
+      - light.kitchen_table: "OFF"
+      - light.kitchen_table: "ON"
+    not_find:
+      - light.kitchen_table: "on"
+      - light.kitchen_table: "off"
+---
+alias: Kitchen table light turned on
+triggers:
+  - trigger: state
+    entity_id:
+      - light.kitchen_table
+    from: "OFF"
+    to: "ON"
+conditions: []
+actions:
+  - action: notify.notify
+    data:
+      message: The kitchen table light is on.

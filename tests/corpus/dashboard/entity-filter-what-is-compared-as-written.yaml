@@ -1,0 +1,35 @@
+source: https://www.home-assistant.io/dashboards/entity-filter/
+note: >-
+  An entity filter over two pumps with every kind of filter the card takes.
+  A plain value and a list under in are states as written. A number under
+  equals is compared as a number, text under in is a substring check, and a
+  regex is a pattern, so none of those are states anybody wrote out.
+expect:
+  states:
+    find:
+      - switch.pool_pump: "on"
+      - switch.pond_pump: "on"
+      - switch.pool_pump: unavailable
+    not_find:
+      - switch.pool_pump: "0"
+      - switch.pool_pump: unavailable,unknown
+      - switch.pool_pump: ^err
+---
+type: entity-filter
+entities:
+  - switch.pool_pump
+  - switch.pond_pump
+state_filter:
+  - "on"
+  - operator: "=="
+    value: "0"
+  - operator: in
+    value: unavailable,unknown
+  - operator: in
+    value:
+      - unavailable
+  - operator: regex
+    value: ^err
+card:
+  type: entities
+  title: Pumps to look at

@@ -1198,6 +1198,39 @@
     ]),
   })
 # ---
+# name: test_automation_case[group-state-capitalised-home]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'climate.living_room',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'climate.set_preset_mode',
+    ]),
+    'states': list([
+      'group.family: Home',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+  })
+# ---
 # name: test_automation_case[hvac-action-ui-display-case]
   dict({
     'areas': list([
@@ -1823,6 +1856,40 @@
     ]),
   })
 # ---
+# name: test_automation_case[mqtt-light-uppercase-on-off]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'light.kitchen_table',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'notify.notify',
+    ]),
+    'states': list([
+      'light.kitchen_table: OFF',
+      'light.kitchen_table: ON',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+  })
+# ---
 # name: test_automation_case[mqtt-payload-picks-action-template]
   dict({
     'areas': list([
@@ -1993,6 +2060,41 @@
     ]),
     'services': list([
       'input_number.set_value',
+    ]),
+    'states': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'numeric_state',
+    ]),
+  })
+# ---
+# name: test_automation_case[numeric-state-attribute-the-sensor-is]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'sensor.watch_battery: battery',
+      'sensor.watch_battery: battery_status',
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'sensor.watch_battery',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'notify.notify',
     ]),
     'states': list([
     ]),
@@ -2281,6 +2383,43 @@
     ]),
   })
 # ---
+# name: test_automation_case[person-state-away]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'state',
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'alarm_control_panel.home',
+      'person.max',
+      'zone.home',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'alarm_control_panel.alarm_arm_away',
+    ]),
+    'states': list([
+      'person.max: away',
+      'zone.home: 0',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+  })
+# ---
 # name: test_automation_case[plus-concatenation-entity-literal]
   dict({
     'areas': list([
@@ -2437,6 +2576,43 @@
     ]),
     'states': list([
       'binary_sensor.closet_motion: on',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+  })
+# ---
+# name: test_automation_case[rgb-color-list-as-state]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'light.desk: rgb_color',
+    ]),
+    'conditions': list([
+      'state',
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'input_boolean.in_a_meeting',
+      'light.desk',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'input_boolean.turn_on',
+    ]),
+    'states': list([
+      'light.desk[rgb_color]: 0',
+      'light.desk[rgb_color]: 255',
     ]),
     'trigger_ids': list([
     ]),
@@ -3255,6 +3431,42 @@
     ]),
   })
 # ---
+# name: test_automation_case[sun-rising-string-true]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'sun.sun: rising',
+    ]),
+    'conditions': list([
+      'state',
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'cover.bedroom_blinds',
+      'sun.sun',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'cover.open_cover',
+    ]),
+    'states': list([
+      'sun.sun[rising]: "true"',
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'time_pattern',
+    ]),
+  })
+# ---
 # name: test_automation_case[sun-trigger-offsets-as-strings]
   dict({
     'areas': list([
@@ -3351,6 +3563,39 @@
     ]),
     'triggers': list([
       'event',
+    ]),
+  })
+# ---
+# name: test_automation_case[temperature-threshold-from-helpers]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'input_number.comfort_minimum',
+      'sensor.living_room_temperature',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'notify.notify',
+    ]),
+    'states': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'temperature.crossed_threshold',
     ]),
   })
 # ---
@@ -3632,6 +3877,40 @@
     ]),
     'triggers': list([
       'state',
+    ]),
+  })
+# ---
+# name: test_automation_case[threshold-editor-keeps-unused-entity]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'input_number.dusk_level',
+      'light.garden',
+      'sensor.garden_illuminance',
+    ]),
+    'floors': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'light.turn_on',
+    ]),
+    'states': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'illuminance.crossed_threshold',
     ]),
   })
 # ---
@@ -5434,6 +5713,28 @@
     ]),
   })
 # ---
+# name: test_dashboard_case[entity-filter-what-is-compared-as-written]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'entities': list([
+      'switch.pond_pump',
+      'switch.pool_pump',
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+      'switch.pond_pump: on',
+      'switch.pond_pump: unavailable',
+      'switch.pool_pump: on',
+      'switch.pool_pump: unavailable',
+    ]),
+  })
+# ---
 # name: test_dashboard_case[fire-dom-event-browser-mod-command-card]
   dict({
     'areas': list([
@@ -5669,6 +5970,23 @@
     'states': list([
       'binary_sensor.storm_alert: on',
       'binary_sensor.weather_warning: on',
+    ]),
+  })
+# ---
+# name: test_dashboard_case[map-label-mode-attribute]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+      'device_tracker.alex_phone: battery_level',
+    ]),
+    'entities': list([
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
     ]),
   })
 # ---
@@ -6315,6 +6633,25 @@
     ]),
   })
 # ---
+# name: test_dashboard_case[visibility-condition-without-entity]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'entities': list([
+      'cover.garage_door',
+      'light.porch',
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+      'cover.garage_door: open',
+    ]),
+  })
+# ---
 # name: test_dashboard_case[visibility-or-and-nested-conditions]
   dict({
     'areas': list([
@@ -6332,6 +6669,25 @@
     ]),
     'states': list([
       'person.alex: home',
+    ]),
+  })
+# ---
+# name: test_dashboard_case[visibility-state-not-decimal-comma]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'entities': list([
+      'sensor.heater_power',
+      'switch.heater',
+    ]),
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+      'sensor.heater_power: 0,000',
     ]),
   })
 # ---
