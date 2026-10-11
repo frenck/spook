@@ -190,6 +190,16 @@ Such a condition loads fine and never passes, a wait like that only ends on its 
 
 To resolve the raised issue, edit the script and make the template render `true` when it should pass. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Removed users
+
+Scripts are inspected for the users they name by their ID, the same way [automations are](automation.md#removed-users): in templates, the ID of a user compared to text, like `context.user_id == '…'` for the user who started the script, or `state_attr('person.frenck', 'user_id') == '…'`, and the `user_id` an event trigger in a `wait_for_trigger` waits for in its `context`. If a script names a user that no longer exists, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the user IDs it cannot find.
+
+Home Assistant gives every user a random ID and never hands the same one out twice, so an ID no user has belongs to a user that was removed. A template comparing with that ID never matches, and Home Assistant does not tell you.
+
+What is not checked is the same as for automations. A script that gives `context` a meaning of its own, as a variable or a field, is not read either.
+
+To resolve the raised issue, edit the script and use the ID of a user that exists, or remove the check. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).

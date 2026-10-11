@@ -59,6 +59,7 @@ from .ectoplasms.script.repairs import (
     unknown_service_references as script_services,
     unknown_state_references as script_states,
     unknown_trigger_references as script_triggers,
+    unknown_user_references as script_users,
 )
 from .entity_filtering import (
     async_filter_known_area_ids,
@@ -124,6 +125,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         script_states,
         script_templates,
         script_triggers,
+        script_users,
     ),
 }
 

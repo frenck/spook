@@ -13,7 +13,7 @@ from custom_components.spook import draft_checking
 from custom_components.spook.ectoplasms.automation.repairs.unknown_trigger_id_references import (
     SpookRepair,
 )
-from tests.repair_helpers import async_issue_about
+from tests.repair_helpers import async_issue_about, async_setup_haunted_automation
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -52,24 +52,9 @@ async def _unknown(
     `None` when there is no issue at all, so a test tells "nothing found"
     apart from an issue that found nothing.
     """
-    assert await async_setup_component(
-        hass,
-        "automation",
-        {
-            "automation": [
-                {
-                    "id": "haunted",
-                    "alias": "Haunted",
-                    "triggers": triggers,
-                    "conditions": conditions or [],
-                    "actions": actions or [],
-                    **extra,
-                }
-            ]
-        },
+    await async_setup_haunted_automation(
+        hass, triggers, conditions=conditions, actions=actions, **extra
     )
-    await hass.async_block_till_done()
-    assert hass.states.get("automation.haunted").state == "on"
 
     await SpookRepair(hass).async_inspect()
 
