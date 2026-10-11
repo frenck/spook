@@ -364,7 +364,7 @@ async def test_what_is_not_a_user_the_frontend_checks_is_not_read(
 
     A condition switched off, the inside of a custom card, data handed to an
     action, a `visible` anywhere but on a view, a strategy's options, views
-    a dashboard strategy leaves unused, and    something that was never a user ID.
+    a dashboard strategy leaves unused, and something that was never a user ID.
     """
     removed = await async_removed_user_id(hass)
 
@@ -469,6 +469,25 @@ async def test_a_draft_dashboard_names_the_removed_users_of_its_views(
         "dashboard",
         {"views": [{"path": "secret", "visible": [{"user": removed}]}]},
     ) == {"users": [removed]}
+
+
+async def test_a_draft_dashboard_run_by_a_strategy_names_no_users(
+    hass: HomeAssistant,
+) -> None:
+    """Test views stored next to a draft's strategy are left alone, like saved."""
+    removed = await async_removed_user_id(hass)
+
+    assert (
+        await async_check_draft(
+            hass,
+            "dashboard",
+            {
+                "strategy": {"type": "original-states"},
+                "views": [{"path": "secret", "visible": [{"user": removed}]}],
+            },
+        )
+        == {}
+    )
 
 
 async def test_a_draft_view_names_the_removed_users_it_is_visible_to(

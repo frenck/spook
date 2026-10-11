@@ -257,8 +257,13 @@ def _extract_draft_user_ids(config: dict[str, Any]) -> set[str]:
     """Return the user IDs a draft card, view or dashboard names.
 
     A view handed over on its own has its own `visible` too, which a card
-    does not have and the dashboard reader only reads below `views`.
+    does not have and the dashboard reader only reads below `views`. Like
+    the repair, a dashboard run by a strategy has no users of its own: the
+    views left stored next to it are never shown.
     """
+    if "views" in config and "strategy" in config:
+        return set()
+
     if "views" not in config and is_view_node(config):
         return extract_user_ids_from_view(config)
 
