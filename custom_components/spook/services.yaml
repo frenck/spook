@@ -902,7 +902,8 @@ homeassistant_update_floor:
         removes them all.
       required: false
       selector:
-        object:
+        text:
+          multiple: true
     icon:
       name: Icon
       description: New icon to use for the floor.

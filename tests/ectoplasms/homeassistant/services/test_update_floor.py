@@ -135,6 +135,19 @@ async def test_aliases_are_replaced_and_an_empty_list_clears_them(
     assert floor_registry.async_get_floor(floor.floor_id).aliases == set()
 
 
+async def test_aliases_are_trimmed_and_empty_ones_dropped(
+    hass: HomeAssistant,
+    floor_registry: fr.FloorRegistry,
+) -> None:
+    """Cleaned up like core's floor editor does, before they are stored."""
+    floor = floor_registry.async_create("First floor")
+    await _setup(hass)
+
+    await _update(hass, floor_id=floor.floor_id, aliases=["  Ground floor ", "", "   "])
+
+    assert floor_registry.async_get_floor(floor.floor_id).aliases == {"Ground floor"}
+
+
 async def test_a_floor_that_does_not_exist_is_refused(
     hass: HomeAssistant,
 ) -> None:
