@@ -26,6 +26,7 @@ Call them like any core action: `domain.action`, fields under `data`, entities u
 - An ID that does not exist is usually an error, and the error names what is missing. Not always: `group.remove_members`, for one, accepts a member that is already gone, on purpose. Follow each action's reference rather than assume.
 - Home Assistant's own MCP server offers the Assist tools and exposed scripts, not every action. To reach a Spook action from there, wrap it in a script and expose that.
 - From Home Assistant 2026.11, Spook also brings its own tools to Home Assistant's administrator API (`homeassistant`), for conversation agents and Home Assistant's MCP server: `spook__overview`, `spook__list_ghosts`, `spook__explain_ghost`, `spook__find_usages`, `spook__check_references`, `spook__list_features`, `spook__ignore_ghost`, `spook__unignore_ghost` and `spook__fix_ghost`. When they are there, prefer them over calling actions by hand. `spook__check_references` checks a draft automation or script for ghosts before you save it.
+- Through an MCP endpoint that serves several APIs at once, Home Assistant puts the API's name in front of each tool: `spook__overview` arrives as `home-assistant__spook__overview`. Same tool, either name.
 
 Every action, with its fields: [references/actions.md](references/actions.md).
 

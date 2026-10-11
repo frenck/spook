@@ -27,6 +27,7 @@ from custom_components.spook.repairs import UnusedLabelFixFlow
 from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels import (
     SpookRepair as UnusedLabelsRepair,
 )
+import probatio
 import pytest
 from tests.entity_objects import give_entity_objects
 
@@ -177,6 +178,30 @@ def test_every_tool_is_prefixed_and_tagged(hass: HomeAssistant) -> None:
     assert tools["spook__fix_ghost"].annotations.destructive
     assert not tools["spook__fix_ghost"].annotations.idempotent
     assert not tools["spook__ignore_ghost"].annotations.destructive
+
+
+def _schema_keys(schema: Any) -> set[str]:
+    """Return every key anywhere in a converted schema."""
+    if isinstance(schema, list):
+        return set().union(*map(_schema_keys, schema))
+    if not isinstance(schema, dict):
+        return set()
+    return set(schema).union(*map(_schema_keys, schema.values()))
+
+
+def test_every_tool_schema_converts_plainly(hass: HomeAssistant) -> None:
+    """Test no tool hands a model an allOf or a format it cannot read.
+
+    Home Assistant's MCP server and conversation integrations convert the
+    schema with probatio, and validators like Strip and Lower come out as an
+    allOf with formats no JSON Schema knows.
+    """
+    for tool in _tools(hass).values():
+        keys = _schema_keys(probatio.to_openapi(tool.parameters))
+        assert not keys & {"allOf", "format"}, tool.name
+
+    reference = probatio.to_openapi(_tools(hass)["spook__find_usages"].parameters)
+    assert reference["properties"]["reference"]["type"] == "string"
 
 
 @pytest.mark.usefixtures("automation_issue")
@@ -633,6 +658,14 @@ async def test_find_usages(hass: HomeAssistant, hass_admin_user: MockUser) -> No
     assert by_id["automation.wake_up"]["name"] == "Wake up"
     assert by_id["lovelace"]["edit_url"] == "/lovelace/upstairs?edit=1"
     assert by_id["lovelace"]["matched_as"] == "entity"
+
+
+async def test_find_usages_wants_more_than_spaces(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a reference of only spaces is refused, after stripping it."""
+    with pytest.raises(probatio.Invalid):
+        await _call(hass, "spook__find_usages", hass_admin_user, reference="   ")
 
 
 async def test_find_usages_skips_what_is_never_rendered(

@@ -128,6 +128,16 @@ def _error(message: str) -> ToolResult:
     return ToolResult(data={"error": message}, error=True)
 
 
+def _reference(value: str) -> str:
+    """Return a reference to look for, without stray spaces or capitals.
+
+    Done here and not with probatio's Strip and Lower. Once Home Assistant
+    converts the schema for a model, those turn a plain string into an
+    `allOf` with formats no JSON Schema knows.
+    """
+    return probatio.Length(min=1)(value.strip().lower())
+
+
 def _draft_config(config: dict[str, Any]) -> dict[str, Any]:
     """Return the draft to check, also when it came in as a JSON string.
 
@@ -521,9 +531,7 @@ class FindUsagesTool(_SpookTool):
                     "What to look for, like 'light.kitchen', 'notify.mobile_app', "
                     "or the ID of a label, area or floor."
                 ),
-            ): probatio.All(
-                str, probatio.Strip, probatio.Lower, probatio.Length(min=1)
-            ),
+            ): probatio.All(str, _reference),
             probatio.Optional(
                 "kind",
                 description=(
