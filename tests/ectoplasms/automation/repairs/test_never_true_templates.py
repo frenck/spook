@@ -315,6 +315,13 @@ async def test_a_trigger_without_jinja_that_reads_as_true_is_left_alone(
         # Jinja that always prints the same text never changes either.
         ("{{ 'on' }}", {"{{ 'on' }}"}),
         ("{{ 'true' }}", None),
+        # Jinja that only ever prints what reads as true never goes from
+        # false to true, so its watch never fires.
+        (
+            "{{ 'on' if is_state('light.hall', 'on') else 'yes' }}",
+            {"{{ 'on' if is_state('light.hall', 'on') else 'yes' }}"},
+        ),
+        ("{{ 'true' if is_state('light.hall', 'on') else 'yes' }}", None),
         # With Jinja, a wait takes `on` once its template changes.
         (ON_OR_OFF, None),
         ("true", None),

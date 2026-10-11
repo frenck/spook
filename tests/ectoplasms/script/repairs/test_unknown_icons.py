@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook import draft_checking
 from custom_components.spook.ectoplasms.script.repairs.unknown_icons import (
     SpookRepair,
 )
@@ -97,3 +98,22 @@ async def test_no_frontend_means_nothing_is_judged(
     uninstall_frontend(monkeypatch)
 
     assert await _async_reported(hass, issue_registry, icon="mdi:ghost") is None
+
+
+async def test_a_draft_is_checked_for_unknown_icons(hass: HomeAssistant) -> None:
+    """A draft script is asked about its icons like a saved one."""
+    assert await async_setup_component(hass, "group", {})
+
+    assert await draft_checking.async_check_draft(
+        hass,
+        "script",
+        {
+            "icon": "mdi:ghost-script",
+            "sequence": [
+                {
+                    "action": "group.set",
+                    "data": {"object_id": "ghosts", "icon": "mdi:home"},
+                }
+            ],
+        },
+    ) == {"icons": ["mdi:ghost-script"]}

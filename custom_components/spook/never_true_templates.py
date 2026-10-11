@@ -49,7 +49,7 @@ class TemplateRole(StrEnum):
     # `helpers/script.py` `_async_step_wait_template`: first checked like a
     # condition, then watched by `async_track_template`, which takes what a
     # trigger takes, but only when its render changes from false to true. A
-    # template that always renders the same text never changes, so for that
+    # template that cannot render both never makes that change, so for that
     # one only the condition check counts.
     WAIT = "wait"
 
@@ -243,6 +243,24 @@ def _starts_untruthy(pieces: tuple[_Piece, ...]) -> bool:
     return False
 
 
+def _wait_never_ends(hass: HomeAssistant, outputs: frozenset[str]) -> bool:
+    """Return whether a wait with these outputs can never end, but on timeout.
+
+    The check up front takes only `true`. The watch after it only fires when
+    the render goes from something that is not true to something that is, so
+    it needs at least one of each. Every output `on` or `yes` never does.
+    """
+    if any(
+        _passes(hass, TemplateRole.CONDITION, output) is not False for output in outputs
+    ):
+        return False
+
+    reads_as_true = {_passes(hass, TemplateRole.TRIGGER, output) for output in outputs}
+    if None in reads_as_true:
+        return False
+    return reads_as_true != {True, False}
+
+
 def never_passes(hass: HomeAssistant, role: TemplateRole, template_str: str) -> bool:
     """Return whether a template can never render what its role needs.
 
@@ -261,10 +279,8 @@ def never_passes(hass: HomeAssistant, role: TemplateRole, template_str: str) -> 
         return False
 
     if (outputs := _combined(list(pieces))) is not None:
-        # A wait that can only ever print one thing never changes once it
-        # has been checked, so its watch never fires.
-        if role is TemplateRole.WAIT and len(outputs) == 1:
-            role = TemplateRole.CONDITION
+        if role is TemplateRole.WAIT:
+            return _wait_never_ends(hass, outputs)
         return all(_passes(hass, role, output) is False for output in outputs)
 
     if role is TemplateRole.CONDITION:
