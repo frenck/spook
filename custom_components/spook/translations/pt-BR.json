@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "Esta zona não é editável: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "A quantidade {amount} não serve para {entity_id}, que se move em passos de {step}. Use um múltiplo de {step}, ou deixe a quantidade de fora para mover um passo."
+        },
+        "area_cannot_update": {
+            "message": "A área {area_id} não pode ser alterada assim: {error}."
+        },
+        "area_name_taken": {
+            "message": "O nome {name} já está em uso pela área {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Nada para atualizar na área {area_id}: informe pelo menos um destes: {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Nada para atualizar no dispositivo {device_id}: informe pelo menos um destes: {fields}."
+        },
+        "floor_name_taken": {
+            "message": "O nome {name} já está em uso pelo andar {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Nada para atualizar no andar {floor_id}: informe pelo menos um destes: {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Esses blocos de tempo não servem para {entity_id}: {error}. Nada foi alterado."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} é uma programação da sua configuração YAML, que o Spook não pode alterar. Edite-a na sua configuração."
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "Esses sensores voltaram, ou a configuração agora aponta para outro lugar, desde que o Spook olhou. Então nada foi limpo. O Spook olha de novo por conta própria e atualiza este reparo."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "O Assist não consegue diferenciar estas: {name}",
+            "description": "Spook encontrou um fantasma nos seus assistentes de voz 👻\n\nAs seguintes entidades estão expostas ao Assist, e todas respondem pelo nome {name}:\n\n{entities}\n\nQuando os nomes são iguais, o Assist só as diferencia pela área: a que você diz, ou aquela em que está o seu satélite de voz. Algumas delas dividem uma área, ou não têm área nenhuma, então o Assist não consegue escolhê-las por esse nome de lugar nenhum. Pedir por {name} então falha, e nada diz quais entidades estão atrapalhando.\n\nPara corrigir isso, dê a cada uma um nome ou alias próprio, ou mova-as para áreas diferentes. Você pode mudar os aliases de uma entidade, e se o Assist a vê ou não, em [Entidades expostas](/config/voice-assistants/expose). As áreas são definidas na [página de Áreas](/config/areas/dashboard).\n\nSpook 👻 Seu mano."
+        },
+        "automation_unknown_attribute_references": {
+            "title": "Atributos desconhecidos usados em: {automation}",
+            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm acionador ou uma condição esperando um atributo que nunca aparece nunca é acionado, e não avisa você. Um template que lê um deles não recebe nada. Para corrigir isso, [edite a automação]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+        },
+        "script_unknown_attribute_references": {
+            "title": "Atributos desconhecidos usados em: {script}",
+            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm acionador ou uma condição esperando um atributo que nunca aparece nunca é acionado, e não avisa você. Um template que lê um deles não recebe nada. Para corrigir isso, [edite o script]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+        },
+        "lovelace_unknown_attribute_references": {
+            "title": "Atributos desconhecidos usados no painel: {dashboard}",
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel mostra ou verifica os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm cartão que mostra um atributo que nunca aparece fica vazio, e uma condição de visibilidade ou um filtro que verifica um deles nunca é satisfeito. Nenhum dos dois avisa você. Para corrigir isso, [edite o painel]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+        },
+        "template_unknown_attribute_references": {
+            "title": "Atributos desconhecidos usados no auxiliar de template: {helper}",
+            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEste auxiliar de template usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm template que lê um atributo que nunca aparece não recebe nada, e uma condição em uma das ações dele esperando um deles nunca é satisfeita. Nenhum dos dois avisa você. Para corrigir isso, [edite o auxiliar de template]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "title": "Atributos desconhecidos usados na entidade de template: {name}",
+            "description": "Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nEsta entidade de template usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm template que lê um atributo que nunca aparece não recebe nada, e um acionador ou uma condição esperando um deles nunca é acionado nem satisfeito. Nenhum deles avisa você.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir isso, edite-a na seção `template:` da sua configuração, use um atributo que a entidade tem e recarregue suas entidades de template.\n\nSpook 👻 Seu mano."
+        },
+        "automation_unknown_state_references": {
+            "title": "Estados desconhecidos usados em: {automation}",
+            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação espera ou verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUm acionador esperando um estado que nunca chega nunca é acionado, uma condição verificando um deles nunca é satisfeita, e nenhum dos dois avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite a automação]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano."
+        },
+        "script_unknown_state_references": {
+            "title": "Estados desconhecidos usados em: {script}",
+            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script espera ou verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUm acionador esperando um estado que nunca chega nunca é acionado, uma condição verificando um deles nunca é satisfeita, e nenhum dos dois avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite o script]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano."
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUma condição de visibilidade ou um filtro verificando um estado que nunca chega nunca é satisfeito, e uma imagem definida para um deles nunca é mostrada. Nenhum deles avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite o painel]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano.",
+            "title": "Estados desconhecidos usados no painel: {dashboard}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "IDs de acionador desconhecidos usados em: {automation}",
+            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação verifica os seguintes IDs de acionador, que nenhum dos acionadores dela tem:\n\n{trigger_ids}\n\n\n\nUma verificação de um ID que nenhum acionador entrega sempre dá o mesmo resultado: uma condição de acionador pedindo esse ID nunca é satisfeita, então a parte que ela protege nunca roda, e nada avisa você. IDs de acionador diferenciam maiúsculas de minúsculas, e um acionador sem ID próprio é identificado pela posição dele na lista, contando a partir de `0`. Para corrigir isso, [edite a automação]({edit}) e use o ID de um dos acionadores dela, ou dê ao acionador o ID que a automação pede.\n\nSpook 👻 Seu mano."
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel navega para as seguintes visualizações, que não existem:\n\n{paths}\n\n\n\nUm botão ou cartão que navega para uma delas abre a primeira visualização desse painel no lugar, sem avisar. Isso costuma acontecer quando uma visualização foi renomeada, movida ou removida. Para corrigir esse erro, [edite o painel]({edit}) e aponte esses caminhos para uma visualização que exista.\n\nSpook 👻 Seu mano.",
+            "title": "Visualizações desconhecidas para onde o painel navega: {dashboard}"
+        },
+        "automation_never_true_templates": {
+            "title": "Templates que nunca podem ser satisfeitos em: {automation}",
+            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação tem os seguintes templates, que nunca podem ser satisfeitos, aconteça o que acontecer na sua casa:\n\n{templates}\n\n\n\nUma condição de template só é satisfeita quando resulta em `true`, e um `wait_template` também, a menos que mude depois para algo que conte como verdadeiro. Um acionador de template é acionado quando o template dele passa a algo que conta como verdadeiro, como `true`, `on`, `yes` ou `1`. Esses templates sempre resultam em outra coisa, por causa de como foram escritos. As causas mais comuns:\n\n- Aspas em volta do template. Um bloco `>-` as trata como texto, então elas acabam no resultado.\n- Nenhum delimitador de template, então o texto é usado como está.\n- YAML colado no campo do template.\n- Um comentário YAML `#` dentro do Jinja, que o Jinja imprime como texto.\n- Uma condição que resulta em `on` em vez de `true`.\n\nNada avisa você: a condição nunca é satisfeita, a espera só termina pelo tempo limite e o acionador nunca é acionado. Para corrigir isso, [edite a automação]({edit}) e faça o template resultar em `true` quando deve ser satisfeito.\n\nSpook 👻 Seu mano."
+        },
+        "script_never_true_templates": {
+            "title": "Templates que nunca podem ser satisfeitos em: {script}",
+            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script tem os seguintes templates, que nunca podem ser satisfeitos, aconteça o que acontecer na sua casa:\n\n{templates}\n\n\n\nUma condição de template só é satisfeita quando resulta em `true`, e um `wait_template` também, a menos que mude depois para algo que conte como verdadeiro. Um acionador de template em um `wait_for_trigger` é acionado quando o template dele passa a algo que conta como verdadeiro, como `true`, `on`, `yes` ou `1`. Esses templates sempre resultam em outra coisa, por causa de como foram escritos. As causas mais comuns:\n\n- Aspas em volta do template. Um bloco `>-` as trata como texto, então elas acabam no resultado.\n- Nenhum delimitador de template, então o texto é usado como está.\n- YAML colado no campo do template.\n- Um comentário YAML `#` dentro do Jinja, que o Jinja imprime como texto.\n- Uma condição que resulta em `on` em vez de `true`.\n\nNada avisa você: a condição nunca é satisfeita e a espera só termina pelo tempo limite. Para corrigir isso, [edite o script]({edit}) e faça o template resultar em `true` quando deve ser satisfeito.\n\nSpook 👻 Seu mano."
+        },
+        "automation_unknown_config_entry_references": {
+            "title": "Entradas de integração desconhecidas usadas em: {automation}",
+            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação passa para as ações dela as seguintes entradas de integração, que são desconhecidas do Home Assistant ou pertencem a uma integração diferente da que a ação pede:\n\n{config_entries}\n\nO Home Assistant as recusa quando o passo roda. Isso costuma acontecer depois que uma integração foi removida e adicionada de novo: ela ganhou uma nova entrada de integração, com um novo ID.\n\nPara corrigir esse erro, [edite a automação]({edit}) e escolha de novo a entrada de integração nessas ações.\n\nSpook 👻 Seu mano."
+        },
+        "script_unknown_config_entry_references": {
+            "title": "Entradas de integração desconhecidas usadas em: {script}",
+            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script passa para as ações dele as seguintes entradas de integração, que são desconhecidas do Home Assistant ou pertencem a uma integração diferente da que a ação pede:\n\n{config_entries}\n\nO Home Assistant as recusa quando o passo roda. Isso costuma acontecer depois que uma integração foi removida e adicionada de novo: ela ganhou uma nova entrada de integração, com um novo ID.\n\nPara corrigir esse erro, [edite o script]({edit}) e escolha de novo a entrada de integração nessas ações.\n\nSpook 👻 Seu mano."
+        },
+        "automation_unknown_icons": {
+            "title": "Ícones desconhecidos usados em: {automation}",
+            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação distribui os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant:\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite a automação]({edit}) e troque-os por ícones que existam.\n\nSpook 👻 Seu mano."
+        },
+        "script_unknown_icons": {
+            "title": "Ícones desconhecidos usados em: {script}",
+            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa ou distribui os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant:\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite o script]({edit}) e troque-os por ícones que existam.\n\nSpook 👻 Seu mano."
+        },
+        "lovelace_unknown_icons": {
+            "title": "Ícones desconhecidos usados no painel: {dashboard}",
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel usa os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant (versão {version}):\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite o painel]({edit}) e troque-os por ícones que existam. O ícone do painel na barra lateral é alterado nas configurações dos seus painéis.\n\nSpook 👻 Seu mano."
+        },
+        "unknown_icons": {
+            "description": "Spook encontrou um fantasma nas suas configurações 👻\n\nOs seguintes ícones não existem no Material Design Icons que vem com o Home Assistant (versão {version}):\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, dê a cada um deles um ícone que exista: uma entidade, um auxiliar ou uma zona nas configurações dele, uma área, um andar ou uma etiqueta nas configurações das suas áreas, etiquetas e zonas, uma categoria onde ela é usada, e `customize:` na sua configuração.\n\nSpook 👻 Seu mano.",
+            "title": "Ícones desconhecidos nas suas configurações"
+        },
+        "automation_unknown_user_references": {
+            "title": "Usuários removidos citados em: {automation}",
+            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um acionador esperando por um deles nunca é acionado por eles, e um template comparando com um deles nunca bate, sem avisar. Para corrigir isso, [edite a automação]({edit}) e use o ID de um usuário que exista, ou remova a verificação.\n\nSpook 👻 Seu mano."
+        },
+        "script_unknown_user_references": {
+            "title": "Usuários removidos citados em: {script}",
+            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um template comparando com um deles nunca bate, e um acionador esperando por um deles nunca é acionado por eles, sem avisar. Para corrigir isso, [edite o script]({edit}) e use o ID de um usuário que exista, ou remova a verificação.\n\nSpook 👻 Seu mano."
+        },
+        "template_unknown_service_references_yaml": {
+            "title": "Ações desconhecidas usadas na entidade de template: {name}",
+            "description": "Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nEla faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\n\n\nIsso costuma acontecer quando o que fornecia uma ação foi removido, ou quando um script foi renomeado ou excluído.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir esse erro, edite-a na seção `template:` da sua configuração, use ações que existam e recarregue suas entidades de template.\n\nSpook 👻 Seu mano."
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um cartão, emblema, seção ou visualização mostrado só para eles agora não é mostrado para ninguém, sem avisar. Uma isenção de confirmação para eles não faz mais nada. Para corrigir isso, [edite o painel]({edit}) e escolha os usuários que devem vê-lo, ou remova a condição.\n\nSpook 👻 Seu mano.",
+            "title": "Usuários removidos citados no painel: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel usa os seguintes temas, que não existem:\n\n{themes}\n\n\n\nUm cartão, seção ou visualização com um desses temas fica com a aparência padrão no lugar, sem avisar. Isso costuma acontecer quando um tema foi renomeado ou removido. Para corrigir esse erro, [edite o painel]({edit}) e escolha um tema que exista, ou adicione o tema de volta.\n\nSpook 👻 Seu mano.",
+            "title": "Temas desconhecidos usados no painel: {dashboard}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nA configuração dela faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida. Um template que lê uma delas não recebe nada, e um acionador esperando uma delas nunca é acionado.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir esse erro, edite-a na seção `template:` da sua configuração, faça referência a entidades que existam e recarregue suas entidades de template.\n\nSpook 👻 Seu mano.",
+            "title": "Entidades desconhecidas usadas na entidade de template: {name}"
         }
     },
     "conditions": {
@@ -973,6 +1100,16 @@
         "not_triggered_by_user": {
             "name": "Não disparado por um usuário",
             "description": "É satisfeita quando não há ninguém a quem atribuir esta execução: um agendamento, o sol, uma integração agindo por conta própria ou o botão Executar. De propósito não tem opções. Se o que você quer é excluir pessoas específicas, coloque \"Disparado por um usuário\" dentro de uma condição Não."
+        },
+        "is_available": {
+            "name": "Entidade está disponível",
+            "description": "É satisfeita quando uma entidade está lá para conversar: qualquer coisa menos indisponível ou desconhecido. Para um alto-falante ou uma tomada inteligente que nem sempre está ligada na energia.",
+            "fields": {
+                "behavior": {
+                    "name": "Comportamento",
+                    "description": "Se basta qualquer uma das entidades estar lá, ou se todas precisam estar."
+                }
+            }
         }
     },
     "services": {
@@ -2755,6 +2892,170 @@
                     "description": "Cor a usar para a etiqueta. Pode ser um nome de cor da lista ou um código de cor hexadecimal (como #FF0000)."
                 }
             }
+        },
+        "homeassistant_update_area": {
+            "name": "Atualizar uma área",
+            "description": "Atualiza uma área existente na hora. Tudo o que você deixar de fora fica com o valor que já tinha. Aliases e etiquetas substituem os que a área tem. O andar, o ícone, a imagem e os sensores podem ser esvaziados colocando-os em null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID da área",
+                    "description": "O ID da área a atualizar."
+                },
+                "name": {
+                    "name": "Nome",
+                    "description": "Novo nome para a área."
+                },
+                "aliases": {
+                    "name": "Aliases",
+                    "description": "Os aliases da área. Substituem os que ela tem; uma lista vazia remove todos."
+                },
+                "floor_id": {
+                    "name": "ID do andar",
+                    "description": "O ID do andar em que a área fica."
+                },
+                "icon": {
+                    "name": "Ícone",
+                    "description": "Novo ícone a usar para a área."
+                },
+                "picture": {
+                    "name": "Imagem",
+                    "description": "A URL ou o caminho de uma imagem para a área."
+                },
+                "labels": {
+                    "name": "Etiquetas",
+                    "description": "Os IDs das etiquetas da área. Substituem as que ela tem; uma lista vazia remove todas."
+                },
+                "temperature_entity_id": {
+                    "name": "Sensor de temperatura",
+                    "description": "O sensor que mede a temperatura na área."
+                },
+                "humidity_entity_id": {
+                    "name": "Sensor de umidade",
+                    "description": "O sensor que mede a umidade na área."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Atualizar um dispositivo",
+            "description": "Atualiza um dispositivo existente na hora. Tudo o que você deixar de fora fica com o valor que já tinha. Etiquetas substituem as que o dispositivo tem. O nome e a área podem ser esvaziados colocando-os em null, o que devolve ao dispositivo o nome que a integração dele deu.",
+            "fields": {
+                "device_id": {
+                    "name": "ID do dispositivo",
+                    "description": "O ID do dispositivo a atualizar. O seletor de dispositivos do Home Assistant não mostra dispositivos desativados; use o modo YAML para informar o ID deles."
+                },
+                "name_by_user": {
+                    "name": "Nome",
+                    "description": "Novo nome para o dispositivo."
+                },
+                "area_id": {
+                    "name": "ID da área",
+                    "description": "O ID da área em que o dispositivo está."
+                },
+                "labels": {
+                    "name": "Etiquetas",
+                    "description": "Os IDs das etiquetas do dispositivo. Substituem as que ele tem; uma lista vazia remove todas."
+                },
+                "disabled_by": {
+                    "name": "Desativado por",
+                    "description": "Defina como user para desativar o dispositivo, ou como null para ativá-lo de novo. Funciona como as ações de desativar e ativar dispositivo."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Atualizar um andar",
+            "description": "Atualiza um andar existente na hora. Tudo o que você deixar de fora fica com o valor que já tinha. Aliases substituem os que o andar tem. O ícone e o nível podem ser esvaziados colocando-os em null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID do andar",
+                    "description": "O ID do andar a atualizar."
+                },
+                "name": {
+                    "name": "Nome",
+                    "description": "Novo nome para o andar."
+                },
+                "aliases": {
+                    "name": "Aliases",
+                    "description": "Os aliases do andar. Substituem os que ele tem; uma lista vazia remove todos."
+                },
+                "icon": {
+                    "name": "Ícone",
+                    "description": "Novo ícone a usar para o andar."
+                },
+                "level": {
+                    "name": "Nível",
+                    "description": "O nível em que o andar está na sua casa."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Criar uma programação",
+            "description": "Cria um auxiliar de programação novo na hora, ligado durante os blocos de tempo informados para cada dia da semana. Devolve o ID de entidade da nova programação.",
+            "fields": {
+                "name": {
+                    "name": "Nome",
+                    "description": "O nome da nova programação."
+                },
+                "schedule_id": {
+                    "name": "ID de entidade da programação",
+                    "description": "O ID de entidade da nova programação. O prefixo schedule. é adicionado automaticamente. Se não for informado, o ID de entidade é gerado a partir do nome."
+                },
+                "icon": {
+                    "name": "Ícone",
+                    "description": "O ícone da nova programação."
+                },
+                "monday": {
+                    "name": "Segunda-feira",
+                    "description": "Quando a programação fica ligada às segundas-feiras: uma lista de blocos de tempo, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Se ficar de fora, ela fica desligada o dia todo."
+                },
+                "wednesday": {
+                    "name": "Quarta-feira",
+                    "description": "Quando a programação fica ligada às quartas-feiras: uma lista de blocos de tempo, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Se ficar de fora, ela fica desligada o dia todo."
+                },
+                "thursday": {
+                    "name": "Quinta-feira",
+                    "description": "Quando a programação fica ligada às quintas-feiras: uma lista de blocos de tempo, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Se ficar de fora, ela fica desligada o dia todo."
+                },
+                "friday": {
+                    "name": "Sexta-feira",
+                    "description": "Quando a programação fica ligada às sextas-feiras: uma lista de blocos de tempo, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Se ficar de fora, ela fica desligada o dia todo."
+                },
+                "saturday": {
+                    "name": "Sábado",
+                    "description": "Quando a programação fica ligada aos sábados: uma lista de blocos de tempo, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Se ficar de fora, ela fica desligada o dia todo."
+                },
+                "sunday": {
+                    "name": "Domingo",
+                    "description": "Quando a programação fica ligada aos domingos: uma lista de blocos de tempo, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Se ficar de fora, ela fica desligada o dia todo."
+                },
+                "tuesday": {
+                    "name": "Terça-feira",
+                    "description": "Quando a programação fica ligada às terças-feiras: uma lista de blocos de tempo, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Se ficar de fora, ela fica desligada o dia todo."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Excluir uma programação",
+            "description": "Exclui auxiliares de programação criados pela interface. O Spook não pode excluir programações configuradas em YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID da entidade",
+                    "description": "A programação (ou programações) a excluir."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Definir os blocos de tempo de um dia",
+            "description": "Substitui os blocos de tempo de um ou mais dias de um auxiliar de programação criado pela interface. O Spook não pode alterar programações configuradas em YAML.",
+            "fields": {
+                "day": {
+                    "name": "Dia",
+                    "description": "O dia ou os dias da semana cujos blocos de tempo definir."
+                },
+                "blocks": {
+                    "name": "Blocos de tempo",
+                    "description": "Os blocos de tempo em que a programação fica ligada nesses dias, cada um com um horário de início e de fim, e dados opcionais que ela mostra como atributos enquanto está ligada. Eles substituem os blocos que os dias tinham. Uma lista vazia deixa os dias desligados o dia todo."
+                }
+            }
         }
     },
     "triggers": {
@@ -2975,6 +3276,92 @@
         "device_discovered": {
             "name": "Dispositivo descoberto",
             "description": "É acionado quando o Home Assistant descobre algo novo que poderia configurar, como um dispositivo que acabou de aparecer na sua rede."
+        },
+        "state_changed": {
+            "description": "É acionado quando uma entidade muda de estado, para tudo o que um alvo abrange: entidades, dispositivos, áreas, andares e etiquetas. Restrinja por domínio, integração ou classe de dispositivo, ou deixe o alvo vazio e deixe que eles escolham as entidades entre todas. Exclua coisas de novo e decida por quanto tempo uma mudança precisa se manter antes de contar.",
+            "fields": {
+                "domain": {
+                    "name": "Domínios",
+                    "description": "Só entidades destes domínios, como binary_sensor ou cover. Sem alvo, escolhe entre todas."
+                },
+                "integration": {
+                    "name": "Integrações",
+                    "description": "Só entidades fornecidas por estas integrações, como zha ou hue. Sem alvo, escolhe entre todas."
+                },
+                "config_entry": {
+                    "name": "Entrada de integração",
+                    "description": "Só entidades desta entrada de integração. Sem alvo, escolhe entre todas."
+                },
+                "device_class": {
+                    "name": "Classes de dispositivo",
+                    "description": "Só entidades destas classes de dispositivo, como door ou window. Sem alvo, escolhe entre todas."
+                },
+                "exclude_target": {
+                    "name": "Excluir",
+                    "description": "Entidades, dispositivos, áreas, andares ou etiquetas a excluir. Tudo o que está neles é excluído, as entidades de diagnóstico também."
+                },
+                "exclude_integration": {
+                    "name": "Excluir integrações",
+                    "description": "Exclui entidades fornecidas por estas integrações."
+                },
+                "exclude_config_entry": {
+                    "name": "Excluir entrada de integração",
+                    "description": "Exclui as entidades desta entrada de integração."
+                },
+                "exclude_device_class": {
+                    "name": "Excluir classes de dispositivo",
+                    "description": "Exclui entidades destas classes de dispositivo."
+                },
+                "attribute": {
+                    "description": "Acompanhar este atributo em vez do estado.",
+                    "name": "Atributo"
+                },
+                "from": {
+                    "name": "De",
+                    "description": "Só mudanças vindas de um destes estados."
+                },
+                "not_from": {
+                    "name": "Não de",
+                    "description": "Só mudanças que não vêm de um destes estados."
+                },
+                "to": {
+                    "name": "Para",
+                    "description": "Só mudanças indo para um destes estados."
+                },
+                "not_to": {
+                    "name": "Não para",
+                    "description": "Só mudanças que não vão para um destes estados."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignorar indisponível e desconhecido",
+                    "description": "Deixa de fora mudanças de ou para indisponível e desconhecido, para que uma reinicialização ou um roteador reiniciando não acione tudo. Desligue para usá-los em De ou Para."
+                },
+                "attribute_changes": {
+                    "name": "Contar mudanças de atributo",
+                    "description": "Ser acionado também quando só um atributo mudou e o estado continuou o mesmo. Não faz nada enquanto um atributo é acompanhado."
+                },
+                "for": {
+                    "description": "Só é acionado quando o novo estado se mantiver por esse tempo. Qualquer outra mudança no meio cancela.",
+                    "name": "Durante"
+                },
+                "blip_tolerance": {
+                    "name": "Tolerância a quedas rápidas",
+                    "description": "Enquanto espera o Durante, ficar indisponível ou desconhecido e voltar como estava dentro deste tempo não recomeça a espera. Só funciona junto com Durante."
+                },
+                "delay": {
+                    "name": "Atraso",
+                    "description": "Espera esse tempo antes de ser acionado, aconteça o que acontecer no meio. Como um atraso no início das ações."
+                },
+                "exclude_domain": {
+                    "name": "Excluir domínios",
+                    "description": "Exclui entidades destes domínios. Sem nada em Excluir, vale para tudo o que o alvo abrange."
+                },
+                "behavior": {
+                    "name": "Comportamento",
+                    "description": "Ser acionado para cada entidade, para a primeira do alvo a chegar lá, ou quando todas estiverem lá. Primeiro e todos precisam de Para ou Não para. Enquanto indisponível e desconhecido são ignorados, entidades nesses estados não participam."
+                }
+            },
+            "name": "Acionador de estado do Spook"
         }
     },
     "selector": {
@@ -2989,6 +3376,17 @@
             "options": {
                 "bottom": "Fim",
                 "top": "Topo"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Segunda-feira",
+                "tuesday": "Terça-feira",
+                "wednesday": "Quarta-feira",
+                "thursday": "Quinta-feira",
+                "friday": "Sexta-feira",
+                "sunday": "Domingo",
+                "saturday": "Sábado"
             }
         }
     },
