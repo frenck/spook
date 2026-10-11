@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Pengguna ditambahkan",
             "description": "Dipicu ketika seseorang diberi akses masuk ke Home Assistant. Pengguna yang dibuat Home Assistant untuk integrasinya sendiri tidak disertakan."
+        },
+        "state_changed": {
+            "name": "Pemicu status Spook",
+            "fields": {
+                "domain": {
+                    "name": "Domain",
+                    "description": "Hanya entitas dari domain ini, seperti binary_sensor atau cover. Tanpa target, entitas dipilih dari semuanya."
+                },
+                "integration": {
+                    "name": "Integrasi",
+                    "description": "Hanya entitas yang disediakan oleh integrasi ini, seperti zha atau hue. Tanpa target, entitas dipilih dari semuanya."
+                },
+                "config_entry": {
+                    "name": "Entri integrasi",
+                    "description": "Hanya entitas dari entri integrasi ini. Tanpa target, entitas dipilih dari semuanya."
+                },
+                "device_class": {
+                    "name": "Kelas perangkat",
+                    "description": "Hanya entitas dari kelas perangkat ini, seperti door atau window. Tanpa target, entitas dipilih dari semuanya."
+                },
+                "exclude_target": {
+                    "name": "Kecualikan",
+                    "description": "Entitas, perangkat, area, lantai, atau label yang dikecualikan. Semua yang ada di dalamnya dikecualikan, termasuk entitas diagnostik."
+                },
+                "exclude_domain": {
+                    "name": "Kecualikan domain",
+                    "description": "Kecualikan entitas dari domain ini. Jika Kecualikan kosong, ini berlaku untuk semua yang dicakup target."
+                },
+                "exclude_integration": {
+                    "name": "Kecualikan integrasi",
+                    "description": "Kecualikan entitas yang disediakan oleh integrasi ini."
+                },
+                "exclude_config_entry": {
+                    "name": "Kecualikan entri integrasi",
+                    "description": "Kecualikan entitas dari entri integrasi ini."
+                },
+                "exclude_device_class": {
+                    "name": "Kecualikan kelas perangkat",
+                    "description": "Kecualikan entitas dari kelas perangkat ini."
+                },
+                "attribute": {
+                    "name": "Atribut",
+                    "description": "Ikuti atribut ini, bukan statusnya."
+                },
+                "from": {
+                    "name": "Dari",
+                    "description": "Hanya perubahan yang berasal dari salah satu status ini."
+                },
+                "not_from": {
+                    "name": "Bukan dari",
+                    "description": "Hanya perubahan yang tidak berasal dari salah satu status ini."
+                },
+                "to": {
+                    "name": "Ke",
+                    "description": "Hanya perubahan yang menuju salah satu status ini."
+                },
+                "not_to": {
+                    "name": "Bukan ke",
+                    "description": "Hanya perubahan yang tidak menuju salah satu status ini."
+                },
+                "ignore_unavailable": {
+                    "name": "Abaikan tidak tersedia dan tidak diketahui",
+                    "description": "Lewati perubahan dari atau ke tidak tersedia dan tidak diketahui, agar restart atau reboot router tidak memicu semuanya. Matikan untuk menggunakannya di Dari atau Ke."
+                },
+                "attribute_changes": {
+                    "name": "Hitung perubahan atribut",
+                    "description": "Juga dipicu ketika hanya sebuah atribut yang berubah dan statusnya tetap sama. Tidak berpengaruh saat mengikuti sebuah atribut."
+                },
+                "behavior": {
+                    "name": "Perilaku",
+                    "description": "Dipicu untuk setiap entitas, untuk entitas pertama dari target yang sampai di sana, atau sekali ketika semuanya sudah sampai. Pertama dan semua memerlukan Ke atau Bukan ke. Selama tidak tersedia dan tidak diketahui diabaikan, entitas dalam status itu tidak ikut dihitung."
+                },
+                "for": {
+                    "name": "Selama",
+                    "description": "Hanya dipicu setelah status baru bertahan selama ini. Perubahan lain di antaranya membatalkannya."
+                },
+                "blip_tolerance": {
+                    "description": "Saat menunggu Selama, menjadi tidak tersedia atau tidak diketahui lalu kembali seperti semula dalam waktu ini tidak memulai penantian dari awal. Hanya berfungsi bersama Selama.",
+                    "name": "Toleransi kedipan"
+                },
+                "delay": {
+                    "description": "Tunggu selama ini sebelum dipicu, apa pun yang terjadi di antaranya. Seperti penundaan di awal aksi.",
+                    "name": "Tunda"
+                }
+            },
+            "description": "Dipicu ketika sebuah entitas berubah status, untuk semua yang dicakup target: entitas, perangkat, area, lantai, dan label. Persempit berdasarkan domain, integrasi, atau kelas perangkat, atau biarkan target kosong dan biarkan pilihan itu memilih entitas dari semuanya. Kecualikan lagi hal-hal tertentu, dan tentukan berapa lama sebuah perubahan harus bertahan sebelum dihitung."
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Bawah",
                 "top": "Atas"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Senin",
+                "tuesday": "Selasa",
+                "wednesday": "Rabu",
+                "thursday": "Kamis",
+                "friday": "Jumat",
+                "saturday": "Sabtu",
+                "sunday": "Minggu"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Durasi",
                     "description": "Berapa lama menunggu setelah eksekusi terakhir sebelum kondisi ini terpenuhi lagi."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Entitas tersedia",
+            "description": "Terpenuhi ketika sebuah entitas bisa diajak bicara: apa pun selain tidak tersedia atau tidak diketahui. Untuk speaker atau colokan pintar yang tidak selalu mendapat daya.",
+            "fields": {
+                "behavior": {
+                    "description": "Apakah cukup salah satu entitas tersedia, atau semuanya harus tersedia.",
+                    "name": "Perilaku"
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Zona ini tidak dapat diedit: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Jumlah {amount} tidak cocok untuk {entity_id}, yang bergerak dengan langkah {step}. Gunakan kelipatan {step}, atau hilangkan jumlahnya untuk bergerak satu langkah."
+        },
+        "area_name_taken": {
+            "message": "Nama {name} sudah dipakai oleh area {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Tidak ada yang diperbarui pada area {area_id}: berikan setidaknya salah satu dari {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Tidak ada yang diperbarui pada perangkat {device_id}: berikan setidaknya salah satu dari {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Nama {name} sudah dipakai oleh lantai {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Tidak ada yang diperbarui pada lantai {floor_id}: berikan setidaknya salah satu dari {fields}."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} adalah jadwal dari konfigurasi YAML Anda, yang tidak dapat diubah oleh Spook. Edit jadwal itu di konfigurasi Anda."
+        },
+        "area_cannot_update": {
+            "message": "Area {area_id} tidak dapat diubah seperti itu: {error}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Blok waktu itu tidak bisa dipakai untuk {entity_id}: {error}. Tidak ada yang diubah."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Sensor-sensor ini sudah kembali, atau pengaturannya kini menunjuk ke tempat lain, sejak Spook memeriksanya. Jadi tidak ada yang dikosongkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "description": "Spook menemukan hantu di asisten suara Anda 👻\n\nEntitas berikut diekspos ke Assist, dan semuanya menjawab nama {name}:\n\n{entities}\n\nJika namanya sama, Assist hanya membedakannya berdasarkan area: area yang Anda sebutkan, atau area tempat satelit suara Anda berada. Beberapa di antaranya berbagi area, atau tidak punya area sama sekali, sehingga Assist tidak bisa memilihnya dengan nama ini dari mana pun. Meminta {name} lalu gagal, dan tidak ada yang memberi tahu entitas mana yang menghalangi.\n\nUntuk memperbaikinya, beri masing-masing nama atau alias sendiri, atau pindahkan ke area yang berbeda. Anda bisa mengubah alias sebuah entitas, dan apakah Assist melihatnya sama sekali, di [Entitas yang diekspos](/config/voice-assistants/expose). Area diatur di [halaman Area](/config/areas/dashboard).\n\nSpook 👻 Sobat Anda.",
+            "title": "Assist tidak bisa membedakan ini: {name}"
+        },
+        "script_unknown_attribute_references": {
+            "title": "Atribut tidak dikenal digunakan di: {script}",
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini menggunakan atribut berikut, yang tidak dimiliki entitasnya. Tidak sekarang, tidak sebagai sesuatu yang ditawarkan oleh jenis entitas itu, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{attributes}\n\n\n\nPemicu atau kondisi yang menunggu atribut yang tidak pernah muncul tidak akan pernah terpicu, dan tidak memberi tahu Anda. Templat yang membacanya tidak mendapat apa-apa. Untuk memperbaikinya, [edit skrip]({edit}) dan gunakan atribut yang dimiliki entitas.\n\nSpook 👻 Sobat Anda."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook menemukan hantu di entitas templat Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan entitas templat berikut:\n\n{name} (`{entity_id}`)\n\nEntitas templat ini menggunakan atribut berikut, yang tidak dimiliki entitasnya. Tidak sekarang, tidak sebagai sesuatu yang ditawarkan oleh jenis entitas itu, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{attributes}\n\n\n\nTemplat yang membaca atribut yang tidak pernah muncul tidak mendapat apa-apa, dan pemicu atau kondisi yang menunggunya tidak pernah terpicu atau terpenuhi. Tidak satu pun memberi tahu Anda.\n\nEntitas templat ini disiapkan di konfigurasi YAML Anda. Untuk memperbaikinya, edit di bagian `template:` konfigurasi Anda, gunakan atribut yang dimiliki entitas, lalu muat ulang entitas templat Anda.\n\nSpook 👻 Sobat Anda.",
+            "title": "Atribut tidak dikenal digunakan di entitas templat: {name}"
+        },
+        "automation_unknown_state_references": {
+            "title": "Status tidak dikenal digunakan di: {automation}",
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini menunggu, atau memeriksa, status berikut, yang tidak pernah dialami entitasnya. Tidak sebagai sesuatu yang bisa dialami jenis entitas itu, tidak di antara opsi yang ditawarkan entitas, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{states}\n\n\n\nPemicu yang menunggu status yang tidak pernah datang tidak akan pernah terpicu, kondisi yang memeriksanya tidak pernah terpenuhi, dan keduanya tidak memberi tahu Anda. Status peka huruf besar dan kecil: `On` bukan `on`. Untuk memperbaikinya, [edit otomasi]({edit}) dan gunakan status yang bisa dialami entitas.\n\nSpook 👻 Sobat Anda."
+        },
+        "script_unknown_state_references": {
+            "title": "Status tidak dikenal digunakan di: {script}",
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini menunggu, atau memeriksa, status berikut, yang tidak pernah dialami entitasnya. Tidak sebagai sesuatu yang bisa dialami jenis entitas itu, tidak di antara opsi yang ditawarkan entitas, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{states}\n\n\n\nPemicu yang menunggu status yang tidak pernah datang tidak akan pernah terpicu, kondisi yang memeriksanya tidak pernah terpenuhi, dan keduanya tidak memberi tahu Anda. Status peka huruf besar dan kecil: `On` bukan `on`. Untuk memperbaikinya, [edit skrip]({edit}) dan gunakan status yang bisa dialami entitas.\n\nSpook 👻 Sobat Anda."
+        },
+        "lovelace_unknown_state_references": {
+            "title": "Status tidak dikenal digunakan di dasbor: {dashboard}",
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini memeriksa status berikut, yang tidak pernah dialami entitasnya. Tidak sebagai sesuatu yang bisa dialami jenis entitas itu, tidak di antara opsi yang ditawarkan entitas, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{states}\n\n\n\nKondisi visibilitas atau filter yang memeriksa status yang tidak pernah datang tidak pernah terpenuhi, dan gambar yang diatur untuk status itu tidak pernah ditampilkan. Tidak satu pun memberi tahu Anda. Status peka huruf besar dan kecil: `On` bukan `on`. Untuk memperbaikinya, [edit dasbor]({edit}) dan gunakan status yang bisa dialami entitas.\n\nSpook 👻 Sobat Anda."
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "ID pemicu tidak dikenal digunakan di: {automation}",
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini memeriksa ID pemicu berikut, yang tidak dimiliki oleh satu pun pemicunya sendiri:\n\n{trigger_ids}\n\n\n\nPemeriksaan terhadap ID yang tidak pernah diberikan oleh pemicu mana pun selalu berakhir sama: kondisi pemicu yang memintanya tidak pernah terpenuhi, sehingga bagian yang dijaganya tidak pernah berjalan, dan tidak ada yang memberi tahu Anda. ID pemicu peka huruf besar dan kecil, dan pemicu tanpa ID sendiri dikenali dari posisinya dalam daftar, dihitung mulai dari `0`. Untuk memperbaikinya, [edit otomasi]({edit}) dan gunakan ID salah satu pemicunya, atau beri pemicu itu ID yang diminta otomasi.\n\nSpook 👻 Sobat Anda."
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini bernavigasi ke tampilan berikut, yang tidak ada:\n\n{paths}\n\n\n\nTombol atau kartu yang bernavigasi ke salah satunya malah membuka tampilan pertama dasbor itu, tanpa memberi tahu. Ini sering terjadi ketika sebuah tampilan diganti nama, dipindahkan, atau dihapus. Untuk memperbaiki kesalahan ini, [edit dasbor]({edit}) dan arahkan ke tampilan yang ada.\n\nSpook 👻 Sobat Anda.",
+            "title": "Tampilan tidak dikenal dituju di dasbor: {dashboard}"
+        },
+        "automation_never_true_templates": {
+            "title": "Templat yang tidak akan pernah terpenuhi di: {automation}",
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini memiliki templat berikut, yang tidak akan pernah terpenuhi, apa pun yang terjadi di rumah Anda:\n\n{templates}\n\n\n\nKondisi templat hanya terpenuhi ketika menghasilkan `true`, begitu juga `wait_template`, kecuali nanti berubah menjadi sesuatu yang dibaca sebagai true. Pemicu templat terpicu ketika templatnya berubah menjadi sesuatu yang dibaca sebagai true, seperti `true`, `on`, `yes`, atau `1`. Templat-templat ini selalu menghasilkan hal lain, karena cara penulisannya. Penyebab yang umum:\n\n- Tanda kutip di sekitar templat. Blok `>-` menganggapnya sebagai teks, sehingga ikut masuk ke hasil.\n- Tidak ada pembatas templat sama sekali, sehingga teksnya diambil apa adanya.\n- YAML yang ditempelkan ke kolom templat.\n- Komentar YAML `#` di dalam Jinja, yang dicetak Jinja sebagai teks.\n- Kondisi yang menghasilkan `on`, bukan `true`.\n\nTidak ada yang memberi tahu Anda: kondisinya tidak pernah terpenuhi, penantiannya hanya berakhir karena batas waktunya, dan pemicunya tidak pernah terpicu. Untuk memperbaikinya, [edit otomasi]({edit}) dan buat templat menghasilkan `true` saat seharusnya terpenuhi.\n\nSpook 👻 Sobat Anda."
+        },
+        "script_never_true_templates": {
+            "title": "Templat yang tidak akan pernah terpenuhi di: {script}",
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini memiliki templat berikut, yang tidak akan pernah terpenuhi, apa pun yang terjadi di rumah Anda:\n\n{templates}\n\n\n\nKondisi templat hanya terpenuhi ketika menghasilkan `true`, begitu juga `wait_template`, kecuali nanti berubah menjadi sesuatu yang dibaca sebagai true. Pemicu templat di dalam `wait_for_trigger` terpicu ketika templatnya berubah menjadi sesuatu yang dibaca sebagai true, seperti `true`, `on`, `yes`, atau `1`. Templat-templat ini selalu menghasilkan hal lain, karena cara penulisannya. Penyebab yang umum:\n\n- Tanda kutip di sekitar templat. Blok `>-` menganggapnya sebagai teks, sehingga ikut masuk ke hasil.\n- Tidak ada pembatas templat sama sekali, sehingga teksnya diambil apa adanya.\n- YAML yang ditempelkan ke kolom templat.\n- Komentar YAML `#` di dalam Jinja, yang dicetak Jinja sebagai teks.\n- Kondisi yang menghasilkan `on`, bukan `true`.\n\nTidak ada yang memberi tahu Anda: kondisinya tidak pernah terpenuhi, dan penantiannya hanya berakhir karena batas waktunya. Untuk memperbaikinya, [edit skrip]({edit}) dan buat templat menghasilkan `true` saat seharusnya terpenuhi.\n\nSpook 👻 Sobat Anda."
+        },
+        "automation_unknown_config_entry_references": {
+            "title": "Entri integrasi tidak dikenal digunakan di: {automation}",
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini memberikan entri integrasi berikut ke aksinya, yang tidak dikenal oleh Home Assistant, atau milik integrasi lain dari yang diminta aksi:\n\n{config_entries}\n\nHome Assistant menolaknya saat langkah itu dijalankan. Ini biasanya terjadi setelah sebuah integrasi dihapus lalu ditambahkan lagi: integrasi itu mendapat entri integrasi baru, dengan ID baru.\n\nUntuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan pilih lagi entri integrasi di aksi-aksi ini.\n\nSpook 👻 Sobat Anda."
+        },
+        "script_unknown_config_entry_references": {
+            "title": "Entri integrasi tidak dikenal digunakan di: {script}",
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini memberikan entri integrasi berikut ke aksinya, yang tidak dikenal oleh Home Assistant, atau milik integrasi lain dari yang diminta aksi:\n\n{config_entries}\n\nHome Assistant menolaknya saat langkah itu dijalankan. Ini biasanya terjadi setelah sebuah integrasi dihapus lalu ditambahkan lagi: integrasi itu mendapat entri integrasi baru, dengan ID baru.\n\nUntuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan pilih lagi entri integrasi di aksi-aksi ini.\n\nSpook 👻 Sobat Anda."
+        },
+        "automation_unknown_icons": {
+            "title": "Ikon tidak dikenal digunakan di: {automation}",
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini memberikan ikon berikut, yang tidak ada di Material Design Icons yang disertakan Home Assistant:\n\n{icons}\n\n\n\nMasing-masing muncul sebagai tempat kosong, tanpa keterangan apa pun. Ini sering terjadi ketika sebuah ikon salah ketik, diganti nama, atau dihapus, atau dipilih dari versi Material Design Icons yang lebih baru daripada yang disertakan Home Assistant. Untuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan ganti dengan ikon yang ada.\n\nSpook 👻 Sobat Anda."
+        },
+        "script_unknown_icons": {
+            "title": "Ikon tidak dikenal digunakan di: {script}",
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini menggunakan atau memberikan ikon berikut, yang tidak ada di Material Design Icons yang disertakan Home Assistant:\n\n{icons}\n\n\n\nMasing-masing muncul sebagai tempat kosong, tanpa keterangan apa pun. Ini sering terjadi ketika sebuah ikon salah ketik, diganti nama, atau dihapus, atau dipilih dari versi Material Design Icons yang lebih baru daripada yang disertakan Home Assistant. Untuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan ganti dengan ikon yang ada.\n\nSpook 👻 Sobat Anda."
+        },
+        "lovelace_unknown_icons": {
+            "title": "Ikon tidak dikenal digunakan di dasbor: {dashboard}",
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini menggunakan ikon berikut, yang tidak ada di Material Design Icons yang disertakan Home Assistant (versi {version}):\n\n{icons}\n\n\n\nMasing-masing muncul sebagai tempat kosong, tanpa keterangan apa pun. Ini sering terjadi ketika sebuah ikon salah ketik, diganti nama, atau dihapus, atau dipilih dari versi Material Design Icons yang lebih baru daripada yang disertakan Home Assistant. Untuk memperbaiki kesalahan ini, [edit dasbor]({edit}) dan ganti dengan ikon yang ada. Ikon dasbor di bilah samping diubah di pengaturan dasbor Anda.\n\nSpook 👻 Sobat Anda."
+        },
+        "unknown_icons": {
+            "title": "Ikon tidak dikenal di pengaturan Anda",
+            "description": "Spook menemukan hantu di pengaturan Anda 👻\n\nIkon berikut tidak ada di Material Design Icons yang disertakan Home Assistant (versi {version}):\n\n{icons}\n\n\n\nMasing-masing muncul sebagai tempat kosong, tanpa keterangan apa pun. Ini sering terjadi ketika sebuah ikon salah ketik, diganti nama, atau dihapus, atau dipilih dari versi Material Design Icons yang lebih baru daripada yang disertakan Home Assistant. Untuk memperbaiki kesalahan ini, beri masing-masing ikon yang ada: entitas, pembantu, atau zona di pengaturannya sendiri, area, lantai, atau label di pengaturan area, label, dan zona Anda, kategori di tempat kategori itu digunakan, dan `customize:` di konfigurasi Anda.\n\nSpook 👻 Sobat Anda."
+        },
+        "automation_unknown_user_references": {
+            "title": "Pengguna yang dihapus disebut di: {automation}",
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini menyebut pengguna berikut, yang sudah tidak ada:\n\n{users}\n\n\n\nHome Assistant tidak pernah memberikan ID pengguna yang sama dua kali, jadi pengguna ini sudah dihapus. Pemicu yang menunggu salah satu dari mereka tidak pernah terpicu untuk mereka, dan templat yang membandingkan dengan salah satu dari mereka tidak pernah cocok, tanpa memberi tahu. Untuk memperbaikinya, [edit otomasi]({edit}) dan gunakan ID pengguna yang ada, atau hapus pemeriksaannya.\n\nSpook 👻 Sobat Anda."
+        },
+        "script_unknown_user_references": {
+            "title": "Pengguna yang dihapus disebut di: {script}",
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini menyebut pengguna berikut, yang sudah tidak ada:\n\n{users}\n\n\n\nHome Assistant tidak pernah memberikan ID pengguna yang sama dua kali, jadi pengguna ini sudah dihapus. Templat yang membandingkan dengan salah satu dari mereka tidak pernah cocok, dan pemicu yang menunggu salah satu dari mereka tidak pernah terpicu untuk mereka, tanpa memberi tahu. Untuk memperbaikinya, [edit skrip]({edit}) dan gunakan ID pengguna yang ada, atau hapus pemeriksaannya.\n\nSpook 👻 Sobat Anda."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Pengguna yang dihapus disebut di dasbor: {dashboard}",
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini menyebut pengguna berikut, yang sudah tidak ada:\n\n{users}\n\n\n\nHome Assistant tidak pernah memberikan ID pengguna yang sama dua kali, jadi pengguna ini sudah dihapus. Kartu, lencana, bagian, atau tampilan yang hanya ditampilkan untuk mereka kini tidak ditampilkan untuk siapa pun, tanpa memberi tahu. Pengecualian dari konfirmasi untuk mereka juga tidak berpengaruh lagi. Untuk memperbaikinya, [edit dasbor]({edit}) dan pilih pengguna yang seharusnya melihatnya, atau hapus kondisinya.\n\nSpook 👻 Sobat Anda."
+        },
+        "lovelace_unknown_theme_references": {
+            "title": "Tema tidak dikenal digunakan di dasbor: {dashboard}",
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini menggunakan tema berikut, yang tidak ada:\n\n{themes}\n\n\n\nKartu, bagian, atau tampilan dengan salah satu tema ini malah mendapat tampilan bawaan, tanpa memberi tahu. Ini sering terjadi ketika sebuah tema diganti nama atau dihapus. Untuk memperbaiki kesalahan ini, [edit dasbor]({edit}) dan pilih tema yang ada, atau tambahkan kembali tema tersebut.\n\nSpook 👻 Sobat Anda."
+        },
+        "template_unknown_entity_references_yaml": {
+            "title": "Entitas tidak dikenal digunakan di entitas templat: {name}",
+            "description": "Spook menemukan hantu di entitas templat Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan entitas templat berikut:\n\n{name} (`{entity_id}`)\n\nKonfigurasinya merujuk ke entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nIni sering terjadi ketika sebuah entitas diganti nama atau dihapus. Templat yang membacanya tidak mendapat apa-apa, dan pemicu yang menunggunya tidak pernah terpicu.\n\nEntitas templat ini disiapkan di konfigurasi YAML Anda. Untuk memperbaiki kesalahan ini, edit di bagian `template:` konfigurasi Anda, rujuk entitas yang ada, lalu muat ulang entitas templat Anda.\n\nSpook 👻 Sobat Anda."
+        },
+        "template_unknown_service_references_yaml": {
+            "title": "Aksi tidak dikenal digunakan di entitas templat: {name}",
+            "description": "Spook menemukan hantu di entitas templat Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan entitas templat berikut:\n\n{name} (`{entity_id}`)\n\nEntitas ini merujuk ke aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{services}\n\n\n\nIni sering terjadi ketika penyedia aksi dihapus, atau sebuah skrip diganti nama atau dihapus.\n\nEntitas templat ini disiapkan di konfigurasi YAML Anda. Untuk memperbaiki kesalahan ini, edit di bagian `template:` konfigurasi Anda, gunakan aksi yang ada, lalu muat ulang entitas templat Anda.\n\nSpook 👻 Sobat Anda."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini menggunakan atribut berikut, yang tidak dimiliki entitasnya. Tidak sekarang, tidak sebagai sesuatu yang ditawarkan oleh jenis entitas itu, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{attributes}\n\n\n\nPemicu atau kondisi yang menunggu atribut yang tidak pernah muncul tidak akan pernah terpicu, dan tidak memberi tahu Anda. Templat yang membacanya tidak mendapat apa-apa. Untuk memperbaikinya, [edit otomasi]({edit}) dan gunakan atribut yang dimiliki entitas.\n\nSpook 👻 Sobat Anda.",
+            "title": "Atribut tidak dikenal digunakan di: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini menampilkan atau memeriksa atribut berikut, yang tidak dimiliki entitasnya. Tidak sekarang, tidak sebagai sesuatu yang ditawarkan oleh jenis entitas itu, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{attributes}\n\n\n\nKartu yang menampilkan atribut yang tidak pernah muncul tetap kosong, dan kondisi visibilitas atau filter yang memeriksanya tidak pernah terpenuhi. Keduanya tidak memberi tahu Anda. Untuk memperbaikinya, [edit dasbor]({edit}) dan gunakan atribut yang dimiliki entitas.\n\nSpook 👻 Sobat Anda.",
+            "title": "Atribut tidak dikenal digunakan di dasbor: {dashboard}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook menemukan hantu di pembantu templat Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan pembantu templat berikut:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nPembantu templat ini menggunakan atribut berikut, yang tidak dimiliki entitasnya. Tidak sekarang, tidak sebagai sesuatu yang ditawarkan oleh jenis entitas itu, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{attributes}\n\n\n\nTemplat yang membaca atribut yang tidak pernah muncul tidak mendapat apa-apa, dan kondisi di salah satu aksinya yang menunggunya tidak pernah terpenuhi. Keduanya tidak memberi tahu Anda. Untuk memperbaikinya, [edit pembantu templat]({edit}) dan gunakan atribut yang dimiliki entitas.\n\nSpook 👻 Sobat Anda.",
+            "title": "Atribut tidak dikenal digunakan di pembantu templat: {helper}"
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Posisi",
                     "description": "Pindahkan ke paling atas atau paling bawah daftar. Berikan ini atau item tempat meletakkannya setelahnya."
+                }
+            }
+        },
+        "homeassistant_update_area": {
+            "name": "Perbarui area",
+            "description": "Memperbarui area yang ada secara langsung. Apa pun yang tidak Anda isi tetap memakai nilai yang sudah ada. Alias dan label menggantikan yang dimiliki area. Lantai, ikon, gambar, dan sensor dapat dikosongkan dengan mengaturnya ke null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang ingin diperbarui."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama baru untuk area."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Alias untuk area. Menggantikan yang sudah ada, daftar kosong menghapus semuanya."
+                },
+                "floor_id": {
+                    "name": "ID lantai",
+                    "description": "ID lantai tempat area ini berada."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon baru yang digunakan untuk area."
+                },
+                "picture": {
+                    "name": "Gambar",
+                    "description": "URL atau path gambar untuk area."
+                },
+                "labels": {
+                    "name": "Label",
+                    "description": "ID label untuk area. Menggantikan yang sudah ada, daftar kosong menghapus semuanya."
+                },
+                "temperature_entity_id": {
+                    "name": "Sensor suhu",
+                    "description": "Sensor yang mengukur suhu di area."
+                },
+                "humidity_entity_id": {
+                    "name": "Sensor kelembapan",
+                    "description": "Sensor yang mengukur kelembapan di area."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Perbarui perangkat",
+            "description": "Memperbarui perangkat yang ada secara langsung. Apa pun yang tidak Anda isi tetap memakai nilai yang sudah ada. Label menggantikan yang dimiliki perangkat. Nama dan area dapat dikosongkan dengan mengaturnya ke null, sehingga perangkat kembali memakai nama dari integrasinya.",
+            "fields": {
+                "device_id": {
+                    "name": "ID perangkat",
+                    "description": "ID perangkat yang ingin diperbarui. Perangkat yang dinonaktifkan tidak ditampilkan oleh pemilih perangkat Home Assistant, gunakan mode YAML untuk memberikan ID-nya."
+                },
+                "name_by_user": {
+                    "name": "Nama",
+                    "description": "Nama baru untuk perangkat."
+                },
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area tempat perangkat berada."
+                },
+                "labels": {
+                    "name": "Label",
+                    "description": "ID label untuk perangkat. Menggantikan yang sudah ada, daftar kosong menghapus semuanya."
+                },
+                "disabled_by": {
+                    "description": "Atur ke user untuk menonaktifkan perangkat, atau ke null untuk mengaktifkannya kembali. Ini bekerja seperti aksi nonaktifkan dan aktifkan perangkat.",
+                    "name": "Dinonaktifkan oleh"
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Perbarui lantai",
+            "description": "Memperbarui lantai yang ada secara langsung. Apa pun yang tidak Anda isi tetap memakai nilai yang sudah ada. Alias menggantikan yang dimiliki lantai. Ikon dan level dapat dikosongkan dengan mengaturnya ke null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID lantai",
+                    "description": "ID lantai yang ingin diperbarui."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama baru untuk lantai."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Alias untuk lantai. Menggantikan yang sudah ada, daftar kosong menghapus semuanya."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon baru yang digunakan untuk lantai."
+                },
+                "level": {
+                    "name": "Level",
+                    "description": "Level tempat lantai ini berada di rumah Anda."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Buat jadwal",
+            "description": "Membuat pembantu jadwal baru secara langsung, menyala selama blok waktu yang diberikan untuk setiap hari dalam seminggu. Mengembalikan ID entitas jadwal baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama jadwal baru."
+                },
+                "schedule_id": {
+                    "name": "ID entitas jadwal",
+                    "description": "ID entitas untuk jadwal baru. Awalan schedule. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk jadwal baru."
+                },
+                "monday": {
+                    "name": "Senin",
+                    "description": "Kapan jadwal menyala pada hari Senin: daftar blok waktu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Jika dikosongkan, jadwal mati sepanjang hari."
+                },
+                "tuesday": {
+                    "name": "Selasa",
+                    "description": "Kapan jadwal menyala pada hari Selasa: daftar blok waktu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Jika dikosongkan, jadwal mati sepanjang hari."
+                },
+                "wednesday": {
+                    "name": "Rabu",
+                    "description": "Kapan jadwal menyala pada hari Rabu: daftar blok waktu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Jika dikosongkan, jadwal mati sepanjang hari."
+                },
+                "thursday": {
+                    "name": "Kamis",
+                    "description": "Kapan jadwal menyala pada hari Kamis: daftar blok waktu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Jika dikosongkan, jadwal mati sepanjang hari."
+                },
+                "friday": {
+                    "name": "Jumat",
+                    "description": "Kapan jadwal menyala pada hari Jumat: daftar blok waktu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Jika dikosongkan, jadwal mati sepanjang hari."
+                },
+                "saturday": {
+                    "name": "Sabtu",
+                    "description": "Kapan jadwal menyala pada hari Sabtu: daftar blok waktu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Jika dikosongkan, jadwal mati sepanjang hari."
+                },
+                "sunday": {
+                    "name": "Minggu",
+                    "description": "Kapan jadwal menyala pada hari Minggu: daftar blok waktu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Jika dikosongkan, jadwal mati sepanjang hari."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Hapus jadwal",
+            "description": "Menghapus pembantu jadwal yang dibuat di UI. Jadwal yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "description": "Jadwal yang ingin dihapus.",
+                    "name": "ID entitas"
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Atur blok waktu sebuah hari",
+            "description": "Mengganti blok waktu dari satu hari atau lebih pada pembantu jadwal yang dibuat di UI. Jadwal yang disiapkan di YAML tidak dapat diubah oleh Spook.",
+            "fields": {
+                "day": {
+                    "name": "Hari",
+                    "description": "Hari atau hari-hari dalam seminggu yang blok waktunya ingin diatur."
+                },
+                "blocks": {
+                    "name": "Blok waktu",
+                    "description": "Blok waktu saat jadwal menyala pada hari-hari itu, masing-masing dengan waktu mulai dan waktu selesai, serta data opsional yang ditampilkan sebagai atribut selama jadwal menyala. Ini menggantikan blok yang sebelumnya dimiliki hari-hari itu. Daftar kosong membuat hari-hari itu mati sepanjang hari."
                 }
             }
         }
