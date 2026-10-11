@@ -1,10 +1,15 @@
 source: https://community.home-assistant.io/t/or-condition-not-working-in-template/863514
 note: >-
   Template condition with states() or states(), which is truthy on any non empty
-  string; the fix compares with is_state. Two entities, one literal state.
+  string; the fix compares with is_state. Four entities across the two
+  conditions, one literal state.
 expect:
   entities:
-    find: [binary_sensor.hallway_motion, input_boolean.guest_mode, media_player.living_room_tv]
+    find:
+      - binary_sensor.hallway_motion
+      - input_boolean.guest_mode
+      - media_player.living_room_tv
+      - sensor.streaming_box_sessions
   states:
     find:
       - media_player.living_room_tv: "on"

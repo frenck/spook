@@ -11,6 +11,7 @@ import re
 from typing import TYPE_CHECKING, Any
 
 import pytest
+import yaml
 
 from homeassistant.components import automation, script
 
@@ -352,3 +353,49 @@ def test_a_case_needs_both_documents(tmp_path: Path) -> None:
 
     with pytest.raises(ValueError, match="expected two"):
         load_case(path)
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        pytest.param(
+            "source: here\nnote: twice\nnote: again\n---\nalias: Twice\n",
+            id="metadata",
+        ),
+        pytest.param(
+            "source: here\nnote: twice\n---\nalias: Twice\n"
+            "actions:\n  - action: light.turn_on\n"
+            "    target:\n      entity_id: light.kitchen\n"
+            "      entity_id: light.hallway\n",
+            id="configuration",
+        ),
+    ],
+)
+def test_a_key_written_twice_is_turned_away(tmp_path: Path, content: str) -> None:
+    """Test a case holding a key twice fails, instead of keeping the last one."""
+    path = tmp_path / "automation" / "twice.yaml"
+    path.parent.mkdir()
+    path.write_text(content, encoding="utf-8")
+
+    with pytest.raises(yaml.constructor.ConstructorError, match="twice"):
+        load_case(path)
+
+
+def test_a_key_overriding_a_merged_one_is_no_duplicate(tmp_path: Path) -> None:
+    """Test merge keys still work, also when a merged mapping merges itself."""
+    path = tmp_path / "dashboard" / "merged.yaml"
+    path.parent.mkdir()
+    path.write_text(
+        "source: here\nnote: merged\n---\n"
+        "base: &base {type: tile, entity: light.kitchen}\n"
+        "dimmed: &dimmed {<<: *base, entity: light.hallway}\n"
+        "cards:\n"
+        "  - {<<: *dimmed, name: Hallway}\n"
+        "  - {<<: *dimmed, name: Again}\n",
+        encoding="utf-8",
+    )
+
+    assert load_case(path).config["cards"] == [
+        {"type": "tile", "entity": "light.hallway", "name": "Hallway"},
+        {"type": "tile", "entity": "light.hallway", "name": "Again"},
+    ]

@@ -4,6 +4,13 @@ note: >-
   pasted into entity IDs with [[area_id]]. The area walk reads `area_id` on any
   node, so the default value is looked up as an area even though here it only
   builds entity IDs. The templated entity ID itself is not valid and dropped.
+known_issue: >-
+  A decluttering variable is read by its name, not by what the template does
+  with it. Telling `study` apart from a real area target needs the template
+  filled in first, so it is reported as an area today.
+expect:
+  areas:
+    not_find: [study]
 ---
 decluttering_templates:
   area_heading:

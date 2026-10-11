@@ -32,7 +32,48 @@ class CorpusLoader(yaml.SafeLoader):  # pylint: disable=too-many-ancestors
     `"!input motion_sensor"`, they make a case a parser fixture: it proves a
     reader does not trip over the text. It is not what Home Assistant hands
     the repairs, which see inputs filled in and files read.
+
+    It also turns away a key a mapping holds twice. PyYAML keeps the last one
+    without a word, so a second `expect` or `entity_id` would quietly replace
+    the first, and the case would test something other than what it says.
     """
+
+    def __init__(self, stream: Any) -> None:
+        """Start reading a stream, with no mapping checked for duplicates yet."""
+        super().__init__(stream)
+        self._checked_mappings: set[int] = set()
+
+    def flatten_mapping(self, node: yaml.MappingNode) -> None:
+        """Merge `<<` keys into a mapping, once its own keys are checked.
+
+        Checked before the merge, and only once: a merged mapping is flattened
+        again each time it is merged, and a key that overrides a merged one is
+        how merge keys are meant to be used, not a duplicate.
+        """
+        if id(node) not in self._checked_mappings:
+            self._checked_mappings.add(id(node))
+            _refuse_duplicate_keys(node)
+
+        super().flatten_mapping(node)
+
+
+def _refuse_duplicate_keys(node: yaml.MappingNode) -> None:
+    """Raise when a mapping, as written, holds the same key twice."""
+    seen: set[tuple[str, str]] = set()
+    for key_node, _ in node.value:
+        if not isinstance(key_node, yaml.ScalarNode):
+            continue
+        if key_node.tag == "tag:yaml.org,2002:merge":
+            continue
+
+        key = (key_node.tag, key_node.value)
+        if key in seen:
+            context = "while reading a mapping"
+            problem = f"found the key {key_node.value!r} twice"
+            raise yaml.constructor.ConstructorError(
+                context, node.start_mark, problem, key_node.start_mark
+            )
+        seen.add(key)
 
 
 def _opaque_tag(loader: CorpusLoader, tag_suffix: str, node: yaml.Node) -> Any:
