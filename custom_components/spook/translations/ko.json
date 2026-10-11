@@ -217,6 +217,92 @@
         "user_added": {
             "name": "사용자 추가됨",
             "description": "누군가에게 Home Assistant 로그인이 주어지면 실행됩니다. Home Assistant가 자체 통합 구성 요소를 위해 만드는 사용자는 제외됩니다."
+        },
+        "state_changed": {
+            "name": "Spook 상태 트리거",
+            "description": "대상에 포함되는 모든 것(엔티티, 기기, 영역, 층, 레이블)에 대해 엔티티의 상태가 바뀌면 실행됩니다. 도메인, 통합 구성 요소, 기기 클래스로 범위를 좁히거나, 대상을 비워 두고 이것들로 전체에서 엔티티를 고르게 할 수 있습니다. 다시 제외할 것을 지정하고, 변경이 인정되기까지 얼마나 유지되어야 하는지 정하세요.",
+            "fields": {
+                "domain": {
+                    "name": "도메인",
+                    "description": "binary_sensor나 cover처럼 이 도메인들의 엔티티만 포함합니다. 대상이 없으면 전체에서 고릅니다."
+                },
+                "integration": {
+                    "name": "통합 구성 요소",
+                    "description": "zha나 hue처럼 이 통합 구성 요소들이 제공하는 엔티티만 포함합니다. 대상이 없으면 전체에서 고릅니다."
+                },
+                "config_entry": {
+                    "name": "통합 구성 요소 항목",
+                    "description": "이 통합 구성 요소 항목의 엔티티만 포함합니다. 대상이 없으면 전체에서 고릅니다."
+                },
+                "device_class": {
+                    "name": "기기 클래스",
+                    "description": "door나 window처럼 이 기기 클래스들의 엔티티만 포함합니다. 대상이 없으면 전체에서 고릅니다."
+                },
+                "exclude_target": {
+                    "name": "제외",
+                    "description": "제외할 엔티티, 기기, 영역, 층 또는 레이블입니다. 그 안에 있는 모든 것이 제외되며, 진단 엔티티도 마찬가지입니다."
+                },
+                "exclude_domain": {
+                    "name": "제외할 도메인",
+                    "description": "이 도메인들의 엔티티를 제외합니다. 제외에 아무것도 없으면 대상에 포함되는 모든 것에 적용됩니다."
+                },
+                "exclude_integration": {
+                    "name": "제외할 통합 구성 요소",
+                    "description": "이 통합 구성 요소들이 제공하는 엔티티를 제외합니다."
+                },
+                "exclude_config_entry": {
+                    "name": "제외할 통합 구성 요소 항목",
+                    "description": "이 통합 구성 요소 항목의 엔티티를 제외합니다."
+                },
+                "exclude_device_class": {
+                    "name": "제외할 기기 클래스",
+                    "description": "이 기기 클래스들의 엔티티를 제외합니다."
+                },
+                "attribute": {
+                    "name": "속성",
+                    "description": "상태 대신 이 속성을 따라갑니다."
+                },
+                "from": {
+                    "name": "이전 상태",
+                    "description": "이 상태들 중 하나에서 바뀌는 경우만 포함합니다."
+                },
+                "not_from": {
+                    "name": "제외할 이전 상태",
+                    "description": "이 상태들 중 어느 것도 아닌 상태에서 바뀌는 경우만 포함합니다."
+                },
+                "to": {
+                    "name": "이후 상태",
+                    "description": "이 상태들 중 하나로 바뀌는 경우만 포함합니다."
+                },
+                "not_to": {
+                    "name": "제외할 이후 상태",
+                    "description": "이 상태들 중 어느 것도 아닌 상태로 바뀌는 경우만 포함합니다."
+                },
+                "ignore_unavailable": {
+                    "name": "사용할 수 없음과 알 수 없음 무시",
+                    "description": "사용할 수 없음이나 알 수 없음에서, 또는 그 상태로 바뀌는 변경을 제외하므로, 재시작이나 공유기 재부팅 때문에 모든 것이 실행되지 않습니다. 이전 상태나 이후 상태에서 이 상태들을 쓰려면 끄세요."
+                },
+                "attribute_changes": {
+                    "name": "속성 변경도 세기",
+                    "description": "상태는 그대로이고 속성만 바뀌었을 때도 실행됩니다. 속성을 따라가는 동안에는 아무 효과가 없습니다."
+                },
+                "behavior": {
+                    "name": "동작 방식",
+                    "description": "엔티티마다 실행할지, 대상 중 처음으로 그 상태가 된 엔티티에서 실행할지, 모두 그 상태가 되었을 때 실행할지 정합니다. 처음과 모두에는 이후 상태나 제외할 이후 상태가 필요합니다. 사용할 수 없음과 알 수 없음을 무시하는 동안에는 그 상태인 엔티티는 포함되지 않습니다."
+                },
+                "for": {
+                    "name": "지속 시간",
+                    "description": "새 상태가 이만큼 유지된 뒤에만 실행됩니다. 그사이에 다른 변경이 있으면 취소됩니다."
+                },
+                "blip_tolerance": {
+                    "name": "순간 끊김 허용",
+                    "description": "지속 시간을 기다리는 동안 사용할 수 없음이나 알 수 없음이 되었다가 이 시간 안에 원래대로 돌아오면 대기가 처음부터 다시 시작되지 않습니다. 지속 시간과 함께 쓸 때만 동작합니다."
+                },
+                "delay": {
+                    "name": "지연",
+                    "description": "그사이 무슨 일이 일어나든 이만큼 기다린 뒤 실행됩니다. 액션 맨 앞에 넣는 지연과 비슷합니다."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "맨 아래",
                 "top": "맨 위"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "월요일",
+                "tuesday": "화요일",
+                "wednesday": "수요일",
+                "thursday": "목요일",
+                "friday": "금요일",
+                "saturday": "토요일",
+                "sunday": "일요일"
             }
         }
     },
@@ -320,6 +417,16 @@
                     "description": "마지막 실행 후 이 조건이 다시 통과하기까지 기다릴 시간입니다."
                 }
             }
+        },
+        "is_available": {
+            "fields": {
+                "behavior": {
+                    "name": "동작 방식",
+                    "description": "엔티티 중 하나만 사용 가능해도 충분한지, 아니면 모두 사용 가능해야 하는지입니다."
+                }
+            },
+            "name": "엔티티 사용 가능",
+            "description": "엔티티와 통신할 수 있을 때, 즉 사용할 수 없음이나 알 수 없음이 아닐 때 통과합니다. 항상 전원이 켜져 있지는 않은 스피커나 스마트 플러그에 유용합니다."
         }
     },
     "config": {
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "이 구역은 편집할 수 없습니다: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "양 {amount}은(는) {entity_id}에 맞지 않습니다. {entity_id}은(는) {step} 단위로 움직입니다. {step}의 배수를 사용하거나, 양을 비워 두고 한 단계만 움직이세요."
+        },
+        "area_cannot_update": {
+            "message": "영역 {area_id}은(는) 그렇게 변경할 수 없습니다: {error}."
+        },
+        "area_name_taken": {
+            "message": "{name}이라는 이름은 이미 영역 {area_id}에서 사용 중입니다."
+        },
+        "area_nothing_to_update": {
+            "message": "영역 {area_id}에 업데이트할 것이 없습니다: {fields} 중 하나 이상을 지정하세요."
+        },
+        "device_nothing_to_update": {
+            "message": "기기 {device_id}에 업데이트할 것이 없습니다: {fields} 중 하나 이상을 지정하세요."
+        },
+        "floor_name_taken": {
+            "message": "{name}이라는 이름은 이미 층 {floor_id}에서 사용 중입니다."
+        },
+        "floor_nothing_to_update": {
+            "message": "층 {floor_id}에 업데이트할 것이 없습니다: {fields} 중 하나 이상을 지정하세요."
+        },
+        "schedule_blocks_invalid": {
+            "message": "이 시간 블록은 {entity_id}에 쓸 수 없습니다: {error}. 아무것도 변경되지 않았습니다."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id}은(는) YAML 구성의 일정이라서 Spook이 변경할 수 없습니다. 대신 구성에서 직접 편집하세요."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Spook이 확인한 뒤로 이 센서들이 돌아왔거나, 설정이 이제 다른 곳을 가리키고 있습니다. 그래서 아무것도 비우지 않았습니다. Spook이 알아서 다시 확인하고 이 문제를 업데이트합니다."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist가 구별하지 못하는 이름: {name}",
+            "description": "Spook이 음성 비서에서 유령을 발견했습니다 👻\n\n다음 엔티티들은 Assist에 노출되어 있고, 모두 {name}이라는 이름에 응답합니다:\n\n{entities}\n\n이름이 같으면 Assist는 영역으로만 구별합니다. 말한 영역이나, 음성 위성이 있는 영역입니다. 이 중 일부는 영역을 공유하거나 영역이 아예 없어서, Assist가 어디에서든 이 이름으로 골라낼 수 없습니다. 그래서 {name}을 요청하면 실패하고, 어떤 엔티티가 방해하는지는 아무것도 알려 주지 않습니다.\n\n이 문제를 수정하려면 각각에 고유한 이름이나 별칭을 주거나, 서로 다른 영역으로 옮기세요. 엔티티의 별칭과 Assist에 보이는지 여부는 [노출된 엔티티](/config/voice-assistants/expose)에서 바꿀 수 있습니다. 영역은 [영역 페이지](/config/areas/dashboard)에서 설정합니다.\n\nSpook 👻 당신의 친구."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 다음 속성을 사용하는데, 해당 엔티티에는 이 속성이 없습니다. 지금도 없고, 그런 종류의 엔티티가 제공하는 속성도 아니며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{attributes}\n\n\n\n나타나지 않는 속성을 기다리는 트리거나 조건은 절대 실행되지 않으며, 그렇다고 알려 주지도 않습니다. 이 속성을 읽는 템플릿은 아무것도 얻지 못합니다. 이 문제를 수정하려면 [자동화를 편집]({edit})해서 엔티티에 있는 속성을 사용하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 속성 사용: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 다음 상태를 기다리거나 확인하는데, 해당 엔티티는 절대 이 상태가 되지 않습니다. 그런 종류의 엔티티가 가질 수 있는 상태도 아니고, 엔티티가 제공하는 옵션에도 없으며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{states}\n\n\n\n오지 않는 상태를 기다리는 트리거는 절대 실행되지 않고, 그 상태를 확인하는 조건은 절대 통과하지 않으며, 둘 다 그렇다고 알려 주지 않습니다. 상태는 대소문자를 구분합니다: `On`은 `on`이 아닙니다. 이 문제를 수정하려면 [자동화를 편집]({edit})해서 엔티티가 가질 수 있는 상태를 사용하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 상태 사용: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 다음 트리거 ID를 확인하는데, 자기 트리거 중 어느 것도 이 ID를 가지고 있지 않습니다:\n\n{trigger_ids}\n\n\n\n어떤 트리거도 넘겨주지 않는 ID를 확인하면 결과는 항상 같습니다. 그 ID를 요구하는 트리거 조건은 절대 통과하지 않으므로, 그 조건이 지키는 부분은 절대 실행되지 않고, 아무것도 알려 주지 않습니다. 트리거 ID는 대소문자를 구분하며, 자기 ID가 없는 트리거는 목록에서의 위치로 불리고 `0`부터 셉니다. 이 문제를 수정하려면 [자동화를 편집]({edit})해서 트리거 중 하나의 ID를 사용하거나, 자동화가 요구하는 ID를 트리거에 주세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 트리거 ID 사용: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 다음 속성을 보여 주거나 확인하는데, 해당 엔티티에는 이 속성이 없습니다. 지금도 없고, 그런 종류의 엔티티가 제공하는 속성도 아니며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{attributes}\n\n\n\n나타나지 않는 속성을 보여 주는 카드는 비어 있고, 그 속성을 확인하는 표시 조건이나 필터는 절대 통과하지 않습니다. 둘 다 그렇다고 알려 주지 않습니다. 이 문제를 수정하려면 [대시보드를 편집]({edit})해서 엔티티에 있는 속성을 사용하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "대시보드에서 사용하는 알 수 없는 속성: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 다음 상태를 확인하는데, 해당 엔티티는 절대 이 상태가 되지 않습니다. 그런 종류의 엔티티가 가질 수 있는 상태도 아니고, 엔티티가 제공하는 옵션에도 없으며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{states}\n\n\n\n오지 않는 상태를 확인하는 표시 조건이나 필터는 절대 통과하지 않고, 그 상태에 지정한 그림은 절대 표시되지 않습니다. 어느 것도 그렇다고 알려 주지 않습니다. 상태는 대소문자를 구분합니다: `On`은 `on`이 아닙니다. 이 문제를 수정하려면 [대시보드를 편집]({edit})해서 엔티티가 가질 수 있는 상태를 사용하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "대시보드에서 사용하는 알 수 없는 상태: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 존재하지 않는 다음 뷰로 이동합니다:\n\n{paths}\n\n\n\n이 중 하나로 이동하는 버튼이나 카드는 아무 말 없이 대신 그 대시보드의 첫 번째 뷰를 엽니다. 보통 뷰의 이름이 바뀌었거나, 옮겨졌거나, 제거되었을 때 이런 일이 생깁니다. 이 오류를 수정하려면 [대시보드를 편집]({edit})해서 존재하는 뷰를 가리키도록 하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "대시보드에서 이동하는 알 수 없는 뷰: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 다음 속성을 사용하는데, 해당 엔티티에는 이 속성이 없습니다. 지금도 없고, 그런 종류의 엔티티가 제공하는 속성도 아니며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{attributes}\n\n\n\n나타나지 않는 속성을 기다리는 트리거나 조건은 절대 실행되지 않으며, 그렇다고 알려 주지도 않습니다. 이 속성을 읽는 템플릿은 아무것도 얻지 못합니다. 이 문제를 수정하려면 [스크립트를 편집]({edit})해서 엔티티에 있는 속성을 사용하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 속성 사용: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 다음 상태를 기다리거나 확인하는데, 해당 엔티티는 절대 이 상태가 되지 않습니다. 그런 종류의 엔티티가 가질 수 있는 상태도 아니고, 엔티티가 제공하는 옵션에도 없으며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{states}\n\n\n\n오지 않는 상태를 기다리는 트리거는 절대 실행되지 않고, 그 상태를 확인하는 조건은 절대 통과하지 않으며, 둘 다 그렇다고 알려 주지 않습니다. 상태는 대소문자를 구분합니다: `On`은 `on`이 아닙니다. 이 문제를 수정하려면 [스크립트를 편집]({edit})해서 엔티티가 가질 수 있는 상태를 사용하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 상태 사용: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook이 템플릿 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 템플릿 도우미를 발견했습니다:\n\n[{helper}]({edit}) (`{entity_id}`)\n\n이 템플릿 도우미는 다음 속성을 사용하는데, 해당 엔티티에는 이 속성이 없습니다. 지금도 없고, 그런 종류의 엔티티가 제공하는 속성도 아니며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{attributes}\n\n\n\n나타나지 않는 속성을 읽는 템플릿은 아무것도 얻지 못하고, 액션 안에서 그 속성을 기다리는 조건은 절대 통과하지 않습니다. 둘 다 그렇다고 알려 주지 않습니다. 이 문제를 수정하려면 [템플릿 도우미를 편집]({edit})해서 엔티티에 있는 속성을 사용하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "템플릿 도우미에서 사용하는 알 수 없는 속성: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화에는 집에서 무슨 일이 일어나든 절대 통과할 수 없는 다음 템플릿이 있습니다:\n\n{templates}\n\n\n\n템플릿 조건은 `true`를 렌더링할 때만 통과하며, `wait_template`도 마찬가지입니다. 단, 나중에 참으로 읽히는 값으로 바뀌는 경우는 예외입니다. 템플릿 트리거는 템플릿이 `true`, `on`, `yes`, `1`처럼 참으로 읽히는 값으로 바뀔 때 실행됩니다. 이 템플릿들은 작성 방식 때문에 항상 다른 값을 렌더링합니다. 흔한 원인:\n\n- 템플릿을 감싼 따옴표. `>-` 블록은 따옴표를 텍스트로 받아들이므로 결과에 그대로 남습니다.\n- 템플릿 구분 기호가 전혀 없어서 텍스트가 그대로 받아들여짐.\n- 템플릿 필드에 붙여 넣은 YAML.\n- Jinja 안의 YAML `#` 주석. Jinja는 이를 텍스트로 출력합니다.\n- `true` 대신 `on`을 렌더링하는 조건.\n\n아무것도 알려 주지 않습니다: 조건은 절대 통과하지 않고, 대기는 시간 초과로만 끝나며, 트리거는 절대 실행되지 않습니다. 이 문제를 수정하려면 [자동화를 편집]({edit})해서 통과해야 할 때 템플릿이 `true`를 렌더링하도록 하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "절대 통과할 수 없는 템플릿: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 액션에 다음 통합 구성 요소 항목을 넘기는데, Home Assistant에서 알 수 없는 항목이거나 액션이 요구하는 것과 다른 통합 구성 요소에 속한 항목입니다:\n\n{config_entries}\n\nHome Assistant는 해당 단계가 실행될 때 이를 거부합니다. 보통 통합 구성 요소를 제거했다가 다시 추가했을 때 이런 일이 생깁니다. 새 ID를 가진 새 통합 구성 요소 항목이 만들어졌기 때문입니다.\n\n이 오류를 수정하려면 [자동화를 편집]({edit})해서 이 액션들에서 통합 구성 요소 항목을 다시 선택하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 통합 구성 요소 항목 사용: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 다음 아이콘을 넘기는데, Home Assistant에 포함된 Material Design Icons에 없는 아이콘입니다:\n\n{icons}\n\n\n\n이 아이콘들은 아무 말 없이 빈 자리로 표시됩니다. 보통 아이콘 이름을 잘못 입력했거나, 아이콘의 이름이 바뀌었거나 제거되었거나, Home Assistant에 포함된 것보다 새로운 버전의 Material Design Icons에서 골랐을 때 이런 일이 생깁니다. 이 오류를 수정하려면 [자동화를 편집]({edit})해서 이 아이콘들을 존재하는 아이콘으로 바꾸세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 아이콘 사용: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 더 이상 존재하지 않는 다음 사용자를 지정합니다:\n\n{users}\n\n\n\nHome Assistant는 같은 사용자 ID를 두 번 발급하지 않으므로, 이 사용자들은 제거된 것입니다. 이 중 한 사용자를 기다리는 트리거는 그 사용자에 대해 절대 실행되지 않고, 이 중 한 사용자와 비교하는 템플릿은 절대 일치하지 않으며, 그렇다고 알려 주지도 않습니다. 이 문제를 수정하려면 [자동화를 편집]({edit})해서 존재하는 사용자의 ID를 사용하거나, 그 확인을 제거하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "제거된 사용자 지정: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 다음 아이콘을 사용하는데, Home Assistant에 포함된 Material Design Icons(버전 {version})에 없는 아이콘입니다:\n\n{icons}\n\n\n\n이 아이콘들은 아무 말 없이 빈 자리로 표시됩니다. 보통 아이콘 이름을 잘못 입력했거나, 아이콘의 이름이 바뀌었거나 제거되었거나, Home Assistant에 포함된 것보다 새로운 버전의 Material Design Icons에서 골랐을 때 이런 일이 생깁니다. 이 오류를 수정하려면 [대시보드를 편집]({edit})해서 이 아이콘들을 존재하는 아이콘으로 바꾸세요. 사이드바에 보이는 대시보드 아이콘은 대시보드 설정에서 바꿉니다.\n\nSpook 👻 당신의 친구.",
+            "title": "대시보드에서 사용하는 알 수 없는 아이콘: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 더 이상 존재하지 않는 다음 사용자를 지정합니다:\n\n{users}\n\n\n\nHome Assistant는 같은 사용자 ID를 두 번 발급하지 않으므로, 이 사용자들은 제거된 것입니다. 이 사용자들에게만 보이던 카드, 배지, 섹션 또는 뷰는 이제 아무 말 없이 아무에게도 보이지 않습니다. 이 사용자들에 대한 확인 면제도 더 이상 아무 효과가 없습니다. 이 문제를 수정하려면 [대시보드를 편집]({edit})해서 볼 수 있어야 할 사용자를 고르거나, 그 조건을 제거하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "대시보드에서 지정한 제거된 사용자: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 존재하지 않는 다음 테마를 사용합니다:\n\n{themes}\n\n\n\n이 테마 중 하나를 쓰는 카드, 섹션 또는 뷰는 아무 말 없이 대신 기본 모양으로 표시됩니다. 보통 테마의 이름이 바뀌었거나 제거되었을 때 이런 일이 생깁니다. 이 오류를 수정하려면 [대시보드를 편집]({edit})해서 존재하는 테마를 고르거나, 테마를 다시 추가하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "대시보드에서 사용하는 알 수 없는 테마: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트에는 집에서 무슨 일이 일어나든 절대 통과할 수 없는 다음 템플릿이 있습니다:\n\n{templates}\n\n\n\n템플릿 조건은 `true`를 렌더링할 때만 통과하며, `wait_template`도 마찬가지입니다. 단, 나중에 참으로 읽히는 값으로 바뀌는 경우는 예외입니다. `wait_for_trigger` 안의 템플릿 트리거는 템플릿이 `true`, `on`, `yes`, `1`처럼 참으로 읽히는 값으로 바뀔 때 실행됩니다. 이 템플릿들은 작성 방식 때문에 항상 다른 값을 렌더링합니다. 흔한 원인:\n\n- 템플릿을 감싼 따옴표. `>-` 블록은 따옴표를 텍스트로 받아들이므로 결과에 그대로 남습니다.\n- 템플릿 구분 기호가 전혀 없어서 텍스트가 그대로 받아들여짐.\n- 템플릿 필드에 붙여 넣은 YAML.\n- Jinja 안의 YAML `#` 주석. Jinja는 이를 텍스트로 출력합니다.\n- `true` 대신 `on`을 렌더링하는 조건.\n\n아무것도 알려 주지 않습니다: 조건은 절대 통과하지 않고, 대기는 시간 초과로만 끝납니다. 이 문제를 수정하려면 [스크립트를 편집]({edit})해서 통과해야 할 때 템플릿이 `true`를 렌더링하도록 하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "절대 통과할 수 없는 템플릿: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 액션에 다음 통합 구성 요소 항목을 넘기는데, Home Assistant에서 알 수 없는 항목이거나 액션이 요구하는 것과 다른 통합 구성 요소에 속한 항목입니다:\n\n{config_entries}\n\nHome Assistant는 해당 단계가 실행될 때 이를 거부합니다. 보통 통합 구성 요소를 제거했다가 다시 추가했을 때 이런 일이 생깁니다. 새 ID를 가진 새 통합 구성 요소 항목이 만들어졌기 때문입니다.\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})해서 이 액션들에서 통합 구성 요소 항목을 다시 선택하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 통합 구성 요소 항목 사용: {script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 다음 아이콘을 사용하거나 넘기는데, Home Assistant에 포함된 Material Design Icons에 없는 아이콘입니다:\n\n{icons}\n\n\n\n이 아이콘들은 아무 말 없이 빈 자리로 표시됩니다. 보통 아이콘 이름을 잘못 입력했거나, 아이콘의 이름이 바뀌었거나 제거되었거나, Home Assistant에 포함된 것보다 새로운 버전의 Material Design Icons에서 골랐을 때 이런 일이 생깁니다. 이 오류를 수정하려면 [스크립트를 편집]({edit})해서 이 아이콘들을 존재하는 아이콘으로 바꾸세요.\n\nSpook 👻 당신의 친구.",
+            "title": "알 수 없는 아이콘 사용: {script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 더 이상 존재하지 않는 다음 사용자를 지정합니다:\n\n{users}\n\n\n\nHome Assistant는 같은 사용자 ID를 두 번 발급하지 않으므로, 이 사용자들은 제거된 것입니다. 이 중 한 사용자와 비교하는 템플릿은 절대 일치하지 않고, 이 중 한 사용자를 기다리는 트리거는 그 사용자에 대해 절대 실행되지 않으며, 그렇다고 알려 주지도 않습니다. 이 문제를 수정하려면 [스크립트를 편집]({edit})해서 존재하는 사용자의 ID를 사용하거나, 그 확인을 제거하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "제거된 사용자 지정: {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook이 템플릿 엔티티에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 템플릿 엔티티를 발견했습니다:\n\n{name} (`{entity_id}`)\n\n이 템플릿 엔티티는 다음 속성을 사용하는데, 해당 엔티티에는 이 속성이 없습니다. 지금도 없고, 그런 종류의 엔티티가 제공하는 속성도 아니며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{attributes}\n\n\n\n나타나지 않는 속성을 읽는 템플릿은 아무것도 얻지 못하고, 그 속성을 기다리는 트리거나 조건은 절대 실행되거나 통과하지 않습니다. 어느 것도 그렇다고 알려 주지 않습니다.\n\n이 템플릿 엔티티는 YAML 구성으로 설정되어 있습니다. 이 문제를 수정하려면 구성의 `template:` 섹션에서 편집해 엔티티에 있는 속성을 사용하고, 템플릿 엔티티를 다시 로드하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "템플릿 엔티티에서 사용하는 알 수 없는 속성: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook이 템플릿 엔티티에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 템플릿 엔티티를 발견했습니다:\n\n{name} (`{entity_id}`)\n\n이 엔티티의 구성이 다음 엔티티를 참조하는데, Home Assistant에서 알 수 없는 엔티티입니다:\n\n{entities}\n\n\n\n보통 엔티티의 이름이 바뀌었거나 제거되었을 때 이런 일이 생깁니다. 이 엔티티를 읽는 템플릿은 아무것도 얻지 못하고, 이 엔티티를 기다리는 트리거는 절대 실행되지 않습니다.\n\n이 템플릿 엔티티는 YAML 구성으로 설정되어 있습니다. 이 오류를 수정하려면 구성의 `template:` 섹션에서 편집해 존재하는 엔티티를 참조하고, 템플릿 엔티티를 다시 로드하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "템플릿 엔티티에서 사용하는 알 수 없는 엔티티: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook이 템플릿 엔티티에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 템플릿 엔티티를 발견했습니다:\n\n{name} (`{entity_id}`)\n\n이 엔티티는 다음 액션을 참조하는데, Home Assistant에서 알 수 없는 액션입니다:\n\n{services}\n\n\n\n보통 액션을 제공하던 것이 제거되었거나, 스크립트의 이름이 바뀌었거나 삭제되었을 때 이런 일이 생깁니다.\n\n이 템플릿 엔티티는 YAML 구성으로 설정되어 있습니다. 이 오류를 수정하려면 구성의 `template:` 섹션에서 편집해 존재하는 액션을 사용하고, 템플릿 엔티티를 다시 로드하세요.\n\nSpook 👻 당신의 친구.",
+            "title": "템플릿 엔티티에서 사용하는 알 수 없는 액션: {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook이 설정에서 유령을 발견했습니다 👻\n\n다음 아이콘은 Home Assistant에 포함된 Material Design Icons(버전 {version})에 없습니다:\n\n{icons}\n\n\n\n이 아이콘들은 아무 말 없이 빈 자리로 표시됩니다. 보통 아이콘 이름을 잘못 입력했거나, 아이콘의 이름이 바뀌었거나 제거되었거나, Home Assistant에 포함된 것보다 새로운 버전의 Material Design Icons에서 골랐을 때 이런 일이 생깁니다. 이 오류를 수정하려면 각각에 존재하는 아이콘을 지정하세요: 엔티티, 도우미, 구역은 각자의 설정에서, 영역, 층, 레이블은 영역, 레이블 및 구역 설정에서, 카테고리는 사용되는 곳에서, 그리고 구성의 `customize:`에서 바꿉니다.\n\nSpook 👻 당신의 친구.",
+            "title": "설정에 있는 알 수 없는 아이콘"
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "위치",
                     "description": "목록의 맨 위나 맨 아래로 옮깁니다. 이 값이나 기준 항목 중 하나를 지정하세요."
+                }
+            }
+        },
+        "schedule_create": {
+            "fields": {
+                "monday": {
+                    "name": "월요일",
+                    "description": "월요일에 일정이 켜지는 시간입니다: 시간 블록 목록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 비워 두면 하루 종일 꺼져 있습니다."
+                },
+                "tuesday": {
+                    "name": "화요일",
+                    "description": "화요일에 일정이 켜지는 시간입니다: 시간 블록 목록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 비워 두면 하루 종일 꺼져 있습니다."
+                },
+                "wednesday": {
+                    "name": "수요일",
+                    "description": "수요일에 일정이 켜지는 시간입니다: 시간 블록 목록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 비워 두면 하루 종일 꺼져 있습니다."
+                },
+                "thursday": {
+                    "name": "목요일",
+                    "description": "목요일에 일정이 켜지는 시간입니다: 시간 블록 목록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 비워 두면 하루 종일 꺼져 있습니다."
+                },
+                "friday": {
+                    "name": "금요일",
+                    "description": "금요일에 일정이 켜지는 시간입니다: 시간 블록 목록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 비워 두면 하루 종일 꺼져 있습니다."
+                },
+                "saturday": {
+                    "name": "토요일",
+                    "description": "토요일에 일정이 켜지는 시간입니다: 시간 블록 목록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 비워 두면 하루 종일 꺼져 있습니다."
+                },
+                "sunday": {
+                    "name": "일요일",
+                    "description": "일요일에 일정이 켜지는 시간입니다: 시간 블록 목록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 비워 두면 하루 종일 꺼져 있습니다."
+                },
+                "name": {
+                    "name": "이름",
+                    "description": "새 일정의 이름입니다."
+                },
+                "icon": {
+                    "name": "아이콘",
+                    "description": "새 일정의 아이콘입니다."
+                },
+                "schedule_id": {
+                    "name": "일정 엔티티 ID",
+                    "description": "새 일정의 엔티티 ID입니다. schedule. 접두사는 자동으로 붙습니다. 지정하지 않으면 이름을 바탕으로 엔티티 ID가 생성됩니다."
+                }
+            },
+            "name": "일정 만들기",
+            "description": "새 일정 도우미를 즉시 만듭니다. 요일마다 지정한 시간 블록 동안 켜집니다. 새 일정의 엔티티 ID를 반환합니다."
+        },
+        "homeassistant_update_area": {
+            "name": "영역 업데이트",
+            "description": "기존 영역을 즉시 업데이트합니다. 지정하지 않은 항목은 기존 값을 유지합니다. 별칭과 레이블은 영역에 있던 것을 대체합니다. 층, 아이콘, 사진, 센서는 null로 설정하면 비울 수 있습니다.",
+            "fields": {
+                "area_id": {
+                    "name": "영역 ID",
+                    "description": "업데이트할 영역의 ID입니다."
+                },
+                "name": {
+                    "name": "이름",
+                    "description": "영역의 새 이름입니다."
+                },
+                "aliases": {
+                    "name": "별칭",
+                    "description": "영역의 별칭입니다. 기존 별칭을 대체하며, 빈 목록이면 모두 제거합니다."
+                },
+                "floor_id": {
+                    "name": "층 ID",
+                    "description": "영역이 있는 층의 ID입니다."
+                },
+                "icon": {
+                    "name": "아이콘",
+                    "description": "영역에 사용할 새 아이콘입니다."
+                },
+                "picture": {
+                    "name": "사진",
+                    "description": "영역 사진의 URL 또는 경로입니다."
+                },
+                "labels": {
+                    "name": "레이블",
+                    "description": "영역의 레이블 ID입니다. 기존 레이블을 대체하며, 빈 목록이면 모두 제거합니다."
+                },
+                "temperature_entity_id": {
+                    "name": "온도 센서",
+                    "description": "영역의 온도를 측정하는 센서입니다."
+                },
+                "humidity_entity_id": {
+                    "name": "습도 센서",
+                    "description": "영역의 습도를 측정하는 센서입니다."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "fields": {
+                "area_id": {
+                    "name": "영역 ID",
+                    "description": "기기가 있는 영역의 ID입니다."
+                },
+                "name_by_user": {
+                    "name": "이름",
+                    "description": "기기의 새 이름입니다."
+                },
+                "labels": {
+                    "name": "레이블",
+                    "description": "기기의 레이블 ID입니다. 기존 레이블을 대체하며, 빈 목록이면 모두 제거합니다."
+                },
+                "device_id": {
+                    "name": "기기 ID",
+                    "description": "업데이트할 기기의 ID입니다. 비활성화된 기기는 Home Assistant의 기기 선택기에 보이지 않으므로, YAML 모드에서 ID를 지정하세요."
+                },
+                "disabled_by": {
+                    "name": "비활성화 주체",
+                    "description": "user로 설정하면 기기를 비활성화하고, null로 설정하면 다시 활성화합니다. 기기 비활성화 및 활성화 액션과 똑같이 동작합니다."
+                }
+            },
+            "name": "기기 업데이트",
+            "description": "기존 기기를 즉시 업데이트합니다. 지정하지 않은 항목은 기존 값을 유지합니다. 레이블은 기기에 있던 것을 대체합니다. 이름과 영역은 null로 설정하면 비울 수 있으며, 이때 기기 이름은 통합 구성 요소가 준 이름으로 돌아갑니다."
+        },
+        "homeassistant_update_floor": {
+            "fields": {
+                "name": {
+                    "name": "이름",
+                    "description": "층의 새 이름입니다."
+                },
+                "aliases": {
+                    "name": "별칭",
+                    "description": "층의 별칭입니다. 기존 별칭을 대체하며, 빈 목록이면 모두 제거합니다."
+                },
+                "floor_id": {
+                    "name": "층 ID",
+                    "description": "업데이트할 층의 ID입니다."
+                },
+                "icon": {
+                    "name": "아이콘",
+                    "description": "층에 사용할 새 아이콘입니다."
+                },
+                "level": {
+                    "name": "높이",
+                    "description": "집에서 이 층이 위치한 높이입니다."
+                }
+            },
+            "name": "층 업데이트",
+            "description": "기존 층을 즉시 업데이트합니다. 지정하지 않은 항목은 기존 값을 유지합니다. 별칭은 층에 있던 것을 대체합니다. 아이콘과 높이는 null로 설정하면 비울 수 있습니다."
+        },
+        "schedule_delete": {
+            "name": "일정 삭제",
+            "description": "UI에서 만든 일정 도우미를 삭제합니다. YAML로 설정한 일정은 Spook이 삭제할 수 없습니다.",
+            "fields": {
+                "entity_id": {
+                    "name": "엔티티 ID",
+                    "description": "삭제할 일정입니다."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "요일의 시간 블록 설정",
+            "description": "UI에서 만든 일정 도우미의 하나 이상의 요일에 대한 시간 블록을 대체합니다. YAML로 설정한 일정은 Spook이 변경할 수 없습니다.",
+            "fields": {
+                "day": {
+                    "name": "요일",
+                    "description": "시간 블록을 설정할 요일입니다."
+                },
+                "blocks": {
+                    "name": "시간 블록",
+                    "description": "그 요일들에 일정이 켜져 있는 시간 블록으로, 각 블록에는 시작 시간과 종료 시간, 그리고 켜져 있는 동안 속성으로 보여 줄 선택적 데이터가 들어갑니다. 이 블록들이 그 요일에 있던 블록을 대체합니다. 빈 목록이면 그 요일은 하루 종일 꺼져 있습니다."
                 }
             }
         }
