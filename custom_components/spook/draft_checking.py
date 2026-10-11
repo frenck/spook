@@ -259,9 +259,11 @@ def _extract_draft_user_ids(config: dict[str, Any]) -> set[str]:
     A view handed over on its own has its own `visible` too, which a card
     does not have and the dashboard reader only reads below `views`. Like
     the repair, a dashboard run by a strategy has no users of its own: the
-    views left stored next to it are never shown.
+    views left stored next to it are never shown. A card has a type and a
+    dashboard does not, so a custom card with options of those names is
+    still read as a card.
     """
-    if "views" in config and "strategy" in config:
+    if "type" not in config and "views" in config and "strategy" in config:
         return set()
 
     if "views" not in config and is_view_node(config):

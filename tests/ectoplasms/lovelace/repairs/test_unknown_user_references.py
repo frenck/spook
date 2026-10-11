@@ -352,6 +352,14 @@ async def test_every_place_a_dashboard_names_a_user_is_read(
             id="views-next-to-a-strategy",
         ),
         pytest.param(
+            _with_cards(visibility="USERS"),
+            id="visibility-on-a-view",
+        ),
+        pytest.param(
+            {"views": [{"type": "custom:mine", "visibility": "USERS"}]},
+            id="visibility-on-a-custom-view",
+        ),
+        pytest.param(
             _with_cards({"type": "tile", "visibility": _only_for("casper")}),
             id="not-a-user-id",
         ),
@@ -363,8 +371,9 @@ async def test_what_is_not_a_user_the_frontend_checks_is_not_read(
     """Test a removed user is left alone where nothing compares it with users.
 
     A condition switched off, the inside of a custom card, data handed to an
-    action, a `visible` anywhere but on a view, a strategy's options, views
-    a dashboard strategy leaves unused, and something that was never a user ID.
+    action, a `visible` anywhere but on a view, a `visibility` on a view, a
+    strategy's options, views a dashboard strategy leaves unused, and
+    something that was never a user ID.
     """
     removed = await async_removed_user_id(hass)
 
@@ -485,6 +494,38 @@ async def test_a_draft_dashboard_run_by_a_strategy_names_no_users(
                 "strategy": {"type": "original-states"},
                 "views": [{"path": "secret", "visible": [{"user": removed}]}],
             },
+        )
+        == {}
+    )
+
+
+async def test_a_draft_custom_card_with_views_and_a_strategy_is_a_card(
+    hass: HomeAssistant,
+) -> None:
+    """Test a custom card's own options are not taken for a strategy dashboard."""
+    removed = await async_removed_user_id(hass)
+
+    assert await async_check_draft(
+        hass,
+        "dashboard",
+        {
+            "type": "custom:mine",
+            "strategy": "anything",
+            "views": [],
+            "visibility": _only_for(removed),
+        },
+    ) == {"users": [removed]}
+
+
+async def test_a_draft_view_has_no_visibility_to_read(hass: HomeAssistant) -> None:
+    """Test a single draft view's `visibility` is left alone, like a saved one."""
+    removed = await async_removed_user_id(hass)
+
+    assert (
+        await async_check_draft(
+            hass,
+            "dashboard",
+            {"path": "secret", "visibility": _only_for(removed), "cards": []},
         )
         == {}
     )

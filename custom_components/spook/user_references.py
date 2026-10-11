@@ -96,13 +96,14 @@ def _walk(node: Any, found: set[str], *, is_view: bool = False) -> None:
     if not isinstance(node, dict):
         return
 
-    # Every card, badge and section can be made visible to some users only.
-    _add_conditions(node.get("visibility", []), found)
-
-    # The older way to show a view to some users only. The frontend applies
-    # it to every view, a custom one too.
+    # The way to show a view to some users only. The frontend applies it to
+    # every view, a custom one too. A view has no `visibility`: only its
+    # cards, badges, sections and sidebar do.
     if is_view:
         found.update(_listed_users(node.get("visible")))
+    else:
+        # Every card, badge and section can be made visible to some users.
+        _add_conditions(node.get("visibility", []), found)
 
     node_type = node.get("type")
     if isinstance(node_type, str) and node_type.startswith(_CUSTOM_PREFIX):
