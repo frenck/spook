@@ -7,6 +7,7 @@ expect:
     find: [script.check_ac_status]
   entities:
     find: [input_boolean.ac_error]
+    not_find: [climate.living_room]
 ---
 alias: Set AC status
 sequence:

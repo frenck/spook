@@ -10,6 +10,9 @@ expect:
       - sensor.outdoor_temperature
       - climate.living_room
       - script.goodnight
+  attributes:
+    find:
+      - climate.living_room: current_temperature
   services:
     find: [script.goodnight]
 ---

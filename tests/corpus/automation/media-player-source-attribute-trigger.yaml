@@ -8,6 +8,10 @@ expect:
   attributes:
     find:
       - media_player.living_room_tv: source
+  states:
+    find:
+      - media_player.living_room_tv[source]: '"HDMI 1"'
+      - media_player.living_room_tv[source]: '"HDMI 2"'
 ---
 alias: Game console selected
 triggers:

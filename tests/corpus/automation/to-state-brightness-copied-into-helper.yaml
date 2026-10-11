@@ -5,6 +5,9 @@ note: >-
 expect:
   entities:
     find: [light.living_room_lamp, input_number.lamp_brightness]
+  attributes:
+    find:
+      - light.living_room_lamp: brightness
 ---
 alias: Remember lamp brightness
 triggers:

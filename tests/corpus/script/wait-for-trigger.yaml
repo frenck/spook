@@ -10,6 +10,8 @@ expect:
   states:
     find:
       - cover.living_room[current_position]: "0"
+      - cover.bedroom[current_position]: "0"
+      - binary_sensor.window: "off"
     not_find:
       - cover.living_room[current_position]: '"0"'
   triggers:

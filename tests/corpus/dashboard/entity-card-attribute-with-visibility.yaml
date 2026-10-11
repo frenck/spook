@@ -6,6 +6,12 @@ note: >-
 expect:
   entities:
     find: [sensor.media_server_process]
+  attributes:
+    find:
+      - sensor.media_server_process: name
+  states:
+    find:
+      - sensor.media_server_process: unavailable
 ---
 type: entity
 entity: sensor.media_server_process

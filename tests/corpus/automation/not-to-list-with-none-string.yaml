@@ -2,9 +2,16 @@ source: https://community.home-assistant.io/t/will-triggers-with-not-to-be-trigg
 note: >-
   A state trigger with not_to listing unknown, unavailable and the string "none" to
   filter out invalid values. The "none" entry is not a state the sensor can have.
+  Unknown and unavailable are read as well; the state check takes both as valid
+  for any entity.
 expect:
   entities:
     find: [sensor.power_meter_current]
+  states:
+    find:
+      - sensor.power_meter_current: none
+      - sensor.power_meter_current: unavailable
+      - sensor.power_meter_current: unknown
 ---
 alias: Track valid power readings
 triggers:

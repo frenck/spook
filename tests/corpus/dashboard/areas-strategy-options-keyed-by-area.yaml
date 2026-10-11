@@ -12,7 +12,10 @@ expect:
     find: [garage, kitchen, bedroom, office]
     not_find: [ground_floor]
   entities:
-    find: [light.office_night_light, light.office_ceiling]
+    find:
+      - light.office_night_light
+      - light.office_ceiling
+      - light.office_desk_lamp
 ---
 strategy:
   type: areas

@@ -4,7 +4,7 @@ note: >-
   a message mentioning an entity. Both are text for system_log.
 expect:
   entities:
-    not_find: [switch.boiler]
+    not_find: [switch.boiler, script.retry_boiler]
 ---
 alias: Retry boiler off
 sequence:
