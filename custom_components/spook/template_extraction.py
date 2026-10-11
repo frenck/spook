@@ -705,6 +705,14 @@ _LOOKUP_PARAMETERS: dict[str, tuple[tuple[str, ...], int]] = {
     "state_attr_translated": (("entity_id", "attribute"), 2),
     "state_translated": (("entity_id",), 1),
     "states": (("entity_id", "rounded", "with_unit"), 1),
+    # The lookups by area, floor or label take that and nothing else.
+    "area_devices": (("area_id_or_name",), 1),
+    "area_entities": (("area_id_or_name",), 1),
+    "floor_areas": (("floor_id_or_name",), 1),
+    "floor_entities": (("floor_id_or_name",), 1),
+    "label_areas": (("label_id_or_name",), 1),
+    "label_devices": (("label_id_or_name",), 1),
+    "label_entities": (("label_id_or_name",), 1),
 }
 
 # What Jinja takes for the one argument of a test without parentheses,
@@ -2509,3 +2517,78 @@ def extract_device_ids_from_config(
     for template_str in extract_template_strings_from_config(config):
         device_ids.update(_extract_device_ids_from_template(template_str, shadowed))
     return device_ids
+
+
+# The functions that list what is in an area, on a floor or with a label,
+# called directly or as a filter, by what they look up. Handed something
+# they find no area, floor or label for, they quietly give an empty list.
+_REGISTRY_LOOKUPS: dict[str, frozenset[str]] = {
+    "areas": frozenset({"area_devices", "area_entities"}),
+    "floors": frozenset({"floor_areas", "floor_entities"}),
+    "labels": frozenset({"label_areas", "label_devices", "label_entities"}),
+}
+
+
+def _looked_up_in_registry(
+    expressions: list[list[_Token]], local: set[str], lookups: frozenset[str]
+) -> set[str]:
+    """Return the literals a template hands these lookups, as written.
+
+    Read like the state lookups: by the very name, never a method, and only
+    a whole literal the call can take. As a filter, the value in front is
+    what is looked up. None of them is a test, so used as one it fails. A
+    name the template or the configuration defines (`local`) hides the
+    call, not the filter.
+    """
+    found: set[str] = set()
+    for tokens in expressions:
+        for index, (kind, name) in enumerate(tokens):
+            if kind != "name" or name not in lookups or _is(tokens, index - 1, "dot"):
+                continue
+
+            if _is(tokens, index - 1, "pipe"):
+                # A dotted name, `| area_entities.x`, is another filter.
+                if _is(tokens, index + 1, "dot"):
+                    continue
+                arguments = _call_arguments(tokens, index + 1) or []
+                if _fits(name, arguments, in_front=1):
+                    found.update(_value_in_front(tokens, index - 1, lists=False))
+            elif name not in local and not _is_test(tokens, index):
+                found.update(_called_lookup(tokens, index, name))
+
+    return found
+
+
+@lru_cache(maxsize=1024)
+def _extract_registry_lookups_from_template(
+    template_str: str, kind: str, shadowed: frozenset[str]
+) -> frozenset[str]:
+    """Extract what a template looks up by area, floor or label.
+
+    Pure in its arguments, so cached like the entity extraction.
+    """
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions) | shadowed
+
+    return frozenset(
+        _looked_up_in_registry(expressions, local, _REGISTRY_LOOKUPS[kind])
+    )
+
+
+def extract_registry_lookups_from_config(
+    config: Any, kind: str, shadowed: frozenset[str] = frozenset()
+) -> set[str]:
+    """Extract the literals templates hand the lookups by area, floor or label.
+
+    `kind` is `areas`, `floors` or `labels`. What is found is as written: an
+    ID, a name, an alias or anything else. Whether that finds anything is up
+    to the caller, which has the registries. A call by a name in
+    `shadowed`, which the configuration gives its templates, is not Home
+    Assistant's lookup.
+    """
+    found: set[str] = set()
+    for template_str in extract_template_strings_from_config(config):
+        found.update(
+            _extract_registry_lookups_from_template(template_str, kind, shadowed)
+        )
+    return found

@@ -41,6 +41,7 @@ from homeassistant.helpers import (
     label_registry as lr,
 )
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.helpers.template.helpers import resolve_area_id
 from homeassistant.util.hass_dict import HassKey
 
 from .const import LOGGER
@@ -674,6 +675,75 @@ def async_filter_known_label_ids(
         label_id
         for label_id in label_ids - known_label_ids
         if label_id and isinstance(label_id, str)
+    }
+
+
+@callback
+def async_template_areas_not_found(hass: HomeAssistant, values: set[str]) -> set[str]:
+    """Return the values `area_entities` and `area_devices` find no area for.
+
+    They take an area ID, or an area name or alias in any case and spacing.
+    Nothing else: an entity or device ID in an area is taken as an area ID
+    (`area_name` finds an area for it), which no area has, and one without
+    an area finds none either. The way to get there is
+    `area_entities(area_id('light.x'))`. A name that is also an entity or
+    device ID in an area finds nothing too, but is not worth telling apart.
+    """
+    area_registry = ar.async_get(hass)
+    return {
+        value
+        for value in values
+        if area_registry.async_get_area(value) is None
+        and area_registry.async_get_area_by_name(value) is None
+        and not area_registry.async_get_areas_by_alias(value)
+    }
+
+
+@callback
+def async_template_floors_not_found(hass: HomeAssistant, values: set[str]) -> set[str]:
+    """Return the values `floor_areas` and `floor_entities` find no floor for.
+
+    They take a floor ID, or a floor name or alias in any case and spacing.
+    Before the name, they ask `floor_name`, which finds a floor for an area
+    too: when the value resolves to an area on a floor, by name, alias,
+    entity or device ID, it is taken as a floor ID. So a floor called
+    `Attic` finds nothing as long as an area on a floor is called that as
+    well, and an entity or device ID never finds a floor.
+    """
+    area_registry = ar.async_get(hass)
+    floor_registry = fr.async_get(hass)
+
+    def _finds_a_floor(value: str) -> bool:
+        if floor_registry.async_get_floor(value) is not None:
+            return True
+        if floor_registry.async_get_floor_by_name(
+            value
+        ) is None and not floor_registry.async_get_floors_by_alias(value):
+            return False
+
+        # The name only counts when `floor_name` did not take it first.
+        if (area_id := resolve_area_id(hass, value)) is None or (
+            area := area_registry.async_get_area(area_id)
+        ) is None:
+            return True
+        return not (area.floor_id and floor_registry.async_get_floor(area.floor_id))
+
+    return {value for value in values if not _finds_a_floor(value)}
+
+
+@callback
+def async_template_labels_not_found(hass: HomeAssistant, values: set[str]) -> set[str]:
+    """Return the values the label lookups find no label for.
+
+    `label_areas`, `label_devices` and `label_entities` take a label ID, or
+    a label name in any case and spacing. Labels have no aliases.
+    """
+    label_registry = lr.async_get(hass)
+    return {
+        value
+        for value in values
+        if label_registry.async_get_label(value) is None
+        and label_registry.async_get_label_by_name(value) is None
     }
 
 
