@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import math
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
@@ -10,7 +9,7 @@ import voluptuous as vol
 from homeassistant.components.number import DOMAIN, NumberEntity
 
 from ....services import AbstractSpookEntityComponentService
-from . import async_set_shown_value, shown_value_as_float
+from . import async_set_shown_value, shown_value_as_float, step_amount
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -29,22 +28,7 @@ class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        step = entity.step or 1
-        amount = call.data.get("amount", step)
-        remainder = amount % step
-        # Float modulo wraps around just short of the step, 0.3 % 0.1 is
-        # 0.09999999999999998, so a remainder against either end is a clean multiple.
-        if not (
-            math.isclose(remainder, 0, rel_tol=0, abs_tol=1e-9)
-            or math.isclose(remainder, step, rel_tol=0, abs_tol=1e-9)
-        ):
-            msg = (
-                f"Amount {amount} not valid for {entity.entity_id}, "
-                f"it needs to be a multiple of {step}"
-            )
-            raise ValueError(msg)
-
-        value = shown_value_as_float(entity) - amount
+        value = shown_value_as_float(entity) - step_amount(entity, call)
 
         if entity.min_value is not None:
             value = max(value, entity.min_value)

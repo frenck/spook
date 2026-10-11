@@ -7,7 +7,7 @@ from types import SimpleNamespace
 from typing import Any
 
 import pytest
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 
 from custom_components.spook.ectoplasms.input_number.services import (
     decrement,
@@ -141,7 +141,7 @@ async def test_input_number_services_reject_near_multiples_of_large_steps(
     entity = MockInputNumber(0, step=1_000_000_000)
     call = _call(amount=999_999_999)
 
-    with pytest.raises(ValueError, match="needs to be a multiple of"):
+    with pytest.raises(ServiceValidationError, match="Use a multiple of"):
         await service_cls(hass).async_handle_service(entity, call)
 
 
@@ -158,10 +158,10 @@ async def test_input_number_services_raise_readable_error_for_invalid_amount(
     call = _call(amount=0.2)
 
     with pytest.raises(
-        ValueError,
+        ServiceValidationError,
         match=escape(
-            "Amount 0.2 not valid for input_number.test, "
-            "it needs to be a multiple of 0.5"
+            "Amount 0.2 does not fit input_number.test, which moves in steps of "
+            "0.5. Use a multiple of 0.5, or leave the amount out to move one step"
         ),
     ):
         await service_cls(hass).async_handle_service(entity, call)
