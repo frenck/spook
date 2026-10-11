@@ -234,10 +234,20 @@ async def test_a_day_that_does_not_exist(hass: HomeAssistant, day: Any) -> None:
     assert _stored(hass)["monday"] == [_MORNING]
 
 
-async def test_the_blocks_have_to_be_given(hass: HomeAssistant) -> None:
+@pytest.mark.parametrize(
+    "data",
+    [
+        {"day": "monday"},
+        {"day": "monday", "blocks": None},
+    ],
+)
+async def test_the_blocks_have_to_be_given(
+    hass: HomeAssistant,
+    data: dict[str, Any],
+) -> None:
     """Clearing a day is asked for with an empty list, never by leaving out."""
     with pytest.raises(vol.Invalid):
-        await _set_day(hass, {"day": "monday"})
+        await _set_day(hass, data)
 
     assert _stored(hass)["monday"] == [_MORNING]
 

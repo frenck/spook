@@ -41,9 +41,11 @@ class SpookService(AbstractSpookEntityComponentService[Schedule]):
             vol.Length(min=1),
             [vol.In(list(WEEKDAY_TO_CONF.values()))],
         ),
-        # Only made a list here. What goes in it is for core to judge, below,
-        # so a block it refuses comes back as an error people can read.
-        vol.Required(CONF_BLOCKS): cv.ensure_list,
+        # Only checked to be a list here, and not made one: a null would
+        # become an empty list and quietly clear the days. What goes in it is
+        # for core to judge, below, so a block it refuses comes back as an
+        # error people can read.
+        vol.Required(CONF_BLOCKS): list,
     }
 
     async def async_handle_service(
