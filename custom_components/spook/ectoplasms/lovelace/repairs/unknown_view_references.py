@@ -13,6 +13,7 @@ from homeassistant.core import callback
 
 from ....const import LOGGER
 from ....dashboard_extraction import (
+    TEMPLATE_MARKERS,
     extract_navigation_paths_from_dashboard_node,
     javascript_number,
 )
@@ -33,12 +34,6 @@ _JAVASCRIPT_FALSY = (None, "", 0, False)
 # before it looks for a view by that name.
 _UNUSED_ENTITIES_VIEW = "hass-unused-entities"
 
-# Whatever a template or a card's own variables turn into is not known until
-# they run. Jinja (a comment too), button-card's `[[[ ]]]`, decluttering-card's
-# `[[ ]]` and config-template-card's `${ }`. Only the opening is asked for: a
-# half-written one is no path to judge either.
-_TEMPLATE_MARKERS = ("{{", "{%", "{#", "[[", "${")
-
 # The browser drops these from a URL, or reads them as a slash, before the
 # frontend gets to see the path. What it ends up as is the browser's call.
 _REWRITTEN_BY_THE_BROWSER = ("\t", "\n", "\r", "\\")
@@ -54,7 +49,7 @@ def _dashboard_and_view(path: str) -> tuple[str, str] | None:
     if (
         not path.startswith("/")
         or path != path.strip()
-        or any(marker in path for marker in _TEMPLATE_MARKERS)
+        or any(marker in path for marker in TEMPLATE_MARKERS)
         or any(character in path for character in _REWRITTEN_BY_THE_BROWSER)
     ):
         return None

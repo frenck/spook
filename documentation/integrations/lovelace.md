@@ -165,6 +165,26 @@ To resolve the raised issue, edit the dashboard and pick the users that should s
 - A dashboard run by a strategy, like the areas dashboard, is not checked.
   :::
 
+### Unknown themes
+
+Dashboards are inspected for the themes they use: the theme of a view, of a section, and of the cards that take one, also inside stacks, grids, conditional cards and the header and footer of a sections view. When that theme does not exist, Spook raises a repair issue naming the dashboard and the themes that are missing.
+
+The frontend does not tell you when a theme is missing. It only puts on a theme it has, so a card or view asking for one that is gone gets the default look, and nothing says why. This usually happens when a theme was renamed, or the file it came from was removed.
+
+A theme is found by its name, exactly as written, so `midnight` is not `Midnight`. `default` and `none` are fine: those are built in, not themes of your own. Spook looks again when the themes are reloaded, so adding a theme back clears the issue as well.
+
+To resolve the raised issue, edit the dashboard and pick a theme that exists, or add the theme back. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only the cards that put on a theme are checked. A theme on any other card, like a tile card or a stack, does nothing either way.
+- Only what the view's layout draws is checked. A panel view shows its first card only, and the sections, header and footer of a view that is not a sections view are never shown.
+- Custom cards, and the cards inside them, are not checked. What a custom card does with a `theme` is up to the card. The theme of a custom view or section is checked, as the frontend puts that one on itself.
+- A theme that is a template, or uses a card's own variables, is not checked.
+- Views, sections and dashboards run by a strategy are not checked. Those are only made when they open.
+  :::
+
 ### Missing dashboard resources
 
 Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks the ones it can: a resource served from `/local/` or `/hacsfiles/` maps to a file on disk, so Spook can see whether that file is there. If it is not, it will raise a repair issue listing the resources in question.

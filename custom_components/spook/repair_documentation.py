@@ -48,6 +48,7 @@ REPAIR_DOCUMENTATION: Final = {
     "lovelace_unknown_entity_references": "lovelace#unknown-referenced-entities",
     "lovelace_unknown_icons": "lovelace#unknown-icons",
     "lovelace_unknown_service_references": "lovelace#unknown-actions",
+    "lovelace_unknown_theme_references": "lovelace#unknown-themes",
     "lovelace_unknown_user_references": "lovelace#removed-users",
     "lovelace_unknown_view_references": "lovelace#unknown-views",
     "lovelace_unknown_state_references": "lovelace#unknown-referenced-states",

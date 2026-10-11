@@ -862,6 +862,196 @@ def extract_icons_from_dashboard_node(node: Any) -> set[str]:
     return icons
 
 
+# Whatever a template or a card's own variables turn into is not known until
+# they run. Jinja (a comment too), button-card's `[[[ ]]]`, decluttering-card's
+# `[[ ]]` and config-template-card's `${ }`. Only the opening is asked for: a
+# half-written one is nothing to judge either.
+TEMPLATE_MARKERS = ("{{", "{%", "{#", "[[", "${")
+
+# The core cards that put on the theme their `theme` names, each with its own
+# call to `applyThemesOnElement` in `src/panels/lovelace/cards`. The entity
+# button and the sensor card are the button and the entity card under another
+# name, the shopping list is the to-do list. Every other card leaves the key
+# alone, so a name there that is gone changes nothing.
+_CARDS_WITH_THEME = frozenset(
+    {
+        "alarm-panel",
+        "button",
+        "calendar",
+        "entities",
+        "entity",
+        "entity-button",
+        "gauge",
+        "glance",
+        "humidifier",
+        "light",
+        "logbook",
+        "markdown",
+        "media-control",
+        "picture",
+        "picture-elements",
+        "picture-entity",
+        "picture-glance",
+        "plant-status",
+        "sensor",
+        "shopping-list",
+        "statistic",
+        "thermostat",
+        "todo-list",
+        "weather-forecast",
+    }
+)
+
+# The core cards that put the cards in their `cards` on the dashboard. Any
+# other card leaves such a key alone.
+_CARDS_WITH_CARDS = frozenset({"grid", "horizontal-stack", "vertical-stack"})
+
+# The conditional card puts the one card in its `card` on the dashboard.
+_CONDITIONAL_CARD = "conditional"
+
+# The entity filter card hands its rows to an entities card, unless its own
+# `card` names another type.
+_ENTITY_FILTER_CARD = "entity-filter"
+_ENTITY_FILTER_DEFAULT_CARD = "entities"
+
+# The two parts of a sections view that each hold a card.
+_VIEW_PARTS_WITH_A_CARD = ("header", "footer")
+
+# The view layouts, as the frontend's `getViewType` picks them. The cards of a
+# sections view are only shown while editing, to be moved into a section.
+_MASONRY_VIEW = "masonry"
+_VIEWS_WITH_CARDS = frozenset({_MASONRY_VIEW, "sidebar"})
+_PANEL_VIEW = "panel"
+_SECTIONS_VIEW = "sections"
+
+# The one section layout the frontend draws. A section without a type gets it,
+# any other core type turns into an error card that shows none of its content.
+_GRID_SECTION = "grid"
+
+
+def _view_type(view: dict[str, Any]) -> Any:
+    """Return the layout the frontend picks for a view.
+
+    Its `getViewType` asks JavaScript whether each key is set, and to
+    JavaScript an empty list is: `sections: []` makes a sections view.
+    """
+    if (view_type := view.get("type")) not in _JAVASCRIPT_FALSY:
+        return view_type
+    if view.get("panel") not in _JAVASCRIPT_FALSY:
+        return _PANEL_VIEW
+    if view.get("sections") not in _JAVASCRIPT_FALSY:
+        return _SECTIONS_VIEW
+    if view.get("cards") not in _JAVASCRIPT_FALSY:
+        return _MASONRY_VIEW
+    return _SECTIONS_VIEW
+
+
+def _collect_theme(node: dict[str, Any], themes: set[str]) -> None:
+    """Collect the theme a dashboard node names, if it names one.
+
+    The frontend looks the name up exactly as written, spaces and all. Only
+    an empty one is no theme at all, and a template is no name until it runs.
+    """
+    if (
+        isinstance(theme := node.get("theme"), str)
+        and theme
+        and not any(marker in theme for marker in TEMPLATE_MARKERS)
+    ):
+        themes.add(theme)
+
+
+def _collect_card_themes(card: Any, themes: set[str]) -> None:
+    """Collect the themes a core card, and the cards in it, put on."""
+    if not isinstance(card, dict) or not isinstance(card_type := card.get("type"), str):
+        return
+
+    # What a custom card does with a `theme`, or with the cards it holds, is
+    # its own business.
+    if card_type.startswith(_CUSTOM_PREFIX):
+        return
+
+    if card_type in _CARDS_WITH_THEME:
+        _collect_theme(card, themes)
+
+    # The stacks and the grid hold cards, the conditional and the entity
+    # filter card hold one.
+    if card_type in _CARDS_WITH_CARDS:
+        _collect_cards_themes(card.get("cards"), themes)
+    elif card_type == _CONDITIONAL_CARD:
+        _collect_card_themes(card.get("card"), themes)
+    elif card_type == _ENTITY_FILTER_CARD and isinstance(
+        inner_card := card.get("card"), dict
+    ):
+        _collect_card_themes(
+            {"type": _ENTITY_FILTER_DEFAULT_CARD, **inner_card}, themes
+        )
+
+
+def _collect_cards_themes(cards: Any, themes: set[str]) -> None:
+    """Collect the themes a list of cards puts on."""
+    if not isinstance(cards, list):
+        return
+
+    for card in cards:
+        _collect_card_themes(card, themes)
+
+
+def _collect_section_themes(sections: Any, themes: set[str]) -> None:
+    """Collect the themes a list of sections, and what is in them, put on.
+
+    The section wrapper puts on a section's theme whatever its type, so a
+    custom section's own theme counts, and the cards and sections in it are
+    left to it. Only the grid layout draws what is in it. A strategy section
+    makes its config when it opens, so none of it is known up front.
+    """
+    if not isinstance(sections, list):
+        return
+
+    for section in sections:
+        if not isinstance(section, dict) or "strategy" in section:
+            continue
+
+        _collect_theme(section, themes)
+        if (section.get("type") or _GRID_SECTION) == _GRID_SECTION:
+            _collect_cards_themes(section.get("cards"), themes)
+            _collect_section_themes(section.get("sections"), themes)
+
+
+def extract_themes_from_dashboard_view(view: Any) -> set[str]:
+    """Return the themes a view, its sections and its core cards put on.
+
+    The view container puts on a view's theme whatever its type, so a custom
+    view's own theme counts, and what is in it does not. A strategy view makes
+    its config when it opens, so none of it is known up front.
+    """
+    themes: set[str] = set()
+    if not isinstance(view, dict) or "strategy" in view:
+        return themes
+
+    _collect_theme(view, themes)
+    if _is_custom(view):
+        return themes
+
+    # Each layout only draws its own part of the config. Whatever another
+    # layout would use is left lying around and changes nothing.
+    view_type = _view_type(view)
+    if view_type in _VIEWS_WITH_CARDS:
+        _collect_cards_themes(view.get("cards"), themes)
+    elif view_type == _PANEL_VIEW and isinstance(cards := view.get("cards"), list):
+        # A panel view shows its first card, and only warns about the rest.
+        _collect_cards_themes(cards[:1], themes)
+    elif view_type == _SECTIONS_VIEW:
+        _collect_section_themes(view.get("sections"), themes)
+        if isinstance(sidebar := view.get("sidebar"), dict):
+            _collect_section_themes(sidebar.get("sections"), themes)
+
+        for part in _VIEW_PARTS_WITH_A_CARD:
+            if isinstance(holder := view.get(part), dict):
+                _collect_card_themes(holder.get("card"), themes)
+
+    return themes
+
+
 # What `Number()` and `trim()` in JavaScript take for whitespace: tab, line
 # and form feeds, the byte order mark, every space separator and the line
 # terminators. Python's own `\s` and `strip()` take a few more, like the
