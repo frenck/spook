@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Úsáideoir curtha leis",
             "description": "Spreagann sé nuair a thugtar logáil isteach do Home Assistant do dhuine éigin. Fágtar amach úsáideoirí a chruthaíonn Home Assistant dá chomhtháthaithe féin."
+        },
+        "state_changed": {
+            "name": "Truicear staide Spook",
+            "description": "Spreagann sé nuair a athraíonn aonán a staid, do gach rud a chlúdaíonn sprioc: aonáin, gléasanna, limistéir, urláir agus lipéid. Cúngaigh é de réir fearainn, comhtháthaithe nó aicme gléis, nó fág an sprioc folamh agus lig dóibh sin na haonáin a roghnú ó gach rud. Eisiaigh rudaí arís, agus socraigh cé chomh fada a chaithfidh athrú seasamh sula gcomhairtear é.",
+            "fields": {
+                "domain": {
+                    "name": "Fearainn",
+                    "description": "Aonáin de na fearainn seo amháin, cosúil le binary_sensor nó cover. Gan sprioc, roghnaíonn sé iad ó gach rud."
+                },
+                "integration": {
+                    "name": "Comhtháthaithe",
+                    "description": "Aonáin a sholáthraíonn na comhtháthaithe seo amháin, cosúil le zha nó hue. Gan sprioc, roghnaíonn sé iad ó gach rud."
+                },
+                "config_entry": {
+                    "name": "Iontráil chomhtháthaithe",
+                    "description": "Aonáin na hiontrála comhtháthaithe seo amháin. Gan sprioc, roghnaíonn sé iad ó gach rud."
+                },
+                "device_class": {
+                    "name": "Aicmí gléis",
+                    "description": "Aonáin de na haicmí gléis seo amháin, cosúil le door nó window. Gan sprioc, roghnaíonn sé iad ó gach rud."
+                },
+                "exclude_target": {
+                    "name": "Eisiaigh",
+                    "description": "Aonáin, gléasanna, limistéir, urláir nó lipéid le heisiamh. Eisiatar gach rud iontu, na haonáin dhiagnóiseacha freisin."
+                },
+                "exclude_domain": {
+                    "name": "Eisiaigh fearainn",
+                    "description": "Eisiaigh aonáin de na fearainn seo. Mura bhfuil aon rud in Eisiaigh, baineann sé seo le gach rud a chlúdaíonn an sprioc."
+                },
+                "exclude_integration": {
+                    "name": "Eisiaigh comhtháthaithe",
+                    "description": "Eisiaigh aonáin a sholáthraíonn na comhtháthaithe seo."
+                },
+                "exclude_config_entry": {
+                    "name": "Eisiaigh iontráil chomhtháthaithe",
+                    "description": "Eisiaigh aonáin na hiontrála comhtháthaithe seo."
+                },
+                "exclude_device_class": {
+                    "name": "Eisiaigh aicmí gléis",
+                    "description": "Eisiaigh aonáin de na haicmí gléis seo."
+                },
+                "attribute": {
+                    "name": "Tréith",
+                    "description": "Lean an tréith seo in ionad na staide."
+                },
+                "from": {
+                    "name": "Ó",
+                    "description": "Athruithe a thagann ó cheann de na staideanna seo amháin."
+                },
+                "not_from": {
+                    "name": "Ní ó",
+                    "description": "Athruithe nach dtagann ó cheann de na staideanna seo amháin."
+                },
+                "to": {
+                    "name": "Go",
+                    "description": "Athruithe a théann go ceann de na staideanna seo amháin."
+                },
+                "not_to": {
+                    "name": "Ní go",
+                    "description": "Athruithe nach dtéann go ceann de na staideanna seo amháin."
+                },
+                "ignore_unavailable": {
+                    "name": "Déan neamhaird de gan fáil agus anaithnid",
+                    "description": "Fág amach athruithe ó gan fáil agus anaithnid nó chucu, ionas nach spreagann atosú nó ródaire á atosú do gach rud. Múch é chun iad a úsáid in Ó nó Go."
+                },
+                "attribute_changes": {
+                    "name": "Comhair athruithe tréithe",
+                    "description": "Spreag freisin nuair nár athraigh ach tréith agus gur fhan an staid mar a bhí. Ní dhéanann sé aon rud fad is atá tréith á leanúint."
+                },
+                "behavior": {
+                    "name": "Iompar",
+                    "description": "Spreag do gach aonán, don chéad cheann den sprioc a shroicheann ann, nó nuair atá siad go léir ann. Teastaíonn Go nó Ní go ón gcéad cheann agus ó iad go léir. Fad is a dhéantar neamhaird de gan fáil agus anaithnid, ní ghlacann aonáin sna staideanna sin páirt."
+                },
+                "for": {
+                    "name": "Ar feadh",
+                    "description": "Ná spreag ach nuair a sheas an staid nua ar feadh an achair seo. Cuireann aon athrú eile idir eatarthu ar ceal é."
+                },
+                "blip_tolerance": {
+                    "name": "Lamháltas preabtha",
+                    "description": "Le linn fanacht ar Ar feadh, ní thosaíonn an fanacht as an nua má théann sé gan fáil nó anaithnid agus má thagann sé ar ais mar a bhí laistigh den am seo. Ní oibríonn sé ach in éineacht le Ar feadh."
+                },
+                "delay": {
+                    "name": "Moill",
+                    "description": "Fan an fad seo sula spreagann sé, cibé rud a tharlaíonn idir eatarthu. Cosúil le moill ag tús na ngníomhartha."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Bun",
                 "top": "Barr"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Dé Luain",
+                "tuesday": "Dé Máirt",
+                "wednesday": "Dé Céadaoin",
+                "thursday": "Déardaoin",
+                "saturday": "Dé Sathairn",
+                "sunday": "Dé Domhnaigh",
+                "friday": "Dé hAoine"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Fad",
                     "description": "An fad ama le fanacht tar éis an rith deireanaigh sula mbeidh an coinníoll seo fíor arís."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Tá an t-aonán ar fáil",
+            "description": "Fíor nuair atá aonán ann le labhairt leis: aon rud seachas gan fáil nó anaithnid. Do challaire nó plocóid chliste nach bhfuil cumhacht aici i gcónaí.",
+            "fields": {
+                "behavior": {
+                    "name": "Iompar",
+                    "description": "Cibé an leor aonán ar bith acu a bheith ann, nó an gcaithfidh gach ceann acu a bheith ann."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Ní féidir an zón seo a chur in eagar: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Ní oireann an méid {amount} do {entity_id}, a bhogann i gcéimeanna de {step}. Úsáid iolraí de {step}, nó fág an méid amach chun céim amháin a bhogadh."
+        },
+        "area_cannot_update": {
+            "message": "Ní féidir an limistéar {area_id} a athrú mar sin: {error}."
+        },
+        "area_nothing_to_update": {
+            "message": "Níl aon rud le nuashonrú ar an limistéar {area_id}: tabhair ceann amháin ar a laghad de {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Níl aon rud le nuashonrú ar an ngléas {device_id}: tabhair ceann amháin ar a laghad de {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Tá an t-ainm {name} tógtha cheana ag an urlár {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Níl aon rud le nuashonrú ar an urlár {floor_id}: tabhair ceann amháin ar a laghad de {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Ní oibríonn na bloic ama sin do {entity_id}: {error}. Níor athraíodh aon rud."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "Is sceideal ó do chumraíocht YAML é {entity_id}, agus ní féidir le Spook é a athrú. Cuir in eagar i do chumraíocht é ina ionad sin."
+        },
+        "area_name_taken": {
+            "message": "Tá an t-ainm {name} tógtha cheana ag an limistéar {area_id}."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Tá na braiteoirí seo ar ais, nó díríonn na socruithe ar áit eile anois, ó d'fhéach Spook. Mar sin níor glanadh aon rud. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Ní féidir le Assist iad seo a aithint óna chéile: {name}",
+            "description": "Tá taibhse aimsithe ag Spook i do chúntóirí gutha 👻\n\nTá na haonáin seo a leanas nochtaithe do Assist, agus freagraíonn siad go léir don ainm {name}:\n\n{entities}\n\nNuair atá ainmneacha mar an gcéanna, ní aithníonn Assist óna chéile iad ach de réir limistéir: an ceann a ainmníonn tú, nó an ceann ina bhfuil do shatailít ghutha. Tá limistéar i bpáirt ag cuid acu seo, nó níl limistéar ar bith acu, mar sin ní féidir le Assist iad a phiocadh amach leis an ainm seo ó áit ar bith. Teipeann ar iarratas ar {name} ansin, agus ní deir aon rud cé na haonáin atá sa bhealach.\n\nChun é seo a réiteach, tabhair ainm nó ailias dá chuid féin do gach ceann acu, nó bog iad isteach i limistéir éagsúla. Is féidir leat ailiasanna aonáin a athrú, agus cibé an bhfeiceann Assist é ar chor ar bith, faoi [Aonáin nochtaithe](/config/voice-assistants/expose). Socraítear limistéir ar an [leathanach Limistéir](/config/areas/dashboard).\n\nSpook 👻 Do chara."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nÚsáideann an t-uathoibriú seo na tréithe seo a leanas, nach bhfuil ag a n-aonáin. Ní anois, ní mar rud a thairgeann an cineál sin aonáin, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{attributes}\n\n\n\nNí spreagann truicear nó coinníoll atá ag fanacht ar thréith nach dtagann riamh, agus ní insíonn sé sin duit. Ní fhaigheann teimpléad a léann ceann acu aon rud. Chun é seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus úsáid tréith atá ag an aonán.\n\nSpook 👻 Do chara.",
+            "title": "Tréithe anaithnide in úsáid in: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nFanann an t-uathoibriú seo ar na staideanna seo a leanas, nó seiceálann sé iad, ach ní bhíonn a n-aonáin iontu riamh. Ní mar rud is féidir leis an gcineál sin aonáin a bheith, ní i measc na roghanna a thairgeann an t-aonán, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{states}\n\n\n\nNí spreagann truicear atá ag fanacht ar staid nach dtagann riamh, ní bhíonn coinníoll a sheiceálann ceann acu fíor riamh, agus ní insíonn ceachtar acu sin duit. Tá staideanna cásíogair: ní hionann `On` agus `on`. Chun é seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus úsáid staid ar féidir leis an aonán a bheith inti.\n\nSpook 👻 Do chara.",
+            "title": "Staideanna anaithnide in úsáid in: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSeiceálann an t-uathoibriú seo na haitheantóirí truicir seo a leanas, nach bhfuil ag aon cheann dá thruicir féin:\n\n{trigger_ids}\n\n\n\nTagann seiceáil ar ID nach dtugann aon truicear uaidh amach mar an gcéanna i gcónaí: ní bhíonn coinníoll truicir a iarrann é fíor riamh, mar sin ní ritheann an chuid a chosnaíonn sé riamh, agus ní insíonn aon rud sin duit. Tá aitheantóirí truicir cásíogair, agus téann truicear gan ID dá chuid féin de réir a ionaid sa liosta, ag comhaireamh ó `0`. Chun é seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus úsáid ID ceann dá thruicir, nó tabhair don truicear an ID a iarrann an t-uathoibriú.\n\nSpook 👻 Do chara.",
+            "title": "Aitheantóirí truicir anaithnide in úsáid in: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nTaispeánann nó seiceálann an deais seo na tréithe seo a leanas, nach bhfuil ag a n-aonáin. Ní anois, ní mar rud a thairgeann an cineál sin aonáin, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{attributes}\n\n\n\nFanann cárta a thaispeánann tréith nach dtagann riamh folamh, agus ní bhíonn coinníoll infheictheachta nó scagaire a sheiceálann ceann acu fíor riamh. Ní insíonn ceachtar acu sin duit. Chun é seo a réiteach, [cuir an deais in eagar]({edit}) agus úsáid tréith atá ag an aonán.\n\nSpook 👻 Do chara.",
+            "title": "Tréithe anaithnide in úsáid sa deais: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nSeiceálann an deais seo na staideanna seo a leanas, ach ní bhíonn a n-aonáin iontu riamh. Ní mar rud is féidir leis an gcineál sin aonáin a bheith, ní i measc na roghanna a thairgeann an t-aonán, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{states}\n\n\n\nNí bhíonn coinníoll infheictheachta nó scagaire a sheiceálann staid nach dtagann riamh fíor riamh, agus ní thaispeántar riamh pictiúr atá socraithe do cheann acu. Ní insíonn aon cheann acu sin duit. Tá staideanna cásíogair: ní hionann `On` agus `on`. Chun é seo a réiteach, [cuir an deais in eagar]({edit}) agus úsáid staid ar féidir leis an aonán a bheith inti.\n\nSpook 👻 Do chara.",
+            "title": "Staideanna anaithnide in úsáid sa deais: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nNascleanann an deais seo chuig na hamhairc seo a leanas, nach ann dóibh:\n\n{paths}\n\n\n\nOsclaíonn cnaipe nó cárta a nascleanann chuig ceann acu seo an chéad amharc den deais sin ina ionad, gan é sin a rá. Tarlaíonn sé seo go minic nuair a athainmníodh, a bogadh nó a baineadh amharc. Chun an earráid seo a réiteach, [cuir an deais in eagar]({edit}) agus dírigh iad seo ar amharc atá ann.\n\nSpook 👻 Do chara.",
+            "title": "Amhairc anaithnide a nascleantar chucu sa deais: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nÚsáideann an script seo na tréithe seo a leanas, nach bhfuil ag a n-aonáin. Ní anois, ní mar rud a thairgeann an cineál sin aonáin, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{attributes}\n\n\n\nNí spreagann truicear nó coinníoll atá ag fanacht ar thréith nach dtagann riamh, agus ní insíonn sé sin duit. Ní fhaigheann teimpléad a léann ceann acu aon rud. Chun é seo a réiteach, [cuir an script in eagar]({edit}) agus úsáid tréith atá ag an aonán.\n\nSpook 👻 Do chara.",
+            "title": "Tréithe anaithnide in úsáid in: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nFanann an script seo ar na staideanna seo a leanas, nó seiceálann sí iad, ach ní bhíonn a n-aonáin iontu riamh. Ní mar rud is féidir leis an gcineál sin aonáin a bheith, ní i measc na roghanna a thairgeann an t-aonán, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{states}\n\n\n\nNí spreagann truicear atá ag fanacht ar staid nach dtagann riamh, ní bhíonn coinníoll a sheiceálann ceann acu fíor riamh, agus ní insíonn ceachtar acu sin duit. Tá staideanna cásíogair: ní hionann `On` agus `on`. Chun é seo a réiteach, [cuir an script in eagar]({edit}) agus úsáid staid ar féidir leis an aonán a bheith inti.\n\nSpook 👻 Do chara.",
+            "title": "Staideanna anaithnide in úsáid in: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do chúntóirí teimpléid 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an gcúntóir teimpléid seo a leanas:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nÚsáideann an cúntóir teimpléid seo na tréithe seo a leanas, nach bhfuil ag a n-aonáin. Ní anois, ní mar rud a thairgeann an cineál sin aonáin, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{attributes}\n\n\n\nNí fhaigheann teimpléad a léann tréith nach dtagann riamh aon rud, agus ní bhíonn coinníoll i gceann dá ghníomhartha atá ag fanacht ar cheann acu fíor riamh. Ní insíonn ceachtar acu sin duit. Chun é seo a réiteach, [cuir an cúntóir teimpléid in eagar]({edit}) agus úsáid tréith atá ag an aonán.\n\nSpook 👻 Do chara.",
+            "title": "Tréithe anaithnide in úsáid i gcúntóir teimpléid: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTá na teimpléid seo a leanas ag an uathoibriú seo, nach féidir leo a bheith fíor riamh, cibé rud a tharlaíonn i do theach:\n\n{templates}\n\n\n\nNíl coinníoll teimpléid fíor ach nuair a thugann sé `true`, agus `wait_template` freisin, mura n-athraíonn sé níos déanaí go rud a léitear mar fhíor. Spreagann truicear teimpléid nuair a athraíonn a theimpléad go rud a léitear mar fhíor, cosúil le `true`, `on`, `yes` nó `1`. Bíonn rud éigin eile mar thoradh ar na teimpléid seo i gcónaí, de bharr an chaoi a bhfuil siad scríofa. Na cúiseanna is coitianta:\n\n- Comharthaí athfhriotail timpeall an teimpléid. Glacann bloc `>-` leo mar théacs, mar sin críochnaíonn siad sa toradh.\n- Gan teorannóirí teimpléid ar chor ar bith, mar sin glactar leis an téacs mar atá.\n- YAML greamaithe isteach i réimse an teimpléid.\n- Nóta tráchta YAML `#` taobh istigh den Jinja, a phriontálann Jinja mar théacs.\n- Coinníoll a thugann `on` seachas `true`.\n\nNí insíonn aon rud duit: ní bhíonn an coinníoll fíor riamh, ní chríochnaíonn an fanacht ach ar a theorainn ama, agus ní spreagann an truicear riamh. Chun é seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus cuir ar an teimpléad `true` a thabhairt nuair ba chóir dó a bheith fíor.\n\nSpook 👻 Do chara.",
+            "title": "Teimpléid nach féidir leo a bheith fíor riamh in: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTugann an t-uathoibriú seo na hiontrálacha comhtháthaithe seo a leanas dá ghníomhartha, nach bhfuil ar eolas ag Home Assistant, nó a bhaineann le comhtháthú eile seachas an ceann a iarrann an gníomh:\n\n{config_entries}\n\nDiúltaíonn Home Assistant dóibh nuair a ritheann an chéim. Tarlaíonn sé seo de ghnáth tar éis comhtháthú a bhaint agus a chur leis arís: fuair sé iontráil chomhtháthaithe nua, le ID nua.\n\nChun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus roghnaigh an iontráil chomhtháthaithe arís sna gníomhartha seo.\n\nSpook 👻 Do chara.",
+            "title": "Iontrálacha comhtháthaithe anaithnide in úsáid in: {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTugann an t-uathoibriú seo amach na deilbhíní seo a leanas, nach ann dóibh sna Material Design Icons a thagann le Home Assistant:\n\n{icons}\n\n\n\nTaispeántar gach ceann acu seo mar spás folamh, gan focal. Tarlaíonn sé seo go minic nuair a clóscríobhadh deilbhín go mícheart, nuair a athainmníodh nó a baineadh é, nó nuair a roghnaíodh é ó leagan níos nuaí de Material Design Icons ná an ceann a thagann le Home Assistant. Chun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus cuir deilbhíní atá ann ina n-áit.\n\nSpook 👻 Do chara.",
+            "title": "Deilbhíní anaithnide in úsáid in: {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAinmníonn an t-uathoibriú seo na húsáideoirí seo a leanas, nach ann dóibh a thuilleadh:\n\n{users}\n\n\n\nNí thugann Home Assistant ID úsáideora amach faoi dhó riamh, mar sin baineadh na húsáideoirí seo. Ní spreagann truicear atá ag fanacht ar dhuine acu riamh dóibh, agus ní mheaitseálann teimpléad a chuireann duine acu i gcomparáid riamh, gan é sin a rá. Chun é seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus úsáid ID úsáideora atá ann, nó bain an tseiceáil.\n\nSpook 👻 Do chara.",
+            "title": "Úsáideoirí bainte ainmnithe in: {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nÚsáideann an deais seo na deilbhíní seo a leanas, nach ann dóibh sna Material Design Icons a thagann le Home Assistant (leagan {version}):\n\n{icons}\n\n\n\nTaispeántar gach ceann acu seo mar spás folamh, gan focal. Tarlaíonn sé seo go minic nuair a clóscríobhadh deilbhín go mícheart, nuair a athainmníodh nó a baineadh é, nó nuair a roghnaíodh é ó leagan níos nuaí de Material Design Icons ná an ceann a thagann le Home Assistant. Chun an earráid seo a réiteach, [cuir an deais in eagar]({edit}) agus cuir deilbhíní atá ann ina n-áit. Athraítear deilbhín an deais sa bharra taoibh i socruithe do dheaiseanna.\n\nSpook 👻 Do chara.",
+            "title": "Deilbhíní anaithnide in úsáid sa deais: {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nAinmníonn an deais seo na húsáideoirí seo a leanas, nach ann dóibh a thuilleadh:\n\n{users}\n\n\n\nNí thugann Home Assistant ID úsáideora amach faoi dhó riamh, mar sin baineadh na húsáideoirí seo. Ní thaispeántar cárta, suaitheantas, rannán nó amharc nach dtaispeántar ach dóibhsean d'aon duine anois, gan é sin a rá. Ní dhéanann díolúine ó dheimhniú dóibh aon rud a thuilleadh. Chun é seo a réiteach, [cuir an deais in eagar]({edit}) agus roghnaigh na húsáideoirí ar chóir dóibh é a fheiceáil, nó bain an coinníoll.\n\nSpook 👻 Do chara.",
+            "title": "Úsáideoirí bainte ainmnithe sa deais: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nÚsáideann an deais seo na téamaí seo a leanas, nach ann dóibh:\n\n{themes}\n\n\n\nFaigheann cárta, rannán nó amharc le ceann de na téamaí seo an cuma réamhshocraithe ina ionad, gan é sin a rá. Tarlaíonn sé seo go minic nuair a athainmníodh nó a baineadh téama. Chun an earráid seo a réiteach, [cuir an deais in eagar]({edit}) agus roghnaigh téama atá ann, nó cuir an téama ar ais.\n\nSpook 👻 Do chara.",
+            "title": "Téamaí anaithnide in úsáid sa deais: {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTá na teimpléid seo a leanas ag an script seo, nach féidir leo a bheith fíor riamh, cibé rud a tharlaíonn i do theach:\n\n{templates}\n\n\n\nNíl coinníoll teimpléid fíor ach nuair a thugann sé `true`, agus `wait_template` freisin, mura n-athraíonn sé níos déanaí go rud a léitear mar fhíor. Spreagann truicear teimpléid i `wait_for_trigger` nuair a athraíonn a theimpléad go rud a léitear mar fhíor, cosúil le `true`, `on`, `yes` nó `1`. Bíonn rud éigin eile mar thoradh ar na teimpléid seo i gcónaí, de bharr an chaoi a bhfuil siad scríofa. Na cúiseanna is coitianta:\n\n- Comharthaí athfhriotail timpeall an teimpléid. Glacann bloc `>-` leo mar théacs, mar sin críochnaíonn siad sa toradh.\n- Gan teorannóirí teimpléid ar chor ar bith, mar sin glactar leis an téacs mar atá.\n- YAML greamaithe isteach i réimse an teimpléid.\n- Nóta tráchta YAML `#` taobh istigh den Jinja, a phriontálann Jinja mar théacs.\n- Coinníoll a thugann `on` seachas `true`.\n\nNí insíonn aon rud duit: ní bhíonn an coinníoll fíor riamh, agus ní chríochnaíonn an fanacht ach ar a theorainn ama. Chun é seo a réiteach, [cuir an script in eagar]({edit}) agus cuir ar an teimpléad `true` a thabhairt nuair ba chóir dó a bheith fíor.\n\nSpook 👻 Do chara.",
+            "title": "Teimpléid nach féidir leo a bheith fíor riamh in: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTugann an script seo na hiontrálacha comhtháthaithe seo a leanas dá gníomhartha, nach bhfuil ar eolas ag Home Assistant, nó a bhaineann le comhtháthú eile seachas an ceann a iarrann an gníomh:\n\n{config_entries}\n\nDiúltaíonn Home Assistant dóibh nuair a ritheann an chéim. Tarlaíonn sé seo de ghnáth tar éis comhtháthú a bhaint agus a chur leis arís: fuair sé iontráil chomhtháthaithe nua, le ID nua.\n\nChun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus roghnaigh an iontráil chomhtháthaithe arís sna gníomhartha seo.\n\nSpook 👻 Do chara.",
+            "title": "Iontrálacha comhtháthaithe anaithnide in úsáid in: {script}"
+        },
+        "script_unknown_icons": {
+            "title": "Deilbhíní anaithnide in úsáid in: {script}",
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nÚsáideann nó tugann an script seo amach na deilbhíní seo a leanas, nach ann dóibh sna Material Design Icons a thagann le Home Assistant:\n\n{icons}\n\n\n\nTaispeántar gach ceann acu seo mar spás folamh, gan focal. Tarlaíonn sé seo go minic nuair a clóscríobhadh deilbhín go mícheart, nuair a athainmníodh nó a baineadh é, nó nuair a roghnaíodh é ó leagan níos nuaí de Material Design Icons ná an ceann a thagann le Home Assistant. Chun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus cuir deilbhíní atá ann ina n-áit.\n\nSpook 👻 Do chara."
+        },
+        "script_unknown_user_references": {
+            "title": "Úsáideoirí bainte ainmnithe in: {script}",
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAinmníonn an script seo na húsáideoirí seo a leanas, nach ann dóibh a thuilleadh:\n\n{users}\n\n\n\nNí thugann Home Assistant ID úsáideora amach faoi dhó riamh, mar sin baineadh na húsáideoirí seo. Ní mheaitseálann teimpléad a chuireann duine acu i gcomparáid riamh, agus ní spreagann truicear atá ag fanacht ar dhuine acu riamh dóibh, gan é sin a rá. Chun é seo a réiteach, [cuir an script in eagar]({edit}) agus úsáid ID úsáideora atá ann, nó bain an tseiceáil.\n\nSpook 👻 Do chara."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Tá taibhse aimsithe ag Spook i d'aonáin teimpléid 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an aonán teimpléid seo a leanas:\n\n{name} (`{entity_id}`)\n\nÚsáideann an t-aonán teimpléid seo na tréithe seo a leanas, nach bhfuil ag a n-aonáin. Ní anois, ní mar rud a thairgeann an cineál sin aonáin, agus ní áit ar bith sa mhéid a chuimhníonn an taifeadán orthu:\n\n{attributes}\n\n\n\nNí fhaigheann teimpléad a léann tréith nach dtagann riamh aon rud, agus ní spreagann truicear agus ní bhíonn coinníoll fíor riamh atá ag fanacht ar cheann acu. Ní insíonn aon cheann acu sin duit.\n\nTá an t-aonán teimpléid seo socraithe i do chumraíocht YAML. Chun é seo a réiteach, cuir in eagar é sa chuid `template:` de do chumraíocht, úsáid tréith atá ag an aonán, agus athlódáil d'aonáin teimpléid.\n\nSpook 👻 Do chara.",
+            "title": "Tréithe anaithnide in úsáid in aonán teimpléid: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Tá taibhse aimsithe ag Spook i d'aonáin teimpléid 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an aonán teimpléid seo a leanas:\n\n{name} (`{entity_id}`)\n\nTagraíonn a chumraíocht do na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nTarlaíonn sé seo go minic nuair a athainmníodh nó a baineadh aonán. Ní fhaigheann teimpléad a léann ceann acu aon rud, agus ní spreagann truicear atá ag fanacht ar cheann acu riamh.\n\nTá an t-aonán teimpléid seo socraithe i do chumraíocht YAML. Chun an earráid seo a réiteach, cuir in eagar é sa chuid `template:` de do chumraíocht, tagair d'aonáin atá ann, agus athlódáil d'aonáin teimpléid.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid in aonán teimpléid: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Tá taibhse aimsithe ag Spook i d'aonáin teimpléid 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an aonán teimpléid seo a leanas:\n\n{name} (`{entity_id}`)\n\nTagraíonn sé do na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{services}\n\n\n\nTarlaíonn sé seo go minic nuair a baineadh soláthraí gnímh, nó nuair a athainmníodh nó a scriosadh script.\n\nTá an t-aonán teimpléid seo socraithe i do chumraíocht YAML. Chun an earráid seo a réiteach, cuir in eagar é sa chuid `template:` de do chumraíocht, úsáid gníomhartha atá ann, agus athlódáil d'aonáin teimpléid.\n\nSpook 👻 Do chara.",
+            "title": "Gníomhartha anaithnide in úsáid in aonán teimpléid: {name}"
+        },
+        "unknown_icons": {
+            "description": "Tá taibhse aimsithe ag Spook i do shocruithe 👻\n\nNíl na deilbhíní seo a leanas ann sna Material Design Icons a thagann le Home Assistant (leagan {version}):\n\n{icons}\n\n\n\nTaispeántar gach ceann acu seo mar spás folamh, gan focal. Tarlaíonn sé seo go minic nuair a clóscríobhadh deilbhín go mícheart, nuair a athainmníodh nó a baineadh é, nó nuair a roghnaíodh é ó leagan níos nuaí de Material Design Icons ná an ceann a thagann le Home Assistant. Chun an earráid seo a réiteach, tabhair deilbhín atá ann do gach ceann acu seo: aonán, cúntóir nó crios ina shocruithe, limistéar, urlár nó lipéad i socruithe do limistéar, lipéad agus crios, catagóir san áit a n-úsáidtear í, agus `customize:` i do chumraíocht.\n\nSpook 👻 Do chara.",
+            "title": "Deilbhíní anaithnide i do shocruithe"
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Seasamh",
                     "description": "Bog go dtí barr nó bun an liosta í. Tabhair é seo nó mír lena cur ina diaidh."
+                }
+            }
+        },
+        "homeassistant_update_area": {
+            "name": "Nuashonraigh limistéar",
+            "description": "Nuashonraíonn sé limistéar atá ann cheana ar an toirt. Coinníonn aon rud a fhágann tú amach an luach atá aige cheana. Cuireann ailiasanna agus lipéid iad siúd atá ag an limistéar in ionad. Is féidir an t-urlár, an deilbhín, an pictiúr agus na braiteoirí a ghlanadh trína socrú go null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir le nuashonrú."
+                },
+                "name": {
+                    "description": "Ainm nua don limistéar.",
+                    "name": "Ainm"
+                },
+                "aliases": {
+                    "name": "Ailiasanna",
+                    "description": "Na hailiasanna don limistéar. Cuireann sé iad siúd atá aige in ionad, baineann liosta folamh iad go léir."
+                },
+                "floor_id": {
+                    "name": "ID an urláir",
+                    "description": "ID an urláir ar a bhfuil an limistéar."
+                },
+                "icon": {
+                    "description": "Deilbhín nua le húsáid don limistéar.",
+                    "name": "Deilbhín"
+                },
+                "picture": {
+                    "name": "Pictiúr",
+                    "description": "URL nó cosán pictiúir don limistéar."
+                },
+                "labels": {
+                    "name": "Lipéid",
+                    "description": "Aitheantóirí na lipéad don limistéar. Cuireann sé iad siúd atá aige in ionad, baineann liosta folamh iad go léir."
+                },
+                "temperature_entity_id": {
+                    "name": "Braiteoir teochta",
+                    "description": "An braiteoir a thomhaiseann an teocht sa limistéar."
+                },
+                "humidity_entity_id": {
+                    "name": "Braiteoir bogthaise",
+                    "description": "An braiteoir a thomhaiseann an bhogthais sa limistéar."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "fields": {
+                "device_id": {
+                    "name": "ID an ghléis",
+                    "description": "ID an ghléis le nuashonrú. Ní thaispeánann roghnóir gléasanna Home Assistant gléasanna díchumasaithe, úsáid mód YAML chun a n-ID a thabhairt."
+                },
+                "name_by_user": {
+                    "name": "Ainm",
+                    "description": "Ainm nua don ghléas."
+                },
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir ina bhfuil an gléas."
+                },
+                "labels": {
+                    "name": "Lipéid",
+                    "description": "Aitheantóirí na lipéad don ghléas. Cuireann sé iad siúd atá aige in ionad, baineann liosta folamh iad go léir."
+                },
+                "disabled_by": {
+                    "name": "Díchumasaithe ag",
+                    "description": "Socraigh go user é chun an gléas a dhíchumasú, nó go null chun é a chumasú arís. Oibríonn sé seo mar a oibríonn na gníomhartha díchumasaigh gléas agus cumasaigh gléas."
+                }
+            },
+            "name": "Nuashonraigh gléas",
+            "description": "Nuashonraíonn sé gléas atá ann cheana ar an toirt. Coinníonn aon rud a fhágann tú amach an luach atá aige cheana. Cuireann lipéid iad siúd atá ag an ngléas in ionad. Is féidir an t-ainm agus an limistéar a ghlanadh trína socrú go null, rud a thugann ar ais don ghléas an t-ainm a thug a chomhtháthú dó."
+        },
+        "homeassistant_update_floor": {
+            "name": "Nuashonraigh urlár",
+            "description": "Nuashonraíonn sé urlár atá ann cheana ar an toirt. Coinníonn aon rud a fhágann tú amach an luach atá aige cheana. Cuireann ailiasanna iad siúd atá ag an urlár in ionad. Is féidir an deilbhín agus an leibhéal a ghlanadh trína socrú go null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID an urláir",
+                    "description": "ID an urláir le nuashonrú."
+                },
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm nua don urlár."
+                },
+                "aliases": {
+                    "name": "Ailiasanna",
+                    "description": "Na hailiasanna don urlár. Cuireann sé iad siúd atá aige in ionad, baineann liosta folamh iad go léir."
+                },
+                "icon": {
+                    "description": "Deilbhín nua le húsáid don urlár.",
+                    "name": "Deilbhín"
+                },
+                "level": {
+                    "name": "Leibhéal",
+                    "description": "An leibhéal ar a bhfuil an t-urlár i do theach."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Cruthaigh sceideal",
+            "description": "Cruthaíonn sé cúntóir sceidil nua ar an toirt, a bhíonn ar siúl le linn na mbloc ama a thugtar do gach lá den tseachtain. Tugann sé ar ais ID aonáin an sceidil nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an sceidil nua."
+                },
+                "schedule_id": {
+                    "name": "ID aonáin an sceidil",
+                    "description": "An ID aonáin don sceideal nua. Cuirtear an réimír schedule. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don sceideal nua."
+                },
+                "monday": {
+                    "name": "Dé Luain",
+                    "description": "Cathain a bhíonn an sceideal ar siúl, ar an Luan: liosta bloc ama, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Má fhágtar amach é, bíonn sé as an lá ar fad."
+                },
+                "tuesday": {
+                    "name": "Dé Máirt",
+                    "description": "Cathain a bhíonn an sceideal ar siúl, ar an Máirt: liosta bloc ama, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Má fhágtar amach é, bíonn sé as an lá ar fad."
+                },
+                "wednesday": {
+                    "name": "Dé Céadaoin",
+                    "description": "Cathain a bhíonn an sceideal ar siúl, ar an gCéadaoin: liosta bloc ama, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Má fhágtar amach é, bíonn sé as an lá ar fad."
+                },
+                "thursday": {
+                    "name": "Déardaoin",
+                    "description": "Cathain a bhíonn an sceideal ar siúl, ar an Déardaoin: liosta bloc ama, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Má fhágtar amach é, bíonn sé as an lá ar fad."
+                },
+                "friday": {
+                    "name": "Dé hAoine",
+                    "description": "Cathain a bhíonn an sceideal ar siúl, ar an Aoine: liosta bloc ama, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Má fhágtar amach é, bíonn sé as an lá ar fad."
+                },
+                "saturday": {
+                    "name": "Dé Sathairn",
+                    "description": "Cathain a bhíonn an sceideal ar siúl, ar an Satharn: liosta bloc ama, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Má fhágtar amach é, bíonn sé as an lá ar fad."
+                },
+                "sunday": {
+                    "name": "Dé Domhnaigh",
+                    "description": "Cathain a bhíonn an sceideal ar siúl, ar an Domhnach: liosta bloc ama, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Má fhágtar amach é, bíonn sé as an lá ar fad."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Scrios sceideal",
+            "description": "Scriosann sé cúntóirí sceidil a rinneadh sa chomhéadan. Ní féidir le Spook sceidil atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An sceideal (nó na sceidil) le scriosadh."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Socraigh bloic ama lae",
+            "description": "Cuireann sé bloic ama nua in ionad bhloic ama lae amháin nó níos mó de chúntóir sceidil a rinneadh sa chomhéadan. Ní féidir le Spook sceidil atá socraithe in YAML a athrú.",
+            "fields": {
+                "day": {
+                    "name": "Lá",
+                    "description": "An lá nó na laethanta den tseachtain ar a socrófar na bloic ama."
+                },
+                "blocks": {
+                    "name": "Bloic ama",
+                    "description": "Na bloic ama a bhíonn an sceideal ar siúl le linn na laethanta sin, gach ceann le ham ó agus am go, agus sonraí roghnacha a thaispeánann sé mar thréithe fad is atá sé ar siúl. Cuireann siad seo na bloic a bhí ag na laethanta in ionad. Fágann liosta folamh na laethanta as an lá ar fad."
                 }
             }
         }
