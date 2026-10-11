@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/automation-trigger-if-numeric-state-falls-below-a-list-of-values/863497/12
+note: >-
+  One watering alert for several plants, a template trigger each with the
+  plant as its ID, and a message picking the room by comparing `trigger.id`.
+  One comparison spells the plant differently from its trigger, so that room
+  never shows up in the message.
+expect:
+  trigger_ids:
+    find: [draceana]
+    not_find: [dracaenna, anthurium, croton]
+---
+alias: Plants watering
+triggers:
+  - trigger: template
+    value_template: "{{ states('sensor.croton_soil_moisture') | int(50) < 30 }}"
+    id: croton
+  - trigger: template
+    value_template: "{{ states('sensor.dracaena_soil_moisture') | int(50) < 30 }}"
+    id: dracaenna
+  - trigger: template
+    value_template: "{{ states('sensor.anthurium_soil_moisture') | int(50) < 30 }}"
+    id: anthurium
+actions:
+  - action: notify.notify
+    data:
+      title: Water alert
+      message: >-
+        The {{ trigger.id }} in the
+        {% if trigger.id == "anthurium" or trigger.id == "draceana" %}dining room
+        {% elif trigger.id == "croton" %}lounge{% endif %} needs watering.

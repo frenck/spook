@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/how-do-i-access-weather-temperature-for-a-notify-message/242237/1
+note: >-
+  A cold weather notification asking `states()` for the temperature by gluing
+  the attribute to the weather entity. That finds nothing, whatever the house
+  looks like, and the message says `unknown`. Reported as not an entity ID.
+  `state_attr()`, the way that works, stays quiet.
+expect:
+  not_entity_ids:
+    find: [weather.home.temperature]
+  entities:
+    find: [weather.home]
+    not_find: [weather.home.temperature]
+  attributes:
+    find:
+      - weather.home: temperature
+---
+alias: Cold outside
+triggers:
+  - trigger: numeric_state
+    entity_id: weather.home
+    attribute: temperature
+    below: 2
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        Current outdoor temperature is {{ states('weather.home.temperature') }},
+        or {{ state_attr('weather.home', 'temperature') }} when asked right.

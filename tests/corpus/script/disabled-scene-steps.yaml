@@ -1,0 +1,23 @@
+source: https://github.com/nzrunner/home-assistant/blob/27bc6006a334dfe1a801221f3be63598b6eb79c0/automations.yaml#L452
+note: >-
+  A bedtime routine with its scene steps parked by `enabled: false`, both the
+  `scene:` shorthand and a `scene.turn_on` action. The shorthand is a key
+  Home Assistant's own list reads, so what only a parked step holds stays
+  quiet, whichever key it sits under. The scene a running step turns on is
+  still reported.
+expect:
+  entities:
+    find: [scene.hallway_night]
+    not_find: [scene.stairs_relax, scene.bedroom_dimmed, scene.living_room_dimmed]
+---
+alias: Bedtime
+sequence:
+  - scene: scene.stairs_relax
+    enabled: false
+  - scene: scene.bedroom_dimmed
+    enabled: false
+  - action: scene.turn_on
+    target:
+      entity_id: scene.living_room_dimmed
+    enabled: false
+  - scene: scene.hallway_night

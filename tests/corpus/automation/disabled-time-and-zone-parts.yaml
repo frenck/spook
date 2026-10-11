@@ -1,0 +1,53 @@
+source: https://community.home-assistant.io/t/how-to-control-my-automations-from-a-tab/895898/8
+note: >-
+  Two time triggers and a zone condition parked with `enabled: false` while a
+  template trigger is tried instead. Home Assistant's own list of what the
+  automation names takes the time trigger's `at` and the zone from parked
+  parts too, so what only those hold stays quiet, whichever key it sits under.
+  The alarm sensor is also named by the template that runs, so it is still
+  reported. The parked triggers keep their IDs for the trigger conditions.
+expect:
+  entities:
+    find: [sensor.phone_next_alarm, switch.coffee_maker]
+    not_find: [input_datetime.coffee_manual_time, zone.home, person.resident]
+  trigger_ids:
+    not_find: [manual, alarm]
+---
+alias: Coffee maker on
+triggers:
+  - trigger: time
+    at: input_datetime.coffee_manual_time
+    id: manual
+    enabled: false
+  - trigger: time
+    at:
+      entity_id: sensor.phone_next_alarm
+      offset: "-00:05:00"
+    id: alarm
+    enabled: false
+  - trigger: template
+    value_template: >-
+      {{ now() >= states('sensor.phone_next_alarm') | as_datetime
+      - timedelta(minutes=5) }}
+    id: alarm_template
+conditions:
+  - condition: zone
+    entity_id: person.resident
+    zone: zone.home
+    enabled: false
+actions:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: manual
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.coffee_maker
+      - conditions:
+          - condition: trigger
+            id: [alarm, alarm_template]
+        sequence:
+          - action: switch.turn_on
+            target:
+              entity_id: switch.coffee_maker

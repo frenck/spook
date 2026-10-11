@@ -1,0 +1,34 @@
+source: https://github.com/frenck/spook/pull/1911
+note: >-
+  An attribute glued to the entity ID in the entity field of more core cards: a
+  gauge, a view badge and a heading badge. No lookup ever finds that, so each
+  is reported as not an entity ID. The same text on a custom card is that
+  card's business, and an `attribute` key next to the entity is the way that
+  works.
+expect:
+  not_entity_ids:
+    find:
+      - sensor.phone.battery_level
+      - weather.home.temperature
+      - climate.living_room.current_temperature
+    not_find: [vacuum.downstairs.battery_level]
+  entities:
+    find: [weather.home]
+---
+title: Home
+badges:
+  - type: entity
+    entity: weather.home.temperature
+cards:
+  - type: gauge
+    entity: sensor.phone.battery_level
+  - type: heading
+    heading: Living room
+    badges:
+      - type: entity
+        entity: climate.living_room.current_temperature
+  - type: entity
+    entity: weather.home
+    attribute: temperature
+  - type: custom:vacuum-card
+    entity: vacuum.downstairs.battery_level
