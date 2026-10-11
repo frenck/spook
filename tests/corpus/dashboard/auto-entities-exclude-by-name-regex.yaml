@@ -3,6 +3,13 @@ note: >-
   Auto-entities listing temperature sensors in one area with an exclude that
   only worked once it matched on name with a regex instead of entity_id. The
   area here is a matcher value, not an area reference to check.
+out_of_scope: >-
+  An auto-entities filter is a matcher of the card's own: it says which
+  entities to pick, so what it names, even a whole entity ID or an area, is
+  not read. Spook reads the keys every card shares (entity, entities,
+  entity_id and friends) and the card shapes it claims, Bubble Card and the
+  Mushroom template card's area. Keys a custom card invents for itself are not
+  read.
 expect:
   areas:
     not_find: [bathroom]

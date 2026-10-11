@@ -2,6 +2,9 @@ source: https://github.com/frenck/spook/issues/1567
 note: >-
   A Jinja comment inside a template keeps the name of an entity that was
   replaced. Comments are never rendered, so the old ID is no reference.
+out_of_scope: >-
+  A Jinja comment is never rendered, so an entity named only there is left out
+  on purpose.
 expect:
   entities:
     find: [sensor.outdoor_temperature, climate.living_room]

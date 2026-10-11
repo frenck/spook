@@ -10,10 +10,13 @@ expect:
   attributes:
     find:
       - climate.bedroom_valve: hvac_action
+      - climate.kitchen_valve: hvac_action
   states:
     find:
       - climate.bedroom_valve[hvac_action]: '"Heating"'
       - climate.kitchen_valve[hvac_action]: '"Idle"'
+      - climate.bedroom_valve[hvac_action]: '"Idle"'
+      - climate.kitchen_valve[hvac_action]: '"Heating"'
 ---
 alias: Boiler on when a valve calls for heat
 triggers:

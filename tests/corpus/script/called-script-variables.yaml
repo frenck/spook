@@ -5,6 +5,10 @@ note: >-
   The entity it names is still mentioned, so the entity repair reads it.
   `script.turn_on` is no finding: the script integration is loaded in the
   house that runs this, so its own actions always exist.
+out_of_scope: >-
+  Variables handed to another script are that script's business: a payload
+  shaped like a condition is data, so the state and attribute in it are left
+  out on purpose.
 expect:
   states:
     not_find:

@@ -12,6 +12,9 @@ out_of_scope: >-
 expect:
   entities:
     not_find: [persistent_notification.trash_today]
+  states:
+    find:
+      - persistent_notification.trash_today: notifying
 ---
 alias: Trash notification
 triggers:

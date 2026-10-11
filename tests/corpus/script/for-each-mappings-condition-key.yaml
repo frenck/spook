@@ -4,9 +4,17 @@ note: >-
   key `condition` is data, not a condition, and the values are weather states.
   Distilled from the documented for_each mapping form; no public sighting of
   this exact key found yet.
+out_of_scope: >-
+  Variables and for_each items are values somebody hands over. A literal under
+  a reference key like entity_id is read; a plain string under a key of
+  somebody's own is data until a template uses it, and Spook does not follow
+  that use.
 expect:
   conditions:
     not_find: [rainy, sunny]
+  entities:
+    find: [weather.home]
+    not_find: [scene.cosy, scene.bright]
 ---
 alias: Weather scene
 sequence:

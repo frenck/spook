@@ -3,11 +3,16 @@ note: >-
   todo.get_items with response_variable, then a repeat for_each over the
   response keyed by entity ID. The subscript on the response dict and
   repeat.item.due are data, not state or attribute lookups.
+out_of_scope: >-
+  A step, trigger or condition parked with `enabled: false` does nothing, so
+  what only it names is left out on purpose.
 expect:
   entities:
     find: [todo.household_chores]
+    not_find: [input_text.last_overdue_chore]
   services:
     find: [todo.get_items, notify.send_message]
+    not_find: [input_text.set_value]
   attributes:
     not_find:
       - todo.household_chores: items

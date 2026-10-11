@@ -6,6 +6,9 @@ note: >-
 expect:
   entities:
     find: [sun.sun, light.kitchen, light.hallway, binary_sensor.back_door, lock.back_door]
+  attributes:
+    find:
+      - sun.sun: next_rising
 ---
 type: entities
 entities:

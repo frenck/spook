@@ -8,6 +8,9 @@ expect:
   entities:
     find: [cover.bedroom_blind]
     not_find: [cover.bedroom_blind.current_position]
+  attributes:
+    find:
+      - cover.bedroom_blind: current_position
   not_entity_ids:
     find: [cover.bedroom_blind.current_position]
 ---

@@ -5,6 +5,11 @@ note: >-
 expect:
   entities:
     find: [person.alex, person.sam, input_boolean.guest_mode]
+  states:
+    find:
+      - person.alex: home
+      - person.sam: home
+      - input_boolean.guest_mode: "on"
 ---
 alias: Heating when someone is home
 triggers:

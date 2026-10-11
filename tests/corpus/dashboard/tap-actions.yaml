@@ -4,6 +4,12 @@ note: >-
   `perform-action` with a target, a button-card action built from a template
   and a floorplan card's own browser-side action. Only the first two are
   actions Home Assistant would be asked to run.
+out_of_scope: >-
+  JavaScript in a custom card runs in the browser and is not read; only the
+  keys the dashboard walk knows are. Spook reads the keys every card shares
+  (entity, entities, entity_id and friends) and the card shapes it claims,
+  Bubble Card and the Mushroom template card's area. Keys a custom card
+  invents for itself are not read.
 expect:
   services:
     find: [light.toggle, scene.turn_on]

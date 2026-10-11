@@ -14,6 +14,9 @@ expect:
     not_find: [vacuum.downstairs.battery_level]
   entities:
     find: [weather.home]
+  attributes:
+    find:
+      - weather.home: temperature
 ---
 title: Home
 badges:

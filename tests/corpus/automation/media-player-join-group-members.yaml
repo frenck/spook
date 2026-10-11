@@ -10,6 +10,8 @@ expect:
       - media_player.bathroom
       - media_player.garage_speaker
       - input_select.sync_leader
+  services:
+    find: [media_player.join]
 ---
 alias: Group speakers
 triggers:

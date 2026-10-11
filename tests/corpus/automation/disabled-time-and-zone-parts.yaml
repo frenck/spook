@@ -6,6 +6,9 @@ note: >-
   parts too, so what only those hold stays quiet, whichever key it sits under.
   The alarm sensor is also named by the template that runs, so it is still
   reported. The parked triggers keep their IDs for the trigger conditions.
+out_of_scope: >-
+  A step, trigger or condition parked with `enabled: false` does nothing, so
+  what only it names is left out on purpose.
 expect:
   entities:
     find: [sensor.phone_next_alarm, switch.coffee_maker]

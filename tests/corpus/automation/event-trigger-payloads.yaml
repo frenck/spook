@@ -3,6 +3,10 @@ note: >-
   An `entity_id` in the data of somebody's own event is whatever the sender
   put there, not a reference. On an event an integration fires, like
   `timer.finished`, it is one. The event type itself is no entity either.
+out_of_scope: >-
+  An entity ID in the data of somebody's own event is whatever the sender put
+  there, so it is left out on purpose. Events an integration fires, like
+  timer.finished, are read.
 expect:
   entities:
     find: [timer.laundry]

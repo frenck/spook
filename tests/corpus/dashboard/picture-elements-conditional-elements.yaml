@@ -5,6 +5,10 @@ note: >-
 expect:
   entities:
     find: [input_select.office_heating_colour, climate.office]
+  states:
+    find:
+      - input_select.office_heating_colour: heating
+      - input_select.office_heating_colour: "off"
 ---
 type: picture-elements
 image: /local/floorplan/office.png

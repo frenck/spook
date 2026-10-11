@@ -4,6 +4,9 @@ note: >-
   field variable. Home Assistant uses a field `default` only to prefill the
   form in the frontend; a caller that leaves the field out gets no value, so
   the default is not something the script runs with, and not a reference.
+out_of_scope: >-
+  A field default only fills in the form in the frontend; the script never
+  runs with it, so an entity named only there is left out on purpose.
 expect:
   services:
     find: [climate.set_temperature]

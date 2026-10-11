@@ -3,6 +3,13 @@ note: >-
   Auto-entities with a wildcard include and options that call an action on
   this.entity_id, plus an area and domain matcher with an exclude. Nothing under
   the filter names a particular thing except the action in options.
+out_of_scope: >-
+  An auto-entities filter is a matcher of the card's own: it says which
+  entities to pick, so what it names, even a whole entity ID or an area, is
+  not read. Spook reads the keys every card shares (entity, entities,
+  entity_id and friends) and the card shapes it claims, Bubble Card and the
+  Mushroom template card's area. Keys a custom card invents for itself are not
+  read.
 expect:
   services:
     find: [scene.turn_on]

@@ -6,6 +6,9 @@ note: >-
 expect:
   entities:
     find: [input_boolean.show_hidden_cards, weather.home]
+  states:
+    find:
+      - input_boolean.show_hidden_cards: "on"
 ---
 type: vertical-stack
 cards:

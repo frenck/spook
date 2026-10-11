@@ -10,6 +10,7 @@ expect:
       - switch.pool_pump: "on"
       - switch.pond_pump: "on"
       - switch.pool_pump: unavailable
+      - switch.pond_pump: unavailable
     not_find:
       - switch.pool_pump: "0"
       - switch.pool_pump: unavailable,unknown

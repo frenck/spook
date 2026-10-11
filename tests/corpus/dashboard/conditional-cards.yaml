@@ -10,6 +10,10 @@ expect:
       - sensor.washing_machine_remaining
       - person.alex
       - camera.front_door
+  states:
+    find:
+      - binary_sensor.washing_machine_running: "on"
+      - person.alex: home
 ---
 type: sections
 title: Utility

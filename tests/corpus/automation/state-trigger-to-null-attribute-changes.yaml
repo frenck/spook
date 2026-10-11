@@ -5,6 +5,9 @@ note: >-
 expect:
   entities:
     find: [media_player.living_room]
+  attributes:
+    find:
+      - media_player.living_room: media_title
   states:
     not_find:
       - media_player.living_room: None

@@ -7,6 +7,10 @@ expect:
     find: [camera.driveway, binary_sensor.driveway_motion, light.driveway, light.porch]
   services:
     find: [light.toggle]
+  states:
+    find:
+      - binary_sensor.driveway_motion: "on"
+      - binary_sensor.driveway_motion: "off"
 ---
 type: picture-glance
 title: Driveway

@@ -5,10 +5,15 @@ note: >-
 expect:
   entities:
     find: [binary_sensor.window_kitchen, binary_sensor.window_bedroom, climate.house]
+  attributes:
+    find:
+      - climate.house: hvac_action
   states:
     find:
       - binary_sensor.window_kitchen: "on"
+      - binary_sensor.window_bedroom: "on"
       - climate.house[hvac_action]: '"preheating"'
+      - climate.house[hvac_action]: '"heating"'
     not_find:
       - climate.house: heating
 ---

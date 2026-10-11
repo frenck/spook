@@ -12,6 +12,9 @@ expect:
   attributes:
     find:
       - event.laundry_scene_controller_button_1: event_type
+  states:
+    find:
+      - event.laundry_scene_controller_button_1[event_type]: '"KeyPressed"'
   services:
     find: [script.announce_dryer_done]
 ---

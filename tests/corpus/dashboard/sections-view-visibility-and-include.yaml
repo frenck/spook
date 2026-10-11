@@ -4,9 +4,17 @@ note: >-
   !include (opaque strings here, the files are not part of the case), visibility by state and by screen size, and a Mushroom template card
   whose tap turns off a different light than the card shows (a copy and paste
   slip in the original).
+out_of_scope: >-
+  The dashboard repairs read keys that name a reference, never templates: the
+  frontend or a custom card renders those, and what they turn into is not
+  something to look up ahead of time.
 expect:
   entities:
     find: [binary_sensor.show_holiday_section, light.living_room, light.bedroom]
+    not_find: [input_boolean.test_environment, binary_sensor.living_room_motion]
+  states:
+    find:
+      - binary_sensor.show_holiday_section: "on"
   services:
     find: [light.turn_off]
 ---

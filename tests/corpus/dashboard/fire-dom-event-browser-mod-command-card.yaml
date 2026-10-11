@@ -2,9 +2,14 @@ source: https://community.home-assistant.io/t/animated-washing-machine-card/8974
 note: >-
   The newer browser_mod form: `command: popup` with the card inline. The card
   inside a tap action is real configuration with entities and an action.
+out_of_scope: >-
+  The dashboard repairs read keys that name a reference, never templates: the
+  frontend or a custom card renders those, and what they turn into is not
+  something to look up ahead of time.
 expect:
   entities:
     find: [sensor.washer_state, switch.washer_power]
+    not_find: [sensor.washer_remaining]
   services:
     find: [switch.turn_off]
 ---

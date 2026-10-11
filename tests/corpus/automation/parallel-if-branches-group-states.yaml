@@ -19,6 +19,7 @@ expect:
   states:
     find:
       - group.family: home
+      - group.hallway_motion: "on"
       - binary_sensor.front_door: "on"
 ---
 alias: Flash lights while the alarm counts down

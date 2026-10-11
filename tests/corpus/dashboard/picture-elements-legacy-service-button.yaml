@@ -6,6 +6,8 @@ note: >-
 expect:
   entities:
     find: [input_select.floorplan_floor, light.hallway]
+  services:
+    find: [input_select.select_option]
 ---
 type: picture-elements
 image: /local/floorplan/ground_floor.png

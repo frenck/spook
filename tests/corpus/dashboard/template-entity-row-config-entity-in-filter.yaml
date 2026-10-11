@@ -3,10 +3,15 @@ note: >-
   Fold entity row whose head counts group members with expand(), and an
   auto-entities filter on group membership whose options render rows with
   templates over config.entity, the row's own entity.
+out_of_scope: >-
+  The group is left unread on purpose, three times over: dashboard templates
+  are rendered by the frontend or the card, an auto-entities filter is a
+  matcher of the card's own, and `group.` entities are in
+  `IGNORED_ENTITY_DOMAINS`, since an action can create one on the fly.
 expect:
   entities:
     find: [sensor.pending_updates]
-    not_find: [config.entity]
+    not_find: [config.entity, group.core_updates]
 ---
 type: vertical-stack
 cards:

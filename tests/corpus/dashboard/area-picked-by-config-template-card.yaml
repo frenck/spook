@@ -4,6 +4,9 @@ note: >-
   config-template-card, which fills in `${ }` before the card sees it. The
   placeholder is no area. The plain area card next to it is the near miss
   the other way.
+out_of_scope: >-
+  JavaScript in a custom card runs in the browser and is not read; only the
+  keys the dashboard walk knows are.
 expect:
   areas:
     find: [living_room]
