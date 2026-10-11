@@ -429,6 +429,33 @@
         },
         "zone_not_editable": {
             "message": "Cette zone n'est pas modifiable : {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "La quantité {amount} ne convient pas à {entity_id}, qui avance par pas de {step}. Utilisez un multiple de {step}, ou omettez la quantité pour avancer d'un pas."
+        },
+        "area_cannot_update": {
+            "message": "La pièce {area_id} ne peut pas être modifiée ainsi : {error}."
+        },
+        "area_name_taken": {
+            "message": "Le nom {name} est déjà pris par la pièce {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Rien à mettre à jour sur la pièce {area_id} : donnez au moins l'un de {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Rien à mettre à jour sur l'appareil {device_id} : donnez au moins l'un de {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Le nom {name} est déjà pris par l'étage {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Rien à mettre à jour sur l'étage {floor_id} : donnez au moins l'un de {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Ces blocs horaires ne conviennent pas à {entity_id} : {error}. Rien n'a été modifié."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} est une planification de votre configuration YAML, que Spook ne peut pas modifier. Modifiez-la plutôt dans votre configuration."
         }
     },
     "issues": {
@@ -885,6 +912,106 @@
                     "changed": "Ces capteurs sont revenus, ou les réglages pointent maintenant ailleurs, depuis que Spook a regardé. Rien n'a donc été effacé. Spook regarde de nouveau de lui-même et met à jour cette réparation."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist ne sait pas les distinguer : {name}",
+            "description": "Spook a trouvé un fantôme dans vos assistants vocaux 👻\n\nLes entités suivantes sont exposées à Assist, et répondent toutes au nom {name} :\n\n{entities}\n\nQuand les noms sont identiques, Assist ne les distingue que par pièce : celle que vous nommez, ou celle où se trouve votre satellite vocal. Certaines d'entre elles partagent une pièce, ou n'ont pas de pièce du tout, donc Assist ne peut les retrouver par ce nom depuis nulle part. Demander {name} échoue alors, et rien n'indique quelles entités gênent.\n\nPour corriger cela, donnez à chacune un nom ou un alias qui lui est propre, ou placez-les dans des pièces différentes. Vous pouvez changer les alias d'une entité, et si Assist la voit ou non, dans [Entités exposées](/config/voice-assistants/expose). Les pièces se définissent sur la [page Pièces](/config/areas/dashboard).\n\nSpook 👻 Votre pote."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation utilise les attributs suivants, que leurs entités n'ont pas. Ni en ce moment, ni comme quelque chose que ce type d'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{attributes}\n\n\n\nUn déclencheur ou une condition qui attend un attribut qui n'apparaît jamais ne se déclenche jamais, et ne vous le dit pas. Un modèle qui en lit un n'obtient rien. Pour corriger cela, [modifiez l'automatisation]({edit}) et utilisez un attribut que l'entité possède.\n\nSpook 👻 Votre pote.",
+            "title": "Attributs inconnus utilisés dans : {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation attend, ou vérifie, les états suivants, dans lesquels leurs entités ne sont jamais. Ni comme quelque chose que ce type d'entité peut être, ni parmi les options que l'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{states}\n\n\n\nUn déclencheur qui attend un état qui ne vient jamais ne se déclenche jamais, une condition qui le vérifie n'est jamais satisfaite, et aucun des deux ne vous le dit. Les états sont sensibles à la casse : `On` n'est pas `on`. Pour corriger cela, [modifiez l'automatisation]({edit}) et utilisez un état dans lequel l'entité peut être.\n\nSpook 👻 Votre pote.",
+            "title": "États inconnus utilisés dans : {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation vérifie les ID de déclencheur suivants, qu'aucun de ses propres déclencheurs ne porte :\n\n{trigger_ids}\n\n\n\nUne vérification d'un ID qu'aucun déclencheur ne transmet donne toujours le même résultat : une condition de déclencheur qui le demande n'est jamais satisfaite, donc la partie qu'elle protège ne s'exécute jamais, et rien ne vous le dit. Les ID de déclencheur sont sensibles à la casse, et un déclencheur sans ID propre est identifié par sa position dans la liste, en comptant à partir de `0`. Pour corriger cela, [modifiez l'automatisation]({edit}) et utilisez l'ID de l'un de ses déclencheurs, ou donnez au déclencheur l'ID que l'automatisation demande.\n\nSpook 👻 Votre pote.",
+            "title": "ID de déclencheur inconnus utilisés dans : {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord affiche ou vérifie les attributs suivants, que leurs entités n'ont pas. Ni en ce moment, ni comme quelque chose que ce type d'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{attributes}\n\n\n\nUne carte qui affiche un attribut qui n'apparaît jamais reste vide, et une condition de visibilité ou un filtre qui en vérifie un n'est jamais satisfait. Aucun des deux ne vous le dit. Pour corriger cela, [modifiez le tableau de bord]({edit}) et utilisez un attribut que l'entité possède.\n\nSpook 👻 Votre pote.",
+            "title": "Attributs inconnus utilisés dans le tableau de bord : {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord vérifie les états suivants, dans lesquels leurs entités ne sont jamais. Ni comme quelque chose que ce type d'entité peut être, ni parmi les options que l'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{states}\n\n\n\nUne condition de visibilité ou un filtre qui vérifie un état qui ne vient jamais n'est jamais satisfait, et une image définie pour cet état n'est jamais affichée. Aucun ne vous le dit. Les états sont sensibles à la casse : `On` n'est pas `on`. Pour corriger cela, [modifiez le tableau de bord]({edit}) et utilisez un état dans lequel l'entité peut être.\n\nSpook 👻 Votre pote.",
+            "title": "États inconnus utilisés dans le tableau de bord : {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord navigue vers les vues suivantes, qui n'existent pas :\n\n{paths}\n\n\n\nUn bouton ou une carte qui navigue vers l'une d'elles ouvre à la place la première vue de ce tableau de bord, sans le dire. Cela arrive souvent quand une vue a été renommée, déplacée ou supprimée. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et faites pointer ces liens vers une vue qui existe.\n\nSpook 👻 Votre pote.",
+            "title": "Vues inconnues ciblées dans le tableau de bord : {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script utilise les attributs suivants, que leurs entités n'ont pas. Ni en ce moment, ni comme quelque chose que ce type d'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{attributes}\n\n\n\nUn déclencheur ou une condition qui attend un attribut qui n'apparaît jamais ne se déclenche jamais, et ne vous le dit pas. Un modèle qui en lit un n'obtient rien. Pour corriger cela, [modifiez le script]({edit}) et utilisez un attribut que l'entité possède.\n\nSpook 👻 Votre pote.",
+            "title": "Attributs inconnus utilisés dans : {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script attend, ou vérifie, les états suivants, dans lesquels leurs entités ne sont jamais. Ni comme quelque chose que ce type d'entité peut être, ni parmi les options que l'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{states}\n\n\n\nUn déclencheur qui attend un état qui ne vient jamais ne se déclenche jamais, une condition qui le vérifie n'est jamais satisfaite, et aucun des deux ne vous le dit. Les états sont sensibles à la casse : `On` n'est pas `on`. Pour corriger cela, [modifiez le script]({edit}) et utilisez un état dans lequel l'entité peut être.\n\nSpook 👻 Votre pote.",
+            "title": "États inconnus utilisés dans : {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook a trouvé un fantôme dans vos assistants de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'assistant de modèle suivant :\n\n[{helper}]({edit}) (`{entity_id}`)\n\nCet assistant de modèle utilise les attributs suivants, que leurs entités n'ont pas. Ni en ce moment, ni comme quelque chose que ce type d'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{attributes}\n\n\n\nUn modèle qui lit un attribut qui n'apparaît jamais n'obtient rien, et une condition dans l'une de ses actions qui en attend un n'est jamais satisfaite. Aucun des deux ne vous le dit. Pour corriger cela, [modifiez l'assistant de modèle]({edit}) et utilisez un attribut que l'entité possède.\n\nSpook 👻 Votre pote.",
+            "title": "Attributs inconnus utilisés dans l'assistant de modèle : {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation contient les modèles suivants, qui ne peuvent jamais être satisfaits, quoi qu'il se passe dans votre maison :\n\n{templates}\n\n\n\nUne condition de modèle n'est satisfaite que si elle donne `true`, et un `wait_template` aussi, à moins qu'il ne devienne plus tard quelque chose qui se lit comme vrai. Un déclencheur de modèle se déclenche quand son modèle devient quelque chose qui se lit comme vrai, comme `true`, `on`, `yes` ou `1`. Ces modèles donnent toujours autre chose, à cause de la façon dont ils sont écrits. Les causes habituelles :\n\n- Des guillemets autour du modèle. Un bloc `>-` les prend comme du texte, ils se retrouvent donc dans le résultat.\n- Aucun délimiteur de modèle, donc le texte est pris tel quel.\n- Du YAML collé dans le champ du modèle.\n- Un commentaire YAML `#` dans le Jinja, que Jinja affiche comme du texte.\n- Une condition qui donne `on` au lieu de `true`.\n\nRien ne vous le dit : la condition n'est jamais satisfaite, l'attente ne se termine qu'à son délai d'expiration, et le déclencheur ne se déclenche jamais. Pour corriger cela, [modifiez l'automatisation]({edit}) et faites en sorte que le modèle donne `true` quand il doit être satisfait.\n\nSpook 👻 Votre pote.",
+            "title": "Modèles qui ne peuvent jamais être satisfaits dans : {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation transmet à ses actions les entrées d'intégration suivantes, qui sont inconnues de Home Assistant, ou qui appartiennent à une autre intégration que celle demandée par l'action :\n\n{config_entries}\n\nHome Assistant les refuse lorsque l'étape s'exécute. Cela arrive généralement après qu'une intégration a été supprimée puis ajoutée à nouveau : elle a reçu une nouvelle entrée d'intégration, avec un nouvel ID.\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et choisissez à nouveau l'entrée d'intégration dans ces actions.\n\nSpook 👻 Votre pote.",
+            "title": "Entrées d'intégration inconnues utilisées dans : {automation}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation attribue les icônes suivantes, qui n'existent pas dans les Material Design Icons fournies avec Home Assistant :\n\n{icons}\n\n\n\nChacune d'elles apparaît comme un emplacement vide, sans un mot. Cela arrive souvent quand une icône a été mal saisie, renommée ou supprimée, ou choisie dans une version de Material Design Icons plus récente que celle fournie avec Home Assistant. Pour résoudre cette erreur, [modifiez l'automatisation]({edit}) et remplacez-les par des icônes qui existent.\n\nSpook 👻 Votre pote.",
+            "title": "Icônes inconnues utilisées dans : {automation}"
+        },
+        "automation_unknown_user_references": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation nomme les utilisateurs suivants, qui n'existent plus :\n\n{users}\n\n\n\nHome Assistant ne donne jamais deux fois le même ID d'utilisateur, ces utilisateurs ont donc été supprimés. Un déclencheur qui attend l'un d'eux ne se déclenche jamais pour eux, et un modèle qui compare avec l'un d'eux ne correspond jamais, sans le dire. Pour corriger cela, [modifiez l'automatisation]({edit}) et utilisez l'ID d'un utilisateur qui existe, ou supprimez la vérification.\n\nSpook 👻 Votre pote.",
+            "title": "Utilisateurs supprimés nommés dans : {automation}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord utilise les icônes suivantes, qui n'existent pas dans les Material Design Icons fournies avec Home Assistant (version {version}) :\n\n{icons}\n\n\n\nChacune d'elles apparaît comme un emplacement vide, sans un mot. Cela arrive souvent quand une icône a été mal saisie, renommée ou supprimée, ou choisie dans une version de Material Design Icons plus récente que celle fournie avec Home Assistant. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et remplacez-les par des icônes qui existent. L'icône du tableau de bord dans la barre latérale se change dans les paramètres de vos tableaux de bord.\n\nSpook 👻 Votre pote.",
+            "title": "Icônes inconnues utilisées dans le tableau de bord : {dashboard}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord nomme les utilisateurs suivants, qui n'existent plus :\n\n{users}\n\n\n\nHome Assistant ne donne jamais deux fois le même ID d'utilisateur, ces utilisateurs ont donc été supprimés. Une carte, un badge, une section ou une vue affichée uniquement pour eux n'est désormais affichée pour personne, sans le dire. Une exemption de confirmation pour eux n'a plus aucun effet. Pour corriger cela, [modifiez le tableau de bord]({edit}) et choisissez les utilisateurs qui doivent le voir, ou supprimez la condition.\n\nSpook 👻 Votre pote.",
+            "title": "Utilisateurs supprimés nommés dans le tableau de bord : {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord utilise les thèmes suivants, qui n'existent pas :\n\n{themes}\n\n\n\nUne carte, une section ou une vue avec l'un de ces thèmes reçoit l'apparence par défaut à la place, sans le dire. Cela arrive souvent quand un thème a été renommé ou supprimé. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et choisissez un thème qui existe, ou rajoutez le thème.\n\nSpook 👻 Votre pote.",
+            "title": "Thèmes inconnus utilisés dans le tableau de bord : {dashboard}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script contient les modèles suivants, qui ne peuvent jamais être satisfaits, quoi qu'il se passe dans votre maison :\n\n{templates}\n\n\n\nUne condition de modèle n'est satisfaite que si elle donne `true`, et un `wait_template` aussi, à moins qu'il ne devienne plus tard quelque chose qui se lit comme vrai. Un déclencheur de modèle dans un `wait_for_trigger` se déclenche quand son modèle devient quelque chose qui se lit comme vrai, comme `true`, `on`, `yes` ou `1`. Ces modèles donnent toujours autre chose, à cause de la façon dont ils sont écrits. Les causes habituelles :\n\n- Des guillemets autour du modèle. Un bloc `>-` les prend comme du texte, ils se retrouvent donc dans le résultat.\n- Aucun délimiteur de modèle, donc le texte est pris tel quel.\n- Du YAML collé dans le champ du modèle.\n- Un commentaire YAML `#` dans le Jinja, que Jinja affiche comme du texte.\n- Une condition qui donne `on` au lieu de `true`.\n\nRien ne vous le dit : la condition n'est jamais satisfaite, et l'attente ne se termine qu'à son délai d'expiration. Pour corriger cela, [modifiez le script]({edit}) et faites en sorte que le modèle donne `true` quand il doit être satisfait.\n\nSpook 👻 Votre pote.",
+            "title": "Modèles qui ne peuvent jamais être satisfaits dans : {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script transmet à ses actions les entrées d'intégration suivantes, qui sont inconnues de Home Assistant, ou qui appartiennent à une autre intégration que celle demandée par l'action :\n\n{config_entries}\n\nHome Assistant les refuse lorsque l'étape s'exécute. Cela arrive généralement après qu'une intégration a été supprimée puis ajoutée à nouveau : elle a reçu une nouvelle entrée d'intégration, avec un nouvel ID.\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et choisissez à nouveau l'entrée d'intégration dans ces actions.\n\nSpook 👻 Votre pote.",
+            "title": "Entrées d'intégration inconnues utilisées dans : {script}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script utilise ou attribue les icônes suivantes, qui n'existent pas dans les Material Design Icons fournies avec Home Assistant :\n\n{icons}\n\n\n\nChacune d'elles apparaît comme un emplacement vide, sans un mot. Cela arrive souvent quand une icône a été mal saisie, renommée ou supprimée, ou choisie dans une version de Material Design Icons plus récente que celle fournie avec Home Assistant. Pour résoudre cette erreur, [modifiez le script]({edit}) et remplacez-les par des icônes qui existent.\n\nSpook 👻 Votre pote.",
+            "title": "Icônes inconnues utilisées dans : {script}"
+        },
+        "script_unknown_user_references": {
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script nomme les utilisateurs suivants, qui n'existent plus :\n\n{users}\n\n\n\nHome Assistant ne donne jamais deux fois le même ID d'utilisateur, ces utilisateurs ont donc été supprimés. Un modèle qui compare avec l'un d'eux ne correspond jamais, et un déclencheur qui attend l'un d'eux ne se déclenche jamais pour eux, sans le dire. Pour corriger cela, [modifiez le script]({edit}) et utilisez l'ID d'un utilisateur qui existe, ou supprimez la vérification.\n\nSpook 👻 Votre pote.",
+            "title": "Utilisateurs supprimés nommés dans : {script}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook a trouvé un fantôme dans vos entités de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entité de modèle suivante :\n\n{name} (`{entity_id}`)\n\nCette entité de modèle utilise les attributs suivants, que leurs entités n'ont pas. Ni en ce moment, ni comme quelque chose que ce type d'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{attributes}\n\n\n\nUn modèle qui lit un attribut qui n'apparaît jamais n'obtient rien, et un déclencheur ou une condition qui en attend un ne se déclenche jamais ou n'est jamais satisfait. Aucun ne vous le dit.\n\nCette entité de modèle est définie dans votre configuration YAML. Pour corriger cela, modifiez-la dans la section `template:` de votre configuration, utilisez un attribut que l'entité possède, et rechargez vos entités de modèle.\n\nSpook 👻 Votre pote.",
+            "title": "Attributs inconnus utilisés dans l'entité de modèle : {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook a trouvé un fantôme dans vos entités de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entité de modèle suivante :\n\n{name} (`{entity_id}`)\n\nSa configuration fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nCela arrive souvent quand une entité a été renommée ou supprimée. Un modèle qui en lit une n'obtient rien, et un déclencheur qui en attend une ne se déclenche jamais.\n\nCette entité de modèle est définie dans votre configuration YAML. Pour résoudre cette erreur, modifiez-la dans la section `template:` de votre configuration, faites référence à des entités existantes, et rechargez vos entités de modèle.\n\nSpook 👻 Votre pote.",
+            "title": "Entités inconnues utilisées dans l'entité de modèle : {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook a trouvé un fantôme dans vos entités de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entité de modèle suivante :\n\n{name} (`{entity_id}`)\n\nElle fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\n\n\nCela arrive souvent lorsque l'intégration derrière une action a été supprimée, ou qu'un script a été renommé ou supprimé.\n\nCette entité de modèle est définie dans votre configuration YAML. Pour résoudre cette erreur, modifiez-la dans la section `template:` de votre configuration, utilisez des actions existantes, et rechargez vos entités de modèle.\n\nSpook 👻 Votre pote.",
+            "title": "Actions inconnues utilisées dans l'entité de modèle : {name}"
+        },
+        "unknown_icons": {
+            "description": "Spook a trouvé un fantôme dans vos paramètres 👻\n\nLes icônes suivantes n'existent pas dans les Material Design Icons fournies avec Home Assistant (version {version}) :\n\n{icons}\n\n\n\nChacune d'elles apparaît comme un emplacement vide, sans un mot. Cela arrive souvent quand une icône a été mal saisie, renommée ou supprimée, ou choisie dans une version de Material Design Icons plus récente que celle fournie avec Home Assistant. Pour résoudre cette erreur, donnez à chacun de ces éléments une icône qui existe : une entité, une entrée ou une zone dans ses paramètres, une pièce, un étage ou une étiquette dans les paramètres de vos pièces, étiquettes et zones, une catégorie là où elle est utilisée, et `customize:` dans votre configuration.\n\nSpook 👻 Votre pote.",
+            "title": "Icônes inconnues dans vos paramètres"
         }
     },
     "services": {
@@ -2667,6 +2794,170 @@
                     "description": "Le déplacer en haut ou en bas de la liste. Donnez ceci ou un élément après lequel le placer."
                 }
             }
+        },
+        "homeassistant_update_area": {
+            "name": "Mettre à jour une pièce",
+            "description": "Met à jour une pièce existante à la volée. Tout ce que vous omettez garde la valeur qu'il a déjà. Les alias et les étiquettes remplacent ceux de la pièce. L'étage, l'icône, l'image et les capteurs peuvent être vidés en les mettant à null.",
+            "fields": {
+                "area_id": {
+                    "name": "ID de pièce",
+                    "description": "L'ID de la pièce à mettre à jour."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "Nouveau nom de la pièce."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Les alias de la pièce. Remplace ceux qu'elle a, une liste vide les supprime tous."
+                },
+                "floor_id": {
+                    "name": "ID d'étage",
+                    "description": "L'ID de l'étage où se trouve la pièce."
+                },
+                "icon": {
+                    "name": "Icône",
+                    "description": "Nouvelle icône à utiliser pour la pièce."
+                },
+                "picture": {
+                    "name": "Image",
+                    "description": "L'URL ou le chemin d'une image pour la pièce."
+                },
+                "labels": {
+                    "name": "Étiquettes",
+                    "description": "Les ID des étiquettes de la pièce. Remplace celles qu'elle a, une liste vide les supprime toutes."
+                },
+                "temperature_entity_id": {
+                    "name": "Capteur de température",
+                    "description": "Le capteur qui mesure la température dans la pièce."
+                },
+                "humidity_entity_id": {
+                    "name": "Capteur d'humidité",
+                    "description": "Le capteur qui mesure l'humidité dans la pièce."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "fields": {
+                "device_id": {
+                    "description": "L'ID de l'appareil à mettre à jour. Le sélecteur d'appareil de Home Assistant n'affiche pas les appareils désactivés, utilisez le mode YAML pour donner leur ID.",
+                    "name": "ID d'appareil"
+                },
+                "name_by_user": {
+                    "name": "Nom",
+                    "description": "Nouveau nom de l'appareil."
+                },
+                "area_id": {
+                    "name": "ID de pièce",
+                    "description": "L'ID de la pièce où se trouve l'appareil."
+                },
+                "labels": {
+                    "name": "Étiquettes",
+                    "description": "Les ID des étiquettes de l'appareil. Remplace celles qu'il a, une liste vide les supprime toutes."
+                },
+                "disabled_by": {
+                    "name": "Désactivé par",
+                    "description": "Mettez user pour désactiver l'appareil, ou null pour le réactiver. Cela fonctionne comme les actions de désactivation et d'activation d'un appareil."
+                }
+            },
+            "name": "Mettre à jour un appareil",
+            "description": "Met à jour un appareil existant à la volée. Tout ce que vous omettez garde la valeur qu'il a déjà. Les étiquettes remplacent celles de l'appareil. Le nom et la pièce peuvent être vidés en les mettant à null, ce qui redonne à l'appareil le nom que son intégration lui avait donné."
+        },
+        "homeassistant_update_floor": {
+            "name": "Mettre à jour un étage",
+            "description": "Met à jour un étage existant à la volée. Tout ce que vous omettez garde la valeur qu'il a déjà. Les alias remplacent ceux de l'étage. L'icône et le niveau peuvent être vidés en les mettant à null.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID d'étage",
+                    "description": "L'ID de l'étage à mettre à jour."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "Nouveau nom de l'étage."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Les alias de l'étage. Remplace ceux qu'il a, une liste vide les supprime tous."
+                },
+                "icon": {
+                    "name": "Icône",
+                    "description": "Nouvelle icône à utiliser pour l'étage."
+                },
+                "level": {
+                    "name": "Niveau",
+                    "description": "Le niveau de l'étage dans votre maison."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Créer une planification",
+            "description": "Crée une nouvelle entrée de planification à la volée, active pendant les blocs horaires donnés pour chaque jour de la semaine. Renvoie l'ID d'entité de la nouvelle planification.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "Le nom de la nouvelle planification."
+                },
+                "schedule_id": {
+                    "name": "ID d'entité de la planification",
+                    "description": "L'ID d'entité de la nouvelle planification. Le préfixe schedule. est ajouté automatiquement. Si aucune valeur n'est fournie, l'ID d'entité sera généré à partir du nom."
+                },
+                "icon": {
+                    "name": "Icône",
+                    "description": "L'icône de la nouvelle planification."
+                },
+                "monday": {
+                    "name": "Lundi",
+                    "description": "Quand la planification est active le lundi : une liste de blocs horaires, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Si omis, elle est inactive toute la journée."
+                },
+                "tuesday": {
+                    "name": "Mardi",
+                    "description": "Quand la planification est active le mardi : une liste de blocs horaires, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Si omis, elle est inactive toute la journée."
+                },
+                "wednesday": {
+                    "name": "Mercredi",
+                    "description": "Quand la planification est active le mercredi : une liste de blocs horaires, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Si omis, elle est inactive toute la journée."
+                },
+                "thursday": {
+                    "name": "Jeudi",
+                    "description": "Quand la planification est active le jeudi : une liste de blocs horaires, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Si omis, elle est inactive toute la journée."
+                },
+                "friday": {
+                    "name": "Vendredi",
+                    "description": "Quand la planification est active le vendredi : une liste de blocs horaires, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Si omis, elle est inactive toute la journée."
+                },
+                "saturday": {
+                    "name": "Samedi",
+                    "description": "Quand la planification est active le samedi : une liste de blocs horaires, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Si omis, elle est inactive toute la journée."
+                },
+                "sunday": {
+                    "name": "Dimanche",
+                    "description": "Quand la planification est active le dimanche : une liste de blocs horaires, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Si omis, elle est inactive toute la journée."
+                }
+            }
+        },
+        "schedule_delete": {
+            "name": "Supprimer une planification",
+            "description": "Supprime des entrées de planification créées dans l'interface. Les planifications définies en YAML ne peuvent pas être supprimées par Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entité",
+                    "description": "La ou les planifications à supprimer."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Définir les blocs horaires d'un jour",
+            "description": "Remplace les blocs horaires d'un ou plusieurs jours d'une entrée de planification créée dans l'interface. Les planifications définies en YAML ne peuvent pas être modifiées par Spook.",
+            "fields": {
+                "day": {
+                    "name": "Jour",
+                    "description": "Le ou les jours de la semaine dont définir les blocs horaires."
+                },
+                "blocks": {
+                    "name": "Blocs horaires",
+                    "description": "Les blocs horaires pendant lesquels la planification est active ces jours-là, chacun avec une heure de début et une heure de fin, et des données facultatives qu'elle affiche comme attributs tant qu'elle est active. Ils remplacent les blocs que ces jours avaient. Une liste vide laisse ces jours inactifs toute la journée."
+                }
+            }
         }
     },
     "conditions": {
@@ -2753,6 +3044,16 @@
                 "tolerance": {
                     "name": "Tolérance",
                     "description": "À quelle distance de la consigne cela compte encore comme atteint, dans l'unité de l'appareil. Utile pour un thermostat qui se stabilise juste en dessous de sa consigne. Zéro signifie la consigne elle-même."
+                }
+            }
+        },
+        "is_available": {
+            "name": "L'entité est disponible",
+            "description": "Satisfaite lorsqu'une entité est joignable : tout sauf indisponible ou inconnu. Pour une enceinte ou une prise connectée qui n'est pas toujours alimentée.",
+            "fields": {
+                "behavior": {
+                    "name": "Comportement",
+                    "description": "Si l'une des entités disponible suffit, ou si elles doivent toutes l'être."
                 }
             }
         }
@@ -2975,6 +3276,92 @@
         "script_started": {
             "name": "Script démarré",
             "description": "Se déclenche lorsqu'un script démarre une exécution. Une exécution refusée par le script, parce qu'il tourne déjà, ne compte pas. Laissez la cible vide pour surveiller tous les scripts."
+        },
+        "state_changed": {
+            "name": "Déclencheur d'état de Spook",
+            "description": "Se déclenche lorsqu'une entité change d'état, pour tout ce que couvre une cible : entités, appareils, pièces, étages et étiquettes. Affinez par domaine, intégration ou classe d'appareil, ou laissez la cible vide et laissez ces filtres choisir les entités parmi tout. Excluez à nouveau certains éléments, et décidez combien de temps un changement doit tenir avant de compter.",
+            "fields": {
+                "domain": {
+                    "name": "Domaines",
+                    "description": "Seulement les entités de ces domaines, comme binary_sensor ou cover. Sans cible, elles sont choisies parmi tout."
+                },
+                "integration": {
+                    "name": "Intégrations",
+                    "description": "Seulement les entités fournies par ces intégrations, comme zha ou hue. Sans cible, elles sont choisies parmi tout."
+                },
+                "config_entry": {
+                    "name": "Entrée d'intégration",
+                    "description": "Seulement les entités de cette entrée d'intégration. Sans cible, elles sont choisies parmi tout."
+                },
+                "device_class": {
+                    "name": "Classes d'appareil",
+                    "description": "Seulement les entités de ces classes d'appareil, comme door ou window. Sans cible, elles sont choisies parmi tout."
+                },
+                "exclude_target": {
+                    "name": "Exclure",
+                    "description": "Entités, appareils, pièces, étages ou étiquettes à exclure. Tout ce qu'ils contiennent est exclu, y compris les entités de diagnostic."
+                },
+                "exclude_domain": {
+                    "name": "Exclure des domaines",
+                    "description": "Exclut les entités de ces domaines. Si Exclure est vide, cela s'applique à tout ce que couvre la cible."
+                },
+                "exclude_integration": {
+                    "name": "Exclure des intégrations",
+                    "description": "Exclut les entités fournies par ces intégrations."
+                },
+                "exclude_config_entry": {
+                    "name": "Exclure une entrée d'intégration",
+                    "description": "Exclut les entités de cette entrée d'intégration."
+                },
+                "exclude_device_class": {
+                    "name": "Exclure des classes d'appareil",
+                    "description": "Exclut les entités de ces classes d'appareil."
+                },
+                "attribute": {
+                    "name": "Attribut",
+                    "description": "Suivre cet attribut au lieu de l'état."
+                },
+                "from": {
+                    "name": "De",
+                    "description": "Seulement les changements venant de l'un de ces états."
+                },
+                "not_from": {
+                    "name": "Pas de",
+                    "description": "Seulement les changements ne venant pas de l'un de ces états."
+                },
+                "to": {
+                    "name": "Vers",
+                    "description": "Seulement les changements allant vers l'un de ces états."
+                },
+                "not_to": {
+                    "name": "Pas vers",
+                    "description": "Seulement les changements n'allant pas vers l'un de ces états."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignorer indisponible et inconnu",
+                    "description": "Écarte les changements depuis ou vers indisponible et inconnu, pour qu'un redémarrage ou le redémarrage d'un routeur ne déclenche pas tout. Désactivez pour les utiliser dans De ou Vers."
+                },
+                "attribute_changes": {
+                    "name": "Compter les changements d'attribut",
+                    "description": "Se déclenche aussi quand seul un attribut a changé et que l'état est resté le même. Sans effet lorsqu'un attribut est suivi."
+                },
+                "behavior": {
+                    "name": "Comportement",
+                    "description": "Se déclencher pour chaque entité, pour la première de la cible à y arriver, ou une fois qu'elles y sont toutes. Première et toutes nécessitent Vers ou Pas vers. Tant qu'indisponible et inconnu sont ignorés, les entités dans ces états ne participent pas."
+                },
+                "for": {
+                    "name": "Pendant",
+                    "description": "Ne se déclenche qu'une fois que le nouvel état a tenu aussi longtemps. Tout autre changement entre-temps l'annule."
+                },
+                "blip_tolerance": {
+                    "name": "Tolérance aux coupures",
+                    "description": "Pendant l'attente de Pendant, devenir indisponible ou inconnu puis revenir comme avant dans ce délai ne relance pas l'attente. Ne fonctionne qu'avec Pendant."
+                },
+                "delay": {
+                    "name": "Délai",
+                    "description": "Attendre aussi longtemps avant de se déclencher, quoi qu'il se passe entre-temps. Comme un délai au début des actions."
+                }
+            }
         }
     },
     "selector": {
@@ -2989,6 +3376,17 @@
             "options": {
                 "bottom": "En bas",
                 "top": "En haut"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Lundi",
+                "tuesday": "Mardi",
+                "wednesday": "Mercredi",
+                "thursday": "Jeudi",
+                "friday": "Vendredi",
+                "saturday": "Samedi",
+                "sunday": "Dimanche"
             }
         }
     },
