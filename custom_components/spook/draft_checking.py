@@ -27,6 +27,7 @@ from .dashboard_extraction import (
     extract_not_entity_ids_from_dashboard_node,
 )
 from .ectoplasms.automation.repairs import (
+    never_true_templates as automation_templates,
     unknown_area_references as automation_areas,
     unknown_attribute_references as automation_attributes,
     unknown_condition_references as automation_conditions,
@@ -42,6 +43,7 @@ from .ectoplasms.automation.repairs import (
 )
 from .ectoplasms.lovelace.entity_names import async_check_dashboard_draft
 from .ectoplasms.script.repairs import (
+    never_true_templates as script_templates,
     unknown_area_references as script_areas,
     unknown_attribute_references as script_attributes,
     unknown_condition_references as script_conditions,
@@ -93,6 +95,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         automation_labels,
         automation_services,
         automation_states,
+        automation_templates,
         automation_trigger_ids,
         automation_triggers,
     ),
@@ -107,6 +110,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         script_labels,
         script_services,
         script_states,
+        script_templates,
         script_triggers,
     ),
 }

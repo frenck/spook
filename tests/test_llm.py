@@ -1278,14 +1278,16 @@ async def test_find_usages_in_groups(
 
 
 @pytest.mark.parametrize("domain", ["automation", "script"])
-def test_drafts_are_checked_by_every_unknown_reference_repair(domain: str) -> None:
+def test_drafts_are_checked_by_every_automation_and_script_repair(domain: str) -> None:
     """Test a new automation or script repair is not left out of draft checks.
 
     The repairs are listed by hand, so one added later has to be added there
     too, or a draft that passes still gets that repair the moment it is saved.
     """
     repairs_path = Path(spook_llm.__file__).parent / "ectoplasms" / domain / "repairs"
-    on_disk = {path.stem for path in repairs_path.glob("unknown_*_references.py")}
+    on_disk = {
+        path.stem for path in repairs_path.glob("*.py") if path.stem != "__init__"
+    }
 
     listed = {
         module.__name__.rsplit(".", 1)[1]

@@ -178,6 +178,18 @@ Home Assistant raises a generic issue about the script without saying which trig
 
 To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Templates that can never pass
+
+Scripts are inspected for templates that, because of how they are written, can never render what Home Assistant needs for them to pass: the `value_template` of template conditions, shorthand template conditions (`condition: "{{ ... }}"`), `wait_template`, and template triggers in a `wait_for_trigger`. Anywhere in the sequence: in an `if`, a `choose`, the `while` or `until` of a `repeat`, a condition step, nested in `and`, `or` or `not`. If one can never pass, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the templates that can never pass.
+
+A template condition passes only when it renders `true` (any case). A `wait_template` is checked like a condition first, and after that takes anything that reads as true, like `on`, `yes` or `1`, once it changes. A template trigger takes that too.
+
+The shapes this catches are the same as for automations: quotes around the template in a `>-` block, no `{{ }}` at all, YAML pasted into the template field, a YAML `#` comment inside the Jinja, and a condition that can only render `on`, `off` or another fixed text. The [automation section](automation.md#templates-that-can-never-pass) explains each, and what is left alone.
+
+Such a condition loads fine and never passes, a wait like that only ends on its timeout, and nothing tells you. Only the text of the template is read. Anything that depends on a state, a variable or the moment it runs is never judged. A script that failed to load is left alone: Home Assistant reports that one itself. Spook looks again whenever scripts are reloaded, which saving one in the editor does.
+
+To resolve the raised issue, edit the script and make the template render `true` when it should pass. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
