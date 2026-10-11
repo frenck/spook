@@ -296,3 +296,70 @@ async def test_home_area_view_of_an_existing_area_is_not_reported(
         async_issue_about(issue_registry, "lovelace_unknown_area_references_home")
         is None
     )
+
+
+async def test_card_placeholders_are_no_areas(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a card's own placeholders are left alone, a missing area is not.
+
+    decluttering-card fills in `[[area_id]]`, button-card runs `[[[ ]]]` and
+    config-template-card fills in `${ }`, all before the card sees the value.
+    Each was reported as an area literally named after the placeholder.
+    """
+    placeholders = ["[[area_id]]", "[[[ return 'kitchen' ]]]", "${area}"]
+
+    repair = SpookRepair(hass)
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard(
+            "lovelace",
+            {
+                "views": [
+                    {
+                        "cards": [
+                            *(
+                                {"type": "area", "area": placeholder}
+                                for placeholder in placeholders
+                            ),
+                            {
+                                "type": "button",
+                                "tap_action": {
+                                    "action": "perform-action",
+                                    "perform_action": "light.turn_on",
+                                    "target": {"area_id": placeholders},
+                                },
+                            },
+                            {"type": "area", "area": "ghost_area"},
+                        ],
+                    },
+                ],
+            },
+        ),
+        "dashboard-areas": _dashboard(
+            "dashboard-areas",
+            {
+                "strategy": {
+                    "type": "areas",
+                    "areas_display": {"hidden": placeholders},
+                    "areas_options": {key: {} for key in placeholders},
+                },
+            },
+        ),
+    }
+
+    await repair.async_inspect()
+
+    issue = async_issue_about(
+        issue_registry, "lovelace_unknown_area_references_lovelace"
+    )
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["areas"] == "- `ghost_area`"
+
+    assert (
+        async_issue_about(
+            issue_registry, "lovelace_unknown_area_references_dashboard-areas"
+        )
+        is None
+    )

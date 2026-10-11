@@ -754,9 +754,9 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
 
 # Filled in by something before it is used: Jinja, or a card's own
 # placeholders, like button-card's `[[[ ]]]` and decluttering-card's
-# `[[entity]]`. No entity ID has a brace or a bracket in it, so neither is
-# one that is wrong.
-_FILLED_IN_LATER = ("{", "[")
+# `[[entity]]`, or config-template-card's `${ }`. No entity ID or area ID has
+# a brace or a bracket in it, so neither is one that is wrong.
+FILLED_IN_LATER = ("{", "[")
 
 
 def is_not_an_entity_id(value: str) -> bool:
@@ -777,7 +777,7 @@ def is_not_an_entity_id(value: str) -> bool:
         or lower_cased.startswith((*NEVER_AN_ENTITY_PREFIXES, *IGNORED_ENTITY_DOMAINS))
         # A pattern, like `light.*`, is never meant as one entity.
         or "*" in value
-        or any(mark in value for mark in _FILLED_IN_LATER)
+        or any(mark in value for mark in FILLED_IN_LATER)
     )
 
 
