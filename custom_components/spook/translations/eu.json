@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Erabiltzailea gehituta",
             "description": "Norbaiti Home Assistant-en saioa hasteko kontu bat ematen zaionean abiarazten da. Home Assistant-ek bere integrazioetarako sortzen dituen erabiltzaileak kanpoan geratzen dira."
+        },
+        "state_changed": {
+            "name": "Spooken egoera-abiarazlea",
+            "description": "Entitate batek egoera aldatzen duenean abiarazten da, helburu batek hartzen duen guztirako: entitateak, gailuak, guneak, solairuak eta etiketak. Mugatu domeinu, integrazio edo gailu-klasearen arabera, edo utzi helburua hutsik eta utzi horiei entitateak guztiaren artetik aukeratzen. Baztertu gauzak berriro, eta erabaki aldaketa batek zenbat iraun behar duen kontuan hartu aurretik.",
+            "fields": {
+                "domain": {
+                    "name": "Domeinuak",
+                    "description": "Domeinu hauetako entitateak bakarrik, adibidez binary_sensor edo cover. Helbururik gabe, guztiaren artetik aukeratzen ditu."
+                },
+                "integration": {
+                    "name": "Integrazioak",
+                    "description": "Integrazio hauek emandako entitateak bakarrik, adibidez zha edo hue. Helbururik gabe, guztiaren artetik aukeratzen ditu."
+                },
+                "config_entry": {
+                    "name": "Integrazio-sarrera",
+                    "description": "Integrazio-sarrera honen entitateak bakarrik. Helbururik gabe, guztiaren artetik aukeratzen ditu."
+                },
+                "device_class": {
+                    "description": "Gailu-klase hauetako entitateak bakarrik, adibidez door edo window. Helbururik gabe, guztiaren artetik aukeratzen ditu.",
+                    "name": "Gailu-klaseak"
+                },
+                "exclude_target": {
+                    "name": "Baztertu",
+                    "description": "Baztertu beharreko entitateak, gailuak, guneak, solairuak edo etiketak. Haien barruko guztia baztertzen da, diagnostiko-entitateak ere bai."
+                },
+                "exclude_domain": {
+                    "description": "Baztertu domeinu hauetako entitateak. Baztertu eremuan ezer ez badago, helburuak hartzen duen guztiari aplikatzen zaio.",
+                    "name": "Baztertu domeinuak"
+                },
+                "exclude_integration": {
+                    "description": "Baztertu integrazio hauek emandako entitateak.",
+                    "name": "Baztertu integrazioak"
+                },
+                "exclude_config_entry": {
+                    "name": "Baztertu integrazio-sarrera",
+                    "description": "Baztertu integrazio-sarrera honen entitateak."
+                },
+                "exclude_device_class": {
+                    "name": "Baztertu gailu-klaseak",
+                    "description": "Baztertu gailu-klase hauetako entitateak."
+                },
+                "attribute": {
+                    "name": "Atributua",
+                    "description": "Jarraitu atributu honi egoeraren ordez."
+                },
+                "from": {
+                    "name": "Nondik",
+                    "description": "Egoera hauetako batetik datozen aldaketak bakarrik."
+                },
+                "not_from": {
+                    "name": "Ez nondik",
+                    "description": "Egoera hauetako batetik ez datozen aldaketak bakarrik."
+                },
+                "to": {
+                    "name": "Nora",
+                    "description": "Egoera hauetako batera doazen aldaketak bakarrik."
+                },
+                "not_to": {
+                    "name": "Ez nora",
+                    "description": "Egoera hauetako batera ez doazen aldaketak bakarrik."
+                },
+                "ignore_unavailable": {
+                    "name": "Baztertu eskuragarri ez eta ezezaguna",
+                    "description": "Utzi kanpoan eskuragarri ez dagoenetik edo ezezagunetik datozen edo hara doazen aldaketak, berrabiarazte batek edo bideratzaile baten berrabiarazteak dena abiarazi ez dezan. Desaktibatu Nondik edo Nora eremuetan erabiltzeko."
+                },
+                "attribute_changes": {
+                    "name": "Zenbatu atributu-aldaketak",
+                    "description": "Abiarazi atributu bat bakarrik aldatu denean eta egoera berdin mantendu denean ere. Ez du ezer egiten atributu bati jarraitzen ari den bitartean."
+                },
+                "behavior": {
+                    "name": "Portaera",
+                    "description": "Abiarazi entitate bakoitzerako, helburuko lehenengoa hara iristen denean, edo denak hor daudenean. Lehenengoak eta denak Nora edo Ez nora behar dute. Eskuragarri ez dagoena eta ezezaguna baztertzen diren bitartean, egoera horietako entitateek ez dute parte hartzen."
+                },
+                "for": {
+                    "name": "Iraupena",
+                    "description": "Egoera berriak hainbeste denbora iraun duenean bakarrik abiarazi. Tartean beste edozein aldaketak bertan behera uzten du."
+                },
+                "blip_tolerance": {
+                    "name": "Etenaldi laburren tolerantzia",
+                    "description": "Iraupena itxaroten ari den bitartean, eskuragarri ez egotera edo ezezagun izatera pasatzeak eta denbora honetan lehen bezala itzultzeak ez du itxaronaldia berriro hasten. Iraupenarekin batera bakarrik dabil."
+                },
+                "delay": {
+                    "name": "Atzerapena",
+                    "description": "Itxaron hainbeste denbora abiarazi aurretik, tartean gertatzen dena gertatzen dela. Ekintzen hasierako atzerapen bat bezala."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Behean",
                 "top": "Goian"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Astelehena",
+                "tuesday": "Asteartea",
+                "wednesday": "Asteazkena",
+                "thursday": "Osteguna",
+                "friday": "Ostirala",
+                "saturday": "Larunbata",
+                "sunday": "Igandea"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Iraupena",
                     "description": "Zenbat itxaron azken exekuzioaren ondoren baldintza hau berriro bete dadin."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Entitatea eskuragarri dago",
+            "description": "Entitate batekin hitz egin daitekeenean betetzen da: eskuragarri ez dagoena edo ezezaguna ez den edozer. Beti elikatuta ez dagoen bozgorailu edo entxufe adimendun baterako.",
+            "fields": {
+                "behavior": {
+                    "description": "Entitateetako bat hor egotea nahikoa den, edo denek egon behar duten.",
+                    "name": "Portaera"
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Toki hau ez da editagarria: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "{amount} kopurua ez dator bat {entity_id}(r)ekin, {step}(e)ko urratsetan mugitzen baita. Erabili {step}(r)en multiplo bat, edo utzi kopurua kanpoan urrats bat mugitzeko."
+        },
+        "area_cannot_update": {
+            "message": "{area_id} gunea ezin da horrela aldatu: {error}."
+        },
+        "area_name_taken": {
+            "message": "{area_id} guneak dagoeneko darabil {name} izena."
+        },
+        "area_nothing_to_update": {
+            "message": "Ez dago ezer eguneratzeko {area_id} gunean: eman gutxienez hauetako bat: {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Ez dago ezer eguneratzeko {device_id} gailuan: eman gutxienez hauetako bat: {fields}."
+        },
+        "floor_name_taken": {
+            "message": "{floor_id} solairuak dagoeneko darabil {name} izena."
+        },
+        "floor_nothing_to_update": {
+            "message": "Ez dago ezer eguneratzeko {floor_id} solairuan: eman gutxienez hauetako bat: {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Ordutegi-bloke horiek ez dute balio {entity_id}(r)entzat: {error}. Ez da ezer aldatu."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} zure YAML konfigurazioko ordutegi bat da, eta Spookek ezin du aldatu. Editatu zure konfigurazioan horren ordez."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Sentsore hauek itzuli dira, edo ezarpenek beste nonbait seinalatzen dute orain, Spookek begiratu zuenetik. Beraz, ez da ezer garbitu. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
                 }
             }
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek atributu hauek erabiltzen ditu, baina haien entitateek ez dituzte. Ez orain, ez mota horretako entitate batek eskaintzen duen zerbait gisa, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{attributes}\n\n\n\nInoiz agertzen ez den atributu baten zain dagoen abiarazle edo baldintza bat ez da inoiz abiarazten, eta ez dizu horren berri ematen. Bat irakurtzen duen txantiloi batek ez du ezer jasotzen. Hau konpontzeko, [editatu automatizazioa]({edit}) eta erabili entitateak duen atributu bat.\n\nSpook 👻 Zure laguna.",
+            "title": "Atributu ezezagunak hemen erabilita: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek egoera hauen zain dago edo hauek egiaztatzen ditu, baina haien entitateak ez daude inoiz egoera horietan. Ez mota horretako entitate batek izan dezakeen zerbait gisa, ez entitateak eskaintzen dituen aukeren artean, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{states}\n\n\n\nInoiz iristen ez den egoera baten zain dagoen abiarazle bat ez da inoiz abiarazten, bat egiaztatzen duen baldintza bat ez da inoiz betetzen, eta bietako batek ere ez dizu horren berri ematen. Egoeretan maiuskulak eta minuskulak bereizten dira: `On` ez da `on`. Hau konpontzeko, [editatu automatizazioa]({edit}) eta erabili entitatea egon daitekeen egoera bat.\n\nSpook 👻 Zure laguna.",
+            "title": "Egoera ezezagunak hemen erabilita: {automation}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek integrazio-sarrera hauek ematen dizkie bere ekintzei, eta Home Assistant-ek ez ditu ezagutzen, edo ekintzak eskatzen duena ez den beste integrazio batenak dira:\n\n{config_entries}\n\nHome Assistant-ek ukatu egiten ditu urratsa exekutatzen denean. Hau normalean integrazio bat kendu eta berriro gehitu ondoren gertatzen da: integrazio-sarrera berri bat jaso zuen, ID berri batekin.\n\nErrore hau konpontzeko, [editatu automatizazioa]({edit}) eta aukeratu berriro integrazio-sarrera ekintza hauetan.\n\nSpook 👻 Zure laguna.",
+            "title": "Integrazio-sarrera ezezagunak hemen erabilita: {automation}"
+        },
+        "automation_unknown_icons": {
+            "title": "Ikono ezezagunak hemen erabilita: {automation}",
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek ikono hauek ematen ditu, eta ez dira existitzen Home Assistant-ekin datozen Material Design Icons ikonoen artean:\n\n{icons}\n\n\n\nHauetako bakoitza leku huts gisa agertzen da, hitzik esan gabe. Hau askotan ikono bat gaizki idatzi, izenez aldatu edo kendu denean gertatzen da, edo Home Assistant-ekin datorrena baino Material Design Icons bertsio berriago batetik hautatu denean. Errore hau konpontzeko, [editatu automatizazioa]({edit}) eta ordeztu hauek existitzen diren ikonoekin.\n\nSpook 👻 Zure laguna."
+        },
+        "automation_unknown_user_references": {
+            "title": "Kendutako erabiltzaileak hemen izendatuta: {automation}",
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek erabiltzaile hauek izendatzen ditu, eta jada ez dira existitzen:\n\n{users}\n\n\n\nHome Assistant-ek ez du inoiz erabiltzaile-ID bat bi aldiz ematen, beraz erabiltzaile hauek kendu egin ziren. Haietako baten zain dagoen abiarazle bat ez da inoiz abiarazten haientzat, eta haietako batekin alderatzen duen txantiloi bat ez dator inoiz bat, ezer esan gabe. Hau konpontzeko, [editatu automatizazioa]({edit}) eta erabili existitzen den erabiltzaile baten IDa, edo kendu egiaztapena.\n\nSpook 👻 Zure laguna."
+        },
+        "automation_never_true_templates": {
+            "title": "Inoiz bete ezin diren txantiloiak hemen: {automation}",
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek txantiloi hauek ditu, eta ezin dira inoiz bete, zure etxean gertatzen dena gertatzen dela:\n\n{templates}\n\n\n\nTxantiloi-baldintza bat `true` errendatzen duenean bakarrik betetzen da, eta `wait_template` bat ere bai, geroago egiazko gisa irakurtzen den zerbait bihurtzen ez bada behintzat. Txantiloi-abiarazle bat bere txantiloia egiazko gisa irakurtzen den zerbait bihurtzen denean abiarazten da, hala nola `true`, `on`, `yes` edo `1`. Txantiloi hauek beti beste zerbait errendatzen dute, idatzita dauden moduagatik. Ohiko arrazoiak:\n\n- Txantiloiaren inguruko komatxoak. `>-` bloke batek testu gisa hartzen ditu, eta emaitzan amaitzen dute.\n- Txantiloi-mugatzailerik ez, beraz testua dagoen bezala hartzen da.\n- Txantiloiaren eremuan itsatsitako YAMLa.\n- Jinjaren barruko YAML `#` iruzkin bat, Jinjak testu gisa inprimatzen duena.\n- `true` beharrean `on` errendatzen duen baldintza bat.\n\nEzerk ez dizu esaten: baldintza ez da inoiz betetzen, itxaronaldia bere denbora-mugarekin bakarrik amaitzen da, eta abiarazlea ez da inoiz abiarazten. Hau konpontzeko, [editatu automatizazioa]({edit}) eta egin txantiloiak `true` errenda dezan bete behar denean.\n\nSpook 👻 Zure laguna."
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek atributu hauek erabiltzen ditu, baina haien entitateek ez dituzte. Ez orain, ez mota horretako entitate batek eskaintzen duen zerbait gisa, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{attributes}\n\n\n\nInoiz agertzen ez den atributu baten zain dagoen abiarazle edo baldintza bat ez da inoiz abiarazten, eta ez dizu horren berri ematen. Bat irakurtzen duen txantiloi batek ez du ezer jasotzen. Hau konpontzeko, [editatu scripta]({edit}) eta erabili entitateak duen atributu bat.\n\nSpook 👻 Zure laguna.",
+            "title": "Atributu ezezagunak hemen erabilita: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek egoera hauen zain dago edo hauek egiaztatzen ditu, baina haien entitateak ez daude inoiz egoera horietan. Ez mota horretako entitate batek izan dezakeen zerbait gisa, ez entitateak eskaintzen dituen aukeren artean, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{states}\n\n\n\nInoiz iristen ez den egoera baten zain dagoen abiarazle bat ez da inoiz abiarazten, bat egiaztatzen duen baldintza bat ez da inoiz betetzen, eta bietako batek ere ez dizu horren berri ematen. Egoeretan maiuskulak eta minuskulak bereizten dira: `On` ez da `on`. Hau konpontzeko, [editatu scripta]({edit}) eta erabili entitatea egon daitekeen egoera bat.\n\nSpook 👻 Zure laguna.",
+            "title": "Egoera ezezagunak hemen erabilita: {script}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek integrazio-sarrera hauek ematen dizkie bere ekintzei, eta Home Assistant-ek ez ditu ezagutzen, edo ekintzak eskatzen duena ez den beste integrazio batenak dira:\n\n{config_entries}\n\nHome Assistant-ek ukatu egiten ditu urratsa exekutatzen denean. Hau normalean integrazio bat kendu eta berriro gehitu ondoren gertatzen da: integrazio-sarrera berri bat jaso zuen, ID berri batekin.\n\nErrore hau konpontzeko, [editatu scripta]({edit}) eta aukeratu berriro integrazio-sarrera ekintza hauetan.\n\nSpook 👻 Zure laguna.",
+            "title": "Integrazio-sarrera ezezagunak hemen erabilita: {script}"
+        },
+        "script_unknown_icons": {
+            "title": "Ikono ezezagunak hemen erabilita: {script}",
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek ikono hauek erabiltzen edo ematen ditu, eta ez dira existitzen Home Assistant-ekin datozen Material Design Icons ikonoen artean:\n\n{icons}\n\n\n\nHauetako bakoitza leku huts gisa agertzen da, hitzik esan gabe. Hau askotan ikono bat gaizki idatzi, izenez aldatu edo kendu denean gertatzen da, edo Home Assistant-ekin datorrena baino Material Design Icons bertsio berriago batetik hautatu denean. Errore hau konpontzeko, [editatu scripta]({edit}) eta ordeztu hauek existitzen diren ikonoekin.\n\nSpook 👻 Zure laguna."
+        },
+        "script_unknown_user_references": {
+            "title": "Kendutako erabiltzaileak hemen izendatuta: {script}",
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek erabiltzaile hauek izendatzen ditu, eta jada ez dira existitzen:\n\n{users}\n\n\n\nHome Assistant-ek ez du inoiz erabiltzaile-ID bat bi aldiz ematen, beraz erabiltzaile hauek kendu egin ziren. Haietako batekin alderatzen duen txantiloi bat ez dator inoiz bat, eta haietako baten zain dagoen abiarazle bat ez da inoiz abiarazten haientzat, ezer esan gabe. Hau konpontzeko, [editatu scripta]({edit}) eta erabili existitzen den erabiltzaile baten IDa, edo kendu egiaztapena.\n\nSpook 👻 Zure laguna."
+        },
+        "script_never_true_templates": {
+            "title": "Inoiz bete ezin diren txantiloiak hemen: {script}",
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek txantiloi hauek ditu, eta ezin dira inoiz bete, zure etxean gertatzen dena gertatzen dela:\n\n{templates}\n\n\n\nTxantiloi-baldintza bat `true` errendatzen duenean bakarrik betetzen da, eta `wait_template` bat ere bai, geroago egiazko gisa irakurtzen den zerbait bihurtzen ez bada behintzat. `wait_for_trigger` bateko txantiloi-abiarazle bat bere txantiloia egiazko gisa irakurtzen den zerbait bihurtzen denean abiarazten da, hala nola `true`, `on`, `yes` edo `1`. Txantiloi hauek beti beste zerbait errendatzen dute, idatzita dauden moduagatik. Ohiko arrazoiak:\n\n- Txantiloiaren inguruko komatxoak. `>-` bloke batek testu gisa hartzen ditu, eta emaitzan amaitzen dute.\n- Txantiloi-mugatzailerik ez, beraz testua dagoen bezala hartzen da.\n- Txantiloiaren eremuan itsatsitako YAMLa.\n- Jinjaren barruko YAML `#` iruzkin bat, Jinjak testu gisa inprimatzen duena.\n- `true` beharrean `on` errendatzen duen baldintza bat.\n\nEzerk ez dizu esaten: baldintza ez da inoiz betetzen, eta itxaronaldia bere denbora-mugarekin bakarrik amaitzen da. Hau konpontzeko, [editatu scripta]({edit}) eta egin txantiloiak `true` errenda dezan bete behar denean.\n\nSpook 👻 Zure laguna."
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek ikono hauek erabiltzen ditu, eta ez dira existitzen Home Assistant-ekin datozen Material Design Icons ikonoen artean ({version} bertsioa):\n\n{icons}\n\n\n\nHauetako bakoitza leku huts gisa agertzen da, hitzik esan gabe. Hau askotan ikono bat gaizki idatzi, izenez aldatu edo kendu denean gertatzen da, edo Home Assistant-ekin datorrena baino Material Design Icons bertsio berriago batetik hautatu denean. Errore hau konpontzeko, [editatu aginte-panela]({edit}) eta ordeztu hauek existitzen diren ikonoekin. Alboko barran aginte-panelak duen ikonoa zure aginte-panelen ezarpenetan aldatzen da.\n\nSpook 👻 Zure laguna.",
+            "title": "Ikono ezezagunak aginte-panelean erabilita: {dashboard}"
+        },
+        "unknown_icons": {
+            "description": "Spookek mamu bat aurkitu du zure ezarpenetan 👻\n\nIkono hauek ez dira existitzen Home Assistant-ekin datozen Material Design Icons ikonoen artean ({version} bertsioa):\n\n{icons}\n\n\n\nHauetako bakoitza leku huts gisa agertzen da, hitzik esan gabe. Hau askotan ikono bat gaizki idatzi, izenez aldatu edo kendu denean gertatzen da, edo Home Assistant-ekin datorrena baino Material Design Icons bertsio berriago batetik hautatu denean. Errore hau konpontzeko, eman hauetako bakoitzari existitzen den ikono bat: entitate, laguntzaile edo toki bati bere ezarpenetan, gune, solairu edo etiketa bati zure gune, etiketa eta tokien ezarpenetan, kategoria bati erabiltzen den lekuan, eta `customize:` zure konfigurazioan.\n\nSpook 👻 Zure laguna.",
+            "title": "Ikono ezezagunak zure ezarpenetan"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek erabiltzaile hauek izendatzen ditu, eta jada ez dira existitzen:\n\n{users}\n\n\n\nHome Assistant-ek ez du inoiz erabiltzaile-ID bat bi aldiz ematen, beraz erabiltzaile hauek kendu egin ziren. Haiei bakarrik erakusten zaien txartel, bereizgarri, atal edo ikuspegi bat orain inori ez zaio erakusten, ezer esan gabe. Haientzako berrespen-salbuespen batek ez du ezer egiten jada. Hau konpontzeko, [editatu aginte-panela]({edit}) eta aukeratu ikusi behar duten erabiltzaileak, edo kendu baldintza.\n\nSpook 👻 Zure laguna.",
+            "title": "Kendutako erabiltzaileak aginte-panelean izendatuta: {dashboard}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek atributu hauek erakusten edo egiaztatzen ditu, baina haien entitateek ez dituzte. Ez orain, ez mota horretako entitate batek eskaintzen duen zerbait gisa, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{attributes}\n\n\n\nInoiz agertzen ez den atributu bat erakusten duen txartel bat hutsik geratzen da, eta bat egiaztatzen duen ikusgaitasun-baldintza edo iragazki bat ez da inoiz betetzen. Bietako batek ere ez dizu horren berri ematen. Hau konpontzeko, [editatu aginte-panela]({edit}) eta erabili entitateak duen atributu bat.\n\nSpook 👻 Zure laguna.",
+            "title": "Atributu ezezagunak aginte-panelean erabilita: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek egoera hauek egiaztatzen ditu, baina haien entitateak ez daude inoiz egoera horietan. Ez mota horretako entitate batek izan dezakeen zerbait gisa, ez entitateak eskaintzen dituen aukeren artean, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{states}\n\n\n\nInoiz iristen ez den egoera bat egiaztatzen duen ikusgaitasun-baldintza edo iragazki bat ez da inoiz betetzen, eta horretarako ezarritako irudi bat ez da inoiz erakusten. Haietako batek ere ez dizu horren berri ematen. Egoeretan maiuskulak eta minuskulak bereizten dira: `On` ez da `on`. Hau konpontzeko, [editatu aginte-panela]({edit}) eta erabili entitatea egon daitekeen egoera bat.\n\nSpook 👻 Zure laguna.",
+            "title": "Egoera ezezagunak aginte-panelean erabilita: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek ikuspegi hauetara nabigatzen du, baina ez dira existitzen:\n\n{paths}\n\n\n\nHauetako batera nabigatzen duen botoi edo txartel batek aginte-panel horren lehen ikuspegia irekitzen du horren ordez, ezer esan gabe. Hau askotan ikuspegi bat izenez aldatu, lekuz aldatu edo kendu denean gertatzen da. Errore hau konpontzeko, [editatu aginte-panela]({edit}) eta zuzendu hauek existitzen den ikuspegi batera.\n\nSpook 👻 Zure laguna.",
+            "title": "Ikuspegi ezezagunetara nabigatzen da aginte-panelean: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek gai hauek erabiltzen ditu, eta ez dira existitzen:\n\n{themes}\n\n\n\nGai hauetako bat duen txartel, atal edo ikuspegi batek itxura lehenetsia hartzen du horren ordez, ezer esan gabe. Hau askotan gai bat izenez aldatu edo kendu denean gertatzen da. Errore hau konpontzeko, [editatu aginte-panela]({edit}) eta aukeratu existitzen den gai bat, edo gehitu gaia berriro.\n\nSpook 👻 Zure laguna.",
+            "title": "Gai ezezagunak aginte-panelean erabilita: {dashboard}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spookek mamu bat aurkitu du zure txantiloi-laguntzaileetan 👻\n\nHegan zebilela, Spookek txantiloi-laguntzaile honekin egin du topo:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTxantiloi-laguntzaile honek atributu hauek erabiltzen ditu, baina haien entitateek ez dituzte. Ez orain, ez mota horretako entitate batek eskaintzen duen zerbait gisa, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{attributes}\n\n\n\nInoiz agertzen ez den atributu bat irakurtzen duen txantiloi batek ez du ezer jasotzen, eta bere ekintzetako batean horren zain dagoen baldintza bat ez da inoiz betetzen. Bietako batek ere ez dizu horren berri ematen. Hau konpontzeko, [editatu txantiloi-laguntzailea]({edit}) eta erabili entitateak duen atributu bat.\n\nSpook 👻 Zure laguna.",
+            "title": "Atributu ezezagunak txantiloi-laguntzailean erabilita: {helper}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "title": "Abiarazle-ID ezezagunak hemen erabilita: {automation}",
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek abiarazle-ID hauek egiaztatzen ditu, baina bere abiarazleetako batek ere ez du halakorik:\n\n{trigger_ids}\n\n\n\nInongo abiarazlek ematen ez duen ID baten egiaztapenak beti emaitza bera ematen du: hura eskatzen duen abiarazle-baldintza bat ez da inoiz betetzen, beraz babesten duen zatia ez da inoiz exekutatzen, eta ezerk ez dizu horren berri ematen. Abiarazle-IDetan maiuskulak eta minuskulak bereizten dira, eta bere ID propiorik gabeko abiarazle bat zerrendako bere posizioaren arabera ezagutzen da, `0`-tik hasita zenbatuta. Hau konpontzeko, [editatu automatizazioa]({edit}) eta erabili bere abiarazleetako baten IDa, edo eman abiarazleari automatizazioak eskatzen duen IDa.\n\nSpook 👻 Zure laguna."
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spookek mamu bat aurkitu du zure txantiloi-entitateetan 👻\n\nHegan zebilela, Spookek txantiloi-entitate honekin egin du topo:\n\n{name} (`{entity_id}`)\n\nTxantiloi-entitate honek atributu hauek erabiltzen ditu, baina haien entitateek ez dituzte. Ez orain, ez mota horretako entitate batek eskaintzen duen zerbait gisa, ezta grabagailuak haietaz gogoratzen duen ezertan ere:\n\n{attributes}\n\n\n\nInoiz agertzen ez den atributu bat irakurtzen duen txantiloi batek ez du ezer jasotzen, eta horren zain dagoen abiarazle edo baldintza bat ez da inoiz abiarazten edo betetzen. Haietako batek ere ez dizu horren berri ematen.\n\nTxantiloi-entitate hau zure YAML konfigurazioan dago konfiguratuta. Hau konpontzeko, editatu zure konfigurazioko `template:` atalean, erabili entitateak duen atributu bat, eta birkargatu zure txantiloi-entitateak.\n\nSpook 👻 Zure laguna.",
+            "title": "Atributu ezezagunak txantiloi-entitatean erabilita: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spookek mamu bat aurkitu du zure txantiloi-entitateetan 👻\n\nHegan zebilela, Spookek txantiloi-entitate honekin egin du topo:\n\n{name} (`{entity_id}`)\n\nBere konfigurazioak entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nHau askotan entitate bat izenez aldatu edo kendu denean gertatzen da. Bat irakurtzen duen txantiloi batek ez du ezer jasotzen, eta baten zain dagoen abiarazle bat ez da inoiz abiarazten.\n\nTxantiloi-entitate hau zure YAML konfigurazioan dago konfiguratuta. Errore hau konpontzeko, editatu zure konfigurazioko `template:` atalean, egin erreferentzia existitzen diren entitateei, eta birkargatu zure txantiloi-entitateak.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak txantiloi-entitatean erabilita: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spookek mamu bat aurkitu du zure txantiloi-entitateetan 👻\n\nHegan zebilela, Spookek txantiloi-entitate honekin egin du topo:\n\n{name} (`{entity_id}`)\n\nEkintza hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{services}\n\n\n\nHau askotan ekintza-hornitzaile bat kendu denean, edo script bat izenez aldatu edo ezabatu denean gertatzen da.\n\nTxantiloi-entitate hau zure YAML konfigurazioan dago konfiguratuta. Errore hau konpontzeko, editatu zure konfigurazioko `template:` atalean, erabili existitzen diren ekintzak, eta birkargatu zure txantiloi-entitateak.\n\nSpook 👻 Zure laguna.",
+            "title": "Ekintza ezezagunak txantiloi-entitatean erabilita: {name}"
+        },
+        "assist_duplicate_names": {
+            "title": "Assist-ek ezin ditu hauek bereizi: {name}",
+            "description": "Spookek mamu bat aurkitu du zure ahots-laguntzaileetan 👻\n\nEntitate hauek Assist-en agerian daude, eta denek {name} izenari erantzuten diote:\n\n{entities}\n\nIzenak berdinak direnean, Assist-ek gunearen arabera bakarrik bereizten ditu: zuk izendatzen duzun gunea, edo zure ahots-satelitea dagoen gunea. Hauetako batzuek gune bera dute, edo ez dute gunerik batere, beraz Assist-ek ezin ditu izen honekin edonondik bereizi. {name} eskatzeak huts egiten du orduan, eta ezerk ez du esaten zein entitate dauden tartean.\n\nHau konpontzeko, eman bakoitzari bere izen edo ezizen propioa, edo eraman gune desberdinetara. Entitate baten ezizenak, eta Assist-ek batere ikusten duen ala ez, [Agerian dauden entitateak](/config/voice-assistants/expose) atalean alda ditzakezu. Guneak [Guneak orrian](/config/areas/dashboard) ezartzen dira.\n\nSpook 👻 Zure laguna."
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Posizioa",
                     "description": "Mugitu zerrendaren goira edo behera. Eman hau edo zein elementuren ondoren jarri."
+                }
+            }
+        },
+        "schedule_create": {
+            "fields": {
+                "monday": {
+                    "name": "Astelehena",
+                    "description": "Ordutegia noiz dagoen piztuta astelehenetan: ordutegi-blokeen zerrenda, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Kanpoan utzita, egun osoan itzalita dago."
+                },
+                "tuesday": {
+                    "name": "Asteartea",
+                    "description": "Ordutegia noiz dagoen piztuta astearteetan: ordutegi-blokeen zerrenda, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Kanpoan utzita, egun osoan itzalita dago."
+                },
+                "wednesday": {
+                    "name": "Asteazkena",
+                    "description": "Ordutegia noiz dagoen piztuta asteazkenetan: ordutegi-blokeen zerrenda, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Kanpoan utzita, egun osoan itzalita dago."
+                },
+                "thursday": {
+                    "name": "Osteguna",
+                    "description": "Ordutegia noiz dagoen piztuta ostegunetan: ordutegi-blokeen zerrenda, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Kanpoan utzita, egun osoan itzalita dago."
+                },
+                "friday": {
+                    "name": "Ostirala",
+                    "description": "Ordutegia noiz dagoen piztuta ostiraletan: ordutegi-blokeen zerrenda, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Kanpoan utzita, egun osoan itzalita dago."
+                },
+                "saturday": {
+                    "name": "Larunbata",
+                    "description": "Ordutegia noiz dagoen piztuta larunbatetan: ordutegi-blokeen zerrenda, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Kanpoan utzita, egun osoan itzalita dago."
+                },
+                "sunday": {
+                    "name": "Igandea",
+                    "description": "Ordutegia noiz dagoen piztuta igandeetan: ordutegi-blokeen zerrenda, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Kanpoan utzita, egun osoan itzalita dago."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Ordutegi berriaren izena."
+                },
+                "schedule_id": {
+                    "name": "Ordutegiaren entitate IDa",
+                    "description": "Ordutegi berriaren entitate IDa. schedule. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Ordutegi berriaren ikonoa."
+                }
+            },
+            "name": "Ordutegi bat sortu",
+            "description": "Ordutegi laguntzaile berri bat sortzen du bat-batean, asteko egun bakoitzerako emandako ordutegi-blokeetan piztuta. Ordutegi berriaren entitate IDa itzultzen du."
+        },
+        "homeassistant_update_area": {
+            "name": "Gune bat eguneratu",
+            "description": "Lehendik dagoen gune bat eguneratzen du bat-batean. Ematen ez duzun guztiak lehendik duen balioa mantentzen du. Ezizenek eta etiketek guneak dituenak ordezten dituzte. Solairua, ikonoa, irudia eta sentsoreak garbitu daitezke null ezarriz.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Eguneratu beharreko gunearen IDa."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Gunearen izen berria."
+                },
+                "aliases": {
+                    "description": "Gunearen ezizenak. Dituenak ordezten ditu; zerrenda huts batek denak kentzen ditu.",
+                    "name": "Ezizenak"
+                },
+                "floor_id": {
+                    "name": "Solairu IDa",
+                    "description": "Gunea dagoen solairuaren IDa."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Gunerako erabili beharreko ikono berria."
+                },
+                "picture": {
+                    "name": "Irudia",
+                    "description": "Gunearen irudi baten URLa edo bidea."
+                },
+                "labels": {
+                    "name": "Etiketak",
+                    "description": "Gunearen etiketen IDak. Dituenak ordezten ditu; zerrenda huts batek denak kentzen ditu."
+                },
+                "temperature_entity_id": {
+                    "name": "Tenperatura-sentsorea",
+                    "description": "Gunean tenperatura neurtzen duen sentsorea."
+                },
+                "humidity_entity_id": {
+                    "name": "Hezetasun-sentsorea",
+                    "description": "Gunean hezetasuna neurtzen duen sentsorea."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Gailu bat eguneratu",
+            "description": "Lehendik dagoen gailu bat eguneratzen du bat-batean. Ematen ez duzun guztiak lehendik duen balioa mantentzen du. Etiketek gailuak dituenak ordezten dituzte. Izena eta gunea garbitu daitezke null ezarriz, eta horrek gailuari bere integrazioak eman zion izena itzultzen dio.",
+            "fields": {
+                "device_id": {
+                    "name": "Gailuaren IDa",
+                    "description": "Eguneratu beharreko gailuaren IDa. Home Assistant-en gailu-hautatzaileak ez ditu desgaitutako gailuak erakusten; erabili YAML modua haien IDa emateko."
+                },
+                "name_by_user": {
+                    "name": "Izena",
+                    "description": "Gailuaren izen berria."
+                },
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Gailua dagoen gunearen IDa."
+                },
+                "labels": {
+                    "name": "Etiketak",
+                    "description": "Gailuaren etiketen IDak. Dituenak ordezten ditu; zerrenda huts batek denak kentzen ditu."
+                },
+                "disabled_by": {
+                    "name": "Nork desgaitua",
+                    "description": "Ezarri user gailua desgaitzeko, edo null berriro gaitzeko. Gailuak desgaitzeko eta gaitzeko ekintzek bezala funtzionatzen du."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "name": "Solairu bat eguneratu",
+            "fields": {
+                "floor_id": {
+                    "name": "Solairu IDa",
+                    "description": "Eguneratu beharreko solairuaren IDa."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Solairuaren izen berria."
+                },
+                "aliases": {
+                    "description": "Solairuaren ezizenak. Dituenak ordezten ditu; zerrenda huts batek denak kentzen ditu.",
+                    "name": "Ezizenak"
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Solairurako erabili beharreko ikono berria."
+                },
+                "level": {
+                    "name": "Maila",
+                    "description": "Solairuak zure etxean duen maila."
+                }
+            },
+            "description": "Lehendik dagoen solairu bat eguneratzen du bat-batean. Ematen ez duzun guztiak lehendik duen balioa mantentzen du. Ezizenek solairuak dituenak ordezten dituzte. Ikonoa eta maila garbitu daitezke null ezarriz."
+        },
+        "schedule_delete": {
+            "name": "Ordutegi bat ezabatu",
+            "description": "Interfazean egindako ordutegi laguntzaileak ezabatzen ditu. YAMLen konfiguratutako ordutegiak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko ordutegia(k)."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Egun baten ordutegi-blokeak ezarri",
+            "description": "Interfazean egindako ordutegi laguntzaile baten egun baten edo gehiagoren ordutegi-blokeak ordezten ditu. YAMLen konfiguratutako ordutegiak ezin ditu Spookek aldatu.",
+            "fields": {
+                "day": {
+                    "name": "Eguna",
+                    "description": "Ordutegi-blokeak ezarri beharreko asteko eguna edo egunak."
+                },
+                "blocks": {
+                    "name": "Ordutegi-blokeak",
+                    "description": "Egun horietan ordutegia piztuta dagoen ordutegi-blokeak, bakoitza hasiera- eta amaiera-ordu batekin, eta piztuta dagoen bitartean atributu gisa erakusten dituen aukerazko datuekin. Egunek zituzten blokeak ordezten dituzte. Zerrenda huts batek egunak egun osoan itzalita uzten ditu."
                 }
             }
         }
