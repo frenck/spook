@@ -217,6 +217,92 @@
         "user_added": {
             "name": "Naudotojas pridėtas",
             "description": "Suveikia, kai kam nors suteikiamas prisijungimas prie Home Assistant. Naudotojai, kuriuos Home Assistant sukuria savo integracijoms, neįtraukiami."
+        },
+        "state_changed": {
+            "name": "Spook būsenos sukėliklis",
+            "description": "Suveikia, kai subjektas pakeičia būseną, visiems dalykams, kuriuos apima paskirtis: subjektams, prietaisams, sritims, aukštams ir etiketėms. Susiaurinkite pagal domeną, integraciją ar prietaiso klasę arba palikite paskirtį tuščią ir leiskite jiems parinkti subjektus iš visų. Vėl ką nors neįtraukite ir nuspręskite, kiek laiko pokytis turi išsilaikyti, kad būtų įskaitytas.",
+            "fields": {
+                "domain": {
+                    "name": "Domenai",
+                    "description": "Tik šių domenų subjektai, pavyzdžiui, binary_sensor ar cover. Be paskirties parenka juos iš visų."
+                },
+                "integration": {
+                    "description": "Tik šių integracijų teikiami subjektai, pavyzdžiui, zha ar hue. Be paskirties parenka juos iš visų.",
+                    "name": "Integracijos"
+                },
+                "config_entry": {
+                    "name": "Integracijos įrašas",
+                    "description": "Tik šio integracijos įrašo subjektai. Be paskirties parenka juos iš visų."
+                },
+                "device_class": {
+                    "name": "Prietaisų klasės",
+                    "description": "Tik šių prietaisų klasių subjektai, pavyzdžiui, door ar window. Be paskirties parenka juos iš visų."
+                },
+                "exclude_target": {
+                    "name": "Neįtraukti",
+                    "description": "Subjektai, prietaisai, sritys, aukštai ar etiketės, kurių neįtraukti. Neįtraukiama viskas, kas juose yra, ir diagnostiniai subjektai."
+                },
+                "exclude_domain": {
+                    "name": "Neįtraukti domenų",
+                    "description": "Neįtraukti šių domenų subjektų. Jei lauke Neįtraukti nieko nėra, tai taikoma viskam, ką apima paskirtis."
+                },
+                "exclude_integration": {
+                    "name": "Neįtraukti integracijų",
+                    "description": "Neįtraukti šių integracijų teikiamų subjektų."
+                },
+                "exclude_config_entry": {
+                    "name": "Neįtraukti integracijos įrašo",
+                    "description": "Neįtraukti šio integracijos įrašo subjektų."
+                },
+                "exclude_device_class": {
+                    "name": "Neįtraukti prietaisų klasių",
+                    "description": "Neįtraukti šių prietaisų klasių subjektų."
+                },
+                "attribute": {
+                    "name": "Atributas",
+                    "description": "Sekti šį atributą vietoje būsenos."
+                },
+                "from": {
+                    "name": "Iš",
+                    "description": "Tik pokyčiai iš vienos iš šių būsenų."
+                },
+                "not_from": {
+                    "name": "Ne iš",
+                    "description": "Tik pokyčiai ne iš vienos iš šių būsenų."
+                },
+                "to": {
+                    "name": "Į",
+                    "description": "Tik pokyčiai į vieną iš šių būsenų."
+                },
+                "not_to": {
+                    "name": "Ne į",
+                    "description": "Tik pokyčiai ne į vieną iš šių būsenų."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignoruoti nepasiekiamą ir nežinomą",
+                    "description": "Praleisti pokyčius iš nepasiekiamos ir nežinomos būsenos arba į jas, kad paleidimas iš naujo ar maršruto parinktuvo perkrovimas nesukeltų visko. Išjunkite, jei norite jas naudoti laukuose Iš ar Į."
+                },
+                "attribute_changes": {
+                    "name": "Skaičiuoti atributų pokyčius",
+                    "description": "Suveikti ir tada, kai pasikeitė tik atributas, o būsena liko tokia pati. Nieko nedaro, kai sekamas atributas."
+                },
+                "behavior": {
+                    "name": "Elgesys",
+                    "description": "Suveikti kiekvienam subjektui, pirmajam paskirties subjektui, kuris ten patenka, arba kai ten patenka visi. Pirmajam ir visiems reikia lauko Į arba Ne į. Kol nepasiekiama ir nežinoma būsena ignoruojamos, tokios būsenos subjektai nedalyvauja."
+                },
+                "for": {
+                    "name": "Trukmė",
+                    "description": "Suveikti tik tada, kai nauja būsena išsilaikė tiek laiko. Bet koks kitas pokytis tarpe tai atšaukia."
+                },
+                "blip_tolerance": {
+                    "name": "Trumpų trikdžių tolerancija",
+                    "description": "Kol laukiama Trukmės, tapimas nepasiekiamu ar nežinomu ir sugrįžimas į buvusią būseną per šį laiką laukimo nepradeda iš naujo. Veikia tik kartu su Trukme."
+                },
+                "delay": {
+                    "name": "Delsa",
+                    "description": "Palaukti tiek laiko prieš suveikiant, kad ir kas nutiktų tarpe. Kaip delsa veiksmų pradžioje."
+                }
+            }
         }
     },
     "selector": {
@@ -231,6 +317,17 @@
             "options": {
                 "bottom": "Apačia",
                 "top": "Viršus"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "monday": "Pirmadienis",
+                "tuesday": "Antradienis",
+                "wednesday": "Trečiadienis",
+                "thursday": "Ketvirtadienis",
+                "saturday": "Šeštadienis",
+                "sunday": "Sekmadienis",
+                "friday": "Penktadienis"
             }
         }
     },
@@ -318,6 +415,16 @@
                 "duration": {
                     "name": "Trukmė",
                     "description": "Kiek laiko palaukti po paskutinio vykdymo, kol ši sąlyga vėl bus tenkinama."
+                }
+            }
+        },
+        "is_available": {
+            "name": "Subjektas pasiekiamas",
+            "description": "Tenkinama, kai su subjektu galima susikalbėti: bet kokia būsena, išskyrus nepasiekiamą ar nežinomą. Garsiakalbiui ar išmaniajam kištukiui, kuris ne visada maitinamas.",
+            "fields": {
+                "behavior": {
+                    "name": "Elgesys",
+                    "description": "Ar pakanka, kad būtų pasiekiamas bet kuris subjektas, ar turi būti visi."
                 }
             }
         }
@@ -752,6 +859,33 @@
         },
         "zone_not_editable": {
             "message": "Šios zonos redaguoti negalima: {entity_id}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Kiekis {amount} netinka {entity_id}, kuris keičiasi žingsniais po {step}. Naudokite {step} kartotinį arba nenurodykite kiekio, kad būtų pakeista vienu žingsniu."
+        },
+        "area_cannot_update": {
+            "message": "Srities {area_id} negalima taip pakeisti: {error}."
+        },
+        "area_name_taken": {
+            "message": "Pavadinimą {name} jau užima sritis {area_id}."
+        },
+        "area_nothing_to_update": {
+            "message": "Srityje {area_id} nėra ką atnaujinti: pateikite bent vieną iš {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Prietaise {device_id} nėra ką atnaujinti: pateikite bent vieną iš {fields}."
+        },
+        "floor_name_taken": {
+            "message": "Pavadinimą {name} jau užima aukštas {floor_id}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Aukšte {floor_id} nėra ką atnaujinti: pateikite bent vieną iš {fields}."
+        },
+        "schedule_blocks_invalid": {
+            "message": "Šie laiko blokai netinka {entity_id}: {error}. Niekas nepakeista."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} yra tvarkaraštis iš jūsų YAML konfigūracijos, kurio Spook pakeisti negali. Vietoje to redaguokite jį savo konfigūracijoje."
         }
     },
     "issues": {
@@ -1208,6 +1342,106 @@
                     "changed": "Nuo tada, kai Spook žiūrėjo, šie jutikliai grįžo arba nustatymai dabar rodo kitur. Todėl niekas neišvalyta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
                 }
             }
+        },
+        "assist_duplicate_names": {
+            "title": "Assist negali jų atskirti: {name}",
+            "description": "Spook rado vaiduoklį jūsų balso asistentuose 👻\n\nŠie subjektai atskleisti Assist ir visi atsiliepia į vardą {name}:\n\n{entities}\n\nKai vardai vienodi, Assist juos atskiria tik pagal sritį: tą, kurią įvardijate, arba tą, kurioje yra jūsų balso palydovas. Kai kurie iš jų yra toje pačioje srityje arba visai neturi srities, todėl Assist negali jų atpažinti pagal šį vardą iš niekur. Tada užklausa dėl {name} nepavyksta, ir niekas nepasako, kurie subjektai trukdo.\n\nNorėdami tai ištaisyti, suteikite kiekvienam savo vardą ar slapyvardį arba perkelkite juos į skirtingas sritis. Subjekto slapyvardžius ir tai, ar Assist jį apskritai mato, galite pakeisti skiltyje [Atskleisti subjektai](/config/voice-assistants/expose). Sritys nustatomos [Sričių puslapyje](/config/areas/dashboard).\n\nSpook 👻 Jūsų bičiulis."
+        },
+        "automation_unknown_attribute_references": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija naudoja šiuos atributus, kurių jų subjektai neturi. Nei dabar, nei kaip kažkas, ką tokios rūšies subjektas siūlo, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{attributes}\n\n\n\nSukėliklis ar sąlyga, laukiantys atributo, kuris niekada neatsiranda, niekada nesuveikia ir apie tai nepraneša. Jį skaitantis šablonas nieko negauna. Norėdami tai ištaisyti, [redaguokite automatizaciją]({edit}) ir naudokite atributą, kurį subjektas turi.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi atributai: {automation}"
+        },
+        "automation_unknown_state_references": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija laukia šių būsenų arba jas tikrina, nors jų subjektai niekada tokiose nebūna. Nei kaip kažkas, kuo tokios rūšies subjektas gali būti, nei tarp subjekto siūlomų parinkčių, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{states}\n\n\n\nSukėliklis, laukiantis niekada neateinančios būsenos, niekada nesuveikia, ją tikrinanti sąlyga niekada nėra tenkinama, ir nė vienas apie tai nepraneša. Būsenose skiriamos didžiosios ir mažosios raidės: `On` nėra `on`. Norėdami tai ištaisyti, [redaguokite automatizaciją]({edit}) ir naudokite būseną, kurioje subjektas gali būti.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos būsenos: {automation}"
+        },
+        "automation_unknown_trigger_id_references": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija tikrina šiuos sukėliklių ID, kurių neturi nė vienas jos sukėliklis:\n\n{trigger_ids}\n\n\n\nID, kurio neperduoda joks sukėliklis, patikrinimas visada baigiasi taip pat: jo prašanti sukėliklio sąlyga niekada nėra tenkinama, todėl jos saugoma dalis niekada nevykdoma, ir niekas apie tai nepraneša. Sukėliklių ID skiriamos didžiosios ir mažosios raidės, o sukėliklis be savo ID vadinamas pagal savo vietą sąraše, skaičiuojant nuo `0`. Norėdami tai ištaisyti, [redaguokite automatizaciją]({edit}) ir naudokite vieno iš jos sukėliklių ID arba suteikite sukėlikliui ID, kurio prašo automatizacija.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi sukėliklių ID: {automation}"
+        },
+        "lovelace_unknown_attribute_references": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis rodo arba tikrina šiuos atributus, kurių jų subjektai neturi. Nei dabar, nei kaip kažkas, ką tokios rūšies subjektas siūlo, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{attributes}\n\n\n\nKortelė, rodanti niekada neatsirandantį atributą, lieka tuščia, o jį tikrinanti matomumo sąlyga ar filtras niekada nėra tenkinami. Nė vienas apie tai nepraneša. Norėdami tai ištaisyti, [redaguokite prietaisų skydelį]({edit}) ir naudokite atributą, kurį subjektas turi.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje naudojami nežinomi atributai: {dashboard}"
+        },
+        "lovelace_unknown_state_references": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis tikrina šias būsenas, kuriose jų subjektai niekada nebūna. Nei kaip kažkas, kuo tokios rūšies subjektas gali būti, nei tarp subjekto siūlomų parinkčių, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{states}\n\n\n\nMatomumo sąlyga ar filtras, tikrinantys niekada neateinančią būseną, niekada nėra tenkinami, o jai nustatytas paveikslėlis niekada nerodomas. Nė vienas apie tai nepraneša. Būsenose skiriamos didžiosios ir mažosios raidės: `On` nėra `on`. Norėdami tai ištaisyti, [redaguokite prietaisų skydelį]({edit}) ir naudokite būseną, kurioje subjektas gali būti.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje naudojamos nežinomos būsenos: {dashboard}"
+        },
+        "lovelace_unknown_view_references": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis nukreipia į šiuos rodinius, kurių nėra:\n\n{paths}\n\n\n\nMygtukas ar kortelė, nukreipiantys į vieną iš jų, vietoje to atidaro pirmąjį to prietaisų skydelio rodinį, nieko nesakydami. Taip dažnai nutinka, kai rodinys buvo pervadintas, perkeltas ar pašalintas. Norėdami ištaisyti šią klaidą, [redaguokite prietaisų skydelį]({edit}) ir nukreipkite juos į esamą rodinį.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje nukreipiama į nežinomus rodinius: {dashboard}"
+        },
+        "script_unknown_attribute_references": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus naudoja šiuos atributus, kurių jų subjektai neturi. Nei dabar, nei kaip kažkas, ką tokios rūšies subjektas siūlo, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{attributes}\n\n\n\nSukėliklis ar sąlyga, laukiantys atributo, kuris niekada neatsiranda, niekada nesuveikia ir apie tai nepraneša. Jį skaitantis šablonas nieko negauna. Norėdami tai ištaisyti, [redaguokite scenarijų]({edit}) ir naudokite atributą, kurį subjektas turi.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi atributai: {script}"
+        },
+        "script_unknown_state_references": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus laukia šių būsenų arba jas tikrina, nors jų subjektai niekada tokiose nebūna. Nei kaip kažkas, kuo tokios rūšies subjektas gali būti, nei tarp subjekto siūlomų parinkčių, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{states}\n\n\n\nSukėliklis, laukiantis niekada neateinančios būsenos, niekada nesuveikia, ją tikrinanti sąlyga niekada nėra tenkinama, ir nė vienas apie tai nepraneša. Būsenose skiriamos didžiosios ir mažosios raidės: `On` nėra `on`. Norėdami tai ištaisyti, [redaguokite scenarijų]({edit}) ir naudokite būseną, kurioje subjektas gali būti.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos būsenos: {script}"
+        },
+        "template_unknown_attribute_references": {
+            "description": "Spook rado vaiduoklį jūsų šablonų pagalbininkuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo šablono pagalbininku:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nŠis šablono pagalbininkas naudoja šiuos atributus, kurių jų subjektai neturi. Nei dabar, nei kaip kažkas, ką tokios rūšies subjektas siūlo, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{attributes}\n\n\n\nŠablonas, skaitantis niekada neatsirandantį atributą, nieko negauna, o vieno iš jo veiksmų sąlyga, laukianti tokio atributo, niekada nėra tenkinama. Nė vienas apie tai nepraneša. Norėdami tai ištaisyti, [redaguokite šablono pagalbininką]({edit}) ir naudokite atributą, kurį subjektas turi.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablono pagalbininke naudojami nežinomi atributai: {helper}"
+        },
+        "automation_never_true_templates": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠioje automatizacijoje yra šie šablonai, kurie niekada negali būti tenkinami, kad ir kas vyktų jūsų namuose:\n\n{templates}\n\n\n\nŠablono sąlyga tenkinama tik tada, kai pateikia `true`, kaip ir `wait_template`, nebent vėliau pasikeistų į kažką, kas skaitoma kaip tiesa. Šablono sukėliklis suveikia, kai jo šablonas virsta kažkuo, kas skaitoma kaip tiesa, pavyzdžiui, `true`, `on`, `yes` ar `1`. Šie šablonai dėl to, kaip parašyti, visada pateikia ką nors kita. Dažniausios priežastys:\n\n- Kabutės aplink šabloną. Blokas `>-` jas laiko tekstu, todėl jos patenka į rezultatą.\n- Visai nėra šablono skirtukų, todėl tekstas paimamas toks, koks yra.\n- Į šablono lauką įklijuotas YAML.\n- YAML komentaras `#` Jinja viduje, kurį Jinja išspausdina kaip tekstą.\n- Sąlyga, kuri pateikia `on` vietoje `true`.\n\nNiekas apie tai nepraneša: sąlyga niekada nėra tenkinama, laukimas baigiasi tik pasibaigus jo laukimo laikui, o sukėliklis niekada nesuveikia. Norėdami tai ištaisyti, [redaguokite automatizaciją]({edit}) ir padarykite, kad šablonas pateiktų `true`, kai jis turi būti tenkinamas.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablonai, kurie niekada negali būti tenkinami: {automation}"
+        },
+        "script_never_true_templates": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠiame scenarijuje yra šie šablonai, kurie niekada negali būti tenkinami, kad ir kas vyktų jūsų namuose:\n\n{templates}\n\n\n\nŠablono sąlyga tenkinama tik tada, kai pateikia `true`, kaip ir `wait_template`, nebent vėliau pasikeistų į kažką, kas skaitoma kaip tiesa. Šablono sukėliklis, esantis `wait_for_trigger`, suveikia, kai jo šablonas virsta kažkuo, kas skaitoma kaip tiesa, pavyzdžiui, `true`, `on`, `yes` ar `1`. Šie šablonai dėl to, kaip parašyti, visada pateikia ką nors kita. Dažniausios priežastys:\n\n- Kabutės aplink šabloną. Blokas `>-` jas laiko tekstu, todėl jos patenka į rezultatą.\n- Visai nėra šablono skirtukų, todėl tekstas paimamas toks, koks yra.\n- Į šablono lauką įklijuotas YAML.\n- YAML komentaras `#` Jinja viduje, kurį Jinja išspausdina kaip tekstą.\n- Sąlyga, kuri pateikia `on` vietoje `true`.\n\nNiekas apie tai nepraneša: sąlyga niekada nėra tenkinama, o laukimas baigiasi tik pasibaigus jo laukimo laikui. Norėdami tai ištaisyti, [redaguokite scenarijų]({edit}) ir padarykite, kad šablonas pateiktų `true`, kai jis turi būti tenkinamas.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablonai, kurie niekada negali būti tenkinami: {script}"
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija savo veiksmams perduoda šiuos integracijos įrašus, kurių Home Assistant nežino arba kurie priklauso kitai integracijai, nei prašo veiksmas:\n\n{config_entries}\n\nHome Assistant juos atmeta, kai vykdomas žingsnis. Paprastai taip nutinka, kai integracija buvo pašalinta ir vėl pridėta: ji gavo naują integracijos įrašą su nauju ID.\n\nNorėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir šiuose veiksmuose iš naujo pasirinkite integracijos įrašą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi integracijos įrašai: {automation}"
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus savo veiksmams perduoda šiuos integracijos įrašus, kurių Home Assistant nežino arba kurie priklauso kitai integracijai, nei prašo veiksmas:\n\n{config_entries}\n\nHome Assistant juos atmeta, kai vykdomas žingsnis. Paprastai taip nutinka, kai integracija buvo pašalinta ir vėl pridėta: ji gavo naują integracijos įrašą su nauju ID.\n\nNorėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir šiuose veiksmuose iš naujo pasirinkite integracijos įrašą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi integracijos įrašai: {script}"
+        },
+        "automation_unknown_icons": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija priskiria šias piktogramas, kurių nėra Material Design Icons rinkinyje, ateinančiame su Home Assistant:\n\n{icons}\n\n\n\nKiekviena iš jų rodoma kaip tuščia vieta, be jokio žodžio. Taip dažnai nutinka, kai piktogramos pavadinimas buvo parašytas klaidingai, piktograma buvo pervadinta ar pašalinta arba paimta iš naujesnės Material Design Icons versijos nei ta, su kuria ateina Home Assistant. Norėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pakeiskite jas esamomis piktogramomis.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos piktogramos: {automation}"
+        },
+        "script_unknown_icons": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus naudoja arba priskiria šias piktogramas, kurių nėra Material Design Icons rinkinyje, ateinančiame su Home Assistant:\n\n{icons}\n\n\n\nKiekviena iš jų rodoma kaip tuščia vieta, be jokio žodžio. Taip dažnai nutinka, kai piktogramos pavadinimas buvo parašytas klaidingai, piktograma buvo pervadinta ar pašalinta arba paimta iš naujesnės Material Design Icons versijos nei ta, su kuria ateina Home Assistant. Norėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pakeiskite jas esamomis piktogramomis.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos piktogramos: {script}"
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis naudoja šias piktogramas, kurių nėra Material Design Icons rinkinyje, ateinančiame su Home Assistant (versija {version}):\n\n{icons}\n\n\n\nKiekviena iš jų rodoma kaip tuščia vieta, be jokio žodžio. Taip dažnai nutinka, kai piktogramos pavadinimas buvo parašytas klaidingai, piktograma buvo pervadinta ar pašalinta arba paimta iš naujesnės Material Design Icons versijos nei ta, su kuria ateina Home Assistant. Norėdami ištaisyti šią klaidą, [redaguokite prietaisų skydelį]({edit}) ir pakeiskite jas esamomis piktogramomis. Prietaisų skydelio piktograma šoninėje juostoje keičiama jūsų prietaisų skydelių nustatymuose.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje naudojamos nežinomos piktogramos: {dashboard}"
+        },
+        "unknown_icons": {
+            "description": "Spook rado vaiduoklį jūsų nustatymuose 👻\n\nŠių piktogramų nėra Material Design Icons rinkinyje, ateinančiame su Home Assistant (versija {version}):\n\n{icons}\n\n\n\nKiekviena iš jų rodoma kaip tuščia vieta, be jokio žodžio. Taip dažnai nutinka, kai piktogramos pavadinimas buvo parašytas klaidingai, piktograma buvo pervadinta ar pašalinta arba paimta iš naujesnės Material Design Icons versijos nei ta, su kuria ateina Home Assistant. Norėdami ištaisyti šią klaidą, kiekvienai iš jų suteikite esamą piktogramą: subjektui, pagalbininkui ar zonai jo nustatymuose, sričiai, aukštui ar etiketei jūsų sričių, etikečių ir zonų nustatymuose, kategorijai ten, kur ji naudojama, ir skiltyje `customize:` jūsų konfigūracijoje.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Nežinomos piktogramos jūsų nustatymuose"
+        },
+        "automation_unknown_user_references": {
+            "title": "Nurodyti pašalinti naudotojai: {automation}",
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija nurodo šiuos naudotojus, kurių nebėra:\n\n{users}\n\n\n\nHome Assistant niekada neišduoda to paties naudotojo ID du kartus, todėl šie naudotojai buvo pašalinti. Sukėliklis, laukiantis vieno iš jų, dėl jų niekada nesuveikia, o šablonas, lyginantis su vienu iš jų, niekada nesutampa, nieko nesakydami. Norėdami tai ištaisyti, [redaguokite automatizaciją]({edit}) ir naudokite esamo naudotojo ID arba pašalinkite patikrinimą.\n\nSpook 👻 Jūsų bičiulis."
+        },
+        "script_unknown_user_references": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus nurodo šiuos naudotojus, kurių nebėra:\n\n{users}\n\n\n\nHome Assistant niekada neišduoda to paties naudotojo ID du kartus, todėl šie naudotojai buvo pašalinti. Šablonas, lyginantis su vienu iš jų, niekada nesutampa, o sukėliklis, laukiantis vieno iš jų, dėl jų niekada nesuveikia, nieko nesakydami. Norėdami tai ištaisyti, [redaguokite scenarijų]({edit}) ir naudokite esamo naudotojo ID arba pašalinkite patikrinimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Nurodyti pašalinti naudotojai: {script}"
+        },
+        "lovelace_unknown_user_references": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis nurodo šiuos naudotojus, kurių nebėra:\n\n{users}\n\n\n\nHome Assistant niekada neišduoda to paties naudotojo ID du kartus, todėl šie naudotojai buvo pašalinti. Kortelė, ženklelis, sekcija ar rodinys, rodomi tik jiems, dabar nerodomi niekam, nieko nesakant. Patvirtinimo išimtis jiems nebeturi jokio poveikio. Norėdami tai ištaisyti, [redaguokite prietaisų skydelį]({edit}) ir pasirinkite naudotojus, kurie turėtų tai matyti, arba pašalinkite sąlygą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje nurodyti pašalinti naudotojai: {dashboard}"
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis naudoja šias temas, kurių nėra:\n\n{themes}\n\n\n\nKortelė, sekcija ar rodinys su viena iš šių temų vietoje to gauna numatytąją išvaizdą, nieko nesakant. Taip dažnai nutinka, kai tema buvo pervadinta ar pašalinta. Norėdami ištaisyti šią klaidą, [redaguokite prietaisų skydelį]({edit}) ir pasirinkite esamą temą arba vėl pridėkite temą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje naudojamos nežinomos temos: {dashboard}"
+        },
+        "template_unknown_attribute_references_yaml": {
+            "description": "Spook rado vaiduoklį jūsų šablonų subjektuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo šablono subjektu:\n\n{name} (`{entity_id}`)\n\nŠis šablono subjektas naudoja šiuos atributus, kurių jų subjektai neturi. Nei dabar, nei kaip kažkas, ką tokios rūšies subjektas siūlo, nei kur nors tame, ką apie juos prisimena įrašytuvas:\n\n{attributes}\n\n\n\nŠablonas, skaitantis niekada neatsirandantį atributą, nieko negauna, o jo laukiantis sukėliklis ar sąlyga niekada nesuveikia ar nėra tenkinami. Nė vienas apie tai nepraneša.\n\nŠis šablono subjektas nustatytas jūsų YAML konfigūracijoje. Norėdami tai ištaisyti, redaguokite jį savo konfigūracijos skiltyje `template:`, naudokite atributą, kurį subjektas turi, ir iš naujo įkelkite šablonų subjektus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablono subjekte naudojami nežinomi atributai: {name}"
+        },
+        "template_unknown_entity_references_yaml": {
+            "description": "Spook rado vaiduoklį jūsų šablonų subjektuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo šablono subjektu:\n\n{name} (`{entity_id}`)\n\nJo konfigūracija nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nTaip dažnai nutinka, kai subjektas buvo pervadintas arba pašalintas. Jį skaitantis šablonas nieko negauna, o jo laukiantis sukėliklis niekada nesuveikia.\n\nŠis šablono subjektas nustatytas jūsų YAML konfigūracijoje. Norėdami ištaisyti šią klaidą, redaguokite jį savo konfigūracijos skiltyje `template:`, nurodykite esamus subjektus ir iš naujo įkelkite šablonų subjektus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablono subjekte naudojami nežinomi subjektai: {name}"
+        },
+        "template_unknown_service_references_yaml": {
+            "description": "Spook rado vaiduoklį jūsų šablonų subjektuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo šablono subjektu:\n\n{name} (`{entity_id}`)\n\nJis nurodo šiuos veiksmus, kurių Home Assistant nežino:\n\n{services}\n\n\n\nTaip dažnai nutinka, kai veiksmą teikianti integracija buvo pašalinta arba scenarijus buvo pervadintas ar ištrintas.\n\nŠis šablono subjektas nustatytas jūsų YAML konfigūracijoje. Norėdami ištaisyti šią klaidą, redaguokite jį savo konfigūracijos skiltyje `template:`, naudokite esamus veiksmus ir iš naujo įkelkite šablonų subjektus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablono subjekte naudojami nežinomi veiksmai: {name}"
         }
     },
     "system_health": {
@@ -2996,6 +3230,170 @@
                 "position": {
                     "name": "Padėtis",
                     "description": "Perkelti į sąrašo viršų arba apačią. Nurodykite tai arba elementą, po kurio jį padėti."
+                }
+            }
+        },
+        "schedule_create": {
+            "fields": {
+                "monday": {
+                    "name": "Pirmadienis",
+                    "description": "Kada tvarkaraštis įjungtas pirmadieniais: laiko blokų sąrašas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jei nenurodyta, jis išjungtas visą dieną."
+                },
+                "tuesday": {
+                    "name": "Antradienis",
+                    "description": "Kada tvarkaraštis įjungtas antradieniais: laiko blokų sąrašas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jei nenurodyta, jis išjungtas visą dieną."
+                },
+                "wednesday": {
+                    "name": "Trečiadienis",
+                    "description": "Kada tvarkaraštis įjungtas trečiadieniais: laiko blokų sąrašas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jei nenurodyta, jis išjungtas visą dieną."
+                },
+                "thursday": {
+                    "name": "Ketvirtadienis",
+                    "description": "Kada tvarkaraštis įjungtas ketvirtadieniais: laiko blokų sąrašas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jei nenurodyta, jis išjungtas visą dieną."
+                },
+                "friday": {
+                    "name": "Penktadienis",
+                    "description": "Kada tvarkaraštis įjungtas penktadieniais: laiko blokų sąrašas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jei nenurodyta, jis išjungtas visą dieną."
+                },
+                "saturday": {
+                    "description": "Kada tvarkaraštis įjungtas šeštadieniais: laiko blokų sąrašas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jei nenurodyta, jis išjungtas visą dieną.",
+                    "name": "Šeštadienis"
+                },
+                "sunday": {
+                    "name": "Sekmadienis",
+                    "description": "Kada tvarkaraštis įjungtas sekmadieniais: laiko blokų sąrašas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jei nenurodyta, jis išjungtas visą dieną."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujo tvarkaraščio pavadinimas."
+                },
+                "schedule_id": {
+                    "name": "Tvarkaraščio subjekto ID",
+                    "description": "Naujo tvarkaraščio subjekto ID. Priešdėlis schedule. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujo tvarkaraščio piktograma."
+                }
+            },
+            "name": "Sukurti tvarkaraštį",
+            "description": "Čia pat sukuria naują tvarkaraščio pagalbininką, įjungtą per kiekvienai savaitės dienai nurodytus laiko blokus. Grąžina naujo tvarkaraščio subjekto ID."
+        },
+        "homeassistant_update_area": {
+            "name": "Atnaujinti sritį",
+            "description": "Čia pat atnaujina esamą sritį. Tai, ko nenurodote, išlaiko turimą reikšmę. Slapyvardžiai ir etiketės pakeičia tuos, kuriuos sritis turi. Aukštą, piktogramą, paveikslėlį ir jutiklius galima išvalyti nustačius juos į null.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Atnaujinamos srities ID."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujas srities pavadinimas."
+                },
+                "aliases": {
+                    "name": "Slapyvardžiai",
+                    "description": "Srities slapyvardžiai. Pakeičia turimus, tuščias sąrašas pašalina juos visus."
+                },
+                "floor_id": {
+                    "name": "Aukšto ID",
+                    "description": "Aukšto, kuriame yra sritis, ID."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Nauja srities piktograma."
+                },
+                "picture": {
+                    "name": "Paveikslėlis",
+                    "description": "Srities paveikslėlio URL arba kelias."
+                },
+                "labels": {
+                    "name": "Etiketės",
+                    "description": "Srities etikečių ID. Pakeičia turimas, tuščias sąrašas pašalina jas visas."
+                },
+                "temperature_entity_id": {
+                    "name": "Temperatūros jutiklis",
+                    "description": "Jutiklis, matuojantis temperatūrą srityje."
+                },
+                "humidity_entity_id": {
+                    "name": "Drėgmės jutiklis",
+                    "description": "Jutiklis, matuojantis drėgmę srityje."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "name": "Atnaujinti prietaisą",
+            "description": "Čia pat atnaujina esamą prietaisą. Tai, ko nenurodote, išlaiko turimą reikšmę. Etiketės pakeičia tas, kurias prietaisas turi. Pavadinimą ir sritį galima išvalyti nustačius juos į null, tada prietaisas vėl gauna pavadinimą, kurį jam suteikė jo integracija.",
+            "fields": {
+                "device_id": {
+                    "name": "Prietaiso ID",
+                    "description": "Atnaujinamo prietaiso ID. Home Assistant prietaisų parinkiklis nerodo išjungtų prietaisų, jų ID nurodykite YAML režimu."
+                },
+                "name_by_user": {
+                    "name": "Pavadinimas",
+                    "description": "Naujas prietaiso pavadinimas."
+                },
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities, kurioje yra prietaisas, ID."
+                },
+                "labels": {
+                    "name": "Etiketės",
+                    "description": "Prietaiso etikečių ID. Pakeičia turimas, tuščias sąrašas pašalina jas visas."
+                },
+                "disabled_by": {
+                    "name": "Išjungė",
+                    "description": "Nustatykite user, kad išjungtumėte prietaisą, arba null, kad vėl jį įjungtumėte. Tai veikia taip pat, kaip prietaiso išjungimo ir įjungimo veiksmai."
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "fields": {
+                "floor_id": {
+                    "description": "Atnaujinamo aukšto ID.",
+                    "name": "Aukšto ID"
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujas aukšto pavadinimas."
+                },
+                "aliases": {
+                    "name": "Slapyvardžiai",
+                    "description": "Aukšto slapyvardžiai. Pakeičia turimus, tuščias sąrašas pašalina juos visus."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Nauja aukšto piktograma."
+                },
+                "level": {
+                    "name": "Lygis",
+                    "description": "Kuriame jūsų namų lygyje yra aukštas."
+                }
+            },
+            "name": "Atnaujinti aukštą",
+            "description": "Čia pat atnaujina esamą aukštą. Tai, ko nenurodote, išlaiko turimą reikšmę. Slapyvardžiai pakeičia tuos, kuriuos aukštas turi. Piktogramą ir lygį galima išvalyti nustačius juos į null."
+        },
+        "schedule_delete": {
+            "name": "Ištrinti tvarkaraštį",
+            "description": "Ištrina sąsajoje sukurtus tvarkaraščio pagalbininkus. YAML nustatytų tvarkaraščių Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinamas (-i) tvarkaraštis (-iai)."
+                }
+            }
+        },
+        "schedule_set_day": {
+            "name": "Nustatyti dienos laiko blokus",
+            "description": "Pakeičia vienos ar kelių sąsajoje sukurto tvarkaraščio pagalbininko dienų laiko blokus. YAML nustatytų tvarkaraščių Spook pakeisti negali.",
+            "fields": {
+                "day": {
+                    "name": "Diena",
+                    "description": "Savaitės diena ar dienos, kurių laiko blokus nustatyti."
+                },
+                "blocks": {
+                    "name": "Laiko blokai",
+                    "description": "Laiko blokai, kuriais tvarkaraštis tomis dienomis įjungtas, kiekvienas su pradžios ir pabaigos laiku bei pasirinktiniais duomenimis, kuriuos jis rodo kaip atributus, kol yra įjungtas. Jie pakeičia tų dienų turėtus blokus. Tuščias sąrašas palieka dienas išjungtas visą dieną."
                 }
             }
         }
