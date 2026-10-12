@@ -429,6 +429,24 @@
         },
         "zone_not_editable": {
             "message": "Ova zona ne može da se menja: {entity_id}."
+        },
+        "area_cannot_update": {
+            "message": "Prostorija {area_id} se ne može promeniti na taj način: {error}."
+        },
+        "amount_not_a_multiple_of_step": {
+            "message": "Iznos {amount} ne odgovara entitetu {entity_id}, koji se pomera u koracima od {step}. Koristite umnožak koraka {step}, ili izostavite iznos da biste se pomerili za jedan korak."
+        },
+        "yaml_schedule_not_editable": {
+            "message": "{entity_id} je raspored iz vaše YAML konfiguracije, koji Spook ne može da promeni. Umesto toga, uredi ga direktno u vašoj konfiguraciji."
+        },
+        "area_nothing_to_update": {
+            "message": "Nema ništa za ažuriranje u prostoriji {area_id}: navedite barem jedno od polja {fields}."
+        },
+        "device_nothing_to_update": {
+            "message": "Nema ništa za ažuriranje na uređaju {device_id}: navedite barem jedno od polja {fields}."
+        },
+        "floor_nothing_to_update": {
+            "message": "Nema ništa za ažuriranje na spratu {floor_id}: navedite barem jedno od polja {fields}."
         }
     },
     "issues": {
@@ -925,6 +943,42 @@
         "assist_duplicate_names": {
             "title": "Asist ne može da ih razlikuje: {name}",
             "description": "Spook je pronašao duha u vašim glasovnim pomoćnicima 👻\n\nSledeći entiteti su izloženi funkciji Assist i svi odgovaraju na ime {name}:\n\n{entities}\n\nKada su imena ista, Assist ih razlikuje samo po prostoriji: onoj koju navedete ili onoj u kojoj se nalazi vaš glasovni satelit. Neki od njih dele istu prostoriju ili uopšte nemaju dodeljenu prostoriju, pa Asist ne može da ih prepozna po tom imenu sa bilo kog mesta. Zahtev za {name} tada ne uspeva, a da pritom ne dobijate obaveštenje o tome koji entiteti prave problem.\n\nDa biste ovo ispravili, dajte svakom entitetu sopstveno ime ili pseudonim, ili ih premestite u različite prostorije. Pseudonime entiteta, kao i to da li ih Assist uopšte vidi, možete promeniti u odeljku [Izloženi entiteti](/config/voice-assistants/expose). Prostorije se podešavaju na stranici sa [prostorijama](/config/areas/dashboard).\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_user_references": {
+            "title": "Uklonjeni korisnici navedeni u: {automation}",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija navodi sledeće korisnike koji više ne postoje:\n\n{users}\n\n\n\nHome Assistant nikada ne dodeljuje isti ID korisnika dvaput, što znači da su ovi korisnici uklonjeni. Pokretač koji čeka nekog od njih nikada se neće aktivirati, a šablon koji se poredi sa nekim od njih nikada neće napraviti podudaranje, a da Vam sistem to ne signalizira. Da biste ovo ispravili, [uredite automatizaciju]({edit}) i upotrebite ID korisnika koji postoji, ili uklonite tu proveru.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_user_references": {
+            "title": "Uklonjeni korisnici navedeni na kontrolnoj tabli: {dashboard}",
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla navodi sledeće korisnike koji više ne postoje:\n\n{users}\n\n\n\nHome Assistant nikada ne dodeljuje isti ID korisnika dvaput, što znači da su ovi korisnici uklonjeni. Kartica, bedž, odeljak ili pregled koji su se prikazivali samo njima, sada se ne prikazuju nikome, a da Vam sistem to ne signalizira. Izuzeće od potvrde za njih više nema nikakvu funkciju. Da biste ovo ispravili, [uredite kontrolnu tablu]({edit}) i izaberite korisnike koji bi trebali da je vide, ili uklonite taj uslov.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_user_references": {
+            "title": "Uklonjeni korisnici navedeni u skripti: {script}",
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta navodi sledeće korisnike koji više ne postoje:\n\n{users}\n\n\n\nHome Assistant nikada ne dodeljuje isti ID korisnika dvaput, što znači da su ovi korisnici uklonjeni. Šablon koji se poredi sa nekim od njih nikada neće napraviti podudaranje, a pokretač koji čeka nekog od njih nikada se neće aktivirati, a da Vam sistem to ne signalizira. Da biste ovo ispravili, [uredite skriptut]({edit}) i upotrebite ID korisnika koji postoji, ili uklonite tu proveru.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_config_entry_references": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija prosleđuje svojim akcijama sledeće unose integracija, koji su nepoznati Home Assistant-u ili pripadaju nekoj drugoj integraciji u odnosu na onu koju akcija zahteva:\n\n{config_entries}\n\nHome Assistant ih odbija u trenutku pokretanja tog koraka. Ovo se obično dešava nakon što je integracija uklonjena pa ponovo dodata: tada dobija novi unos integracije sa novim ID-jem.\n\nDa biste ispravili ovu grešku, uredite automatizaciju i ponovo izaberite unos integracije u ovim akcijama.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_unknown_icons": {
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija dodeljuje sledeće ikone, koje ne postoje u Material Design Icons paketu koji dolazi uz Home Assistant:\n\n{icons}\n\n\n\nSvaka od njih se prikazuje kao prazno mesto, bez ijedne reči. Ovo se često dešava kada je naziv ikone pogrešno otkucan, promenjen ili uklonjen, ili ako je izabrana iz novije verzije Material Design Icons paketa u odnosu na onu koja dolazi uz Home Assistant. Da biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i zamenite ih ikonama koje postoje.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "automation_never_true_templates": {
+            "description": "Spook je pronašao duha u Vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija sadrži sledeće šablone, koji nikada ne mogu da prođu, šta god da se desi u vašem domu:\n\n{templates}\n\n\n\nUslov šablona (template condition) prolazi samo kada vrati vrednost `true`, kao i `wait_template`, osim ako se kasnije ne promeni u nešto što se čita kao tačno. Pokretač šablona se aktivira kada se njegov šablon promeni u nešto što se čita kao tačno, poput `true`, `on`, `yes` ili `1`. Ovi šabloni uvek vraćaju nešto drugo, zbog načina na koji su napisani. Uobičajeni uzroci su:\n\n- Navodnici oko šablona. `>-` blok ih prihvata kao tekst, pa oni na kraju završe u rezultatu.\n- Uopšte nema graničnika šablona (template delimiters), pa se tekst uzima onakav kakav jeste.\n- YAML kod je kopiran u polje za šablon.\n- YAML komentar sa znakom `#` unutar Jinja koda, što Jinja ispisuje kao tekst.\n- Uslov koji vraća on umesto `true`.\n\nSistem Vam ništa ne signalizira: uslov nikada ne prolazi, čekanje (wait) se završava tek kada istekne vremensko ograničenje (timeout), a pokretač se nikada ne aktivira. Da biste ovo ispravili, [uredite automatizaciju]({edit}) i podesite šablon tako da vrati `true`kada treba da prođe.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_icons": {
+            "description": "Spook je pronašao duha na vašim kontrolnim tablama 👻\n\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće ikone, koje ne postoje u Material Design Icons paketu koji dolazi uz Home Assistant (verzija {version}):\n\n{icons}\n\n\n\nSvaka od njih se prikazuje kao prazno mesto, bez ijedne reči. Ovo se često dešava kada je naziv ikone pogrešno otkucan, promenjen ili uklonjen, ili ako je izabrana iz novije verzije Material Design Icons paketa u odnosu na onu koja dolazi uz Home Assistant. Da biste ispravili ovu grešku, uredite kontrolnu tablu i zamenite ih ikonama koje postoje. Ikona kontrolne table u bočnoj traci menja se u podešavanjima Vaših kontrolnih tabli.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "lovelace_unknown_theme_references": {
+            "description": "Spook je pronašao duha na Vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće teme, koje ne postoje:\n\n{themes}\n\n\n\nKartica, odeljak ili pregled sa jednom od ovih tema umesto toga dobijaju podrazumevani izgled, a da Vam sistem to ne signalizira. Ovo se često dešava kada je tema promenila naziv ili kada je uklonjena. Da biste ispravili ovu grešku, [uredite kontrolnu tablu]({edit}) i izaberite temu koja postoji, ili ponovo dodajte tu temu.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_config_entry_references": {
+            "description": "Spook je pronašao duha u Vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta prosleđuje svojim akcijama sledeće unose integracija, koji su nepoznati Home Assistant-u ili pripadaju nekoj drugoj integraciji u odnosu na onu koju akcija zahteva:\n\n{config_entries}\n\nHome Assistant ih odbija u trenutku pokretanja tog koraka. Ovo se obično dešava nakon što je integracija uklonjena pa ponovo dodata: tada dobija novi unos integracije sa novim ID-jem.\n\nDa biste ispravili ovu grešku, uredite skriptu i ponovo izaberite unos integracije u ovim akcijama.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_never_true_templates": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta sadrži sledeće šablone (templates), koji nikada ne mogu da prođu, šta god da se desi u vašem domu:\n\n{templates}\n\n\n\nUslov šablona (template condition) prolazi samo kada vrati vrednost `true`, kao i `wait_template`, osim ako se kasnije ne promeni u nešto što se čita kao tačno. Pokretač šablona unutar `wait_for_trigger` se aktivira kada se njegov šablon promeni u nešto što se čita kao tačno, poput `true`, `on`, `yes` ili `1`. Ovi šabloni uvek vraćaju nešto drugo, zbog načina na koji su napisani. Uobičajeni uzroci su:\n\n- Navodnici oko šablona. `>-` blok ih prihvata kao tekst, pa oni na kraju završe u rezultatu.\n- Uopšte nema graničnika šablona (template delimiters), pa se tekst uzima onakav kakav jeste.\n- YAML kod je kopiran u polje za šablon.\n- YAML komentar sa znakom `#` unutar Jinja koda, što Jinja ispisuje kao tekst.\n- Uslov koji vraća `on` umesto tr`true`.\n\nSistem vam ništa ne signalizira: uslov nikada ne prolazi, a čekanje se završava tek kada istekne vremensko ograničenje. Da biste ovo ispravili, uredite skriptu i podesite šablon tako da vrati true kada treba da prođe.\n\nSpook 👻 Vaš pomoćnik."
+        },
+        "script_unknown_icons": {
+            "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi ili dodeljuje sledeće ikone, koje ne postoje u Material Design Icons paketu koji dolazi uz Home Assistant:\n\n{icons}\n\n\n\nSvaka od njih se prikazuje kao prazno mesto, bez ijedne reči. Ovo se često dešava kada je naziv ikone pogrešno otkucan, promenjen ili uklonjen, ili ako je izabrana iz novije verzije Material Design Icons paketa u odnosu na onu koja dolazi uz Home Assistant. Da biste ispravili ovu grešku, [uredite skriptu]({edit}) i zamenite ih ikonama koje postoje.\n\nSpook 👻 Vaš pomoćnik."
         }
     },
     "services": {
@@ -2707,6 +2761,120 @@
         "input_select_reverse": {
             "name": "Obrni opcije",
             "description": "Obrće redosled dostupnih opcija za `input_select` entitet, od poslednje ka prvoj. Ovo nije trajno i biće poništeno nakon ponovnog učitavanja ili ponovnog pokretanja Home Assistant-a."
+        },
+        "homeassistant_update_area": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi"
+                },
+                "area_id": {
+                    "name": "ID prostorije"
+                },
+                "floor_id": {
+                    "name": "ID sprata"
+                },
+                "humidity_entity_id": {
+                    "name": "Senzor vlažnosti"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona koja će se koristiti za prostoriju."
+                },
+                "labels": {
+                    "name": "Oznake"
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za prostoriju."
+                },
+                "picture": {
+                    "name": "Slika"
+                }
+            }
+        },
+        "homeassistant_update_floor": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi"
+                },
+                "floor_id": {
+                    "name": "ID sprata"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona koja će se koristiti za sprat."
+                },
+                "level": {
+                    "name": "Nivo"
+                },
+                "name": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za sprat."
+                }
+            }
+        },
+        "homeassistant_update_device": {
+            "fields": {
+                "area_id": {
+                    "name": "ID prostorije"
+                },
+                "device_id": {
+                    "name": "ID uređaja"
+                },
+                "disabled_by": {
+                    "name": "Onemogućeno od",
+                    "description": "Postavite na korisnika da biste onemogućili uređaj, ili na null da biste ga ponovo omogućili. Ovo funkcioniše isto kao i akcije za onemogućavanje i omogućavanje uređaja."
+                },
+                "labels": {
+                    "name": "Oznake"
+                },
+                "name_by_user": {
+                    "name": "Naziv",
+                    "description": "Novi naziv za uređaj."
+                }
+            }
+        },
+        "schedule_create": {
+            "name": "Kreiraj raspored",
+            "description": "Kreira novog pomoćnika za raspored u letu, koji je uključen tokom zadatih vremenskih blokova za svaki dan u nedelji. Vraća ID entiteta novog rasporeda.",
+            "fields": {
+                "friday": {
+                    "name": "Petak"
+                },
+                "icon": {
+                    "name": "Ikona"
+                },
+                "monday": {
+                    "name": "Ponedeljak"
+                },
+                "name": {
+                    "name": "Naziv"
+                },
+                "saturday": {
+                    "name": "Subota"
+                },
+                "schedule_id": {
+                    "name": "ID entiteta rasporeda"
+                }
+            }
+        },
+        "schedule_set_day": {
+            "fields": {
+                "day": {
+                    "name": "Dan"
+                }
+            },
+            "description": "Zamenjuje vremenske blokove za jedan ili više dana u pomoćniku za raspored koji je napravljen u korisničkom interfejsu. Rasporedi podešeni preko YAML-a ne mogu se menjati pomoću Spook-a.",
+            "name": "Podešavanje vremenskih blokova za dan"
+        },
+        "schedule_delete": {
+            "name": "Obriši raspored",
+            "description": "Briše pomoćnike za rasporede napravljene u korisničkom interfejsu. Rasporedi podešeni preko YAML-a ne mogu se obrisati pomoću Spook-a.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entiteta"
+                }
+            }
         }
     },
     "conditions": {
@@ -3125,6 +3293,13 @@
             "options": {
                 "bottom": "Dole",
                 "top": "Gore"
+            }
+        },
+        "schedule_day": {
+            "options": {
+                "friday": "Petak",
+                "monday": "Ponedeljak",
+                "saturday": "Subota"
             }
         }
     },
