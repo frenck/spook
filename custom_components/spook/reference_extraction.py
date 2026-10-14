@@ -18,6 +18,8 @@ from dataclasses import dataclass, field
 import re
 from typing import TYPE_CHECKING, Any, Literal
 
+import voluptuous as vol
+
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.components.script import EVENT_SCRIPT_STARTED
 from homeassistant.const import (
@@ -30,6 +32,7 @@ from homeassistant.const import (
     MATCH_ALL,
 )
 from homeassistant.core import callback, valid_entity_id
+from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .const import LOGGER
@@ -489,6 +492,65 @@ def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
             or not (isinstance(value, dict) and value.get(CONF_ENABLED) is False)
         }
     return config
+
+
+def _is_switched_by_a_template(step: Any) -> bool:
+    """Return whether a step is turned on or off by a template in `enabled`.
+
+    Home Assistant takes text it reads as a boolean there too, like `"off"`;
+    only what it cannot read as one is a template.
+    """
+    if not isinstance(step, dict) or not isinstance(
+        enabled := step.get(CONF_ENABLED), str
+    ):
+        return False
+
+    try:
+        cv.boolean(enabled)
+    except vol.Invalid:
+        return True
+    return False
+
+
+def with_blueprint_switches_off(config: Any, *, in_payload: bool = False) -> Any:
+    """Return a copy of ``config`` with every templated `enabled` set to false.
+
+    A blueprint switches its own steps and triggers with a template in
+    `enabled`, driven by an input, to pick one of several ways of doing the
+    same thing. The ones not picked never run, and whoever uses the
+    blueprint cannot edit them either. Turned off here, every reader that
+    leaves out disabled steps leaves them out too. #1986.
+
+    Only for a blueprint. Somebody who wrote such a template themselves can
+    fix whatever it guards, so there it is still read.
+    """
+    if isinstance(config, list):
+        return [
+            with_blueprint_switches_off(item, in_payload=in_payload) for item in config
+        ]
+    if not isinstance(config, dict):
+        return config
+
+    copied = {
+        key: with_blueprint_switches_off(
+            value, in_payload=in_payload or key in _PAYLOAD_KEYS
+        )
+        for key, value in config.items()
+    }
+    if not in_payload and _is_switched_by_a_template(config):
+        copied[CONF_ENABLED] = False
+    return copied
+
+
+def config_to_judge(entity: Any, config: Any) -> Any:
+    """Return the part of an automation or script's config worth judging.
+
+    All of it, unless it comes from a blueprint: then what the blueprint
+    switches off with a template is left out.
+    """
+    if getattr(entity, "referenced_blueprint", None) is None:
+        return config
+    return with_blueprint_switches_off(config)
 
 
 def mentioned_only_in_disabled_steps(config: Any) -> set[str]:

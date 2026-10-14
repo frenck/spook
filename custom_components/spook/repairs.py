@@ -76,6 +76,7 @@ from .reference_extraction import (
     NamedReferences,
     async_collect_mentioned_strings,
     async_referencing,
+    config_to_judge,
     extract_attribute_references_from_config,
     extract_state_references_from_config,
 )
@@ -849,7 +850,7 @@ class AbstractSpookUnknownEntityNamesRepair(
         """
         named = self._named.get(entity.entity_id)
         if named is None or named[0] is not config:
-            named = (config, self._references_in(config))
+            named = (config, self._references_in(config_to_judge(entity, config)))
         self._named[entity.entity_id] = named
         references = named[1]
 
