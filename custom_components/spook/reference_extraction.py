@@ -18,8 +18,6 @@ from dataclasses import dataclass, field
 import re
 from typing import TYPE_CHECKING, Any, Literal
 
-import voluptuous as vol
-
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.components.script import EVENT_SCRIPT_STARTED
 from homeassistant.const import (
@@ -32,7 +30,6 @@ from homeassistant.const import (
     MATCH_ALL,
 )
 from homeassistant.core import callback, valid_entity_id
-from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .const import LOGGER
@@ -484,7 +481,7 @@ def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
         # a key like `actions` or `then`. Parked like that, the key goes.
         return {
             key: without_disabled_steps(
-                value, in_payload=in_payload or key in _PAYLOAD_KEYS
+                value, in_payload=in_payload or key in VALUE_KEYS
             )
             for key, value in config.items()
             if in_payload
@@ -497,19 +494,14 @@ def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
 def _is_switched_by_a_template(step: Any) -> bool:
     """Return whether a step is turned on or off by a template in `enabled`.
 
-    Home Assistant takes text it reads as a boolean there too, like `"off"`;
-    only what it cannot read as one is a template.
+    Home Assistant takes text it reads as a boolean there too, like `"off"`,
+    which is no template.
     """
-    if not isinstance(step, dict) or not isinstance(
-        enabled := step.get(CONF_ENABLED), str
-    ):
-        return False
-
-    try:
-        cv.boolean(enabled)
-    except vol.Invalid:
-        return True
-    return False
+    return (
+        isinstance(step, dict)
+        and isinstance(enabled := step.get(CONF_ENABLED), str)
+        and is_template_string(enabled)
+    )
 
 
 def with_blueprint_switches_off(config: Any, *, in_payload: bool = False) -> Any:
@@ -532,8 +524,9 @@ def with_blueprint_switches_off(config: Any, *, in_payload: bool = False) -> Any
         return config
 
     copied = {
+        # The items a repeat goes over are values too, never steps.
         key: with_blueprint_switches_off(
-            value, in_payload=in_payload or key in _PAYLOAD_KEYS
+            value, in_payload=in_payload or key in VALUE_KEYS
         )
         for key, value in config.items()
     }

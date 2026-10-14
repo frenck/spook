@@ -347,7 +347,14 @@ def test_with_blueprint_switches_off_turns_off_what_a_template_switches() -> Non
                 "enabled": "{{ y }}",
                 # Data is data, even when it looks like a step.
                 "data": {"enabled": "{{ z }}"},
-            }
+            },
+            {
+                "repeat": {
+                    # And so are the items a repeat goes over.
+                    "for_each": [{"enabled": "{{ true }}", "value": "{{ w }}"}],
+                    "sequence": [],
+                }
+            },
         ],
     }
 
@@ -362,7 +369,13 @@ def test_with_blueprint_switches_off_turns_off_what_a_template_switches() -> Non
                 "action": "light.turn_on",
                 "enabled": False,
                 "data": {"enabled": "{{ z }}"},
-            }
+            },
+            {
+                "repeat": {
+                    "for_each": [{"enabled": "{{ true }}", "value": "{{ w }}"}],
+                    "sequence": [],
+                }
+            },
         ],
     }
     # A copy: the configuration Home Assistant holds is left as it is.
