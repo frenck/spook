@@ -84,7 +84,9 @@ mode: restart
 # set these tests are about means that taking an entry out of it takes it out
 # of the yardstick too, and every assertion below keeps passing while the thing
 # it guards is broken.
-_THE_PLACEHOLDERS = frozenset({"trigger.entity_id", "this.entity_id"})
+_THE_PLACEHOLDERS = frozenset(
+    {"trigger.entity_id", "this.entity_id", "browser_entities."}
+)
 
 
 def _named(found: set[str]) -> set[str]:
