@@ -3,14 +3,14 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.components.homeassistant.exposed_entities import (
     async_expose_entity,
 )
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import entity_registry as er, intent
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.setup import async_setup_component
 
@@ -18,6 +18,7 @@ from custom_components.spook.ectoplasms.conversation.repairs import duplicate_na
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
+    import pytest
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import (
         area_registry as ar,
@@ -132,6 +133,43 @@ async def test_same_name_in_different_areas_is_left_alone(
     await _inspect(hass)
 
     assert _no_issues(issue_registry)
+
+
+async def test_a_big_house_is_not_asked_from_every_area(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Only the areas they are in are worth asking from, plus one other.
+
+    Asking from every area blocked the event loop on big houses. The lamps
+    sit in the last areas made, so finding them is no luck of the order.
+    """
+    await _set_up_assist(hass)
+    for number in range(30):
+        area_registry.async_create(f"Empty room {number}")
+    kitchen = area_registry.async_create("Kitchen")
+    bedroom = area_registry.async_create("Bedroom")
+    _entity(hass, entity_registry, "lamp_1", "Lamp", area_id=kitchen.id)
+    _entity(hass, entity_registry, "lamp_2", "Lamp", area_id=bedroom.id)
+
+    asked_from: list[str | None] = []
+    match_targets = intent.async_match_targets
+
+    def _counting_match_targets(*args: Any, **kwargs: Any) -> intent.MatchTargetsResult:
+        asked_from.append(args[2].area_id)
+        return match_targets(*args, **kwargs)
+
+    monkeypatch.setattr(intent, "async_match_targets", _counting_match_targets)
+
+    await _inspect(hass)
+
+    assert _no_issues(issue_registry)
+    assert kitchen.id in asked_from
+    assert bedroom.id in asked_from
+    assert len(asked_from) <= 4  # noqa: PLR2004
 
 
 async def test_same_name_without_any_area_is_reported(

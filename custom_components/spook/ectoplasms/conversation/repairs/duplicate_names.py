@@ -85,7 +85,11 @@ class SpookRepair(AbstractSpookRepair):
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        for name, states in (await self._async_exposed_names()).items():
+        exposed_names = await self._async_exposed_names()
+        for index, (name, states) in enumerate(exposed_names.items()):
+            if index and index % INSPECTION_YIELD_INTERVAL == 0:
+                await asyncio.sleep(0)
+
             # A name only one entity answers to is never in doubt.
             if len(states) < 2:  # noqa: PLR2004
                 continue
@@ -173,10 +177,15 @@ class SpookRepair(AbstractSpookRepair):
         """Ask core's matcher which of these it can pick out by this name.
 
         Asked as Assist asks it: by name, among what is exposed, preferring
-        the area the voice satellite is in. Once without a satellite area,
-        and once for every area there is. Naming an area in the sentence
+        the area the voice satellite is in. Naming an area in the sentence
         never narrows it further than a satellite in that same area does,
-        so these are all the chances Assist has.
+        so the satellite's area is the only chance Assist has.
+
+        Not asked from every area there is: on a big house that is
+        thousands of questions per look. A satellite in an area none of
+        these entities are in gets the same answer from any such area, so
+        it is asked once without an area, once from an area none of them
+        are in, and once from every area one of them is in.
 
         Also returns the area core placed each entity in, which follows the
         device when the entity has none of its own.
@@ -192,21 +201,43 @@ class SpookRepair(AbstractSpookRepair):
             return candidate.area is not None and candidate.area.id in area_ids
 
         constraints = intent.MatchTargetsConstraints(name=name, assistant=ASSISTANT)
-        satellite_areas: list[str | None] = [
-            None,
-            *(area.id for area in self.area_registry.async_list_areas()),
-        ]
-
+        candidates = list(states.values())
         singled_out: set[str] = set()
-        for satellite_area in satellite_areas:
+        asked: set[str | None] = set()
+
+        @callback
+        def _ask_from(satellite_area: str | None) -> None:
+            asked.add(satellite_area)
             result = intent.async_match_targets(
                 self.hass,
                 constraints,
                 intent.MatchTargetsPreferences(area_id=satellite_area),
-                states=list(states.values()),
+                states=candidates,
                 area_candidate_filter=_area_filter,
             )
             if result.is_match and len(result.states) == 1:
                 singled_out.add(result.states[0].entity_id)
+
+        _ask_from(None)
+
+        area_ids = [area.id for area in self.area_registry.async_list_areas()]
+        if not area_ids:
+            return areas, singled_out
+
+        # Asking from any area at all has core note down, through the
+        # filter, the area it places each of them in. Only then is it known
+        # which areas are worth asking from.
+        _ask_from(area_ids[0])
+
+        their_area_ids = {area.id for area in areas.values() if area is not None}
+        worth_asking = set(their_area_ids)
+        if other_area_id := next(
+            (area_id for area_id in area_ids if area_id not in their_area_ids),
+            None,
+        ):
+            worth_asking.add(other_area_id)
+
+        for satellite_area in sorted(worth_asking - asked):
+            _ask_from(satellite_area)
 
         return areas, singled_out
