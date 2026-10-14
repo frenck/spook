@@ -8,6 +8,7 @@ from homeassistant.components import automation
 from homeassistant.const import EVENT_COMPONENT_LOADED
 
 from ....never_true_templates import never_true_templates
+from ....reference_extraction import config_to_judge
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
@@ -45,4 +46,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         """Return the templates in ``entity`` that can never pass."""
         if not (raw_config := getattr(entity, "raw_config", None)):
             return set()
-        return never_true_templates(self.hass, self.domain, raw_config)
+        return never_true_templates(
+            self.hass, self.domain, config_to_judge(entity, raw_config)
+        )

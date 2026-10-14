@@ -14,6 +14,7 @@ from custom_components.spook.reference_extraction import (
     numeric_state_threshold_entities,
     numeric_threshold_entities,
     only_in_disabled_steps,
+    with_blueprint_switches_off,
     without_disabled_steps,
 )
 
@@ -330,6 +331,55 @@ def test_without_disabled_steps_leaves_out_what_is_parked() -> None:
         "triggers": [{"trigger": "state", "entity_id": "light.a"}],
         "actions": [{"if": [], "then": [{"action": "light.turn_off"}]}],
     }
+
+
+def test_with_blueprint_switches_off_turns_off_what_a_template_switches() -> None:
+    """A templated `enabled` reads false; a boolean, as text or not, stays."""
+    config = {
+        "triggers": [
+            {"trigger": "state", "entity_id": "light.a", "enabled": "{{ x }}"},
+            {"trigger": "state", "entity_id": "light.b", "enabled": "off"},
+            {"trigger": "state", "entity_id": "light.c", "enabled": True},
+        ],
+        "actions": [
+            {
+                "action": "light.turn_on",
+                "enabled": "{{ y }}",
+                # Data is data, even when it looks like a step.
+                "data": {"enabled": "{{ z }}"},
+            },
+            {
+                "repeat": {
+                    # And so are the items a repeat goes over.
+                    "for_each": [{"enabled": "{{ true }}", "value": "{{ w }}"}],
+                    "sequence": [],
+                }
+            },
+        ],
+    }
+
+    assert with_blueprint_switches_off(config) == {
+        "triggers": [
+            {"trigger": "state", "entity_id": "light.a", "enabled": False},
+            {"trigger": "state", "entity_id": "light.b", "enabled": "off"},
+            {"trigger": "state", "entity_id": "light.c", "enabled": True},
+        ],
+        "actions": [
+            {
+                "action": "light.turn_on",
+                "enabled": False,
+                "data": {"enabled": "{{ z }}"},
+            },
+            {
+                "repeat": {
+                    "for_each": [{"enabled": "{{ true }}", "value": "{{ w }}"}],
+                    "sequence": [],
+                }
+            },
+        ],
+    }
+    # A copy: the configuration Home Assistant holds is left as it is.
+    assert config["triggers"][0]["enabled"] == "{{ x }}"
 
 
 def test_without_disabled_steps_leaves_service_data_alone() -> None:
