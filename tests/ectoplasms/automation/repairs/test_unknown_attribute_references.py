@@ -213,6 +213,52 @@ async def test_attribute_never_had_is_reported(
 
 
 @pytest.mark.usefixtures("recorder_mock")
+async def test_the_state_by_another_name_says_so(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test `hvac_mode` is called the state, not taken for `hvac_modes`.
+
+    A climate entity is in its HVAC mode. The list of modes is one letter
+    away, and never what was meant. Issue #1973.
+    """
+    hass.states.async_set(
+        "climate.bedroom_ac", "cool", {"hvac_modes": ["off", "cool", "dry"]}
+    )
+    await async_wait_recording_done(hass)
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "triggers": [
+                        {
+                            "trigger": "state",
+                            "entity_id": "climate.bedroom_ac",
+                            "attribute": "hvac_mode",
+                        }
+                    ],
+                    "actions": [],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["attributes"] == (
+        "- `hvac_mode` of `climate.bedroom_ac` (that is its state, not an attribute)"
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
 async def test_custom_attribute_present_now_is_fine(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

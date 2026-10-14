@@ -23,6 +23,7 @@ from custom_components.spook.attribute_checking import (
     UnknownAttribute,
     async_domain_attributes,
     async_unknown_attributes,
+    names_the_state,
     suggest_name,
 )
 
@@ -610,6 +611,23 @@ def test_suggestion(name: str, known: set[str], expected: str) -> None:
 def test_no_suggestion(name: str, known: set[str]) -> None:
     """Test no suggestion is made when it would be a guess."""
     assert suggest_name(name, known) is None
+
+
+@pytest.mark.parametrize(
+    ("entity_id", "attribute", "expected"),
+    [
+        ("climate.bedroom", "hvac_mode", True),
+        ("light.kitchen", "state", True),
+        ("light.kitchen", "State", True),
+        # Only a climate entity is in its HVAC mode.
+        ("water_heater.boiler", "hvac_mode", False),
+        ("climate.bedroom", "hvac_modes", False),
+        ("climate.bedroom", "preset_mode", False),
+    ],
+)
+def test_names_the_state(entity_id: str, attribute: str, *, expected: bool) -> None:
+    """Test which attributes somebody names are the state itself."""
+    assert names_the_state(entity_id, attribute) is expected
 
 
 @pytest.mark.usefixtures("recorder_mock")

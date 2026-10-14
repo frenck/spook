@@ -45,7 +45,11 @@ from homeassistant.helpers.event import async_call_later, async_track_time_inter
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
-from .attribute_checking import async_unknown_attributes
+from .attribute_checking import (
+    NAMES_THE_STATE_HINT,
+    async_unknown_attributes,
+    names_the_state,
+)
 from .attribute_value_checking import as_yaml, async_unknown_attribute_values
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
@@ -786,6 +790,9 @@ class AbstractSpookUnknownEntityNamesRepair(
     #: How one finding reads in the issue, with ``{name}`` and ``{entity_id}``.
     finding_line: str
 
+    #: Whether the names are attributes, which can be the state by another name.
+    names_attributes: bool = False
+
     _unknown_by_owner: dict[str, set[str]]
     _unknown_by_reference: dict[str, _UnknownName]
     _inspected_configs: dict[str, Any]
@@ -972,6 +979,12 @@ class AbstractSpookUnknownEntityNamesRepair(
                 line = self.finding_line.format(name=name, entity_id=finding.entity_id)
             if finding.suggestion is not None:
                 line += f" (did you mean `{finding.suggestion}`?)"
+            elif (
+                self.names_attributes
+                and isinstance(name, str)
+                and names_the_state(finding.entity_id, name)
+            ):
+                line += f" ({NAMES_THE_STATE_HINT})"
             lines.append(line)
         return "\n".join(lines)
 
@@ -981,6 +994,7 @@ class AbstractSpookUnknownAttributesRepair(AbstractSpookUnknownEntityNamesRepair
 
     reference_label = "attributes"
     finding_line = "- `{name}` of `{entity_id}`"
+    names_attributes = True
 
     def _references_in(self, config: dict[str, Any]) -> NamedReferences:
         """Return the attributes a configuration names, and of which entities."""

@@ -10,7 +10,12 @@ from homeassistant.components.template.const import CONF_ATTRIBUTES
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
-from ....attribute_checking import UnknownAttribute, async_unknown_attributes
+from ....attribute_checking import (
+    NAMES_THE_STATE_HINT,
+    UnknownAttribute,
+    async_unknown_attributes,
+    names_the_state,
+)
 from ....const import LOGGER
 from ....entity_filtering import async_name_helper_in_the_registry
 from ....reference_extraction import (
@@ -46,6 +51,8 @@ def _finding_line(finding: UnknownAttribute) -> str:
     line = f"- `{finding.attribute}` of `{finding.entity_id}`"
     if finding.suggestion is not None:
         line += f" (did you mean `{finding.suggestion}`?)"
+    elif names_the_state(finding.entity_id, finding.attribute):
+        line += f" ({NAMES_THE_STATE_HINT})"
     return line
 
 
