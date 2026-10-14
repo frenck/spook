@@ -37,7 +37,7 @@ from homeassistant.const import (
     EntityCapabilityAttribute,
     EntityStateAttribute,
 )
-from homeassistant.core import split_entity_id
+from homeassistant.core import callback, split_entity_id
 from homeassistant.helpers.recorder import (
     DATA_INSTANCE,
     async_migration_in_progress,
@@ -420,6 +420,18 @@ def _knowledge(hass: HomeAssistant, entity_id: str) -> _Knowledge:
     if (knowledge := known.get(entity_id)) is None:
         knowledge = known[entity_id] = _Knowledge()
     return knowledge
+
+
+@callback
+def async_note_attributes(
+    hass: HomeAssistant, entity_id: str, keys: Iterable[str]
+) -> None:
+    """Note attributes an entity showed, outside of any look at it.
+
+    One that shows up and is gone again before the next look still counts,
+    even when the recorder has not written it down yet.
+    """
+    _knowledge(hass, entity_id).see(keys)
 
 
 async def _async_ask_the_recorder(

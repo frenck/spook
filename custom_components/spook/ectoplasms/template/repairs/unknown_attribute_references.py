@@ -99,6 +99,7 @@ class SpookRepair(AbstractSpookRepair):
     automatically_clean_up_issues = True
     first_inspection_delay = timedelta(minutes=10)
     inspect_interval = timedelta(days=1)
+    inspect_when_attributes_appear = True
 
     _named: dict[str, tuple[Mapping[str, Any], NamedReferences]]
     _named_in_yaml: dict[str, tuple[YamlTemplateEntity, NamedReferences]]
@@ -218,6 +219,7 @@ class SpookRepair(AbstractSpookRepair):
         by_pair = {
             (finding.entity_id, finding.attribute): finding for finding in unknown
         }
+        self._await_attributes(by_pair)
 
         for entry, options, pairs in named.values():
             # The recorder was asked in between. A helper removed or changed

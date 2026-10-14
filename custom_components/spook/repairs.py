@@ -47,6 +47,7 @@ from homeassistant.util.async_ import create_eager_task
 
 from .attribute_checking import (
     NAMES_THE_STATE_HINT,
+    async_note_attributes,
     async_unknown_attributes,
     names_the_state,
 )
@@ -376,10 +377,18 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     #: as a state and nothing else, often well after Home Assistant started.
     inspect_on_entity_added_or_removed: bool = False
 
+    #: Re-run the inspection when an entity gains an attribute it was reported
+    #: without, handed over with `_await_attributes`. A sensor that lost its
+    #: attributes for a while gets them back without anything else that would
+    #: bring a look: no reload, no registry change, and the daily look can be
+    #: a day away. #1995.
+    inspect_when_attributes_appear: bool = False
+
     automatically_clean_up_issues: bool = False
     possible_issue_ids: set[str]
 
     _event_subs: set[Callable[[], None]]
+    _attributes_awaited: dict[str, frozenset[str]]
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
@@ -387,6 +396,21 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self._event_subs = set()
         self.possible_issue_ids = set()
         self._waiting_for_first_inspection = False
+        self._attributes_awaited = {}
+
+    @callback
+    def _await_attributes(self, pairs: Iterable[tuple[str, str]]) -> None:
+        """Remember the (entity ID, attribute) pairs this round reported.
+
+        Replaced every round, so what is fixed or gone is no longer waited on.
+        """
+        awaited: dict[str, set[str]] = {}
+        for entity_id, attribute in pairs:
+            awaited.setdefault(entity_id, set()).add(attribute)
+        self._attributes_awaited = {
+            entity_id: frozenset(attributes)
+            for entity_id, attributes in awaited.items()
+        }
 
     async def _async_inspect_with_cleanup(self) -> None:
         """Run an inspection and clean up issues that are no longer valid."""
@@ -512,6 +536,9 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                 ),
             )
 
+        if self.inspect_when_attributes_appear:
+            self._listen_for_awaited_attributes()
+
         if self.inspect_on_reload:
 
             @callback
@@ -558,6 +585,48 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     _async_config_entry_changed,
                 ),
             )
+
+    @callback
+    def _listen_for_awaited_attributes(self) -> None:
+        """Look again once an entity gets an attribute this repair waits on."""
+
+        @callback
+        def _an_awaited_attribute_appeared(event_data: Mapping[str, Any]) -> bool:
+            """Return whether an entity just got an attribute it was missing.
+
+            Only the update it shows up in: a sensor that updates every second
+            must not bring a look, and the recorder question that comes with
+            it, each time.
+            """
+            awaited = self._attributes_awaited.get(event_data["entity_id"])
+            if awaited is None or (new_state := event_data.get("new_state")) is None:
+                return False
+
+            old_state = event_data.get("old_state")
+            had = old_state.attributes if old_state is not None else {}
+            return any(
+                attribute in new_state.attributes and attribute not in had
+                for attribute in awaited
+            )
+
+        @callback
+        def _async_attribute_appeared(event: Event) -> None:
+            # Noted right away: it may be gone again by the time the look
+            # comes, before the recorder has written it down.
+            async_note_attributes(
+                self.hass,
+                event.data["entity_id"],
+                event.data["new_state"].attributes,
+            )
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _async_attribute_appeared,
+                event_filter=_an_awaited_attribute_appeared,
+            ),
+        )
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""
@@ -916,6 +985,12 @@ class AbstractSpookUnknownEntityNamesRepair(
             {pair for pairs in named.values() for pair in pairs}
         )
         by_pair = {(finding.entity_id, finding.name): finding for finding in unknown}
+        if self.inspect_when_attributes_appear:
+            self._await_attributes(
+                (finding.entity_id, finding.name)
+                for finding in unknown
+                if isinstance(finding.name, str)
+            )
 
         self._inspected_configs = configs
         self._unknown_by_reference = {
@@ -995,6 +1070,7 @@ class AbstractSpookUnknownAttributesRepair(AbstractSpookUnknownEntityNamesRepair
     reference_label = "attributes"
     finding_line = "- `{name}` of `{entity_id}`"
     names_attributes = True
+    inspect_when_attributes_appear = True
 
     def _references_in(self, config: dict[str, Any]) -> NamedReferences:
         """Return the attributes a configuration names, and of which entities."""

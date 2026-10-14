@@ -163,6 +163,8 @@ class AbstractSpookDashboardEntityNamesRepair(AbstractSpookRepair, ABC):
                 for pair in group
             }
         )
+        if self.inspect_when_attributes_appear:
+            self._await_attributes(unknown)
 
         async for dashboard, url_path, config in async_dashboard_configs(
             self._dashboards
@@ -227,6 +229,7 @@ class AbstractSpookDashboardAttributesRepair(AbstractSpookDashboardEntityNamesRe
     reference_label = "attributes"
     finding_line = "- `{name}` of `{entity_id}`"
     names_attributes = True
+    inspect_when_attributes_appear = True
 
     def _groups(self, names: DashboardNames) -> frozenset[Group]:
         """Return the attribute groups."""

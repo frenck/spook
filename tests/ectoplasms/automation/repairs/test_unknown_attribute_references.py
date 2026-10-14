@@ -259,6 +259,33 @@ async def test_the_state_by_another_name_says_so(
 
 
 @pytest.mark.usefixtures("recorder_mock")
+async def test_an_attribute_coming_back_brings_a_look(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the entity gaining the attribute brings a look, and only that."""
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_wait_recording_done(hass)
+    await _automation(hass, "wobble")
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+    assert async_issue_about(issue_registry, ISSUE)
+
+    looks: list[None] = []
+    repair.inspect_debouncer.async_schedule_call = lambda: looks.append(None)
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200})
+    await hass.async_block_till_done()
+    assert not looks
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200, "wobble": 1})
+    await hass.async_block_till_done()
+    assert len(looks) == 1
+    await repair.async_deactivate()
+
+
+@pytest.mark.usefixtures("recorder_mock")
 async def test_custom_attribute_present_now_is_fine(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
