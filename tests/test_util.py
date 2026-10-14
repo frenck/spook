@@ -529,6 +529,9 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
             {"sensor.remote"},
         ),
         ("{{ data.get('update.lamp') is not none }}", set()),
+        # Unless it is looked up first, and what that gives is the key.
+        ("{{ data.get('sensor.ghost' | states) }}", {"sensor.ghost"}),
+        ("{{ data.get('sensor.ghost' is has_value) }}", {"sensor.ghost"}),
         # Tested with `in`, it may well be about an entity, so it still counts.
         ("{{ 'light.ghost' in area_entities('kitchen') }}", {"light.ghost"}),
         ("{{ 'update.lamp' in (data or {}) }}", {"update.lamp"}),

@@ -664,16 +664,20 @@ def _is_left_alone_literal_match(
     return match.span(1)[0] - 1 in left_alone_offsets
 
 
-# What comes right in front of a key looked up in a dictionary.
+# What comes right in front of a key looked up in a dictionary, and what can
+# come right after it when it is the whole key.
 _GET_CALL = [("operator", "."), ("name", "get"), ("operator", "(")]
+_END_OF_ARGUMENT = frozenset({("operator", ","), ("operator", ")")})
 
 
 def _dictionary_key_offsets(template_str: str) -> frozenset[int]:
     """Return where each string literal looked up in a dictionary starts.
 
-    The first argument of `.get(...)`. A dictionary handed over by a REST
-    sensor, for one, can be keyed by the entity IDs of another Home
-    Assistant, and none of those look up anything here. #1971.
+    The first argument of `.get(...)`, when it is the whole of it. A
+    dictionary handed over by a REST sensor, for one, can be keyed by the
+    entity IDs of another Home Assistant, and none of those look up anything
+    here. #1971. In `.get('sensor.x' | states)` the literal is looked up
+    first, and the key is what that gives.
 
     Not a literal tested with `in`: `'fan.x' in trigger.event.data.entity_id`
     is about an entity, and reads exactly like a test for a key.
@@ -698,6 +702,8 @@ def _dictionary_key_offsets(template_str: str) -> frozenset[int]:
             for _, before_kind, before_value in significant[max(index - 3, 0) : index]
         ]
         == _GET_CALL
+        and index + 1 < len(significant)
+        and significant[index + 1][1:] in _END_OF_ARGUMENT
     )
 
 
