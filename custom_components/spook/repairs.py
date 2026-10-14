@@ -47,6 +47,7 @@ from homeassistant.util.async_ import create_eager_task
 
 from .attribute_checking import (
     NAMES_THE_STATE_HINT,
+    async_note_attributes,
     async_unknown_attributes,
     names_the_state,
 )
@@ -536,33 +537,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             )
 
         if self.inspect_when_attributes_appear:
-
-            @callback
-            def _an_awaited_attribute_appeared(event_data: Mapping[str, Any]) -> bool:
-                """Return whether an entity now has an attribute it was missing.
-
-                Only then: a sensor that updates every second must not bring a
-                look, and the recorder question that comes with it, each time.
-                """
-                awaited = self._attributes_awaited.get(event_data["entity_id"])
-                new_state = event_data.get("new_state")
-                return (
-                    awaited is not None
-                    and new_state is not None
-                    and not awaited.isdisjoint(new_state.attributes)
-                )
-
-            @callback
-            def _async_attribute_appeared(_: Event) -> None:
-                self.inspect_debouncer.async_schedule_call()
-
-            self._event_subs.add(
-                self.hass.bus.async_listen(
-                    EVENT_STATE_CHANGED,
-                    _async_attribute_appeared,
-                    event_filter=_an_awaited_attribute_appeared,
-                ),
-            )
+            self._listen_for_awaited_attributes()
 
         if self.inspect_on_reload:
 
@@ -610,6 +585,48 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     _async_config_entry_changed,
                 ),
             )
+
+    @callback
+    def _listen_for_awaited_attributes(self) -> None:
+        """Look again once an entity gets an attribute this repair waits on."""
+
+        @callback
+        def _an_awaited_attribute_appeared(event_data: Mapping[str, Any]) -> bool:
+            """Return whether an entity just got an attribute it was missing.
+
+            Only the update it shows up in: a sensor that updates every second
+            must not bring a look, and the recorder question that comes with
+            it, each time.
+            """
+            awaited = self._attributes_awaited.get(event_data["entity_id"])
+            if awaited is None or (new_state := event_data.get("new_state")) is None:
+                return False
+
+            old_state = event_data.get("old_state")
+            had = old_state.attributes if old_state is not None else {}
+            return any(
+                attribute in new_state.attributes and attribute not in had
+                for attribute in awaited
+            )
+
+        @callback
+        def _async_attribute_appeared(event: Event) -> None:
+            # Noted right away: it may be gone again by the time the look
+            # comes, before the recorder has written it down.
+            async_note_attributes(
+                self.hass,
+                event.data["entity_id"],
+                event.data["new_state"].attributes,
+            )
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _async_attribute_appeared,
+                event_filter=_an_awaited_attribute_appeared,
+            ),
+        )
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""
