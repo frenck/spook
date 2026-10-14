@@ -171,7 +171,7 @@ Dashboards are inspected for the themes they use: the theme of a view, of a sect
 
 The frontend does not tell you when a theme is missing. It only puts on a theme it has, so a card or view asking for one that is gone gets the default look, and nothing says why. This usually happens when a theme was renamed, or the file it came from was removed.
 
-A theme is found by its name, exactly as written, so `midnight` is not `Midnight`. `default` and `none` are fine: those are built in, not themes of your own. Spook looks again when the themes are reloaded, so adding a theme back clears the issue as well.
+A theme is found by its name, exactly as written, so `midnight` is not `Midnight`. `default` and `none` are fine: those are built in, not themes of your own. So is `Backend-selected`, which older versions of the theme picker wrote when no theme was picked. Spook looks again when the themes are reloaded, so adding a theme back clears the issue as well.
 
 To resolve the raised issue, edit the dashboard and pick a theme that exists, or add the theme back. Spook will automatically remove the repair issue once the issue is fixed.
 

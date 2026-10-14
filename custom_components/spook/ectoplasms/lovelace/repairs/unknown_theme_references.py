@@ -28,6 +28,11 @@ if TYPE_CHECKING:
 # name Home Assistant itself uses for no theme at all.
 _BUILT_IN_THEMES = frozenset({DEFAULT_THEME, VALUE_NO_THEME})
 
+# What the frontend's theme picker used to write for "whatever the backend
+# picked". Plenty of older dashboards still carry it, and the frontend still
+# reads it as no theme, whatever its case.
+_BACKEND_SELECTED = "backend-selected"
+
 
 class SpookRepair(AbstractSpookRepair):
     """Spook repair tries to find themes in dashboards that do not exist.
@@ -75,7 +80,9 @@ class SpookRepair(AbstractSpookRepair):
             unknown_themes = {
                 theme
                 for theme in themes
-                if theme not in known_themes and theme not in _BUILT_IN_THEMES
+                if theme not in known_themes
+                and theme not in _BUILT_IN_THEMES
+                and theme.casefold() != _BACKEND_SELECTED
             }
             if not unknown_themes:
                 continue

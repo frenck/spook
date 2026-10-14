@@ -479,6 +479,9 @@ async def test_entity_filter_card_hands_its_rows_to_an_entities_card(
         "default",
         # Home Assistant's name for no theme at all.
         "none",
+        # What the old theme picker wrote for no theme, read in any case.
+        "Backend-selected",
+        "backend-selected",
         # Themes that exist, with and without light and dark variants.
         "Midnight",
         "Sunrise",
