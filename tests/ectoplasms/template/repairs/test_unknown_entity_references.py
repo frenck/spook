@@ -49,6 +49,45 @@ async def test_unknown_entity_in_template_creates_issue(
     )
 
 
+async def test_the_helper_is_not_told_it_meant_itself(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the closest name being the helper's own is not suggested.
+
+    `sensor.daily_power_peak` is close to `sensor.daily_power`, which is the
+    helper the template is in. Issue #1967.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Daily power",
+        options={
+            "name": "Daily power",
+            "template_type": "sensor",
+            "state": "{{ states('sensor.daily_power_peak') | float(0) }}",
+        },
+    )
+    entry.add_to_hass(hass)
+    entity_registry.async_get_or_create(
+        "sensor",
+        "template",
+        entry.entry_id,
+        suggested_object_id="daily_power",
+        config_entry=entry,
+    )
+    hass.states.async_set("sensor.daily_power", "21")
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
+    )
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["entities"] == "- `sensor.daily_power_peak`"
+
+
 async def test_known_entities_create_no_issue(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

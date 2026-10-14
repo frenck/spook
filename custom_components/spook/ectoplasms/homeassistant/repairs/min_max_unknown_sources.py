@@ -37,7 +37,16 @@ class SpookRepair(AbstractSpookRepair):
             if not (unknown := async_unknown_min_max_members(self.hass, entry)):
                 continue
 
-            sources = await async_describe_unknown_entities(self.hass, sorted(unknown))
+            sources = await async_describe_unknown_entities(
+                self.hass,
+                sorted(unknown),
+                referenced_by={
+                    entity.entity_id
+                    for entity in er.async_entries_for_config_entry(
+                        self.entity_registry, entry.entry_id
+                    )
+                },
+            )
             self.async_create_issue(
                 issue_id=entry.entry_id,
                 references=unknown,

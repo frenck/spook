@@ -42,7 +42,9 @@ class SpookRepair(AbstractSpookRepair):
                 self.hass, entity_ids=members, known_entity_ids=known_entity_ids
             ):
                 described = await async_describe_unknown_entities(
-                    self.hass, sorted(unknown_entities)
+                    self.hass,
+                    sorted(unknown_entities),
+                    referenced_by={entity.entity_id},
                 )
                 self.async_create_issue(
                     issue_id=entity.entity_id,
