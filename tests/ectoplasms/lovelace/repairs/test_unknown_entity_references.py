@@ -959,6 +959,9 @@ async def test_the_same_value_on_a_custom_card_is_not_reported(
         "this.entity_id",
         "this.entity_id.attributes",
         "trigger.entity_id",
+        # browser_mod's own dictionary of the browser's entities. #1982.
+        "browser_entities.browserID",
+        "browser_entities.player",
         "config.entity",
         "all",
         "none",
@@ -979,6 +982,44 @@ async def test_what_the_dashboard_walk_lets_go_is_not_reported(
     card = {"type": "entities", "entities": [entity, {"entity": entity}]}
 
     assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+async def test_a_browser_mod_badge_on_a_view_is_not_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test the badge from issue #1982, as it sits on a view."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {
+            "views": [
+                {
+                    "path": "home",
+                    "badges": [
+                        {
+                            "type": "custom:browser-mod-badge",
+                            "entity": "browser_entities.browserID",
+                        }
+                    ],
+                }
+            ]
+        }
+
+    reported: list[set[str]] = []
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace", config={"title": "Overview"}, async_load=_loads
+        )
+    }
+    monkeypatch.setattr(
+        repair,
+        "async_create_issue",
+        lambda **kwargs: reported.append(set(kwargs["references"])),
+    )
+
+    await repair.async_inspect()
+
+    assert not reported
 
 
 @pytest.mark.parametrize(
