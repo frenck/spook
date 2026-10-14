@@ -1264,6 +1264,72 @@ async def test_text_that_is_never_rendered_names_no_entity(
     assert await _async_unknown_in_automation(hass, config) == set()
 
 
+async def test_the_kind_of_trigger_a_template_compares_is_no_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test `trigger.platform` held against a trigger type is left alone.
+
+    `sun.dusk` looks like an entity ID, and is the name of the trigger this
+    automation listens to. Issue #1970.
+    """
+    config: dict[str, Any] = {
+        "alias": "Dusk",
+        # Off, so the sun triggers schedule nothing that outlives the test.
+        "initial_state": False,
+        "triggers": [
+            {"trigger": "sun.dusk", "options": {"offset_type": "before"}},
+            {"trigger": "sun.sunset", "options": {"offset_type": "before"}},
+        ],
+        "actions": [
+            {
+                "if": [
+                    {
+                        "condition": "template",
+                        "value_template": "{{ trigger.platform == 'sun.dusk' }}",
+                    }
+                ],
+                "then": [
+                    {
+                        "action": "light.turn_on",
+                        "target": {"entity_id": "light.porch_ghost"},
+                    }
+                ],
+            },
+            {"variables": {"setting": "{{ trigger.platform in ['sun.sunset'] }}"}},
+        ],
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == {"light.porch_ghost"}
+
+
+async def test_the_event_type_a_template_compares_is_no_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test an event type held against in a template is left alone.
+
+    It was already left out where the trigger names it, but not where a
+    template in the same automation compares the event with it.
+    """
+    config: dict[str, Any] = {
+        "alias": "Sleep timer",
+        "triggers": [
+            {
+                "trigger": "event",
+                "event_type": ["timer.finished", "timer.cancelled"],
+            }
+        ],
+        "actions": [
+            {
+                "variables": {
+                    "done": "{{ trigger.event.event_type == 'timer.finished' }}",
+                }
+            }
+        ],
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == set()
+
+
 async def test_a_template_in_action_data_still_names_entities(
     hass: HomeAssistant,
 ) -> None:
