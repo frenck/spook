@@ -121,6 +121,15 @@ _MIN_MAX_MINIMUM_MEMBERS = 2
 # the worst moment for it. #1898.
 FIRST_INSPECTIONS_SPREAD_OVER = timedelta(minutes=2)
 
+# What an entity registry entry can have written to it that no repair looks
+# at. Integrations write these all day long: a media player's sources, a
+# select's options or a climate entity's modes go in `capabilities` every
+# time they change, along with the features that come with them. None of it
+# changes which entities there are or what they are called, and every one of
+# them had every repair listening to the registry look at the whole house
+# again.
+REGISTRY_CHANGES_NO_REPAIR_LOOKS_AT = frozenset({"capabilities", "supported_features"})
+
 
 def _plural(items: Sized) -> str:
     """Return the plural suffix for a sized collection."""
@@ -130,6 +139,20 @@ def _plural(items: Sized) -> str:
 def _bulleted(items: Iterable[str]) -> str:
     """Return the markdown list a repair puts its findings in."""
     return "\n".join(f"- `{item}`" for item in items)
+
+
+@callback
+def _registry_entry_changed_something_looked_at(
+    event_data: er.EventEntityRegistryUpdatedData,
+) -> bool:
+    """Return whether a registry event is worth another look.
+
+    An entry created or removed always is, and so is any update with more in
+    it than what no repair looks at.
+    """
+    if event_data["action"] != "update":
+        return True
+    return not event_data["changes"].keys() <= REGISTRY_CHANGES_NO_REPAIR_LOOKS_AT
 
 
 def format_config_entry_references(
@@ -349,6 +372,9 @@ class AbstractSpookRepairBase(ABC):
 class AbstractSpookRepair(AbstractSpookRepairBase):
     """Abstract base class to hold a Spook repairs."""
 
+    #: Re-run the inspection when one of these is fired. Entity registry
+    #: updates writing only what no repair looks at are let go, see
+    #: `REGISTRY_CHANGES_NO_REPAIR_LOOKS_AT`.
     inspect_events: set[EventType[Any] | str] | None = None
     inspect_debouncer: Debouncer[Coroutine[Any, Any, None]]
     inspect_config_entry_changed: bool | str = False
@@ -469,7 +495,15 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         if self.inspect_events is not None:
             for event in self.inspect_events:
                 self._event_subs.add(
-                    self.hass.bus.async_listen(event, _async_call_inspect_debouncer),
+                    self.hass.bus.async_listen(
+                        event,
+                        _async_call_inspect_debouncer,
+                        event_filter=(
+                            _registry_entry_changed_something_looked_at
+                            if event == er.EVENT_ENTITY_REGISTRY_UPDATED
+                            else None
+                        ),
+                    ),
                 )
 
         if self.inspect_interval is not None:
