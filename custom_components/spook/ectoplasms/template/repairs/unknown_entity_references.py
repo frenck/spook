@@ -128,6 +128,12 @@ class SpookRepair(AbstractSpookRepair):
                 active=active,
                 known_entity_ids=known_entity_ids,
                 translation_key=None,
+                referenced_by=frozenset(
+                    entity.entity_id
+                    for entity in er.async_entries_for_config_entry(
+                        self.entity_registry, entry.entry_id
+                    )
+                ),
                 translation_placeholders={
                     "helper": entry.title,
                     "entity_id": async_name_helper_in_the_registry(
@@ -166,6 +172,7 @@ class SpookRepair(AbstractSpookRepair):
                 known_entity_ids=known_entity_ids,
                 # There is no editor for YAML, so the issue says where to look.
                 translation_key=f"{self.repair}_yaml",
+                referenced_by=frozenset({template_entity.entity_id}),
                 translation_placeholders={
                     "name": template_entity.name,
                     "entity_id": template_entity.entity_id,
@@ -214,6 +221,7 @@ class SpookRepair(AbstractSpookRepair):
         known_entity_ids: set[str],
         translation_key: str | None,
         translation_placeholders: dict[str, str],
+        referenced_by: frozenset[str],
         template_entity: YamlTemplateEntity | None = None,
     ) -> None:
         """Raise an issue for what one template names that does not exist."""
@@ -235,7 +243,7 @@ class SpookRepair(AbstractSpookRepair):
             known_entity_ids=known_entity_ids,
         )
         described = await self._async_describe(
-            unknown_entities, unknown_active, not_entity_ids
+            unknown_entities, unknown_active, not_entity_ids, referenced_by
         )
 
         # Reading and describing it took a while. A template entity reloaded
@@ -269,7 +277,11 @@ class SpookRepair(AbstractSpookRepair):
         )
 
     async def _async_describe(
-        self, unknown: set[str], unknown_active: set[str], not_entity_ids: set[str]
+        self,
+        unknown: set[str],
+        unknown_active: set[str],
+        not_entity_ids: set[str],
+        referenced_by: frozenset[str],
     ) -> str:
         """Describe the unknown entities, qualifying the disabled-only ones.
 
@@ -283,7 +295,7 @@ class SpookRepair(AbstractSpookRepair):
         meant: a wrong suggestion is worse than none.
         """
         described = await async_describe_unknown_entities(
-            self.hass, sorted(unknown_active)
+            self.hass, sorted(unknown_active), referenced_by=referenced_by
         )
         if disabled_only := unknown - unknown_active:
             described = "\n".join(
@@ -294,6 +306,7 @@ class SpookRepair(AbstractSpookRepair):
                         self.hass,
                         sorted(disabled_only),
                         note="only referenced from disabled steps",
+                        referenced_by=referenced_by,
                     ),
                 )
                 if part

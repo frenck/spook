@@ -51,6 +51,27 @@ async def test_rename_suggestion_for_similar_entity(hass: HomeAssistant) -> None
     )
 
 
+async def test_the_entity_referencing_it_is_never_suggested(
+    hass: HomeAssistant,
+) -> None:
+    """Test a template sensor is not told it meant itself. Issue #1967.
+
+    The suggestion is still remembered, for whoever else references the same
+    unknown entity.
+    """
+    hass.states.async_set("sensor.daily_power", "21")
+
+    result = await async_describe_unknown_entities(
+        hass, ["sensor.daily_power_peak"], referenced_by={"sensor.daily_power"}
+    )
+    elsewhere = await async_describe_unknown_entities(hass, ["sensor.daily_power_peak"])
+
+    assert result == "- `sensor.daily_power_peak`"
+    assert elsewhere == (
+        "- `sensor.daily_power_peak` (did you mean `sensor.daily_power`?)"
+    )
+
+
 async def test_deleted_entity_detail(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
