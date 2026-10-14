@@ -522,6 +522,16 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ 'Group.Kids' | closest(*point) }}", set()),
         # `distance` takes a mixed case one for a coordinate, at any position.
         ("{{ distance('zone.home', 'Sensor.Phone') }}", {"zone.home"}),
+        # A key looked up in a dictionary looks up nothing, like the entity IDs
+        # of another Home Assistant in what a REST sensor handed over. #1971.
+        (
+            "{{ (state_attr('sensor.remote', 'data') or {}).get('update.lamp', {}) }}",
+            {"sensor.remote"},
+        ),
+        ("{{ data.get('update.lamp') is not none }}", set()),
+        # Tested with `in`, it may well be about an entity, so it still counts.
+        ("{{ 'light.ghost' in area_entities('kitchen') }}", {"light.ghost"}),
+        ("{{ 'update.lamp' in (data or {}) }}", {"update.lamp"}),
     ],
 )
 def test_extract_entities_from_template_regex(
