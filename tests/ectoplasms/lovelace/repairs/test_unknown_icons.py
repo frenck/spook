@@ -190,6 +190,12 @@ async def test_a_near_miss_suggests_the_icon_it_meant(
                 "data": {"object_id": "ghosts", "icon": "mdi:ghost-bulb"},
             },
         },
+        # A third-party card can take an `action` setting that is no action.
+        {
+            "type": "custom:mediocre-massive-media-player-card",
+            "action": {"tap_action": {"action": "navigate"}},
+            "icon": "mdi:ghost-bulb",
+        },
     ],
 )
 async def test_what_is_not_judged(

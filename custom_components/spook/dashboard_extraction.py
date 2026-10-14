@@ -768,7 +768,10 @@ def _walk_navigation(node: Any, paths: set[str]) -> None:
     if navigates and isinstance(path := node.get(_NAVIGATION_PATH_KEY), str):
         paths.add(path)
 
-    if node.get("action") in _PERFORMED_ACTIONS:
+    if (
+        isinstance(action_type := node.get("action"), str)
+        and action_type in _PERFORMED_ACTIONS
+    ):
         node = {
             key: value
             for key, value in node.items()
@@ -815,7 +818,10 @@ def _walk_icons(node: Any, icons: set[str], *, in_custom: bool) -> None:
 
     # What a performed action hands to Home Assistant is the action's own
     # data, not something the dashboard draws.
-    if node.get("action") in _PERFORMED_ACTIONS:
+    if (
+        isinstance(action_type := node.get("action"), str)
+        and action_type in _PERFORMED_ACTIONS
+    ):
         node = {
             key: value
             for key, value in node.items()
