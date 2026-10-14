@@ -18,6 +18,7 @@ from ....reference_extraction import (
     VALUE_KEYS,
     core_references,
     event_payload_keys_to_leave_alone,
+    extract_platform_keys_from_config,
     names_given_to_templates,
     threshold_entities,
     without_never_rendered,
@@ -355,10 +356,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
                     self.hass, entity.raw_config, self._known_services
                 )
             )
-            for key in ("trigger", "triggers"):
-                all_entities.difference_update(
-                    extract_event_types_from_trigger_config(entity.raw_config.get(key))
-                )
 
         # Extract entities from Template objects within the automation entity
         all_entities.update(
@@ -368,6 +365,19 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         )
 
         raw_config = getattr(entity, "raw_config", None)
+        if raw_config:
+            # The kinds of trigger and event this automation listens for look
+            # like entity IDs, `sun.dusk` and `timer.finished` for two, and a
+            # template comparing `trigger.platform` or the event type with
+            # one names no entity at all.
+            all_entities.difference_update(
+                extract_platform_keys_from_config(raw_config).trigger_keys
+            )
+            for key in ("trigger", "triggers"):
+                all_entities.difference_update(
+                    extract_event_types_from_trigger_config(raw_config.get(key))
+                )
+
         return await async_unknown_entities_named(
             self.hass,
             all_entities,
