@@ -7,7 +7,11 @@ from typing import Any
 import pytest
 
 from custom_components.spook import configuration_cache
-from custom_components.spook.configuration_cache import per_configuration
+from custom_components.spook.configuration_cache import (
+    forget_dashboards,
+    per_configuration,
+    per_dashboard_node,
+)
 from custom_components.spook.reference_extraction import without_disabled_steps
 from custom_components.spook.template_extraction import (
     extract_template_strings_from_config,
@@ -128,3 +132,34 @@ def test_templates_of_a_configuration_are_found_once() -> None:
 
     assert first == ["{{ states('light.kitchen') }}"]
     assert extract_template_strings_from_config(config) is first
+
+
+def test_dashboard_readings_are_forgotten_when_asked() -> None:
+    """Test everything read from dashboards goes once a dashboard changed."""
+    read: list[Any] = []
+
+    @per_dashboard_node
+    def _reader(node: Any) -> int:
+        read.append(node)
+        return len(read)
+
+    view = {"cards": []}
+
+    _reader(view)
+    _reader(view)
+    forget_dashboards()
+    _reader(view)
+
+    assert read == [view, view]
+
+
+def test_forgetting_dashboards_keeps_configurations() -> None:
+    """Test forgetting dashboards leaves what was read from automations."""
+    reader, read = _counted()
+    config = {"actions": []}
+
+    reader(config)
+    forget_dashboards()
+    reader(config)
+
+    assert read == [config]

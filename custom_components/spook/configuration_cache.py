@@ -64,3 +64,28 @@ def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:
 
     _read.cache_clear = remembered.clear  # type: ignore[attr-defined]
     return _read
+
+
+# What has been read from dashboards, to be forgotten whenever one changes.
+_DASHBOARD_READERS: list[Callable[[], None]] = []
+
+
+def per_dashboard_node[**P, R](func: Callable[P, R]) -> Callable[P, R]:
+    """Remember what ``func`` reads from a part of a dashboard, per part.
+
+    The same as `per_configuration`, with one difference: all of it is
+    forgotten when Home Assistant says a dashboard changed. Home Assistant
+    hands out a new configuration when a dashboard is saved, so the old
+    readings would not be asked for again anyway. But a dashboard is shared
+    with whatever else runs in the house, and one that changes in place under
+    the same object would otherwise keep its old readings.
+    """
+    remembering = per_configuration(func)
+    _DASHBOARD_READERS.append(remembering.cache_clear)  # type: ignore[attr-defined]
+    return remembering
+
+
+def forget_dashboards() -> None:
+    """Forget everything read from dashboards."""
+    for forget in _DASHBOARD_READERS:
+        forget()

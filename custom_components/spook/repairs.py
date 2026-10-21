@@ -26,7 +26,11 @@ from homeassistant.config_entries import (
     ConfigEntry,
     ConfigEntryChange,
 )
-from homeassistant.const import CONF_ENTITIES, EVENT_STATE_CHANGED
+from homeassistant.const import (
+    CONF_ENTITIES,
+    EVENT_LOVELACE_UPDATED,
+    EVENT_STATE_CHANGED,
+)
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
@@ -52,6 +56,7 @@ from .attribute_checking import (
     names_the_state,
 )
 from .attribute_value_checking import as_yaml, async_unknown_attribute_values
+from .configuration_cache import forget_dashboards
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
@@ -516,8 +521,11 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                 )
             )
 
-        async def _async_call_inspect_debouncer(_: Event) -> None:
+        async def _async_call_inspect_debouncer(event: Event) -> None:
             # Trigger an inspection when an event is received from the event bus.
+            if event.event_type == EVENT_LOVELACE_UPDATED:
+                # What was read from the dashboards may say something else now.
+                forget_dashboards()
             await self.inspect_debouncer.async_call()
 
         if self.inspect_events is not None:
