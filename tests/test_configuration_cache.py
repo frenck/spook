@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
+from homeassistant.const import EVENT_SERVICE_REGISTERED, EVENT_SERVICE_REMOVED
+
 from custom_components.spook import configuration_cache
+from custom_components.spook.action_extraction import RememberedNames
 from custom_components.spook.configuration_cache import (
     forget_dashboards,
     per_configuration,
@@ -16,6 +19,9 @@ from custom_components.spook.reference_extraction import without_disabled_steps
 from custom_components.spook.template_extraction import (
     extract_template_strings_from_config,
 )
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 
 def _counted() -> tuple[Any, list[Any]]:
@@ -163,3 +169,70 @@ def test_forgetting_dashboards_keeps_configurations() -> None:
     reader(config)
 
     assert read == [config]
+
+
+async def test_named_in_is_read_once_until_the_actions_change(
+    hass: HomeAssistant,
+) -> None:
+    """Test what a configuration names is read once, and again for new actions."""
+    remembered = RememberedNames()
+    stop = remembered.async_follow_actions(hass)
+    read: list[Any] = []
+
+    async def _read(config: dict[str, Any], shadowed: frozenset[str]) -> set[str]:
+        read.append((config, shadowed))
+        return {"light.kitchen"}
+
+    config = {"actions": []}
+    remembered.start_round({"light.turn_on"})
+
+    assert await remembered.async_named_in(config, frozenset(), _read) == {
+        "light.kitchen"
+    }
+    await remembered.async_named_in(config, frozenset(), _read)
+    assert len(read) == 1
+
+    # Other names given to the templates are another reading.
+    await remembered.async_named_in(config, frozenset({"states"}), _read)
+    assert len(read) == 2  # noqa: PLR2004
+
+    # The same actions next round: still remembered.
+    remembered.start_round({"light.turn_on"})
+    await remembered.async_named_in(config, frozenset(), _read)
+    assert len(read) == 2  # noqa: PLR2004
+
+    # Other actions at the start of a round: read again.
+    remembered.start_round({"light.turn_on", "light.toggle"})
+    await remembered.async_named_in(config, frozenset(), _read)
+    assert len(read) == 3  # noqa: PLR2004
+
+    # An action registered in between: read again.
+    hass.bus.async_fire(EVENT_SERVICE_REGISTERED, {"domain": "x", "service": "y"})
+    await hass.async_block_till_done()
+    await remembered.async_named_in(config, frozenset(), _read)
+    assert len(read) == 4  # noqa: PLR2004
+
+    # And one removed.
+    hass.bus.async_fire(EVENT_SERVICE_REMOVED, {"domain": "x", "service": "y"})
+    await hass.async_block_till_done()
+    await remembered.async_named_in(config, frozenset(), _read)
+    assert len(read) == 5  # noqa: PLR2004
+
+    stop()
+
+
+async def test_named_in_hands_out_a_copy(hass: HomeAssistant) -> None:
+    """Test a caller changing what it got leaves what is remembered alone."""
+    remembered = RememberedNames()
+    remembered.start_round(set())
+
+    async def _read(_config: dict[str, Any], _shadowed: frozenset[str]) -> set[str]:
+        return {"light.kitchen"}
+
+    config = {"actions": []}
+    (await remembered.async_named_in(config, frozenset(), _read)).add("x.y")
+
+    assert await remembered.async_named_in(config, frozenset(), _read) == {
+        "light.kitchen"
+    }
+    _ = hass

@@ -9,6 +9,7 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
+    RememberedNames,
     async_extract_entities_from_action_config,
     async_extract_entities_from_value,
     async_unknown_entities_named,
@@ -311,6 +312,17 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
 
     _known_entity_ids: set[str]
     _known_services: set[str]
+    _remembered: RememberedNames
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair, remembering nothing yet."""
+        super().__init__(hass)
+        self._remembered = RememberedNames()
+
+    async def async_activate(self) -> None:
+        """Handle the activating a repair."""
+        self._event_subs.add(self._remembered.async_follow_actions(self.hass))
+        await super().async_activate()
 
     async def _async_setup_inspection(self) -> None:
         """Cache what every automation in this cycle needs looked up.
@@ -323,8 +335,17 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
             self.hass, include_all_none=True
         )
         self._known_services = async_get_all_services(self.hass)
+        self._remembered.start_round(self._known_services)
 
     async def _async_named_in(
+        self, config: dict[str, Any], shadowed: frozenset[str]
+    ) -> set[str]:
+        """Return the entities a configuration names, read once until it changes."""
+        return await self._remembered.async_named_in(
+            config, shadowed, self._async_read_named_in
+        )
+
+    async def _async_read_named_in(
         self, config: dict[str, Any], shadowed: frozenset[str]
     ) -> set[str]:
         """Return the entities a configuration names, the way this repair reads it.
@@ -349,22 +370,16 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
         all_entities = core_references(entity, "entities")
 
-        # Also extract entities directly from raw configuration if available
-        if hasattr(entity, "raw_config") and entity.raw_config:
+        # What the configuration names, its structure and its templates alike.
+        # The very reading the report settles with below, so it is read once.
+        raw_config = getattr(entity, "raw_config", None)
+        if isinstance(raw_config, dict) and raw_config:
             all_entities.update(
-                await extract_entities_from_automation_config(
-                    self.hass, entity.raw_config, self._known_services
+                await self._async_named_in(
+                    raw_config, names_given_to_templates(raw_config)
                 )
             )
 
-        # Extract entities from Template objects within the automation entity
-        all_entities.update(
-            await extract_template_entities_from_automation_entity(
-                self.hass, entity, self._known_services
-            )
-        )
-
-        raw_config = getattr(entity, "raw_config", None)
         if raw_config:
             # The kinds of trigger and event this automation listens for look
             # like entity IDs, `sun.dusk` and `timer.finished` for two, and a
