@@ -14,6 +14,7 @@ from homeassistant.const import Platform
 from homeassistant.core import valid_entity_id
 from homeassistant.helpers.template import Template
 
+from .configuration_cache import CACHE_SIZE, per_configuration
 from .const import LOGGER
 from .entity_filtering import (
     IGNORED_ENTITY_DOMAINS,
@@ -182,7 +183,8 @@ _GLUE = ("~", "+", "'", '"')
 _GLUE_OPERATORS = frozenset({"~", "+"})
 
 
-def _lexed(template_str: str) -> list[tuple[int, str, str]] | None:
+@lru_cache(maxsize=CACHE_SIZE)
+def _lexed(template_str: str) -> tuple[tuple[int, str, str], ...] | None:
     """Return the tokens Jinja reads in a template, each with where it starts.
 
     The lexer hands its tokens back raw, but not always all of the source:
@@ -211,7 +213,7 @@ def _lexed(template_str: str) -> list[tuple[int, str, str]] | None:
         lexed.append((offset, kind, value))
         offset += len(value)
 
-    return lexed
+    return tuple(lexed)
 
 
 def _ends_a_raw_value(tokens: list[tuple[int, str, str]], index: int) -> bool:
@@ -1308,7 +1310,7 @@ def _states_spelled_out(
     }
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _looked_up_in_any_case(
     template_str: str, shadowed: frozenset[str] = frozenset()
 ) -> frozenset[str]:
@@ -1336,7 +1338,7 @@ def _looked_up_in_any_case(
 _SINGLE_ENTITY_LOOKUPS = _STATE_LOOKUPS - _EXPANDING_LOOKUPS
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def extract_not_entity_ids_from_template(
     template_str: str, shadowed: frozenset[str] = frozenset()
 ) -> frozenset[str]:
@@ -1375,7 +1377,7 @@ def _entity_id_from_template_match(match: re.Match[str]) -> str:
     return groups[0]
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _extract_entity_candidates_from_template(
     template_str: str, shadowed: frozenset[str] = frozenset()
 ) -> frozenset[str]:
@@ -1587,23 +1589,32 @@ async def async_filter_known_entity_ids_with_templates(
     return async_drop_existing_action_names(hass, unknown_entities)
 
 
+@per_configuration
 def extract_template_strings_from_config(
     config: Any, strings: list[str] | None = None
 ) -> list[str]:
-    """Recursively extract template strings from configuration data."""
+    """Return the template strings anywhere in configuration data.
+
+    Added to ``strings`` when given. Without it the list is shared with
+    whoever else asks about the same configuration: read it, never change it.
+    """
     if strings is None:
         strings = []
+    _collect_template_strings(config, strings)
+    return strings
 
+
+def _collect_template_strings(config: Any, strings: list[str]) -> None:
+    """Collect the template strings in a part of configuration data."""
     if isinstance(config, str):
         if is_template_string(config):  # Uses the util's is_template_string
             strings.append(config)
     elif isinstance(config, dict):
         for value in config.values():
-            extract_template_strings_from_config(value, strings)
+            _collect_template_strings(value, strings)
     elif isinstance(config, (list, tuple)):
         for item in config:
-            extract_template_strings_from_config(item, strings)
-    return strings
+            _collect_template_strings(item, strings)
 
 
 async def async_extract_entities_from_config(
@@ -1682,11 +1693,16 @@ _EXPRESSION_ENDS = frozenset({"block_end", "variable_end"})
 type _Token = tuple[str, str]
 
 
+@lru_cache(maxsize=CACHE_SIZE)
 def _expressions(template_str: str) -> list[list[_Token]]:
     """Return the tokens of each expression in a template, read by Jinja.
 
     Template text around the expressions, comments and whitespace are not in
     them. A template Jinja cannot read has none.
+
+    Every reading of a template starts here, so a template is lexed once
+    rather than once for each thing read from it. What is handed out is
+    shared: read it, never change it.
     """
     expressions: list[list[_Token]] = []
     current: list[_Token] | None = None
@@ -1902,7 +1918,7 @@ def _attribute_pair(
     return None
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def extract_attribute_pairs_from_template(
     template_str: str,
     shadowed: frozenset[str] = frozenset(),
@@ -2174,7 +2190,7 @@ def _comparison_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     return set()
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def extract_state_pairs_from_template(
     template_str: str,
     shadowed: frozenset[str] = frozenset(),
@@ -2274,7 +2290,7 @@ def _compared_trigger_ids(tokens: list[_Token], index: int) -> list[str]:
     return []
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def extract_trigger_ids_from_template(template_str: str) -> frozenset[str]:
     """Return the trigger IDs a template compares `trigger.id` to, literally.
 
@@ -2453,7 +2469,7 @@ def _person_user_id_test(tokens: list[_Token], index: int) -> list[str]:
     return []
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def extract_user_ids_from_template(
     template_str: str, shadowed: frozenset[str] = frozenset()
 ) -> frozenset[str]:
@@ -2586,7 +2602,7 @@ def _listed_devices(expressions: list[list[_Token]], local: set[str]) -> set[str
     return found
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _extract_device_ids_from_template(
     template_str: str, shadowed: frozenset[str] = frozenset()
 ) -> frozenset[str]:
@@ -2656,7 +2672,7 @@ def _looked_up_in_registry(
     return found
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _extract_registry_lookups_from_template(
     template_str: str, kind: str, shadowed: frozenset[str]
 ) -> frozenset[str]:

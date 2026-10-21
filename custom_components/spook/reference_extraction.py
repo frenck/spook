@@ -32,6 +32,7 @@ from homeassistant.const import (
 from homeassistant.core import callback, valid_entity_id
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
+from .configuration_cache import per_configuration
 from .const import LOGGER
 from .entity_filtering import (
     async_template_areas_not_found,
@@ -437,6 +438,7 @@ def _walk(config: Any, targets: ExtractedTargets) -> None:
         _walk(value, targets)
 
 
+@per_configuration
 def extract_targets_from_config(config: Any) -> ExtractedTargets:
     """Extract area, device, floor, and label references from a raw config.
 
@@ -460,7 +462,8 @@ _PAYLOAD_KEYS = _EXCLUDED_KEYS | frozenset({"data", "data_template", "service_da
 VALUE_KEYS = _PAYLOAD_KEYS | frozenset({"for_each"})
 
 
-def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
+@per_configuration
+def without_disabled_steps(config: Any) -> Any:
     """Return a copy of ``config`` without its disabled steps.
 
     A step, trigger or condition carrying ``enabled: false`` is left out of
@@ -469,9 +472,14 @@ def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
     are arbitrary, and a dict in there with an ``enabled`` key of its own is
     not a step.
     """
+    return _without_disabled_steps(config)
+
+
+def _without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
+    """Return a part of a configuration without its disabled steps."""
     if isinstance(config, list):
         return [
-            without_disabled_steps(item, in_payload=in_payload)
+            _without_disabled_steps(item, in_payload=in_payload)
             for item in config
             if in_payload
             or not (isinstance(item, dict) and item.get(CONF_ENABLED) is False)
@@ -480,7 +488,7 @@ def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
         # A single step can also be written without a list, as the value of
         # a key like `actions` or `then`. Parked like that, the key goes.
         return {
-            key: without_disabled_steps(
+            key: _without_disabled_steps(
                 value, in_payload=in_payload or key in VALUE_KEYS
             )
             for key, value in config.items()
@@ -564,6 +572,7 @@ def mentioned_only_in_disabled_steps(config: Any) -> set[str]:
     return _strings_and_pieces(config) - running
 
 
+@per_configuration
 def _strings_and_pieces(config: Any) -> set[str]:
     """Return every string in ``config``, and its lowercased comma pieces."""
     strings: set[str] = set()
@@ -804,6 +813,7 @@ def _walk_attribute_references(
 _NEVER_RENDERED_KEYS = frozenset({"alias", "description", "fields"})
 
 
+@per_configuration
 def without_never_rendered(config: Any) -> Any:
     """Return the configuration without the parts that are never rendered.
 
@@ -811,16 +821,21 @@ def without_never_rendered(config: Any) -> Any:
     action can have a `description` too, like a calendar event. So are the
     items a repeat goes over, which are rendered as a whole.
     """
+    return _without_never_rendered(config)
+
+
+def _without_never_rendered(config: Any) -> Any:
+    """Return a part of a configuration without what is never rendered."""
     if isinstance(config, dict):
         return {
             key: value
             if key in _PAYLOAD_KEYS or key == "for_each"
-            else without_never_rendered(value)
+            else _without_never_rendered(value)
             for key, value in config.items()
             if key not in _NEVER_RENDERED_KEYS
         }
     if isinstance(config, list):
-        return [without_never_rendered(item) for item in config]
+        return [_without_never_rendered(item) for item in config]
     return config
 
 
@@ -860,6 +875,7 @@ def _collect_names(node: Any, names: set[str]) -> None:
             _collect_names(value, names)
 
 
+@per_configuration
 def names_given_to_templates(config: Any) -> frozenset[str]:
     """Return every name a configuration gives its templates.
 
