@@ -100,6 +100,8 @@ But wait, there are more counters! The following sensors are also added:
 
 - Number of areas (`sensor.areas`)
 - Number of automations (`sensor.automations`)
+- Number of disabled automations (`sensor.automations_disabled`)
+- Number of running automations (`sensor.automations_running`)
 - Number of custom integrations in use (`sensor.custom_integrations`)
 - Number of devices (`sensor.devices`)
 - Number of integrations in use (`sensor.integrations`)
@@ -107,6 +109,7 @@ But wait, there are more counters! The following sensors are also added:
 - Number of persons (`sensor.persons`)
 - Number of scenes (`sensor.scenes`)
 - Number of scripts (`sensor.scripts`)
+- Number of running scripts (`sensor.scripts_running`)
 - Number of suns (`sensor.suns`)
 - Number of zones (`sensor.zones`)
 
