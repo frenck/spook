@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import valid_entity_id
 
+from .configuration_cache import per_dashboard_node
 from .dashboard_extraction import javascript_number, javascript_trim
 from .reference_extraction import (
     _attribute_reference,
@@ -495,6 +496,7 @@ def _walk(node: Any, found: _Found, *, is_section: bool = False) -> None:
             _walk(value, found, is_section=key == "sections")
 
 
+@per_dashboard_node
 def extract_names_from_dashboard_node(node: Any) -> DashboardNames:
     """Return the attributes and states named anywhere in a dashboard node.
 
