@@ -45,7 +45,12 @@ from homeassistant.helpers.event import async_call_later, async_track_time_inter
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
-from .attribute_checking import async_unknown_attributes
+from .attribute_checking import (
+    NAMES_THE_STATE_HINT,
+    async_note_attributes,
+    async_unknown_attributes,
+    names_the_state,
+)
 from .attribute_value_checking import as_yaml, async_unknown_attribute_values
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
@@ -76,6 +81,7 @@ from .reference_extraction import (
     NamedReferences,
     async_collect_mentioned_strings,
     async_referencing,
+    config_to_judge,
     extract_attribute_references_from_config,
     extract_state_references_from_config,
 )
@@ -120,6 +126,15 @@ _MIN_MAX_MINIMUM_MEMBERS = 2
 # the worst moment for it. #1898.
 FIRST_INSPECTIONS_SPREAD_OVER = timedelta(minutes=2)
 
+# What an entity registry entry can have written to it that no repair looks
+# at. Integrations write these all day long: a media player's sources, a
+# select's options or a climate entity's modes go in `capabilities` every
+# time they change, along with the features that come with them. None of it
+# changes which entities there are or what they are called, and every one of
+# them had every repair listening to the registry look at the whole house
+# again.
+REGISTRY_CHANGES_NO_REPAIR_LOOKS_AT = frozenset({"capabilities", "supported_features"})
+
 
 def _plural(items: Sized) -> str:
     """Return the plural suffix for a sized collection."""
@@ -129,6 +144,20 @@ def _plural(items: Sized) -> str:
 def _bulleted(items: Iterable[str]) -> str:
     """Return the markdown list a repair puts its findings in."""
     return "\n".join(f"- `{item}`" for item in items)
+
+
+@callback
+def _registry_entry_changed_something_looked_at(
+    event_data: er.EventEntityRegistryUpdatedData,
+) -> bool:
+    """Return whether a registry event is worth another look.
+
+    An entry created or removed always is, and so is any update with more in
+    it than what no repair looks at.
+    """
+    if event_data["action"] != "update":
+        return True
+    return not event_data["changes"].keys() <= REGISTRY_CHANGES_NO_REPAIR_LOOKS_AT
 
 
 def format_config_entry_references(
@@ -348,6 +377,9 @@ class AbstractSpookRepairBase(ABC):
 class AbstractSpookRepair(AbstractSpookRepairBase):
     """Abstract base class to hold a Spook repairs."""
 
+    #: Re-run the inspection when one of these is fired. Entity registry
+    #: updates writing only what no repair looks at are let go, see
+    #: `REGISTRY_CHANGES_NO_REPAIR_LOOKS_AT`.
     inspect_events: set[EventType[Any] | str] | None = None
     inspect_debouncer: Debouncer[Coroutine[Any, Any, None]]
     inspect_config_entry_changed: bool | str = False
@@ -371,10 +403,18 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     #: as a state and nothing else, often well after Home Assistant started.
     inspect_on_entity_added_or_removed: bool = False
 
+    #: Re-run the inspection when an entity gains an attribute it was reported
+    #: without, handed over with `_await_attributes`. A sensor that lost its
+    #: attributes for a while gets them back without anything else that would
+    #: bring a look: no reload, no registry change, and the daily look can be
+    #: a day away. #1995.
+    inspect_when_attributes_appear: bool = False
+
     automatically_clean_up_issues: bool = False
     possible_issue_ids: set[str]
 
     _event_subs: set[Callable[[], None]]
+    _attributes_awaited: dict[str, frozenset[str]]
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
@@ -382,6 +422,21 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self._event_subs = set()
         self.possible_issue_ids = set()
         self._waiting_for_first_inspection = False
+        self._attributes_awaited = {}
+
+    @callback
+    def _await_attributes(self, pairs: Iterable[tuple[str, str]]) -> None:
+        """Remember the (entity ID, attribute) pairs this round reported.
+
+        Replaced every round, so what is fixed or gone is no longer waited on.
+        """
+        awaited: dict[str, set[str]] = {}
+        for entity_id, attribute in pairs:
+            awaited.setdefault(entity_id, set()).add(attribute)
+        self._attributes_awaited = {
+            entity_id: frozenset(attributes)
+            for entity_id, attributes in awaited.items()
+        }
 
     async def _async_inspect_with_cleanup(self) -> None:
         """Run an inspection and clean up issues that are no longer valid."""
@@ -468,7 +523,15 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         if self.inspect_events is not None:
             for event in self.inspect_events:
                 self._event_subs.add(
-                    self.hass.bus.async_listen(event, _async_call_inspect_debouncer),
+                    self.hass.bus.async_listen(
+                        event,
+                        _async_call_inspect_debouncer,
+                        event_filter=(
+                            _registry_entry_changed_something_looked_at
+                            if event == er.EVENT_ENTITY_REGISTRY_UPDATED
+                            else None
+                        ),
+                    ),
                 )
 
         if self.inspect_interval is not None:
@@ -506,6 +569,9 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     event_filter=_entity_added_or_removed,
                 ),
             )
+
+        if self.inspect_when_attributes_appear:
+            self._listen_for_awaited_attributes()
 
         if self.inspect_on_reload:
 
@@ -553,6 +619,48 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     _async_config_entry_changed,
                 ),
             )
+
+    @callback
+    def _listen_for_awaited_attributes(self) -> None:
+        """Look again once an entity gets an attribute this repair waits on."""
+
+        @callback
+        def _an_awaited_attribute_appeared(event_data: Mapping[str, Any]) -> bool:
+            """Return whether an entity just got an attribute it was missing.
+
+            Only the update it shows up in: a sensor that updates every second
+            must not bring a look, and the recorder question that comes with
+            it, each time.
+            """
+            awaited = self._attributes_awaited.get(event_data["entity_id"])
+            if awaited is None or (new_state := event_data.get("new_state")) is None:
+                return False
+
+            old_state = event_data.get("old_state")
+            had = old_state.attributes if old_state is not None else {}
+            return any(
+                attribute in new_state.attributes and attribute not in had
+                for attribute in awaited
+            )
+
+        @callback
+        def _async_attribute_appeared(event: Event) -> None:
+            # Noted right away: it may be gone again by the time the look
+            # comes, before the recorder has written it down.
+            async_note_attributes(
+                self.hass,
+                event.data["entity_id"],
+                event.data["new_state"].attributes,
+            )
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _async_attribute_appeared,
+                event_filter=_an_awaited_attribute_appeared,
+            ),
+        )
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""
@@ -785,6 +893,9 @@ class AbstractSpookUnknownEntityNamesRepair(
     #: How one finding reads in the issue, with ``{name}`` and ``{entity_id}``.
     finding_line: str
 
+    #: Whether the names are attributes, which can be the state by another name.
+    names_attributes: bool = False
+
     _unknown_by_owner: dict[str, set[str]]
     _unknown_by_reference: dict[str, _UnknownName]
     _inspected_configs: dict[str, Any]
@@ -849,7 +960,7 @@ class AbstractSpookUnknownEntityNamesRepair(
         """
         named = self._named.get(entity.entity_id)
         if named is None or named[0] is not config:
-            named = (config, self._references_in(config))
+            named = (config, self._references_in(config_to_judge(entity, config)))
         self._named[entity.entity_id] = named
         references = named[1]
 
@@ -908,6 +1019,12 @@ class AbstractSpookUnknownEntityNamesRepair(
             {pair for pairs in named.values() for pair in pairs}
         )
         by_pair = {(finding.entity_id, finding.name): finding for finding in unknown}
+        if self.inspect_when_attributes_appear:
+            self._await_attributes(
+                (finding.entity_id, finding.name)
+                for finding in unknown
+                if isinstance(finding.name, str)
+            )
 
         self._inspected_configs = configs
         self._unknown_by_reference = {
@@ -971,6 +1088,12 @@ class AbstractSpookUnknownEntityNamesRepair(
                 line = self.finding_line.format(name=name, entity_id=finding.entity_id)
             if finding.suggestion is not None:
                 line += f" (did you mean `{finding.suggestion}`?)"
+            elif (
+                self.names_attributes
+                and isinstance(name, str)
+                and names_the_state(finding.entity_id, name)
+            ):
+                line += f" ({NAMES_THE_STATE_HINT})"
             lines.append(line)
         return "\n".join(lines)
 
@@ -980,6 +1103,8 @@ class AbstractSpookUnknownAttributesRepair(AbstractSpookUnknownEntityNamesRepair
 
     reference_label = "attributes"
     finding_line = "- `{name}` of `{entity_id}`"
+    names_attributes = True
+    inspect_when_attributes_appear = True
 
     def _references_in(self, config: dict[str, Any]) -> NamedReferences:
         """Return the attributes a configuration names, and of which entities."""

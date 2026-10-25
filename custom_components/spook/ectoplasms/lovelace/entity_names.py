@@ -17,7 +17,11 @@ from homeassistant.components.lovelace import DOMAIN
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
 from homeassistant.helpers import entity_registry as er
 
-from ...attribute_checking import async_unknown_attributes
+from ...attribute_checking import (
+    NAMES_THE_STATE_HINT,
+    async_unknown_attributes,
+    names_the_state,
+)
 from ...const import LOGGER
 from ...dashboard_names import (
     DashboardNames,
@@ -99,6 +103,9 @@ class AbstractSpookDashboardEntityNamesRepair(AbstractSpookRepair, ABC):
     #: How one finding reads in the issue, with `{name}` and `{entity_id}`.
     finding_line: str
 
+    #: Whether the names are attributes, which can be the state by another name.
+    names_attributes: bool = False
+
     _dashboards: dict[str | None, LovelaceStorage | LovelaceYAML]
 
     @abstractmethod
@@ -121,6 +128,8 @@ class AbstractSpookDashboardEntityNamesRepair(AbstractSpookRepair, ABC):
             line = self.finding_line.format(name=name, entity_id=entity_id)
             if (suggestion := unknown[entity_id, name]) is not None:
                 line += f" (did you mean `{suggestion}`?)"
+            elif self.names_attributes and names_the_state(entity_id, name):
+                line += f" ({NAMES_THE_STATE_HINT})"
             lines.append(line)
         return "\n".join(lines)
 
@@ -154,6 +163,8 @@ class AbstractSpookDashboardEntityNamesRepair(AbstractSpookRepair, ABC):
                 for pair in group
             }
         )
+        if self.inspect_when_attributes_appear:
+            self._await_attributes(unknown)
 
         async for dashboard, url_path, config in async_dashboard_configs(
             self._dashboards
@@ -217,6 +228,8 @@ class AbstractSpookDashboardAttributesRepair(AbstractSpookDashboardEntityNamesRe
 
     reference_label = "attributes"
     finding_line = "- `{name}` of `{entity_id}`"
+    names_attributes = True
+    inspect_when_attributes_appear = True
 
     def _groups(self, names: DashboardNames) -> frozenset[Group]:
         """Return the attribute groups."""

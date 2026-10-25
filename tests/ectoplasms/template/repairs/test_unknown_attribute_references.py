@@ -216,6 +216,72 @@ async def test_attribute_never_had_is_reported(
 
 
 @pytest.mark.usefixtures("recorder_mock")
+async def test_an_attribute_coming_back_brings_a_look(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the entity having the attribute again brings a look. #1995.
+
+    Only that brings a look: an update that still lacks it does not, or a
+    sensor updating every second would have the recorder asked each time.
+    """
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_wait_recording_done(hass)
+    entry = _sensor(hass, "{{ state_attr('light.kitchen', 'wobble') }}")
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+    assert _issue(issue_registry, entry)
+
+    looks: list[None] = []
+    repair.inspect_debouncer.async_schedule_call = lambda: looks.append(None)
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200})
+    await hass.async_block_till_done()
+    assert not looks
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200, "wobble": 1})
+    await hass.async_block_till_done()
+    assert len(looks) == 1
+
+    # Still there in the next update: that is no news.
+    hass.states.async_set("light.kitchen", "on", {"brightness": 100, "wobble": 1})
+    await hass.async_block_till_done()
+    assert len(looks) == 1
+    await repair.async_deactivate()
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_an_attribute_there_only_for_a_moment_still_counts(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an attribute gone again before the look is not reported again.
+
+    The look comes a little later, and the recorder may not have written the
+    state that had it yet.
+    """
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_wait_recording_done(hass)
+    entry = _sensor(hass, "{{ state_attr('light.kitchen', 'wobble') }}")
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+    assert _issue(issue_registry, entry)
+    repair.inspect_debouncer.async_schedule_call = lambda: None
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255, "wobble": 1})
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await hass.async_block_till_done()
+
+    # Noted as seen, which is what counts as known from then on, whatever
+    # the recorder has written down by the time of the look.
+    knowledge = hass.data[attribute_checking.DATA_ATTRIBUTE_KNOWLEDGE]
+    assert "wobble" in knowledge["light.kitchen"].seen
+    await repair.async_deactivate()
+
+
+@pytest.mark.usefixtures("recorder_mock")
 async def test_attribute_only_in_history_is_fine(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

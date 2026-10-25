@@ -595,7 +595,12 @@ def async_drop_existing_action_names(
 # easy-layout-card hands mini-graph-card `this.entity_id1`, `this.entity_id2`
 # and so on, one per entity. Anything starting with these is the same variable
 # with a number on it, and no domain ever will be. #1606.
-NEVER_AN_ENTITY_PREFIXES = ("trigger.entity_id", "this.entity_id")
+#
+# `browser_entities` is browser_mod's: a dictionary of the entities of the
+# browser looking at the dashboard, only there in its own cards, frontend
+# templates and browser calls. `browser_entities.browserID` reads like an
+# entity ID, and is the browser's own sensor, whichever browser it is. #1982.
+NEVER_AN_ENTITY_PREFIXES = ("trigger.entity_id", "this.entity_id", "browser_entities.")
 
 
 @callback

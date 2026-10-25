@@ -19,7 +19,7 @@ from .entity_filtering import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Collection, Iterable
 
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er
@@ -34,11 +34,16 @@ async def async_describe_unknown_entities(
     entity_ids: Iterable[str],
     *,
     note: str | None = None,
+    referenced_by: Collection[str] = (),
 ) -> str:
     """Return a bulleted, enriched description of unknown entity IDs.
 
     A ``note`` is appended to every line, to qualify a group of entity IDs
     that share something worth saying once per entry.
+
+    ``referenced_by`` holds the entity IDs of whatever references these,
+    which are never suggested: a template sensor told it meant itself is
+    no help. #1967.
 
     The rename suggestions are worked out in a thread first. Every repair
     describing what it found called the inline version, and each of those
@@ -48,7 +53,9 @@ async def async_describe_unknown_entities(
     """
     entity_ids = list(entity_ids)
     await async_warm_rename_suggestions(hass, entity_ids)
-    return async_describe_warmed_unknown_entities(hass, entity_ids, note=note)
+    return async_describe_warmed_unknown_entities(
+        hass, entity_ids, note=note, referenced_by=referenced_by
+    )
 
 
 def async_describe_warmed_unknown_entities(
@@ -56,6 +63,7 @@ def async_describe_warmed_unknown_entities(
     entity_ids: Iterable[str],
     *,
     note: str | None = None,
+    referenced_by: Collection[str] = (),
 ) -> str:
     """Describe unknown entity IDs whose suggestions were worked out already.
 
@@ -71,7 +79,13 @@ def async_describe_warmed_unknown_entities(
 
     return "\n".join(
         f"- `{entity_id}`"
-        + _detail(entity_id, deleted_by_entity_id, known_by_domain, suggestions)
+        + _detail(
+            entity_id,
+            deleted_by_entity_id,
+            known_by_domain,
+            suggestions,
+            referenced_by,
+        )
         + suffix
         for entity_id in entity_ids
     )
@@ -82,13 +96,17 @@ def _detail(
     deleted_by_entity_id: dict[str, er.DeletedRegistryEntry],
     known_by_domain: dict[str, list[str]],
     suggestions: dict[str, str | None],
+    referenced_by: Collection[str],
 ) -> str:
     """Return the trailing detail for a single unknown entity ID."""
     if (deleted := deleted_by_entity_id.get(entity_id)) is not None:
         when = deleted.modified_at.date().isoformat()
         return f" (deleted on {when}, was provided by `{deleted.platform}`)"
 
-    if (match := _rename_suggestion(entity_id, known_by_domain, suggestions)) is None:
+    # The suggestion is shared by every repair, so it is only here, where it
+    # is known who references the entity, that pointing at itself shows.
+    match = _rename_suggestion(entity_id, known_by_domain, suggestions)
+    if match is None or match in referenced_by:
         return ""
 
     return f" (did you mean `{match}`?)"

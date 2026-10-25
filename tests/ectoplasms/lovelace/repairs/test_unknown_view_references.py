@@ -150,8 +150,17 @@ async def test_fixing_the_path_clears_the_issue(
             "cards": [_navigating("/lovelace/attic")],
         },
         {"type": "area", "area": "kitchen", "navigation_path": "/lovelace/attic"},
+        {
+            "type": "custom:mediocre-massive-media-player-card",
+            "action": {
+                "tap_action": {
+                    "action": "navigate",
+                    "navigation_path": "/lovelace/attic",
+                },
+            },
+        },
     ],
-    ids=["hold-action", "custom-card-key", "nested", "area-card"],
+    ids=["hold-action", "custom-card-key", "nested", "area-card", "action-not-text"],
 )
 async def test_navigation_anywhere_on_a_card_is_read(
     hass: HomeAssistant,

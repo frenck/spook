@@ -295,6 +295,38 @@ async def test_attribute_never_had_is_reported_from_history(
 
 
 @pytest.mark.usefixtures("recorder_mock")
+async def test_an_attribute_coming_back_brings_a_look(
+    hass: HomeAssistant, issue_registry: ir.IssueRegistry
+) -> None:
+    """Test the entity gaining the attribute brings a look, and only that. #1995."""
+    _kitchen_light(hass)
+    await async_wait_recording_done(hass)
+    hass.data["lovelace"] = SimpleNamespace(
+        dashboards={
+            "lovelace": dashboard(
+                {"type": "entity", "entity": "light.kitchen", "attribute": "colour"}
+            )
+        }
+    )
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+    assert async_issue_about(issue_registry, ISSUE)
+
+    looks: list[None] = []
+    repair.inspect_debouncer.async_schedule_call = lambda: looks.append(None)
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200})
+    await hass.async_block_till_done()
+    assert not looks
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200, "colour": "red"})
+    await hass.async_block_till_done()
+    assert len(looks) == 1
+    await repair.async_deactivate()
+
+
+@pytest.mark.usefixtures("recorder_mock")
 async def test_attribute_only_in_history_is_fine(
     hass: HomeAssistant, issue_registry: ir.IssueRegistry
 ) -> None:

@@ -37,7 +37,7 @@ from homeassistant.const import (
     EntityCapabilityAttribute,
     EntityStateAttribute,
 )
-from homeassistant.core import split_entity_id
+from homeassistant.core import callback, split_entity_id
 from homeassistant.helpers.recorder import (
     DATA_INSTANCE,
     async_migration_in_progress,
@@ -106,6 +106,15 @@ MOST_ATTRIBUTE_SETS_PER_ENTITY: Final = 1000
 _SHORTEST_NAME_TO_CORRECT = 5
 
 _SEPARATORS = re.compile(r"[\s_-]+")
+
+# Attributes somebody names that are the entity's state itself. A climate
+# entity is in its HVAC mode, and has no attribute for it; the one closest
+# by name, `hvac_modes`, is the list of modes it can be in, which is never
+# what was meant. #1973.
+_THE_STATE_BY_ANOTHER_NAME: Final = {"climate": frozenset({"hvac_mode"})}
+
+#: Said of an attribute that is the state itself, in place of a suggestion.
+NAMES_THE_STATE_HINT: Final = "that is its state, not an attribute"
 
 DATA_DOMAIN_ATTRIBUTES: HassKey[dict[str, frozenset[str]]] = HassKey(
     "spook_domain_attributes"
@@ -246,6 +255,14 @@ def _one_edit_apart(name: str, other: str) -> bool:
     while index < len(shorter) and shorter[index] == longer[index]:
         index += 1
     return shorter[index:] == longer[index + 1 :]
+
+
+def names_the_state(entity_id: str, attribute: str) -> bool:
+    """Return whether an attribute somebody named is the entity's state."""
+    domain, _ = split_entity_id(entity_id)
+    return attribute.casefold() == "state" or attribute in (
+        _THE_STATE_BY_ANOTHER_NAME.get(domain, frozenset())
+    )
 
 
 def suggest_name(name: str, known: Iterable[str]) -> str | None:
@@ -403,6 +420,18 @@ def _knowledge(hass: HomeAssistant, entity_id: str) -> _Knowledge:
     if (knowledge := known.get(entity_id)) is None:
         knowledge = known[entity_id] = _Knowledge()
     return knowledge
+
+
+@callback
+def async_note_attributes(
+    hass: HomeAssistant, entity_id: str, keys: Iterable[str]
+) -> None:
+    """Note attributes an entity showed, outside of any look at it.
+
+    One that shows up and is gone again before the next look still counts,
+    even when the recorder has not written it down yet.
+    """
+    _knowledge(hass, entity_id).see(keys)
 
 
 async def _async_ask_the_recorder(
@@ -598,7 +627,11 @@ async def _async_findings(
             UnknownAttribute(
                 entity_id=entity_id,
                 attribute=attribute,
-                suggestion=suggest_name(attribute, look.known),
+                suggestion=(
+                    None
+                    if names_the_state(entity_id, attribute)
+                    else suggest_name(attribute, look.known)
+                ),
             )
             for attribute in look.unknown
             if (

@@ -22,6 +22,8 @@ from custom_components.spook.ectoplasms.automation.repairs.unknown_attribute_ref
 from tests.repair_helpers import async_issue_about, async_setup_template_automation
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
@@ -65,6 +67,92 @@ async def _automation(hass: HomeAssistant, attribute: str, **extra: Any) -> None
         },
     )
     await hass.async_block_till_done()
+
+
+SWITCHED_BLUEPRINT = """
+blueprint:
+  name: Kitchen light
+  domain: automation
+  input:
+    light:
+      selector:
+        entity:
+    source:
+      default: brightness
+trigger_variables:
+  source: !input source
+triggers:
+  - trigger: state
+    entity_id: !input light
+    attribute: brightness
+    enabled: "{{ source == 'brightness' }}"
+  - trigger: state
+    entity_id: !input light
+    attribute: wobble
+    enabled: "{{ source == 'wobble' }}"
+actions: []
+"""
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_what_a_blueprint_switches_off_is_not_judged(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    tmp_path: Path,
+) -> None:
+    """Test a blueprint's trigger picked away by an input is left alone.
+
+    The blueprint offers two triggers and attaches the one its input picks.
+    The other watches an attribute this light never had, and nobody
+    using the blueprint can edit it. Issue #1986.
+    """
+    hass.config.config_dir = str(tmp_path)
+    blueprint = tmp_path / "blueprints" / "automation" / "frenck" / "kitchen.yaml"
+    blueprint.parent.mkdir(parents=True)
+    blueprint.write_text(SWITCHED_BLUEPRINT, encoding="utf-8")
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_wait_recording_done(hass)
+
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "use_blueprint": {
+                        "path": "frenck/kitchen.yaml",
+                        "input": {"light": "light.kitchen"},
+                    },
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get("automation.haunted").state == "on"
+
+    await SpookRepair(hass).async_inspect()
+
+    assert not async_issue_about(issue_registry, ISSUE)
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_what_somebody_switches_with_a_template_is_still_judged(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the same trigger written by hand is still reported.
+
+    Whoever wrote the template can fix what it guards.
+    """
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_wait_recording_done(hass)
+    await _automation(hass, "wobble", enabled="{{ false }}")
+
+    await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, ISSUE)
 
 
 async def test_case_only_is_reported_without_a_recorder(
@@ -122,6 +210,79 @@ async def test_attribute_never_had_is_reported(
     assert issue.translation_placeholders["attributes"] == (
         "- `wobble` of `light.kitchen`"
     )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_the_state_by_another_name_says_so(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test `hvac_mode` is called the state, not taken for `hvac_modes`.
+
+    A climate entity is in its HVAC mode. The list of modes is one letter
+    away, and never what was meant. Issue #1973.
+    """
+    hass.states.async_set(
+        "climate.bedroom_ac", "cool", {"hvac_modes": ["off", "cool", "dry"]}
+    )
+    await async_wait_recording_done(hass)
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "triggers": [
+                        {
+                            "trigger": "state",
+                            "entity_id": "climate.bedroom_ac",
+                            "attribute": "hvac_mode",
+                        }
+                    ],
+                    "actions": [],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["attributes"] == (
+        "- `hvac_mode` of `climate.bedroom_ac` (that is its state, not an attribute)"
+    )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_an_attribute_coming_back_brings_a_look(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the entity gaining the attribute brings a look, and only that."""
+    hass.states.async_set("light.kitchen", "on", {"brightness": 255})
+    await async_wait_recording_done(hass)
+    await _automation(hass, "wobble")
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+    assert async_issue_about(issue_registry, ISSUE)
+
+    looks: list[None] = []
+    repair.inspect_debouncer.async_schedule_call = lambda: looks.append(None)
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200})
+    await hass.async_block_till_done()
+    assert not looks
+
+    hass.states.async_set("light.kitchen", "on", {"brightness": 200, "wobble": 1})
+    await hass.async_block_till_done()
+    assert len(looks) == 1
+    await repair.async_deactivate()
 
 
 @pytest.mark.usefixtures("recorder_mock")
