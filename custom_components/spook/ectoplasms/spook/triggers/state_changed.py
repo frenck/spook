@@ -10,9 +10,11 @@ import voluptuous as vol
 from homeassistant.const import (
     CONF_ATTRIBUTE,
     CONF_DELAY,
+    CONF_ENTITY_CATEGORY,
     CONF_FOR,
     CONF_OPTIONS,
     CONF_TARGET,
+    ENTITY_CATEGORIES,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
@@ -55,6 +57,7 @@ CONF_DOMAIN = "domain"
 CONF_EXCLUDE_CONFIG_ENTRY = "exclude_config_entry"
 CONF_EXCLUDE_DEVICE_CLASS = "exclude_device_class"
 CONF_EXCLUDE_DOMAIN = "exclude_domain"
+CONF_EXCLUDE_ENTITY_CATEGORY = f"exclude_{CONF_ENTITY_CATEGORY}"
 CONF_EXCLUDE_INTEGRATION = "exclude_integration"
 CONF_EXCLUDE_TARGET = "exclude_target"
 CONF_FROM = "from"
@@ -79,6 +82,10 @@ _EXCLUDE_TARGET_SCHEMA = vol.Schema(cv.TARGET_FIELDS)
 # Values are compared as text, because that is what the editor hands over. A
 # brightness of 255 and a "255" typed into a field are the same thing.
 _VALUES = vol.All(cv.ensure_list, [cv.string])
+
+# HA's ENTITY_CATEGORIES list augmented with a label for the default primary
+# entity category (eg. when the entity does not have an entity category)
+_EXTENTED_ENTITY_CATEGORIES = ["primary", *ENTITY_CATEGORIES]
 
 
 def _no_contradictions(options: dict[str, Any]) -> dict[str, Any]:
@@ -136,11 +143,17 @@ _OPTIONS_SCHEMA = vol.All(
             vol.Optional(CONF_INTEGRATION): _VALUES,
             vol.Optional(CONF_CONFIG_ENTRY): _VALUES,
             vol.Optional(CONF_DEVICE_CLASS): _VALUES,
+            vol.Optional(CONF_ENTITY_CATEGORY, default=["primary"]): [
+                vol.In(_EXTENTED_ENTITY_CATEGORIES)
+            ],
             vol.Optional(CONF_EXCLUDE_TARGET): _EXCLUDE_TARGET_SCHEMA,
             vol.Optional(CONF_EXCLUDE_DOMAIN): _VALUES,
             vol.Optional(CONF_EXCLUDE_INTEGRATION): _VALUES,
             vol.Optional(CONF_EXCLUDE_CONFIG_ENTRY): _VALUES,
             vol.Optional(CONF_EXCLUDE_DEVICE_CLASS): _VALUES,
+            vol.Optional(CONF_EXCLUDE_ENTITY_CATEGORY): [
+                vol.In(_EXTENTED_ENTITY_CATEGORIES)
+            ],
             vol.Optional(CONF_ATTRIBUTE): cv.string,
             vol.Optional(CONF_FROM): _VALUES,
             vol.Optional(CONF_NOT_FROM): _VALUES,
@@ -220,6 +233,7 @@ class _EntityFilter:
     integrations: frozenset[str] = frozenset()
     config_entries: frozenset[str] = frozenset()
     device_classes: frozenset[str] = frozenset()
+    entity_categories: frozenset[str | None] = frozenset()
 
     @classmethod
     def from_options(cls, options: dict[str, Any], prefix: str = "") -> _EntityFilter:
@@ -229,6 +243,9 @@ class _EntityFilter:
             integrations=frozenset(options.get(f"{prefix}{CONF_INTEGRATION}", [])),
             config_entries=frozenset(options.get(f"{prefix}{CONF_CONFIG_ENTRY}", [])),
             device_classes=frozenset(options.get(f"{prefix}{CONF_DEVICE_CLASS}", [])),
+            entity_categories=frozenset(
+                options.get(f"{prefix}{CONF_ENTITY_CATEGORY}", [])
+            ),
         )
 
     @property
@@ -257,7 +274,7 @@ class _EntityFilter:
     def _passes(self, entity_id: str, entry: er.RegistryEntry | None) -> bool:
         """Return whether one entity passes every list that was given.
 
-        Integration, entry and device class come from the entity registry,
+        Integration, entry, device class and entity category come from the entity registry,
         because a change there is what makes the target look again. An entity
         without a registry entry has none of them, so it never passes those.
         Reading the device class from its state instead would be a filter that
@@ -276,11 +293,20 @@ class _EntityFilter:
         ):
             return False
 
-        return not self.device_classes or (
-            entry is not None
-            and (entry.device_class or entry.original_device_class)
-            in self.device_classes
-        )
+        if self.device_classes and (
+            entry is None
+            or (entry.device_class or entry.original_device_class)
+            not in self.device_classes
+        ):
+            return False
+
+        if self.entity_categories:
+            category = entry.entity_category if entry is not None else None
+            cat_str = category.value if category is not None else "primary"
+            if cat_str not in self.entity_categories:
+                return False
+
+        return True
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -483,23 +509,28 @@ class _StateWatcher(StateChangeWatcher):
     def _everything(self) -> set[str]:
         """Return everything the include lists can pick from.
 
-        The primary entities in the registry, as a target through a device
-        or area would give, and the entities without a registry entry, which
-        only a domain can pick. Those are found when the registry changes,
-        not the moment their first state is written.
+        If entity_category or exclude_entity_category is specified in options,
+        returns all entities in the registry. Otherwise, returns primary
+        entities (where entry.entity_category is None) and unregistered entities.
         """
         registry = er.async_get(self._hass)
-        primary = {
-            entity_id
-            for entity_id, entry in registry.entities.items()
-            if entry.entity_category is None
-        }
+        has_category_option = bool(self._settings.include.entity_categories) or bool(
+            self._settings.exclude.entity_categories
+        )
+        if has_category_option:
+            registered = set(registry.entities.keys())
+        else:
+            registered = {
+                entity_id
+                for entity_id, entry in registry.entities.items()
+                if entry.entity_category is None
+            }
         unregistered = {
             entity_id
             for entity_id in self._hass.states.async_entity_ids()
             if entity_id not in registry.entities
         }
-        return primary | unregistered
+        return registered | unregistered
 
     @callback
     def _handle_entities_update(self, tracked_entities: set[str]) -> None:
