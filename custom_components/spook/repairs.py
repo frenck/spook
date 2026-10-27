@@ -599,17 +599,48 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             )
 
         if self.inspect_config_entry_changed:
+            # What an entry holds decides whether a change is a reason to
+            # look again. UPDATED also fires on bare state transitions: an
+            # entry stuck retrying its setup re-fires it on every attempt,
+            # minutes apart for days on end, and each one used to send
+            # every repair listening here through a full inspection. #2034.
+            config_entry_fingerprints: dict[str, str] = {}
 
-            async def _async_config_entry_changed(  # pylint: disable=unused-argument
-                change: ConfigEntryChange,  # noqa: ARG001
+            async def _async_config_entry_changed(
+                change: ConfigEntryChange,
                 entry: ConfigEntry,
             ) -> None:
-                """Handle options update."""
+                """Handle a changed config entry."""
                 if (
                     self.inspect_config_entry_changed is not True
                     and entry.domain != self.inspect_config_entry_changed
                 ):
                     return
+                if change == ConfigEntryChange.UPDATED:
+                    # Subentries ride along on UPDATED too: adding,
+                    # changing or removing one leaves data and options
+                    # untouched, so they go into the fingerprint as well.
+                    fingerprint = hashlib.sha256(
+                        json.dumps(
+                            {
+                                "data": dict(entry.data),
+                                "options": dict(entry.options),
+                                "subentries": {
+                                    subentry_id: dict(subentry.data)
+                                    for subentry_id, subentry in sorted(
+                                        entry.subentries.items()
+                                    )
+                                },
+                            },
+                            sort_keys=True,
+                            default=str,
+                        ).encode()
+                    ).hexdigest()
+                    if config_entry_fingerprints.get(entry.entry_id) == fingerprint:
+                        return
+                    config_entry_fingerprints[entry.entry_id] = fingerprint
+                elif change == ConfigEntryChange.REMOVED:
+                    config_entry_fingerprints.pop(entry.entry_id, None)
                 await self.inspect_debouncer.async_call()
 
             self._event_subs.add(
