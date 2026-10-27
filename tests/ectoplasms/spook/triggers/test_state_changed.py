@@ -1069,13 +1069,20 @@ async def test_picking_by_entity_category(
     # Filter for all config and primary
     for entry in (primary, diagnostic, config):
         await _set(hass, entry.entity_id, "off")
-    handed_all, unsub_all= await _attach(
-        hass, NO_TARGET, device_class=["door"], entity_category=["config", "primary", "diagnostic"]
+    handed_all, unsub_all = await _attach(
+        hass,
+        NO_TARGET,
+        device_class=["door"],
+        entity_category=["config", "primary", "diagnostic"],
     )
     for entry in (primary, diagnostic, config):
         await _set(hass, entry.entity_id, "on")
     unsub_all()
-    assert _fired_for(handed_all) == [primary.entity_id, diagnostic.entity_id, config.entity_id]
+    assert _fired_for(handed_all) == [
+        primary.entity_id,
+        diagnostic.entity_id,
+        config.entity_id,
+    ]
 
 
 async def test_picking_by_update_domain(
