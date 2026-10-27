@@ -10,10 +10,18 @@ from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+)
 
+from homeassistant.config_entries import (
+    SIGNAL_CONFIG_ENTRY_CHANGED,
+    ConfigEntryChange,
+)
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from custom_components.spook import repairs
@@ -27,12 +35,15 @@ import pytest
 
 EXPECTED_UNSUBSCRIBE_COUNT = 4
 EXPECTED_INTERVAL_INSPECTIONS = 2
+EXPECTED_UNCHANGED_INSPECTIONS = 2
+EXPECTED_CHANGED_INSPECTIONS = 3
+EXPECTED_SUBENTRY_INSPECTIONS = 4
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from freezegun.api import FrozenDateTimeFactory
-    from homeassistant.config_entries import ConfigEntry, ConfigEntryChange
+    from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
 
@@ -187,6 +198,79 @@ async def test_inspect_interval_reinspects_over_time(
     await hass.async_block_till_done()
     await _flush_debouncer(hass, freezer)
     assert repair.inspections == EXPECTED_INTERVAL_INSPECTIONS
+
+
+async def test_config_entry_update_without_changes_skips_inspection(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A config entry that only changed state is no reason to look again.
+
+    UPDATED fires on bare state transitions too, like every attempt of a
+    setup that keeps failing, and each one used to run a full inspection.
+    #2034.
+    """
+    entry = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    repair = MockRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    # The first UPDATED gets a look: what it holds may really have changed.
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # The same data again, like a setup retry firing, gets none.
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # New data on the same entry is a real change, and does get one.
+    changed = MockConfigEntry(
+        domain="mock",
+        data={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, changed
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_CHANGED_INSPECTIONS
+
+    # A changed subentry leaves data and options alone but rides along on
+    # UPDATED, and does get a look too.
+    with_subentry = MockConfigEntry(
+        domain="mock",
+        data={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+        subentries_data=[
+            {
+                "subentry_id": "fedcba9876543210fedcba9876543210",
+                "subentry_type": "test",
+                "title": "Sub",
+                "data": {"sub": "data"},
+            },
+        ],
+    )
+    async_dispatcher_send(
+        hass,
+        SIGNAL_CONFIG_ENTRY_CHANGED,
+        ConfigEntryChange.UPDATED,
+        with_subentry,
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    await repair.async_deactivate()
 
 
 async def test_unloading_leaves_the_issue_registry_alone(
