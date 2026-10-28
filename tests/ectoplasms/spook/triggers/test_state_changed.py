@@ -675,6 +675,38 @@ async def test_through_an_area_only_primary_entities_count(
     assert _fired_for(handed) == [door.entity_id]
 
 
+@pytest.mark.parametrize("kind", ["area_id", "device_id"])
+async def test_category_filter_includes_indirectly_targeted_config_entities(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    device_registry: dr.DeviceRegistry,
+    entity_registry: er.EntityRegistry,
+    kind: str,
+) -> None:
+    """Category filters can select config entities reached through a target."""
+    device_id, area_id, entry = _device_in_area(hass, device_registry, area_registry)
+    update = entity_registry.async_get_or_create(
+        "update",
+        "demo",
+        "kitchen",
+        device_id=device_id,
+        config_entry=entry,
+        entity_category=EntityCategory.CONFIG,
+    )
+    await _set(hass, update.entity_id, "off")
+
+    handed, unsub = await _attach(
+        hass,
+        {kind: area_id if kind == "area_id" else device_id},
+        entity_category=["config"],
+    )
+
+    await _set(hass, update.entity_id, "on")
+    unsub()
+
+    assert _fired_for(handed) == [update.entity_id]
+
+
 async def test_a_diagnostic_entity_named_directly_counts(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,

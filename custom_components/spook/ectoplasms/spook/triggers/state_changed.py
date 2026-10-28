@@ -256,22 +256,43 @@ class _EntityFilter:
             or self.integrations
             or self.config_entries
             or self.device_classes
+            or self.entity_categories
         )
 
     @callback
-    def keep(self, hass: HomeAssistant, entity_ids: Iterable[str]) -> set[str]:
+    def keep(
+        self,
+        hass: HomeAssistant,
+        entity_ids: Iterable[str],
+        *,
+        include_entity_categories: bool = True,
+    ) -> set[str]:
         """Return the entities that pass every list that was given."""
-        if self.is_empty:
+        entity_categories = (
+            self.entity_categories if include_entity_categories else frozenset()
+        )
+        if not (
+            self.domains
+            or self.integrations
+            or self.config_entries
+            or self.device_classes
+            or entity_categories
+        ):
             return set(entity_ids)
 
         registry = er.async_get(hass)
         return {
             entity_id
             for entity_id in entity_ids
-            if self._passes(entity_id, registry.async_get(entity_id))
+            if self._passes(entity_id, registry.async_get(entity_id), entity_categories)
         }
 
-    def _passes(self, entity_id: str, entry: er.RegistryEntry | None) -> bool:
+    def _passes(
+        self,
+        entity_id: str,
+        entry: er.RegistryEntry | None,
+        entity_categories: frozenset[str | None],
+    ) -> bool:
         """Return whether one entity passes every list that was given.
 
         Integration, entry, device class and entity category come from the entity registry,
@@ -300,10 +321,10 @@ class _EntityFilter:
         ):
             return False
 
-        if self.entity_categories:
+        if entity_categories:
             category = entry.entity_category if entry is not None else None
             cat_str = category.value if category is not None else "primary"
-            if cat_str not in self.entity_categories:
+            if cat_str not in entity_categories:
                 return False
 
         return True
@@ -470,7 +491,15 @@ class _StateWatcher(StateChangeWatcher):
         self._states: dict[str, State | None] = {}
         self._waiting: dict[str, _Waiting] = {}
         self._picking = not target_selection.has_any_target
-        super().__init__(hass, target_selection, entity_filter=self._wanted)
+        super().__init__(
+            hass,
+            target_selection,
+            entity_filter=self._wanted,
+            primary_entities_only=not (
+                settings.include.entity_categories - {"primary"}
+                or settings.exclude.entity_categories
+            ),
+        )
 
     @callback
     def watched(self) -> set[str]:
@@ -488,7 +517,13 @@ class _StateWatcher(StateChangeWatcher):
         settings = self._settings
         if self._picking:
             entity_ids = self._everything()
-        included = settings.include.keep(self._hass, entity_ids)
+        included = settings.include.keep(
+            self._hass,
+            entity_ids,
+            include_entity_categories=(
+                self._picking or settings.include.entity_categories != {"primary"}
+            ),
+        )
 
         if settings.exclude_target:
             selected = async_extract_referenced_entity_ids(
