@@ -143,9 +143,7 @@ _OPTIONS_SCHEMA = vol.All(
             vol.Optional(CONF_INTEGRATION): _VALUES,
             vol.Optional(CONF_CONFIG_ENTRY): _VALUES,
             vol.Optional(CONF_DEVICE_CLASS): _VALUES,
-            vol.Optional(CONF_ENTITY_CATEGORY, default=["primary"]): [
-                vol.In(_EXTENTED_ENTITY_CATEGORIES)
-            ],
+            vol.Optional(CONF_ENTITY_CATEGORY): [vol.In(_EXTENTED_ENTITY_CATEGORIES)],
             vol.Optional(CONF_EXCLUDE_TARGET): _EXCLUDE_TARGET_SCHEMA,
             vol.Optional(CONF_EXCLUDE_DOMAIN): _VALUES,
             vol.Optional(CONF_EXCLUDE_INTEGRATION): _VALUES,
@@ -234,18 +232,21 @@ class _EntityFilter:
     config_entries: frozenset[str] = frozenset()
     device_classes: frozenset[str] = frozenset()
     entity_categories: frozenset[str | None] = frozenset()
+    entity_categories_explicit: bool = False
 
     @classmethod
     def from_options(cls, options: dict[str, Any], prefix: str = "") -> _EntityFilter:
         """Build the filter from the options, with or without `exclude_`."""
+        entity_category_key = f"{prefix}{CONF_ENTITY_CATEGORY}"
         return cls(
             domains=frozenset(options.get(f"{prefix}{CONF_DOMAIN}", [])),
             integrations=frozenset(options.get(f"{prefix}{CONF_INTEGRATION}", [])),
             config_entries=frozenset(options.get(f"{prefix}{CONF_CONFIG_ENTRY}", [])),
             device_classes=frozenset(options.get(f"{prefix}{CONF_DEVICE_CLASS}", [])),
             entity_categories=frozenset(
-                options.get(f"{prefix}{CONF_ENTITY_CATEGORY}", [])
+                options.get(entity_category_key, ["primary"] if not prefix else [])
             ),
+            entity_categories_explicit=entity_category_key in options,
         )
 
     @property
@@ -496,7 +497,10 @@ class _StateWatcher(StateChangeWatcher):
             target_selection,
             entity_filter=self._wanted,
             primary_entities_only=not (
-                settings.include.entity_categories - {"primary"}
+                (
+                    settings.include.entity_categories_explicit
+                    and settings.include.entity_categories - {"primary"}
+                )
                 or settings.exclude.entity_categories
             ),
         )
@@ -521,7 +525,7 @@ class _StateWatcher(StateChangeWatcher):
             self._hass,
             entity_ids,
             include_entity_categories=(
-                self._picking or settings.include.entity_categories != {"primary"}
+                self._picking or settings.include.entity_categories_explicit
             ),
         )
 

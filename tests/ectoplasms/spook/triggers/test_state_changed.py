@@ -160,7 +160,6 @@ async def test_leaving_out_the_options_takes_the_defaults(hass: HomeAssistant) -
         "ignore_unavailable": True,
         "attribute_changes": False,
         "behavior": "each",
-        "entity_category": ["primary"],
     }
 
 
@@ -722,6 +721,33 @@ async def test_a_diagnostic_entity_named_directly_counts(
     unsub()
 
     assert len(handed) == 1
+
+
+@pytest.mark.parametrize(
+    ("entity_category", "expected_count"),
+    [(None, 1), (["primary"], 0)],
+)
+async def test_direct_config_entity_category_filter_requires_explicit_option(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    entity_category: list[str] | None,
+    expected_count: int,
+) -> None:
+    """An omitted category filter does not narrow directly named entities."""
+    update = entity_registry.async_get_or_create(
+        "update", "demo", "kitchen", entity_category=EntityCategory.CONFIG
+    )
+    await _set(hass, update.entity_id, "off")
+
+    options = {"domain": ["update"]}
+    if entity_category is not None:
+        options["entity_category"] = entity_category
+    handed, unsub = await _attach(hass, {"entity_id": update.entity_id}, **options)
+
+    await _set(hass, update.entity_id, "on")
+    unsub()
+
+    assert len(handed) == expected_count
 
 
 @pytest.fixture(name="mixed")
