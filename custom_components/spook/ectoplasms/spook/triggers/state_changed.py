@@ -497,11 +497,8 @@ class _StateWatcher(StateChangeWatcher):
             target_selection,
             entity_filter=self._wanted,
             primary_entities_only=not (
-                (
-                    settings.include.entity_categories_explicit
-                    and settings.include.entity_categories - {"primary"}
-                )
-                or settings.exclude.entity_categories
+                settings.include.entity_categories_explicit
+                and settings.include.entity_categories - {"primary"}
             ),
         )
 
