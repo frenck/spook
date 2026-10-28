@@ -62,10 +62,9 @@ state_changed:
       selector:
         text:
           multiple: true
-    entity_category: 
+    entity_category: &entity_category_definition
       required: false
-      default: [primary]
-      selector: &entity_category_selector
+      selector:
         select:
           multiple: true
           mode: "dropdown"
@@ -100,9 +99,7 @@ state_changed:
       selector:
         text:
           multiple: true
-    exclude_entity_category:
-      required: false
-      selector: *entity_category_selector
+    exclude_entity_category: *entity_category_definition
     attribute:
       required: false
       example: brightness
