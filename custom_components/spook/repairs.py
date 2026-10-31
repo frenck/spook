@@ -529,6 +529,8 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                         event_filter=(
                             _registry_entry_changed_something_looked_at
                             if event == er.EVENT_ENTITY_REGISTRY_UPDATED
+                            else self._device_registry_event_worth_a_look
+                            if event == dr.EVENT_DEVICE_REGISTRY_UPDATED
                             else None
                         ),
                     ),
@@ -661,6 +663,17 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                 event_filter=_an_awaited_attribute_appeared,
             ),
         )
+
+    @callback
+    def _device_registry_event_worth_a_look(
+        self,
+        event_data: dr.EventDeviceRegistryUpdatedData,  # noqa: ARG002 # pylint: disable=unused-argument
+    ) -> bool:
+        """Return whether a device registry event is worth another look.
+
+        Every one is, unless a repair knows better and says so.
+        """
+        return True
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""
@@ -845,6 +858,75 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
                 self.reference_label.capitalize(),
                 ", ".join(sorted_unknown),
             )
+
+
+class DeviceReferencesRepairMixin:  # pylint: disable=too-few-public-methods
+    """Look again on a device registry event only if it is about a device in use.
+
+    For a repair that reports device IDs nothing knows. Whether an ID is known
+    only changes when a device by that ID, or split from one by that ID, comes
+    or goes, and only matters for an ID an automation or script names. Any
+    other device registry event cannot change what the repair reports.
+
+    Without this, every device that appears or disappears anywhere costs a
+    full round over every automation or script. An integration that
+    discovers devices by the thousand, and removes them again, keeps that
+    going until the event loop misses the Supervisor's watchdog and Home
+    Assistant Core gets restarted.
+
+    What a round names only counts once the round is done. Until a first one
+    is, every event is worth a look; while one runs, the last one done still
+    decides, together with what the running one found so far.
+    """
+
+    hass: HomeAssistant
+    _referenced_device_ids: set[str] | None = None
+    _collecting_device_ids: set[str] | None = None
+
+    async def async_inspect(self) -> None:
+        """Inspect, and keep the device IDs the round found named."""
+        self._collecting_device_ids = set()
+        try:
+            await super().async_inspect()  # type: ignore[misc]
+        except BaseException:
+            self._collecting_device_ids = None
+            raise
+        self._referenced_device_ids = self._collecting_device_ids
+        self._collecting_device_ids = None
+
+    def _remember_referenced_device_ids(self, device_ids: Iterable[str]) -> None:
+        """Note device IDs an automation or script names, known or not."""
+        if self._collecting_device_ids is not None:
+            self._collecting_device_ids.update(
+                device_id for device_id in device_ids if isinstance(device_id, str)
+            )
+
+    @callback
+    def _device_registry_event_worth_a_look(
+        self,
+        event_data: dr.EventDeviceRegistryUpdatedData,
+    ) -> bool:
+        """Return whether the event is about a device that is named."""
+        if self._referenced_device_ids is None:
+            return True
+
+        if event_data["action"] == "update":
+            # The ID of a device never changes. The ID it was split from is
+            # the only other one known through it, and only a migration sets
+            # that.
+            return "composite_device_id" in event_data["changes"]
+
+        touched = {event_data["device_id"]}
+        if event_data["action"] == "remove":
+            device: Mapping[str, Any] = event_data.get("device") or {}
+            touched.add(device.get("composite_device_id"))
+        elif device_entry := dr.async_get(self.hass).async_get(event_data["device_id"]):
+            touched.add(getattr(device_entry, "composite_device_id", None))
+
+        return not (
+            self._referenced_device_ids.isdisjoint(touched)
+            and (self._collecting_device_ids or set()).isdisjoint(touched)
+        )
 
 
 def _finding_reference(entity_id: str, name: str | AttributeValue) -> str:

@@ -14,6 +14,7 @@ from ....reference_extraction import (
     names_given_to_templates,
     only_in_disabled_steps,
 )
+from ....repairs import DeviceReferencesRepairMixin
 from ....template_extraction import extract_device_ids_from_config
 from . import AbstractSpookAutomationReferencesRepair
 
@@ -51,7 +52,7 @@ def extract_event_data_device_ids_from_trigger_config(
     return device_ids
 
 
-class SpookRepair(AbstractSpookAutomationReferencesRepair):
+class SpookRepair(DeviceReferencesRepairMixin, AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced devices in automations."""
 
     domain = automation.DOMAIN
@@ -109,6 +110,7 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
                 ),
             )
 
+        self._remember_referenced_device_ids(device_ids)
         return async_filter_known_device_ids(
             self.hass,
             device_ids=device_ids,
