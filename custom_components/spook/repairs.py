@@ -415,6 +415,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
     _event_subs: set[Callable[[], None]]
     _attributes_awaited: dict[str, frozenset[str]]
+    _config_entry_fingerprints: dict[str, str]
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
@@ -423,6 +424,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self.possible_issue_ids = set()
         self._waiting_for_first_inspection = False
         self._attributes_awaited = {}
+        self._config_entry_fingerprints = {}
 
     @callback
     def _await_attributes(self, pairs: Iterable[tuple[str, str]]) -> None:
@@ -445,7 +447,13 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             return
 
         if not self.automatically_clean_up_issues:
-            await self.async_inspect()
+            try:
+                await self.async_inspect()
+            except Exception:
+                # A look that failed keeps the next identical UPDATED a
+                # reason to look again, so drop the fingerprints.
+                self._config_entry_fingerprints.clear()
+                raise
             return
 
         # Issues registered by earlier inspections. Anything not re-registered
@@ -473,6 +481,9 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             # Restore the bookkeeping so the next successful inspection can
             # still clean up issues from before the failure.
             self.issue_ids.update(previous_issue_ids)
+            # A look that failed keeps the next identical UPDATED a reason
+            # to look again, so drop the fingerprints too.
+            self._config_entry_fingerprints.clear()
             raise
 
         # Remove issues that are no longer valid after the inspection:
@@ -604,8 +615,6 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             # entry stuck retrying its setup re-fires it on every attempt,
             # minutes apart for days on end, and each one used to send
             # every repair listening here through a full inspection. #2034.
-            config_entry_fingerprints: dict[str, str] = {}
-
             async def _async_config_entry_changed(
                 change: ConfigEntryChange,
                 entry: ConfigEntry,
@@ -617,14 +626,16 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                 ):
                     return
                 if change == ConfigEntryChange.UPDATED:
-                    # Subentries ride along on UPDATED too: adding,
-                    # changing or removing one leaves data and options
+                    # UPDATED rides along on more than data and options:
+                    # renames, disables and subentry changes leave those
                     # untouched, so they go into the fingerprint as well.
                     fingerprint = hashlib.sha256(
                         json.dumps(
                             {
                                 "data": dict(entry.data),
                                 "options": dict(entry.options),
+                                "title": entry.title,
+                                "disabled_by": entry.disabled_by,
                                 "subentries": {
                                     subentry_id: dict(subentry.data)
                                     for subentry_id, subentry in sorted(
@@ -636,11 +647,14 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                             default=str,
                         ).encode()
                     ).hexdigest()
-                    if config_entry_fingerprints.get(entry.entry_id) == fingerprint:
+                    if (
+                        self._config_entry_fingerprints.get(entry.entry_id)
+                        == fingerprint
+                    ):
                         return
-                    config_entry_fingerprints[entry.entry_id] = fingerprint
+                    self._config_entry_fingerprints[entry.entry_id] = fingerprint
                 elif change == ConfigEntryChange.REMOVED:
-                    config_entry_fingerprints.pop(entry.entry_id, None)
+                    self._config_entry_fingerprints.pop(entry.entry_id, None)
                 await self.inspect_debouncer.async_call()
 
             self._event_subs.add(
