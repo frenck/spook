@@ -18,6 +18,7 @@ from pytest_homeassistant_custom_component.common import (
 from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntryChange,
+    ConfigEntryDisabler,
 )
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import issue_registry as ir
@@ -38,6 +39,8 @@ EXPECTED_INTERVAL_INSPECTIONS = 2
 EXPECTED_UNCHANGED_INSPECTIONS = 2
 EXPECTED_CHANGED_INSPECTIONS = 3
 EXPECTED_SUBENTRY_INSPECTIONS = 4
+EXPECTED_RENAMED_INSPECTIONS = 5
+EXPECTED_DISABLED_INSPECTIONS = 6
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -266,6 +269,127 @@ async def test_config_entry_update_without_changes_skips_inspection(
         SIGNAL_CONFIG_ENTRY_CHANGED,
         ConfigEntryChange.UPDATED,
         with_subentry,
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    # A rename leaves everything the fingerprint held alone but rides along
+    # on UPDATED too, and does get a look.
+    renamed = MockConfigEntry(
+        domain="mock",
+        data={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+        subentries_data=[
+            {
+                "subentry_id": "fedcba9876543210fedcba9876543210",
+                "subentry_type": "test",
+                "title": "Sub",
+                "data": {"sub": "data"},
+            },
+        ],
+        title="Renamed",
+    )
+    async_dispatcher_send(
+        hass,
+        SIGNAL_CONFIG_ENTRY_CHANGED,
+        ConfigEntryChange.UPDATED,
+        renamed,
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_RENAMED_INSPECTIONS
+
+    # Disabling the entry does the same.
+    disabled = MockConfigEntry(
+        domain="mock",
+        data={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+        subentries_data=[
+            {
+                "subentry_id": "fedcba9876543210fedcba9876543210",
+                "subentry_type": "test",
+                "title": "Sub",
+                "data": {"sub": "data"},
+            },
+        ],
+        title="Renamed",
+        disabled_by=ConfigEntryDisabler.USER,
+    )
+    async_dispatcher_send(
+        hass,
+        SIGNAL_CONFIG_ENTRY_CHANGED,
+        ConfigEntryChange.UPDATED,
+        disabled,
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_DISABLED_INSPECTIONS
+
+    await repair.async_deactivate()
+
+
+class MockFailingRepair(AbstractSpookRepair):
+    """Mock repair whose inspection can be made to fail."""
+
+    domain = "mock"
+    repair = "mock_repair"
+    inspect_config_entry_changed = True
+
+    inspections = 0
+    raise_on_inspect = False
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair."""
+        self.inspections += 1
+        if self.raise_on_inspect:
+            msg = "Inspection went bump in the night"
+            raise HomeAssistantError(msg)
+
+
+async def test_config_entry_update_retries_after_failed_inspection(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A look that failed keeps the next identical UPDATED a reason to look.
+
+    The fingerprint for a failed run is dropped, so the same entry data
+    still sends the repair back in instead of being skipped for good.
+    """
+    entry = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    repair = MockFailingRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    # The UPDATED gets a look, the look fails.
+    repair.raise_on_inspect = True
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # The same data again is not skipped: the failed look left no
+    # fingerprint behind, so it is a reason to look once more.
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_CHANGED_INSPECTIONS
+
+    # Once a look lands, the fingerprint holds again and the same data
+    # is skipped like before.
+    repair.raise_on_inspect = False
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
     )
     await _flush_debouncer(hass, freezer)
     assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
