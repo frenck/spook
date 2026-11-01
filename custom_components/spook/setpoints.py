@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any
 import voluptuous as vol
 
 from homeassistant.const import UnitOfTemperature
-from homeassistant.util.unit_conversion import TemperatureConverter
+from homeassistant.util.unit_conversion import TemperatureDeltaConverter
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant, ServiceCall
@@ -110,7 +110,7 @@ def temperature_step(
     the Home Assistant interface falls back to.
     """
     if (step := call.data.get(CONF_STEP)) is not None:
-        return TemperatureConverter.convert_interval(
+        return TemperatureDeltaConverter.convert(
             step, hass.config.units.temperature_unit, unit
         )
     return own_step or _DEFAULT_TEMPERATURE_STEP.get(
