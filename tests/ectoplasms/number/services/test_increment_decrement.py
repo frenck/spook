@@ -13,7 +13,7 @@ from homeassistant.const import Platform, UnitOfElectricCurrent, UnitOfTemperatu
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.setup import async_setup_component
 from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     MockPlatform,
@@ -29,7 +29,7 @@ from custom_components.spook.services import SpookServiceManager
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
-    from pytest_homeassistant_custom_component.typing import WebSocketGenerator
+    from pytest_homeassistant.typing import WebSocketGenerator
 
 
 pytestmark = pytest.mark.usefixtures("spook_translations")
@@ -236,9 +236,8 @@ async def _setup_charger(
     """
     assert await async_setup_component(hass, "homeassistant", {})
 
-    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         await hass.config_entries.async_forward_entry_setups(entry, [Platform.NUMBER])
-        return True
 
     async def _setup_platform(
         _hass: HomeAssistant,

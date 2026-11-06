@@ -29,7 +29,7 @@ from annotatedyaml.objects import Input
 import aiohttp
 import pytest
 import voluptuous as vol
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     async_fire_time_changed,
     mock_restore_cache,
@@ -89,7 +89,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from freezegun.api import FrozenDateTimeFactory
-    from pytest_homeassistant_custom_component.typing import (
+    from pytest_homeassistant.typing import (
         MockHAClientWebSocket,
         WebSocketGenerator,
     )

@@ -119,7 +119,8 @@ disable = [
 ]
 
 [tool.pytest.ini_options]
-addopts = "--cov=custom_components/spook --cov-report=term-missing --cov-report=xml"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-p no:respx --cov=custom_components/spook --cov-report=term-missing --cov-report=xml"
 asyncio_mode = "auto"
 
 [tool.coverage.run]
@@ -144,9 +145,10 @@ environments = [
 [dependency-groups]
 dev = [
   "aiosqlite==0.22.1",
+  "numpy==2.3.2",  # Required by the trend integration exercised in tests
   "pre-commit-hooks==6.0.0",
   "pylint==4.1.3",
-  "pytest-homeassistant-custom-component==0.13.375",
+  "pytest-homeassistant==2026.11.0",
   "prek==0.5.10",
   "pytest-cov==7.1.0",
   "ruff==0.17.3",

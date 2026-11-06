@@ -11,7 +11,7 @@ from homeassistant.core import State
 from homeassistant.helpers.condition import ConditionConfig
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
-from pytest_homeassistant_custom_component.common import mock_restore_cache
+from pytest_homeassistant.common import mock_restore_cache
 import voluptuous as vol
 
 from custom_components.spook.condition import async_get_conditions

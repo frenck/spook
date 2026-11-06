@@ -9,7 +9,7 @@ from homeassistant.components.light import ColorMode, LightEntity, LightEntityFe
 from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import Platform
 from homeassistant.helpers.group import IntegrationSpecificGroup
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     MockPlatform,
@@ -183,9 +183,8 @@ async def async_set_up_lights(hass: HomeAssistant, parallel_updates: int = 0) ->
     way plenty of integrations with a slow or fragile connection do.
     """
 
-    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         await hass.config_entries.async_forward_entry_setups(entry, [Platform.LIGHT])
-        return True
 
     async def _setup_platform(
         _hass: HomeAssistant,

@@ -6,7 +6,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM

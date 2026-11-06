@@ -15,7 +15,7 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import Platform
 from homeassistant.exceptions import ServiceNotSupported, ServiceValidationError
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     MockPlatform,
@@ -86,9 +86,8 @@ async def _setup(hass: HomeAssistant, *lists: TodoListEntity) -> None:
     """Set up these lists and the action."""
     assert await async_setup_component(hass, "homeassistant", {})
 
-    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         await hass.config_entries.async_forward_entry_setups(entry, [Platform.TODO])
-        return True
 
     async def _setup_platform(
         _hass: HomeAssistant,

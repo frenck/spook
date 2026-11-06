@@ -16,7 +16,7 @@ from homeassistant.core import Context, CoreState
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 import voluptuous as vol
 
 from custom_components.spook.ectoplasms.spook.triggers.update_installed import (

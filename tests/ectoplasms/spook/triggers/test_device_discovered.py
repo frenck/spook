@@ -9,7 +9,7 @@ from homeassistant import config_entries
 from homeassistant.config_entries import SOURCE_IMPORT, SOURCE_ZEROCONF
 from homeassistant.core import CoreState
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockModule,
     mock_config_flow,
     mock_integration,

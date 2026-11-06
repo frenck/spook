@@ -6,7 +6,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 
 from homeassistant.core_config import DATA_CUSTOMIZE
 from homeassistant.helpers.entity_values import EntityValues

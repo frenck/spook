@@ -21,7 +21,7 @@ from homeassistant.components.script import UnavailableScriptEntity
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.template import Template
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.spook.draft_checking import async_check_draft
 from custom_components.spook.ectoplasms.automation.repairs import (

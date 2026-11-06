@@ -10,7 +10,7 @@ from homeassistant.const import EVENT_SERVICE_REGISTERED
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.service import async_set_service_schema
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.spook.action_extraction import (
     ActionDescriptionsUnavailableError,

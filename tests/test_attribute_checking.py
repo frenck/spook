@@ -7,7 +7,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 import pytest
-from pytest_homeassistant_custom_component.components.recorder.common import (
+from pytest_homeassistant.components.recorder.common import (
     async_wait_recording_done,
 )
 from sqlalchemy.exc import OperationalError
@@ -86,7 +86,7 @@ async def test_domain_enum_is_read_from_core(hass: HomeAssistant) -> None:
     assert "supported_color_modes" in light
 
     assert "operation_mode" in await async_domain_attributes(hass, "water_heater")
-    assert await async_domain_attributes(hass, "sun") == frozenset()
+    assert "elevation" in await async_domain_attributes(hass, "sun")
     assert await async_domain_attributes(hass, "not_a_domain") == frozenset()
 
 

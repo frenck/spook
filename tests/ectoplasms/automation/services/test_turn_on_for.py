@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 from homeassistant.core import Context, CoreState, State
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     async_fire_time_changed,
     mock_restore_cache,
 )
