@@ -47,7 +47,7 @@ def _patch_restore_cache_helpers() -> None:
     from homeassistant.helpers import restore_state  # noqa: PLC0415
     from homeassistant.helpers.json import JSONEncoder  # noqa: PLC0415
     from homeassistant.util import dt as dt_util  # noqa: PLC0415
-    from pytest_homeassistant_custom_component import common  # noqa: PLC0415
+    from pytest_homeassistant import common  # noqa: PLC0415
 
     if hasattr(common, "_mock_restore_cache") or not hasattr(
         restore_state.RestoreStateData, "_async_load_stored_states"

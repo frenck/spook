@@ -14,7 +14,7 @@ from unittest.mock import patch
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import selector, trigger as trigger_helper
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
 

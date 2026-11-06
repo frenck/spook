@@ -327,6 +327,7 @@ async def test_the_condition_ignores_an_issue_waiting_to_be_confirmed(
         "data": {
             "issues": [
                 {
+                    "config_entry_id": None,
                     "created": "2026-08-01T12:00:00+00:00",
                     "dismissed_version": None,
                     "domain": "demo",

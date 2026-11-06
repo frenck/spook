@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 
 from homeassistant.components.lovelace.resources import RESOURCE_STORAGE_KEY
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 import pytest
 
 from custom_components.spook.const import DOMAIN

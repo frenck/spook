@@ -9,7 +9,7 @@ from homeassistant.core import Context
 from homeassistant.exceptions import HomeAssistantError, Unauthorized
 from homeassistant.helpers.device_registry import DeviceEntryDisabler
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 import voluptuous as vol
 
 import pytest

@@ -22,7 +22,7 @@ from homeassistant.helpers import (
 )
 from homeassistant.helpers.template import Template
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.spook.entity_filtering import (
     async_template_areas_not_found,
