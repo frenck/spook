@@ -9,7 +9,7 @@ from homeassistant.core import Context, CoreState
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 # Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
 # loader resolve the integration when it goes looking for the trigger platform.

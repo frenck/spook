@@ -14,7 +14,7 @@ from homeassistant.const import Platform
 from homeassistant.setup import async_setup_component
 from homeassistant.util import yaml as yaml_util
 import pytest
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     MockPlatform,
@@ -268,12 +268,11 @@ async def async_set_up(
     assert await async_setup_component(hass, "script", {"script": {}})
     await hass.async_block_till_done()
 
-    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         await hass.config_entries.async_forward_entry_setups(entry, [Platform.UPDATE])
-        return True
 
-    async def _unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
-        return await hass.config_entries.async_unload_platforms(
+    async def _unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+        await hass.config_entries.async_unload_platforms(
             entry,
             [Platform.UPDATE],
         )

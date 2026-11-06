@@ -8,7 +8,7 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 
 from homeassistant.components.frontend import DATA_THEMES
 from homeassistant.components.lovelace.const import ConfigNotFound
@@ -709,7 +709,7 @@ async def test_reloading_themes_clears_and_raises_the_issue(
 
     with_starlight = {"frontend": {"themes": {**_THEMES, "Starlight": {}}}}
     with patch(
-        "homeassistant.components.frontend.async_hass_config_yaml",
+        "homeassistant.components.frontend.services.async_hass_config_yaml",
         return_value=with_starlight,
     ):
         await hass.services.async_call("frontend", "reload_themes", blocking=True)
@@ -718,7 +718,7 @@ async def test_reloading_themes_clears_and_raises_the_issue(
     assert async_issue_about(issue_registry, _ISSUE) is None
 
     with patch(
-        "homeassistant.components.frontend.async_hass_config_yaml",
+        "homeassistant.components.frontend.services.async_hass_config_yaml",
         return_value={"frontend": {"themes": _THEMES}},
     ):
         await hass.services.async_call("frontend", "reload_themes", blocking=True)

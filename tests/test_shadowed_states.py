@@ -20,7 +20,7 @@ from homeassistant.components.automation import UnavailableAutomationEntity
 from homeassistant.components.script import UnavailableScriptEntity
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.spook.ectoplasms.automation.repairs import (
     unknown_entity_references as automation_entities,

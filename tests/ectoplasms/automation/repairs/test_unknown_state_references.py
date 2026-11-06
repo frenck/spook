@@ -7,8 +7,8 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 import pytest
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
-from pytest_homeassistant_custom_component.components.recorder.common import (
+from pytest_homeassistant.common import async_fire_time_changed
+from pytest_homeassistant.components.recorder.common import (
     async_wait_recording_done,
 )
 
