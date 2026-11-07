@@ -175,7 +175,7 @@ Give up after five minutes, and do something else about it:
         message: The back door is still open.
 ```
 
-To stop the sequence when the timeout expires, check the response with a condition action. A false result stops the current sequence, giving the equivalent of `continue_on_timeout: false` for this sequence:
+To stop the current sequence when the timeout expires, check the response with a condition action:
 
 ```{code-block} yaml
 :linenos:
@@ -189,8 +189,10 @@ To stop the sequence when the timeout expires, check the response with a conditi
   response_variable: waited
 - condition: template
   value_template: "{{ waited.completed }}"
-# Actions below run only if the condition was met before the timeout.
+# Later actions in this sequence run only if the condition was met.
 ```
+
+At the top level, a false condition stops the automation or script. Inside a nested `if` or `repeat`, it stops only that nested sequence; actions in the parent sequence or the next repeat iteration may still run. This differs from a native wait with `continue_on_timeout: false`, which aborts the enclosing script even when the wait is nested.
 
 :::
 
