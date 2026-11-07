@@ -137,7 +137,9 @@ Takes one condition or a list of them, and a list means all of them, the same as
 
 The other half of what this fixes is that it looks first. `wait_for_trigger` always waits for something to happen, so if the thing you are waiting for has already happened you wait forever, which is why people wrap it in an `if`. This checks the condition before waiting, so an automation that arrives late still carries on.
 
-Returns `completed` when it is given a `response_variable`, which says whether the condition arrived or the timeout did.
+When the timeout expires, the action finishes normally and the automation or script continues with the next action, even if the condition is still false. This also applies when no `response_variable` is set. There is no `continue_on_timeout` option: the behavior is equivalent to Home Assistant's wait actions with `continue_on_timeout: true`.
+
+Set a `response_variable` to check the outcome. Its `completed` value is `true` if the condition was met (including when it was already true), or `false` if the timeout expired.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -171,6 +173,23 @@ Give up after five minutes, and do something else about it:
     - action: notify.persistent_notification
       data:
         message: The back door is still open.
+```
+
+To stop the sequence when the timeout expires, check the response with a condition action. A false result stops the current sequence, giving the equivalent of `continue_on_timeout: false` for this sequence:
+
+```{code-block} yaml
+:linenos:
+- action: spook.wait_for_condition
+  data:
+    timeout: "00:05:00"
+    condition:
+      condition: state
+      entity_id: binary_sensor.back_door
+      state: "off"
+  response_variable: waited
+- condition: template
+  value_template: "{{ waited.completed }}"
+# Actions below run only if the condition was met before the timeout.
 ```
 
 :::
