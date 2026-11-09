@@ -132,7 +132,7 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        # Linked to from a dashboard or a theme (a background, say): public on purpose.
+        # Collect what dashboards and themes link to, to leave those files alone.
         in_use: set[str] = set()
         async for _, _, config in async_dashboard_configs(self._dashboards):
             _collect_local_paths(config, in_use)
