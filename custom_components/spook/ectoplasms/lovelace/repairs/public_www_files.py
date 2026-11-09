@@ -136,7 +136,10 @@ class SpookRepair(AbstractSpookRepair):
 
         # Collect what dashboards and themes link to, to leave those files alone.
         in_use: set[str] = set()
-        for dashboard in list(self._dashboards.values()):
+        for key, dashboard in list(self._dashboards.items()):
+            # The old default dashboard, a leftover nobody can open. #1593.
+            if key is None and "lovelace" in self._dashboards:
+                continue
             try:
                 config = await dashboard.async_load(force=False)
             except ConfigNotFound:

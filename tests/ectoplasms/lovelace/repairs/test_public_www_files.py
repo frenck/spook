@@ -298,3 +298,24 @@ async def test_an_unreadable_dashboard_skips_the_round(
     assert _issue(issue_registry, "printer")
     assert _issue(issue_registry, "camera") is None
     assert "Spook could not read dashboard dashboard-0" in caplog.text
+
+
+async def test_the_old_default_dashboard_is_passed_over(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a leftover of the old default dashboard cannot stop every round.
+
+    Home Assistant keeps it under no name next to the real one, and nobody
+    can open it, so its file being broken is nobody's problem to fix.
+    """
+    await hass.async_add_executor_job(_write, www, "printer/cover.png")
+    _set_dashboards(hass, {}, HomeAssistantError("Leftover"))
+    dashboards = hass.data["lovelace"].dashboards
+    dashboards["lovelace"] = dashboards.pop("dashboard-0")
+    dashboards[None] = dashboards.pop("dashboard-1")
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "printer")
