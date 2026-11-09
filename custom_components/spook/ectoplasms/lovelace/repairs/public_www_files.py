@@ -132,11 +132,11 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        # Themes count too: a background image is set in one.
+        # Linked to from a dashboard or a theme (a background, say): public on purpose.
         in_use: set[str] = set()
-        _collect_local_paths(self.hass.data.get(DATA_THEMES), in_use)
         async for _, _, config in async_dashboard_configs(self._dashboards):
             _collect_local_paths(config, in_use)
+        _collect_local_paths(self.hass.data.get(DATA_THEMES, {}), in_use)
 
         public = await self.hass.async_add_executor_job(
             _public_files, Path(self.hass.config.path("www")), in_use
