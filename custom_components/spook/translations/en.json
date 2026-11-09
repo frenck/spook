@@ -1060,7 +1060,7 @@
     },
     "lovelace_public_www_files": {
       "title": "Files anyone can download: {folder}",
-      "description": "Spook has found a ghost in your `www` folder 👻\n\nHome Assistant serves everything in the `www` folder at `/local/`, without asking anyone to log in. The folder `{folder}` holds {count} files that are not dashboard code, and that no dashboard or theme uses:\n\n{files}\n\n\n\nThis usually happens because an integration stores files here to show them on a dashboard, like camera snapshots or previews of 3D prints. Anybody who can reach your Home Assistant, and knows or guesses the name of a file, can download it.\n\nTo fix this, find out which integration writes to this folder, and whether it can store its files elsewhere. If they are fine to be public, ignore this repair and Spook will leave this folder alone.\n\nSpook 👻 Your homie."
+      "description": "Spook has found a ghost in your `www` folder 👻\n\nHome Assistant serves everything in the `www` folder at `/local/`, without asking anyone to log in. The folder `{folder}` holds {count} file(s) that are not dashboard code, and that no dashboard or theme uses:\n\n{files}\n\n\n\nThis usually happens because an integration stores files here to show them on a dashboard, like camera snapshots or previews of 3D prints. Anybody who can reach your Home Assistant, and knows or guesses the name of a file, can download it.\n\nTo fix this, find out which integration writes to this folder, and whether it can store its files elsewhere. If they are fine to be public, ignore this repair and Spook will leave this folder alone.\n\nSpook 👻 Your homie."
     },
     "lovelace_duplicate_resources": {
       "title": "Dashboard resource listed more than once: {resource}",
