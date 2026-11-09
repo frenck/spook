@@ -10,15 +10,17 @@ from urllib.parse import unquote
 
 from homeassistant.components.frontend import DATA_THEMES
 from homeassistant.components.lovelace import DOMAIN
+from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_LOVELACE_UPDATED,
     EVENT_THEMES_UPDATED,
 )
+from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
 
-from ....const import LOGGER
+from ....const import DOMAIN as SPOOK_DOMAIN, LOGGER
 from ....repairs import AbstractSpookRepair
-from ..dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
     from homeassistant.components.lovelace.dashboard import (
@@ -134,7 +136,21 @@ class SpookRepair(AbstractSpookRepair):
 
         # Collect what dashboards and themes link to, to leave those files alone.
         in_use: set[str] = set()
-        async for _, _, config in async_dashboard_configs(self._dashboards):
+        for dashboard in list(self._dashboards.values()):
+            try:
+                config = await dashboard.async_load(force=False)
+            except ConfigNotFound:
+                # Made up on the fly, so it links to nothing in `www`.
+                continue
+            except HomeAssistantError:
+                # Without its links, files it shows would be reported wrongly.
+                LOGGER.warning(
+                    "Spook could not read dashboard %s, so it skipped looking "
+                    "for public files in www",
+                    dashboard.url_path or "lovelace",
+                )
+                self._async_keep_issues()
+                return
             _collect_local_paths(config, in_use)
         _collect_local_paths(self.hass.data.get(DATA_THEMES, {}), in_use)
 
@@ -157,3 +173,13 @@ class SpookRepair(AbstractSpookRepair):
                     ),
                 },
             )
+
+    @callback
+    def _async_keep_issues(self) -> None:
+        """Keep every issue raised before, which the cleanup would remove."""
+        prefix = f"{self.repair}_"
+        self.issue_ids.update(
+            issue_id.removeprefix(prefix)
+            for domain, issue_id in self.issue_registry.issues
+            if domain == SPOOK_DOMAIN and issue_id.startswith(prefix)
+        )

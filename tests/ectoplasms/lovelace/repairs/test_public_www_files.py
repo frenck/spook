@@ -9,6 +9,8 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from homeassistant.components.frontend import DATA_THEMES
+from homeassistant.components.lovelace.const import ConfigNotFound
+from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.public_www_files import (
@@ -43,12 +45,18 @@ def _write(www: Path, *names: str) -> None:
         path.write_text("here", encoding="utf-8")
 
 
-def _set_dashboards(hass: HomeAssistant, *configs: dict[str, Any]) -> None:
-    """Install dashboards with these configs."""
+def _set_dashboards(
+    hass: HomeAssistant, *configs: dict[str, Any] | HomeAssistantError
+) -> None:
+    """Install dashboards with these configs, or the error loading one raises."""
 
-    def dashboard(url_path: str, config: dict[str, Any]) -> SimpleNamespace:
+    def dashboard(
+        url_path: str, config: dict[str, Any] | HomeAssistantError
+    ) -> SimpleNamespace:
         async def async_load(*, force: bool) -> dict[str, Any]:
             del force
+            if isinstance(config, HomeAssistantError):
+                raise config
             return config
 
         return SimpleNamespace(url_path=url_path, config={}, async_load=async_load)
@@ -252,3 +260,41 @@ async def test_ignoring_a_folder_outlasts_new_files(
     assert issue.dismissed_version is not None
     assert issue.translation_placeholders
     assert issue.translation_placeholders["count"] == "2"
+
+
+async def test_a_dashboard_without_a_stored_config_is_no_reason_to_stop(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test the generated Overview, which has nothing stored, is passed over."""
+    await hass.async_add_executor_job(_write, www, "printer/cover.png")
+    _set_dashboards(hass, ConfigNotFound())
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "printer")
+
+
+async def test_an_unreadable_dashboard_skips_the_round(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test nothing is reported, or cleaned up, while a dashboard is unreadable.
+
+    Its links are unknown, so any file could be one it shows. A fresh repair
+    stands in for a restart, which only knows the issues from the registry.
+    """
+    await hass.async_add_executor_job(_write, www, "printer/cover.png")
+    _set_dashboards(hass)
+    await _async_inspect(hass)
+
+    await hass.async_add_executor_job(_write, www, "camera/snapshot.jpg")
+    _set_dashboards(hass, HomeAssistantError("Broken YAML"))
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "printer")
+    assert _issue(issue_registry, "camera") is None
+    assert "Spook could not read dashboard dashboard-0" in caplog.text

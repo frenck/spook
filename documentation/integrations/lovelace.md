@@ -237,6 +237,7 @@ To resolve the raised issue, find out which integration writes to the folder, an
 :::{attention} Known limitations
 :class: dropdown
 
+- While a dashboard cannot be read, for example because of an error in its YAML, Spook does not know which files it shows. It then skips the check, keeps the issues raised before, and logs a warning.
 - Only dashboards and themes are checked for files in use. A file sent along with a notification, or linked to from a template, is reported as unused.
 - A folder holding frontend code is skipped as a whole, even when an integration writes other files into it as well.
   :::
