@@ -13,6 +13,7 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 from sqlalchemy.exc import OperationalError
 
 from homeassistant.core import State
+from homeassistant.const import STATE_UNAVAILABLE
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util import dt as dt_util
 
@@ -219,6 +220,39 @@ async def test_attribute_never_had_is_reported(
     ) == {
         UnknownAttribute("sensor.weather_alert", "alerts", "alert"),
         UnknownAttribute("sensor.weather_alert", "nothing", None),
+    }
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_unavailable_entity_history_cannot_prove_attribute_is_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Test unavailable state attributes absent from history are not judged.
+
+    Core omits integration-specific attributes while an entity is unavailable,
+    so a complete retained history is not complete knowledge of what it supports.
+    A case-only mistake next to an attribute it still shows remains certain.
+    """
+    await _record(
+        hass,
+        "media_player.projector",
+        {"friendly_name": "Projector"},
+    )
+    hass.states.async_set(
+        "media_player.projector",
+        STATE_UNAVAILABLE,
+        {"friendly_name": "Projector"},
+    )
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(
+        hass,
+        {
+            ("media_player.projector", "adb_response"),
+            ("media_player.projector", "Friendly_Name"),
+        },
+    ) == {
+        UnknownAttribute("media_player.projector", "Friendly_Name", "friendly_name"),
     }
 
 

@@ -34,6 +34,7 @@ from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_ID,
     MATCH_ALL,
+    STATE_UNAVAILABLE,
     EntityCapabilityAttribute,
     EntityStateAttribute,
 )
@@ -620,6 +621,9 @@ async def _async_findings(
             and answer is not None
             and answer.holds(now)
             and answer.complete
+            # Core omits an unavailable entity's integration-specific state
+            # attributes. Recorder absence cannot prove one of them is unknown.
+            and look.state.state != STATE_UNAVAILABLE
             and look.state.last_updated == before.state.last_updated
         )
         folded = {candidate.casefold() for candidate in look.known}
