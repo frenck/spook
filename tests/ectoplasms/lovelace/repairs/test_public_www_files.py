@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
+from homeassistant.components.frontend import DATA_THEMES
+
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.public_www_files import (
     SpookRepair,
@@ -105,21 +107,28 @@ async def test_files_straight_in_www_are_reported_together(
     issue_registry: ir.IssueRegistry,
     www: Path,
 ) -> None:
-    """Test loose files share one issue, and loose code is left alone."""
+    """Test loose files share one issue, and loose code is left alone.
+
+    A folder that happens to be called `www` gets an issue of its own.
+    """
     await hass.async_add_executor_job(
-        _write, www, "snapshot.jpg", "notes.txt", "my-card.js"
+        _write, www, "snapshot.jpg", "notes.txt", "my-card.js", "www/cover.png"
     )
     _set_dashboards(hass)
 
     await _async_inspect(hass)
 
-    issue = _issue(issue_registry, "www")
+    issue = _issue(issue_registry, ".")
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["folder"] == "/local/"
     assert issue.translation_placeholders["files"] == (
         "- `/local/notes.txt`\n- `/local/snapshot.jpg`"
     )
+    issue = _issue(issue_registry, "www")
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["folder"] == "/local/www/"
 
 
 async def test_what_is_put_up_on_purpose_is_left_alone(
@@ -127,7 +136,7 @@ async def test_what_is_put_up_on_purpose_is_left_alone(
     issue_registry: ir.IssueRegistry,
     www: Path,
 ) -> None:
-    """Test HACS, cards, hidden files and dashboard images are not reported."""
+    """Test the Marketplace, cards, hidden files and linked files are left alone."""
     await hass.async_add_executor_job(
         _write,
         www,
@@ -139,7 +148,15 @@ async def test_what_is_put_up_on_purpose_is_left_alone(
         "floorplan/.hidden/backup.png",
         "floorplan/ground floor.png",
         "floorplan/first.png",
+        "floorplan/legend.png",
+        "floorplan/notes.png",
+        "backgrounds/night.jpg",
     )
+    hass.data[DATA_THEMES] = {
+        "dark": {
+            "lovelace-background": 'center / cover url("/local/backgrounds/night.jpg")'
+        }
+    }
     _set_dashboards(
         hass,
         {
@@ -157,6 +174,13 @@ async def test_what_is_put_up_on_purpose_is_left_alone(
                                     "src": "https://ha.example.com/local/floorplan/first.png"
                                 }
                             ],
+                        },
+                        {
+                            "type": "markdown",
+                            "content": (
+                                "![Legend](/local/floorplan/legend.png) "
+                                '<img src="/local/floorplan/notes.png">'
+                            ),
                         },
                     ]
                 }
@@ -183,7 +207,7 @@ async def test_no_www_folder_is_a_no_op(
 
     await _async_inspect(hass)
 
-    assert _issue(issue_registry, "www") is None
+    assert _issue(issue_registry, ".") is None
 
 
 async def test_issue_goes_once_the_files_do(

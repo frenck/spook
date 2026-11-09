@@ -221,25 +221,23 @@ Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Public files in the www folder
 
-Home Assistant serves everything in the `www` folder of your configuration at `/local/`, and it does so without asking anybody to log in. That is on purpose: browsers load custom cards and dashboard images from it with a plain link, and a plain link cannot carry a login. It also means anybody who can reach your Home Assistant can download whatever is in there, as long as they know, or can guess, the name of the file. Home Assistant does not list what is in the folder.
+Home Assistant serves everything in the `www` folder of your configuration at `/local/`, without asking anybody to log in. That is on purpose: browsers load custom cards and dashboard images from it with a plain link, and a plain link cannot carry a login. It also means anybody who can reach your Home Assistant can download what is in there, as long as they know or can guess the name of the file.
 
-Custom cards and your own images are not the only things that end up there. Some integrations store files in `www` to show them on a dashboard, like camera snapshots or previews of 3D prints, and it is easy to miss that those are public too.
+Custom cards and your own images are not the only things that end up there. Some {term}`integrations <integration>` store files in `www` to show them on a {term}`dashboard`, like camera snapshots or previews of 3D prints. It is easy to miss that those are public too.
 
-Spook looks through the `www` folder and raises a repair issue for every folder holding files that nobody seems to have put up on purpose. It leaves alone:
+Spook looks through the `www` folder and raises a repair issue for every folder holding files that nobody seems to have put there on purpose. It leaves alone:
 
-- The `community` folder, where HACS installs its frontend plugins.
+- The `community` folder, where the Marketplace installs dashboard cards ({term}`HACS` did so before Home Assistant 2026.11).
 - Any folder holding frontend code (JavaScript or CSS), which is a card or theme, images and all.
 - Hidden files and folders.
-- Files that one of your dashboards points at with a `/local/` link.
+- Files that a dashboard or theme links to with `/local/`.
 
-The issue names the folder, how many files it holds, and the first few of them.
-
-To resolve the raised issue, find out which integration writes to the folder. See if it has an option to store its files elsewhere, or ask its author. If the files are fine to be public, ignore the issue. Spook remembers that for the folder, so new files appearing in it will not bring the issue back. Spook will automatically remove the repair issue once the folder is empty, or gone.
+To resolve the raised issue, find out which integration writes to the folder, and whether it can store its files elsewhere. If the files are fine to be public, ignore the issue: Spook keeps quiet about that folder, also when new files show up in it. Spook will automatically remove the repair issue once the issue is fixed.
 
 :::{attention} Known limitations
 :class: dropdown
 
-- Only dashboards are checked for files in use. A file sent along with a notification, or used by a card through a template, is reported as unused.
+- Only dashboards and themes are checked for files in use. A file sent along with a notification, or linked to from a template, is reported as unused.
 - A folder holding frontend code is skipped as a whole, even when an integration writes other files into it as well.
   :::
 
