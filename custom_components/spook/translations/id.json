@@ -1343,10 +1343,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "description": "Spook menemukan hantu di asisten suara Anda 👻\n\nEntitas berikut diekspos ke Assist, dan semuanya menjawab nama {name}:\n\n{entities}\n\nJika namanya sama, Assist hanya membedakannya berdasarkan area: area yang Anda sebutkan, atau area tempat satelit suara Anda berada. Beberapa di antaranya berbagi area, atau tidak punya area sama sekali, sehingga Assist tidak bisa memilihnya dengan nama ini dari mana pun. Meminta {name} lalu gagal, dan tidak ada yang memberi tahu entitas mana yang menghalangi.\n\nUntuk memperbaikinya, beri masing-masing nama atau alias sendiri, atau pindahkan ke area yang berbeda. Anda bisa mengubah alias sebuah entitas, dan apakah Assist melihatnya sama sekali, di [Entitas yang diekspos](/config/voice-assistants/expose). Area diatur di [halaman Area](/config/areas/dashboard).\n\nSpook 👻 Sobat Anda.",
-            "title": "Assist tidak bisa membedakan ini: {name}"
-        },
         "script_unknown_attribute_references": {
             "title": "Atribut tidak dikenal digunakan di: {script}",
             "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini menggunakan atribut berikut, yang tidak dimiliki entitasnya. Tidak sekarang, tidak sebagai sesuatu yang ditawarkan oleh jenis entitas itu, dan tidak di mana pun dalam apa yang diingat perekam tentang entitas tersebut:\n\n{attributes}\n\n\n\nPemicu atau kondisi yang menunggu atribut yang tidak pernah muncul tidak akan pernah terpicu, dan tidak memberi tahu Anda. Templat yang membacanya tidak mendapat apa-apa. Untuk memperbaikinya, [edit skrip]({edit}) dan gunakan atribut yang dimiliki entitas.\n\nSpook 👻 Sobat Anda."

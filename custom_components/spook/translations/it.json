@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist non riesce a distinguerle: {name}",
-            "description": "👻 Spook ha trovato un fantasma nei tuoi assistenti vocali\n\nLe seguenti entità sono esposte ad Assist, e rispondono tutte al nome {name}:\n\n{entities}\n\nQuando i nomi sono uguali, Assist le distingue solo per area: quella che nomini, o quella in cui si trova il tuo satellite vocale. Alcune di queste condividono un'area, o non hanno nessuna area, quindi Assist non riesce a individuarle con questo nome da nessuna parte. Chiedere {name} allora non funziona, e niente dice quali entità sono d'intralcio.\n\nPer risolvere, dai a ognuna un nome o un alias tutto suo, oppure spostale in aree diverse. Puoi cambiare gli alias di un'entità, e se Assist la vede o no, in [Entità esposte](/config/voice-assistants/expose). Le aree si impostano nella [pagina Aree](/config/areas/dashboard).\n\nSpook 👻 Il tuo compare."
-        },
         "automation_unknown_attribute_references": {
             "title": "Attributi sconosciuti usati in: {automation}",
             "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione usa i seguenti attributi, che le loro entità non hanno. Non adesso, non come qualcosa che quel tipo di entità offre, e da nessuna parte in ciò che il recorder ricorda di loro:\n\n{attributes}\n\n\n\nUn trigger o una condizione che aspetta un attributo che non compare mai non si attiva mai, e non te lo dice. Un template che ne legge uno non ottiene niente. Per risolvere, [modifica l'automazione]({edit}) e usa un attributo che l'entità ha.\n\nSpook 👻 Il tuo compare."

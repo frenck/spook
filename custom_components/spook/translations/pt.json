@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "O Assist não consegue distinguir estas: {name}",
-            "description": "O Spook encontrou um fantasma nos teus assistentes de voz 👻\n\nAs seguintes entidades estão expostas ao Assist, e todas respondem pelo nome {name}:\n\n{entities}\n\nQuando os nomes são iguais, o Assist só as distingue pela área: a que indicas, ou aquela onde está o teu satélite de voz. Algumas delas partilham uma área, ou não têm área nenhuma, por isso o Assist não as consegue escolher por este nome a partir de lado nenhum. Pedir {name} falha então, e nada diz que entidades estão a atrapalhar.\n\nPara corrigir isto, dá a cada uma um nome ou alias próprio, ou move-as para áreas diferentes. Podes mudar os aliases de uma entidade, e se o Assist a vê ou não, em [Entidades expostas](/config/voice-assistants/expose). As áreas definem-se na [página de Áreas](/config/areas/dashboard).\n\nSpook 👻 O teu amigo."
-        },
         "automation_unknown_attribute_references": {
             "description": "O Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa os seguintes atributos, que as respetivas entidades não têm. Nem neste momento, nem como algo que esse tipo de entidade oferece, nem em lado nenhum daquilo que o gravador se lembra delas:\n\n{attributes}\n\n\n\nUm acionador ou uma condição à espera de um atributo que nunca aparece nunca dispara, e não te avisa. Um template que lê um deles não recebe nada. Para corrigir isto, [edita a automação]({edit}) e usa um atributo que a entidade tenha.\n\nSpook 👻 O teu amigo.",
             "title": "Atributos desconhecidos utilizados em: {automation}"

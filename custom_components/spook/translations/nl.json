@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist kan deze niet uit elkaar houden: {name}",
-            "description": "Spook heeft een geest gevonden in je spraakassistenten 👻\n\nDe volgende entiteiten zijn beschikbaar gemaakt voor Assist, en luisteren allemaal naar de naam {name}:\n\n{entities}\n\nAls namen hetzelfde zijn, houdt Assist ze alleen uit elkaar op ruimte: de ruimte die je noemt, of de ruimte waarin je spraaksatelliet staat. Sommige hiervan delen een ruimte, of hebben helemaal geen ruimte, dus Assist kan ze nergens vandaan op deze naam vinden. Vragen naar {name} mislukt dan, en niets zegt welke entiteiten in de weg zitten.\n\nOm dit te verhelpen, geef je elk een eigen naam of alias, of zet je ze in verschillende ruimtes. De aliassen van een entiteit, en of Assist haar überhaupt ziet, pas je aan onder [Beschikbaar gemaakte entiteiten](/config/voice-assistants/expose). Ruimtes stel je in op de [pagina Ruimtes](/config/areas/dashboard).\n\nSpook 👻 Je homie."
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering gebruikt de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen trigger of voorwaarde die wacht op een attribuut dat nooit verschijnt, gaat nooit af, en zegt je dat niet. Een template die er een leest, krijgt niets. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en gebruik je een attribuut dat de entiteit heeft.\n\nSpook 👻 Je homie.",
             "title": "Onbekende attributen gebruikt in: {automation}"
