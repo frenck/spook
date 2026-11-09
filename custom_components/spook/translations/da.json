@@ -1343,10 +1343,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist kan ikke skelne disse fra hinanden: {name}",
-            "description": "Spook har fundet et spøgelse i dine stemmeassistenter 👻\n\nFølgende entiteter er eksponeret for Assist, og de svarer alle på navnet {name}:\n\n{entities}\n\nNår navne er ens, skelner Assist kun mellem dem efter område: det, du nævner, eller det, din stemmesatellit står i. Nogle af disse deler et område eller har slet intet område, så Assist kan ikke finde dem ud fra dette navn, uanset hvor du er. At spørge efter {name} mislykkes så, og intet fortæller, hvilke entiteter der står i vejen.\n\nFor at rette dette skal du give hver af dem sit eget navn eller alias, eller flytte dem til forskellige områder. Du kan ændre en entitets aliasser, og om Assist overhovedet ser den, under [Eksponerede entiteter](/config/voice-assistants/expose). Områder indstilles på [siden Områder](/config/areas/dashboard).\n\nSpook 👻 er din ven."
-        },
         "automation_unknown_attribute_references": {
             "title": "Ukendte attributter brugt i: {automation}",
             "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering bruger følgende attributter, som deres entiteter ikke har. Hverken lige nu, som noget den slags entitet tilbyder, eller nogen steder i det, recorderen husker om dem:\n\n{attributes}\n\n\n\nEn udløser eller betingelse, der venter på en attribut, som aldrig dukker op, slår aldrig til, og du får intet at vide. En skabelon, der læser en, får intet. For at rette dette skal du [redigere automatiseringen]({edit}) og bruge en attribut, som entiteten har.\n\nSpook 👻 er din ven."

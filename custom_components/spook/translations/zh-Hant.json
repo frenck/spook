@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist 無法區分這些：{name}",
-            "description": "Spook 在您的語音助理中發現了一個幽靈 👻\n\n以下實體都已向 Assist 公開，並且都回應名稱 {name}：\n\n{entities}\n\n名稱相同時，Assist 只能透過區域來區分它們：您說出的區域，或者語音衛星所在的區域。其中一些共用同一個區域，或者根本沒有區域，所以 Assist 無法在任何地方僅憑這個名稱把它們挑出來。於是要求 {name} 會失敗，而且不會說明是哪些實體在礙事。\n\n要修正此問題，請給每個實體一個獨有的名稱或別名，或者把它們移到不同的區域。您可以在 [公開的實體](/config/voice-assistants/expose) 中變更實體的別名，以及 Assist 是否能看到它。區域在 [區域頁面](/config/areas/dashboard) 中設定。\n\nSpook 👻 您的好夥伴。"
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化使用了以下屬性，但這些實體並沒有這些屬性。現在沒有，這類實體本身也不提供，記錄器所記得的歷史中也從未出現過：\n\n{attributes}\n\n\n\n等待一個從不出現的屬性的觸發條件或條件永遠不會觸發，也不會告訴您。讀取它的模板什麼也得不到。要修正此問題，請 [編輯此自動化]({edit}) 並使用實體擁有的屬性。\n\nSpook 👻 您的好夥伴。",
             "title": "在以下項目中使用了未知屬性：{automation}"

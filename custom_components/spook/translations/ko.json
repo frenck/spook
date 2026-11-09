@@ -1343,10 +1343,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist가 구별하지 못하는 이름: {name}",
-            "description": "Spook이 음성 비서에서 유령을 발견했습니다 👻\n\n다음 엔티티들은 Assist에 노출되어 있고, 모두 {name}이라는 이름에 응답합니다:\n\n{entities}\n\n이름이 같으면 Assist는 영역으로만 구별합니다. 말한 영역이나, 음성 위성이 있는 영역입니다. 이 중 일부는 영역을 공유하거나 영역이 아예 없어서, Assist가 어디에서든 이 이름으로 골라낼 수 없습니다. 그래서 {name}을 요청하면 실패하고, 어떤 엔티티가 방해하는지는 아무것도 알려 주지 않습니다.\n\n이 문제를 수정하려면 각각에 고유한 이름이나 별칭을 주거나, 서로 다른 영역으로 옮기세요. 엔티티의 별칭과 Assist에 보이는지 여부는 [노출된 엔티티](/config/voice-assistants/expose)에서 바꿀 수 있습니다. 영역은 [영역 페이지](/config/areas/dashboard)에서 설정합니다.\n\nSpook 👻 당신의 친구."
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 다음 속성을 사용하는데, 해당 엔티티에는 이 속성이 없습니다. 지금도 없고, 그런 종류의 엔티티가 제공하는 속성도 아니며, 레코더가 기억하는 기록 어디에도 없습니다:\n\n{attributes}\n\n\n\n나타나지 않는 속성을 기다리는 트리거나 조건은 절대 실행되지 않으며, 그렇다고 알려 주지도 않습니다. 이 속성을 읽는 템플릿은 아무것도 얻지 못합니다. 이 문제를 수정하려면 [자동화를 편집]({edit})해서 엔티티에 있는 속성을 사용하세요.\n\nSpook 👻 당신의 친구.",
             "title": "알 수 없는 속성 사용: {automation}"

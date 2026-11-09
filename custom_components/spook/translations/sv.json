@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist kan inte skilja dessa åt: {name}",
-            "description": "Spook har hittat ett spöke bland dina röstassistenter 👻\n\nFöljande entiteter är exponerade för Assist, och alla svarar på namnet {name}:\n\n{entities}\n\nNär namnen är samma skiljer Assist dem bara åt efter område: det du nämner, eller det din röstsatellit står i. Några av dessa delar område, eller har inget område alls, så Assist kan inte välja ut dem med detta namn varifrån som helst. Att be om {name} misslyckas då, och ingenting säger vilka entiteter som står i vägen.\n\nFör att åtgärda detta, ge var och en ett eget namn eller alias, eller flytta dem till olika områden. Du kan ändra en entitets alias, och om Assist alls ser den, under [Exponerade entiteter](/config/voice-assistants/expose). Områden ställs in på [sidan Områden](/config/areas/dashboard).\n\nSpook 👻 Din polare."
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering använder följande attribut, som deras entiteter inte har. Inte just nu, inte som något den sortens entitet erbjuder, och inte någonstans i det som recordern minns om dem:\n\n{attributes}\n\n\n\nEn utlösare eller ett villkor som väntar på ett attribut som aldrig dyker upp utlöses aldrig, och säger inget om det. En mall som läser ett får ingenting. För att åtgärda detta, [redigera automatiseringen]({edit}) och använd ett attribut som entiteten har.\n\nSpook 👻 Din polare.",
             "title": "Okända attribut används i: {automation}"
