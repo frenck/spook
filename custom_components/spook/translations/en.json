@@ -1058,6 +1058,10 @@
       "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind.\n\nThese resources are listed in your YAML configuration, so the Resources page cannot change them. Edit the `resources:` section of your Lovelace configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
       "title": "Dashboard resources point at missing files"
     },
+    "lovelace_public_www_files": {
+      "title": "Files anyone can download: {folder}",
+      "description": "Spook has found a ghost in your `www` folder 👻\n\nHome Assistant serves everything in the `www` folder of your configuration at `/local/`, to anyone who can reach your Home Assistant. Nobody has to log in: browsers load these files with a plain link, and a plain link cannot carry a login. Home Assistant does not list what is in the folder, so somebody needs to know a file's name, but names that follow a pattern are easy to guess.\n\nThe folder `{folder}` holds {count} files that are not dashboard code, and that none of your dashboards use. These include:\n\n{files}\n\n\n\nThis usually happens because an integration stores files here to show them on a dashboard, like camera snapshots or previews of 3D prints. That is how it is meant to work for custom cards and images you put up yourself, but it is easy to miss that these files are public too.\n\nIf you did not expect these files to be public, find out which integration writes to this folder. Check whether it has an option to store them elsewhere, or ask its author. If they are fine as they are, ignore this repair and Spook will stay quiet about this folder.\n\nSpook 👻 Your homie."
+    },
     "lovelace_duplicate_resources": {
       "title": "Dashboard resource listed more than once: {resource}",
       "fix_flow": {
