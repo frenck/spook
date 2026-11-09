@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist kann diese nicht unterscheiden: {name}",
-            "description": "Spook hat einen Geist in deinen Sprachassistenten gefunden 👻\n\nDie folgenden Entitäten sind für Assist freigegeben und hören alle auf den Namen {name}:\n\n{entities}\n\nWenn Namen gleich sind, unterscheidet Assist sie nur nach Bereich: dem, den du nennst, oder dem, in dem dein Sprachsatellit steht. Einige davon teilen sich einen Bereich oder haben gar keinen Bereich, deshalb kann Assist sie von nirgendwo über diesen Namen finden. Eine Anfrage nach {name} schlägt dann fehl, und nichts sagt dir, welche Entitäten im Weg sind.\n\nUm das zu beheben, gib jeder einen eigenen Namen oder Alias, oder verschiebe sie in verschiedene Bereiche. Die Aliase einer Entität, und ob Assist sie überhaupt sieht, änderst du unter [Freigegebene Entitäten](/config/voice-assistants/expose). Bereiche legst du auf der [Seite Bereiche](/config/areas/dashboard) fest.\n\nSpook 👻 Dein Kumpel."
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung verwendet die folgenden Attribute, die ihre Entitäten nicht haben. Nicht im Moment, nicht als etwas, das diese Art von Entität bietet, und nirgends in dem, was der Recorder von ihnen weiß:\n\n{attributes}\n\n\n\nEin Auslöser oder eine Bedingung, die auf ein Attribut wartet, das nie auftaucht, löst nie aus und sagt dir das nicht. Ein Template, das eines liest, bekommt nichts. Um das zu beheben, [bearbeite die Automatisierung]({edit}) und verwende ein Attribut, das die Entität hat.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Attribute verwendet in: {automation}"

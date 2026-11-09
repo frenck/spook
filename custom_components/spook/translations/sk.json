@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist ich nevie rozlíšiť: {name}",
-            "description": "Spook našiel ducha v tvojich hlasových asistentoch 👻\n\nNasledujúce entity sú sprístupnené pre Assist a všetky reagujú na meno {name}:\n\n{entities}\n\nKeď sú mená rovnaké, Assist ich rozlišuje len podľa oblasti: tej, ktorú povieš, alebo tej, v ktorej je tvoj hlasový satelit. Niektoré z nich zdieľajú oblasť alebo nemajú oblasť vôbec, takže ich Assist podľa tohto mena nevie odkiaľkoľvek vybrať. Požiadavka na {name} potom zlyhá a nič nepovie, ktoré entity prekážajú.\n\nAk to chceš opraviť, daj každej z nich vlastné meno alebo alias, alebo ich presuň do rôznych oblastí. Aliasy entity a to, či ju Assist vôbec vidí, zmeníš v časti [Sprístupnené entity](/config/voice-assistants/expose). Oblasti sa nastavujú na [stránke Oblasti](/config/areas/dashboard).\n\nSpook 👻 Tvoj kamoš."
-        },
         "automation_unknown_attribute_references": {
             "title": "Neznáme atribúty používané v: {automation}",
             "description": "Spook našiel ducha v tvojich automatizáciách 👻\n\nAko sa tak vznášal okolo, Spook narazil na túto automatizáciu:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTáto automatizácia používa nasledujúce atribúty, ktoré ich entity nemajú. Ani teraz, ani ako niečo, čo taký druh entity ponúka, ani nikde v tom, čo si o nich pamätá rekordér:\n\n{attributes}\n\n\n\nSpúšťač alebo podmienka, ktorá čaká na atribút, ktorý sa nikdy neobjaví, sa nikdy nespustí a nič ti nepovie. Šablóna, ktorá ho číta, nedostane nič. Ak to chceš opraviť, [uprav automatizáciu]({edit}) a použi atribút, ktorý entita má.\n\nSpook 👻 Tvoj kamoš."

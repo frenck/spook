@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "description": "Spook on löytänyt kummituksen ääniavustajistasi 👻\n\nSeuraavat entiteetit on tuotu Assistin saataville, ja kaikki vastaavat nimeen {name}:\n\n{entities}\n\nKun nimet ovat samat, Assist erottaa ne toisistaan vain alueen perusteella: sen, jonka nimeät, tai sen, jossa puhesatelliittisi on. Osa näistä on samalla alueella tai ei millään alueella, joten Assist ei pysty poimimaan niitä tällä nimellä mistään. Pyyntö {name} epäonnistuu silloin, eikä mikään kerro, mitkä entiteetit ovat tiellä.\n\nKorjataksesi tämän, anna jokaiselle oma nimi tai alias, tai siirrä ne eri alueille. Entiteetin aliaksia, ja sitä näkeekö Assist sen lainkaan, voit muuttaa kohdassa [Saataville tuodut entiteetit](/config/voice-assistants/expose). Alueet asetetaan [Alueet-sivulla](/config/areas/dashboard).\n\nSpook 👻 Kamusi.",
-            "title": "Assist ei erota näitä toisistaan: {name}"
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio käyttää seuraavia attribuutteja, joita niiden entiteeteillä ei ole. Ei juuri nyt, ei sellaisena, jota tämänkaltainen entiteetti tarjoaa, eikä missään, mitä tallennin niistä muistaa:\n\n{attributes}\n\n\n\nLaukaisin tai ehto, joka odottaa attribuuttia, joka ei koskaan ilmesty, ei koskaan laukea, eikä kerro siitä. Mallipohja, joka lukee sellaista, ei saa mitään. Korjataksesi tämän, [muokkaa automaatiota]({edit}) ja käytä attribuuttia, joka entiteetillä on.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia attribuutteja käytetty: {automation}"
