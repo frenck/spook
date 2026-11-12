@@ -6,10 +6,17 @@ import re
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.script import DOMAIN as SCRIPT_DOMAIN
-from homeassistant.const import ATTR_ENTITY_ID, CONF_ENABLED
+from homeassistant.const import (
+    ATTR_ENTITY_ID,
+    CONF_ENABLED,
+    EVENT_SERVICE_REGISTERED,
+    EVENT_SERVICE_REMOVED,
+)
+from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.service import async_get_all_descriptions
 
+from .configuration_cache import CACHE_SIZE
 from .const import LOGGER
 from .entity_filtering import (
     NEVER_AN_ENTITY_PREFIXES,
@@ -38,7 +45,7 @@ from .template_extraction import (
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable, Mapping
 
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import Event, HomeAssistant
 
 # The pattern enumerates every known domain, so it is long. This walker
 # visits every value in a configuration, so compile it once.
@@ -819,3 +826,68 @@ def unknown_config_entries(
         if entry is None or (integration is not None and entry.domain != integration):
             unknown.add(entry_id)
     return unknown
+
+
+type NamedReader = Callable[[dict[str, Any], frozenset[str]], Awaitable[set[str]]]
+
+
+class RememberedNames:
+    """What automations or scripts name, kept until the actions change.
+
+    Reading the entities a configuration names walks every step and template
+    in it. The repairs ask after every reload, registry change and loaded
+    integration, and mostly about configurations that have not changed. What
+    they find depends on the configuration and on the actions Home Assistant
+    has: an action name is no entity ID, and an action's schema says whether
+    its data holds one. So it is kept per configuration and forgotten as soon
+    as an action is registered, removed, or the set of actions looks
+    different at the start of a round. #2005.
+
+    Keyed by the configuration itself, which is kept along so no other can
+    take its key, and by the names it gives its templates.
+    """
+
+    def __init__(self) -> None:
+        """Start with nothing remembered."""
+        self._actions: set[str] | None = None
+        self._named: dict[tuple[int, frozenset[str]], tuple[Any, set[str]]] = {}
+
+    @callback
+    def async_follow_actions(self, hass: HomeAssistant) -> Callable[[], None]:
+        """Forget everything whenever an action comes or goes."""
+
+        @callback
+        def _forget(_: Event) -> None:
+            self._named.clear()
+
+        stops = [
+            hass.bus.async_listen(event, _forget)
+            for event in (EVENT_SERVICE_REGISTERED, EVENT_SERVICE_REMOVED)
+        ]
+
+        @callback
+        def _stop() -> None:
+            for stop in stops:
+                stop()
+
+        return _stop
+
+    def start_round(self, known_services: set[str]) -> None:
+        """Forget everything if the actions are not the ones it was read with."""
+        if known_services != self._actions:
+            self._named.clear()
+            self._actions = known_services
+
+    async def async_named_in(
+        self, config: dict[str, Any], shadowed: frozenset[str], read: NamedReader
+    ) -> set[str]:
+        """Return what ``read`` finds in ``config``, read once."""
+        key = (id(config), shadowed)
+        if (known := self._named.get(key)) is not None and known[0] is config:
+            return set(known[1])
+
+        named = await read(config, shadowed)
+        if len(self._named) >= CACHE_SIZE:
+            self._named.clear()
+        self._named[key] = (config, set(named))
+        return named
