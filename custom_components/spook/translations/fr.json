@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist ne sait pas les distinguer : {name}",
-            "description": "Spook a trouvé un fantôme dans vos assistants vocaux 👻\n\nLes entités suivantes sont exposées à Assist, et répondent toutes au nom {name} :\n\n{entities}\n\nQuand les noms sont identiques, Assist ne les distingue que par pièce : celle que vous nommez, ou celle où se trouve votre satellite vocal. Certaines d'entre elles partagent une pièce, ou n'ont pas de pièce du tout, donc Assist ne peut les retrouver par ce nom depuis nulle part. Demander {name} échoue alors, et rien n'indique quelles entités gênent.\n\nPour corriger cela, donnez à chacune un nom ou un alias qui lui est propre, ou placez-les dans des pièces différentes. Vous pouvez changer les alias d'une entité, et si Assist la voit ou non, dans [Entités exposées](/config/voice-assistants/expose). Les pièces se définissent sur la [page Pièces](/config/areas/dashboard).\n\nSpook 👻 Votre pote."
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation utilise les attributs suivants, que leurs entités n'ont pas. Ni en ce moment, ni comme quelque chose que ce type d'entité propose, ni nulle part dans ce que l'enregistreur se rappelle d'elles :\n\n{attributes}\n\n\n\nUn déclencheur ou une condition qui attend un attribut qui n'apparaît jamais ne se déclenche jamais, et ne vous le dit pas. Un modèle qui en lit un n'obtient rien. Pour corriger cela, [modifiez l'automatisation]({edit}) et utilisez un attribut que l'entité possède.\n\nSpook 👻 Votre pote.",
             "title": "Attributs inconnus utilisés dans : {automation}"
