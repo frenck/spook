@@ -30,6 +30,7 @@ from homeassistant.components.sensor import (
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_HOMEASSISTANT_STARTED,
+    EVENT_STATE_CHANGED,
     EntityCategory,
     Platform,
 )
@@ -63,6 +64,7 @@ class HomeAssistantSpookSensorEntityDescription(
 
     value_fn: Callable[[HomeAssistant], int | None]
     update_events: set[EventType[Any] | str] = field(default_factory=set)
+    update_domains: frozenset[str] = field(default_factory=frozenset)
 
 
 @callback
@@ -117,6 +119,41 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         update_events={automation.EVENT_AUTOMATION_RELOADED},
         value_fn=lambda hass: _count_active_domain_entities(hass, automation.DOMAIN),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
+        key="automation_disabled",
+        translation_key="homeassistant_automation_disabled",
+        entity_id="sensor.automations_disabled",
+        icon="mdi:robot-off",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        state_class=SensorStateClass.TOTAL,
+        update_events={automation.EVENT_AUTOMATION_RELOADED, EVENT_STATE_CHANGED},
+        update_domains=frozenset({automation.DOMAIN}),
+        value_fn=lambda hass: sum(
+            1
+            for entity_id in hass.states.async_entity_ids(automation.DOMAIN)
+            if (s := hass.states.get(entity_id)) is not None
+            and not s.attributes.get("restored", False)
+            and s.state == "off"
+        ),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
+        key="automation_running",
+        translation_key="homeassistant_automation_running",
+        entity_id="sensor.automations_running",
+        icon="mdi:robot-excited",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        state_class=SensorStateClass.TOTAL,
+        update_events={automation.EVENT_AUTOMATION_RELOADED, EVENT_STATE_CHANGED},
+        update_domains=frozenset({automation.DOMAIN}),
+        value_fn=lambda hass: sum(
+            1
+            for entity_id in hass.states.async_entity_ids(automation.DOMAIN)
+            if (s := hass.states.get(entity_id)) is not None
+            and s.attributes.get("current", 0) > 0
+        ),
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.BINARY_SENSOR,
@@ -458,6 +495,23 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         value_fn=lambda hass: _count_active_domain_entities(hass, script.DOMAIN),
     ),
     HomeAssistantSpookSensorEntityDescription(
+        key="script_running",
+        translation_key="homeassistant_script_running",
+        entity_id="sensor.scripts_running",
+        icon="mdi:script-text-play",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        entity_registry_enabled_default=False,
+        state_class=SensorStateClass.TOTAL,
+        update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED, EVENT_STATE_CHANGED},
+        update_domains=frozenset({script.DOMAIN}),
+        value_fn=lambda hass: sum(
+            1
+            for entity_id in hass.states.async_entity_ids(script.DOMAIN)
+            if (s := hass.states.get(entity_id)) is not None
+            and s.attributes.get("current", 0) > 0
+        ),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
         key=Platform.SELECT,
         translation_key="homeassistant_select",
         entity_id="sensor.selects",
@@ -648,9 +702,15 @@ class HomeAssistantSpookSensorEntity(HomeAssistantSpookEntity, SensorEntity):
             self._unsub_debouncer = None
             self.async_schedule_update_ha_state()
 
+        _domains = self.entity_description.update_domains
+
         @callback
-        def _update_state(_: Event) -> None:
+        def _update_state(event: Event) -> None:
             """Update state."""
+            if _domains and event.event_type == EVENT_STATE_CHANGED:
+                entity_id: str = event.data.get("entity_id", "")
+                if entity_id.split(".")[0] not in _domains:
+                    return
             if self._unsub_debouncer:
                 self._unsub_debouncer()
             self._unsub_debouncer = async_call_later(self.hass, 5, _debounced_update)

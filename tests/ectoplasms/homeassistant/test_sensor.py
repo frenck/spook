@@ -29,12 +29,42 @@ async def test_script_count_excludes_restored_entities(hass: HomeAssistant) -> N
     assert _value_for_sensor(hass, script.DOMAIN) == 1
 
 
+async def test_script_running_count(hass: HomeAssistant) -> None:
+    """Test running scripts are counted."""
+    hass.states.async_set("script.running_one", "on", {"current": 1})
+    hass.states.async_set("script.running_two", "on", {"current": 2})
+    hass.states.async_set("script.idle", "off", {"current": 0})
+    hass.states.async_set("script.no_attr", "off")
+
+    assert _value_for_sensor(hass, "script_running") == 2
+
+
 async def test_automation_count_excludes_restored_entities(hass: HomeAssistant) -> None:
     """Test restored automation entities are not counted."""
     hass.states.async_set("automation.active", "off")
     hass.states.async_set("automation.restored", "unavailable", {"restored": True})
 
     assert _value_for_sensor(hass, automation.DOMAIN) == 1
+
+
+async def test_automation_disabled_count(hass: HomeAssistant) -> None:
+    """Test disabled (off) automations are counted."""
+    hass.states.async_set("automation.disabled_one", "off")
+    hass.states.async_set("automation.disabled_two", "off")
+    hass.states.async_set("automation.enabled", "on")
+    hass.states.async_set("automation.restored", "unavailable", {"restored": True})
+
+    assert _value_for_sensor(hass, "automation_disabled") == 2
+
+
+async def test_automation_running_count(hass: HomeAssistant) -> None:
+    """Test running automations are counted."""
+    hass.states.async_set("automation.running_one", "on", {"current": 1})
+    hass.states.async_set("automation.running_two", "on", {"current": 3})
+    hass.states.async_set("automation.idle", "on", {"current": 0})
+    hass.states.async_set("automation.no_attr", "on")
+
+    assert _value_for_sensor(hass, "automation_running") == 2
 
 
 async def test_counter_count(hass: HomeAssistant) -> None:
