@@ -29,7 +29,13 @@ if TYPE_CHECKING:
 # and the copies made of them along the way. A round goes through all of
 # them in the same order every time, so a cache that holds fewer than that
 # drops each one right before it is asked for again and never hits.
-CACHE_SIZE = 8192
+#
+# Counted on a house with about 23,000 distinct templates in its automations,
+# scripts and dashboards: the readers of one template each keep about that
+# many, `_expressions` about twice that, and the lookup of areas, floors and
+# labels keeps one per template and per kind, about 69,000. Anything below
+# that last number misses on every one of them in the second round.
+CACHE_SIZE = 131072
 
 
 def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:

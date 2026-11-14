@@ -11,6 +11,7 @@ import hashlib
 import importlib
 import json
 from pathlib import Path
+import time
 from typing import TYPE_CHECKING, Any, final
 
 from homeassistant.components import blueprint, lovelace as lovelace_const
@@ -57,7 +58,7 @@ from .attribute_checking import (
 )
 from .attribute_value_checking import as_yaml, async_unknown_attribute_values
 from .configuration_cache import forget_dashboards
-from .const import DOMAIN, LOGGER
+from .const import DOMAIN, LOGGER, YIELD_AFTER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
 from .ectoplasms.spook.triggers.state_changed import async_watched_entity_ids
@@ -804,11 +805,19 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         # findings first lets all of that happen in one go. #1667.
         findings: list[tuple[Any, list[str]]] = []
 
+        slice_started = time.monotonic()
         for index, entity in enumerate(entities):
-            if index and index % INSPECTION_YIELD_INTERVAL == 0:
-                # Inspections are CPU-bound; periodically yield to the event
-                # loop so large installations do not stall it.
+            # Inspections are CPU-bound; periodically yield to the event loop
+            # so large installations do not stall it. By count, and by the
+            # clock as well: a count does not know how long an entity takes,
+            # and a script with hundreds of templates takes a tenth of a
+            # second or more to read, so fifty of them held the loop for
+            # many seconds. #2005.
+            if (
+                index and index % INSPECTION_YIELD_INTERVAL == 0
+            ) or time.monotonic() - slice_started > YIELD_AFTER:
                 await asyncio.sleep(0)
+                slice_started = time.monotonic()
 
             unavailable_class = self.unavailable_entity_class
             # pylint: disable-next=isinstance-second-argument-not-valid-type

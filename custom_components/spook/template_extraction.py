@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import asyncio
 from collections import deque
 from dataclasses import dataclass
 from functools import lru_cache
 import re
+import time
 from typing import TYPE_CHECKING, Any
 
 from jinja2 import Environment, TemplateSyntaxError
@@ -15,7 +17,7 @@ from homeassistant.core import valid_entity_id
 from homeassistant.helpers.template import Template
 
 from .configuration_cache import CACHE_SIZE, per_configuration
-from .const import LOGGER
+from .const import LOGGER, YIELD_AFTER
 from .entity_filtering import (
     IGNORED_ENTITY_DOMAINS,
     NEVER_AN_ENTITY_PREFIXES,
@@ -1643,7 +1645,15 @@ async def async_extract_entities_from_config(
     if known_services is None:
         known_services = async_get_all_services(hass) if template_strings else set()
     extracted_templates: dict[str, set[str]] = {}
+    slice_started = time.monotonic()
     for template_str in template_strings:
+        # Reading a template is CPU-bound, and the function below never waits
+        # for anything, so without this the event loop is held until every
+        # template of the configuration has been read. A large script has
+        # hundreds. #2005.
+        if time.monotonic() - slice_started > YIELD_AFTER:
+            await asyncio.sleep(0)
+            slice_started = time.monotonic()
         try:
             # async_extract_entities_from_template_string already handles
             # TemplateError and other exceptions internally, logging them.
