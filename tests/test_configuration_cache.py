@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -14,6 +15,7 @@ from custom_components.spook.configuration_cache import (
     forget_dashboards,
     per_configuration,
     per_dashboard_node,
+    read_once,
 )
 from custom_components.spook.reference_extraction import without_disabled_steps
 from custom_components.spook.template_extraction import (
@@ -109,6 +111,62 @@ def test_cache_clear_forgets_everything() -> None:
     reader(config)
 
     assert read == [config, config]
+
+
+def test_a_configuration_read_once_is_not_remembered() -> None:
+    """Test a configuration put together for one reading is not kept.
+
+    No one hands that very object in again, so remembering it would only keep
+    it until the cache drops it.
+    """
+    reader, read = _counted()
+    config = {"actions": []}
+
+    with read_once():
+        assert reader(config) == 1
+        assert reader(config) == 2  # noqa: PLR2004
+    assert reader(config) == 3  # noqa: PLR2004
+    assert reader(config) == 3  # noqa: PLR2004
+    assert read == [config, config, config]
+
+
+def test_what_is_remembered_is_still_handed_out_when_reading_once() -> None:
+    """Test reading once still hands out what was read before."""
+    reader, read = _counted()
+    config = {"actions": []}
+
+    reader(config)
+    with read_once():
+        assert reader(config) == 1
+
+    assert read == [config]
+
+
+async def test_reading_once_stays_with_its_task() -> None:
+    """Test another task remembers while one reads once.
+
+    A reading that hands the event loop back lets other tasks run in the
+    middle of it, and those keep remembering what they read.
+    """
+    reader, read = _counted()
+    started = asyncio.Event()
+    done = asyncio.Event()
+    elsewhere = {"actions": []}
+
+    async def _reading_once() -> None:
+        with read_once():
+            started.set()
+            await done.wait()
+
+    async def _remembering() -> None:
+        await started.wait()
+        reader(elsewhere)
+        reader(elsewhere)
+        done.set()
+
+    await asyncio.gather(_reading_once(), _remembering())
+
+    assert read == [elsewhere]
 
 
 def test_disabled_steps_are_left_out_once() -> None:

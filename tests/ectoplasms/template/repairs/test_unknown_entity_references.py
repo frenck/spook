@@ -563,3 +563,73 @@ async def test_a_helper_with_no_entity_falls_back_to_its_entry(
     )
     assert issue
     assert issue.translation_placeholders["entity_id"] == entry.entry_id
+
+
+async def test_the_options_are_read_as_one_copy_until_they_change(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test every round reads the same copy of a helper's options.
+
+    A copy made every round is a configuration no one asks about again, and
+    every reader that remembers what it read would keep it. New options are
+    a new copy, so the findings follow them. #2005.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Ghostly sensor",
+        options={
+            "name": "Ghostly sensor",
+            "template_type": "sensor",
+            "state": "{{ states('sensor.ghost') }}",
+        },
+    )
+    entry.add_to_hass(hass)
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+    first = repair._options_of(entry)
+    await repair._async_inspect_with_cleanup()
+    assert repair._options_of(entry) is first
+
+    hass.config_entries.async_update_entry(
+        entry,
+        options={
+            "name": "Ghostly sensor",
+            "template_type": "sensor",
+            "state": "{{ states('sensor.phantom') }}",
+        },
+    )
+    await repair._async_inspect_with_cleanup()
+
+    assert repair._options_of(entry) is not first
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
+    )
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["entities"] == "- `sensor.phantom`"
+
+
+async def test_the_options_of_a_removed_helper_are_forgotten(
+    hass: HomeAssistant,
+) -> None:
+    """Test the copy of a helper that is gone is not kept."""
+    entry = MockConfigEntry(
+        domain="template",
+        title="Ghostly sensor",
+        options={
+            "name": "Ghostly sensor",
+            "template_type": "sensor",
+            "state": "{{ states('sensor.ghost') }}",
+        },
+    )
+    entry.add_to_hass(hass)
+    repair = SpookRepair(hass)
+    await repair.async_inspect()
+    assert entry.entry_id in repair._options
+
+    await hass.config_entries.async_remove(entry.entry_id)
+    await repair.async_inspect()
+
+    assert entry.entry_id not in repair._options

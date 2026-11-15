@@ -18,11 +18,13 @@ reads the same.
 from __future__ import annotations
 
 from collections import OrderedDict
+from contextlib import contextmanager
+from contextvars import ContextVar
 from functools import wraps
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
 # How many readings of templates and of configurations are kept. Enough for
 # every template, automation, script and template helper of a large house,
@@ -36,6 +38,28 @@ if TYPE_CHECKING:
 # labels keeps one per template and per kind, about 69,000. Anything below
 # that last number misses on every one of them in the second round.
 CACHE_SIZE = 131072
+
+# Off while a configuration is read that was put together for that reading.
+_REMEMBERING: ContextVar[bool] = ContextVar("spook_remembering", default=True)
+
+
+@contextmanager
+def read_once() -> Iterator[None]:
+    """Read configurations without remembering them.
+
+    For a configuration put together for one reading, like a copy of a
+    helper's options: no one hands that very object in again, so remembering
+    it would only keep it, and what was read from it, until the cache drops
+    it. What is already remembered is still handed out.
+
+    Held per task, so a turn handed to another task in the middle of the
+    reading does not change what that task remembers.
+    """
+    token = _REMEMBERING.set(False)
+    try:
+        yield
+    finally:
+        _REMEMBERING.reset(token)
 
 
 def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:
@@ -63,6 +87,8 @@ def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:
             return known[1]
 
         result = func(*args, **kwargs)
+        if not _REMEMBERING.get():
+            return result
         remembered[id(config)] = (config, result)
         if len(remembered) > CACHE_SIZE:
             remembered.popitem(last=False)
