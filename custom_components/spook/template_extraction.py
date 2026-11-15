@@ -135,6 +135,37 @@ def is_template_string(value: str) -> bool:
     )
 
 
+def _extract_entities_from_template_string(
+    template_str: str,
+    known_services: set[str],
+    shadowed: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Extract entity IDs from a template string using regex analysis.
+
+    The synchronous core of `async_extract_entities_from_template_string`,
+    with the services already known. Pure computation over plain data, so
+    it can run in an executor, away from the event loop.
+    """
+    if not is_template_string(template_str):
+        return set()
+
+    # Use regex patterns to find entities
+    try:
+        return (
+            set(_extract_entity_candidates_from_template(template_str, shadowed))
+            - known_services
+        )
+    # pylint: disable-next=broad-exception-caught
+    except Exception as exc:  # noqa: BLE001 - Keep broad for unexpected regex issues
+        LOGGER.debug(
+            "Failed to extract entities from template '%s...' using regex.",
+            template_str[:50],
+            exc_info=exc,  # Pass the exception for logging
+        )
+
+    return set()
+
+
 async def async_extract_entities_from_template_string(
     hass: HomeAssistant,
     template_str: str,
@@ -149,23 +180,12 @@ async def async_extract_entities_from_template_string(
     if not is_template_string(template_str):
         return set()
 
-    entities = set()
+    if known_services is None:
+        known_services = async_get_all_services(hass)
 
-    # Use regex patterns to find entities
-    try:
-        regex_entities = extract_entities_from_template_regex(
-            hass, template_str, known_services, shadowed
-        )
-        entities.update(regex_entities)
-    # pylint: disable-next=broad-exception-caught
-    except Exception as exc:  # noqa: BLE001 - Keep broad for unexpected regex issues
-        LOGGER.debug(
-            "Failed to extract entities from template '%s...' using regex.",
-            template_str[:50],
-            exc_info=exc,  # Pass the exception for logging
-        )
-
-    return entities
+    return _extract_entities_from_template_string(
+        template_str, known_services, shadowed
+    )
 
 
 def _strip_jinja_comments(template_str: str) -> str:
@@ -1624,26 +1644,50 @@ async def async_extract_entities_from_config(
     configuration, so a caller handing in a part of it, or a copy without
     its descriptions, passes them in.
     """
-    entities = set()
     if not config:
-        return entities
+        return set()
 
-    template_strings = extract_template_strings_from_config(config)
     if known_services is None:
-        known_services = async_get_all_services(hass) if template_strings else set()
+        # Building the services flattens every service Home Assistant has,
+        # which reads the service registry, so it happens here, on the
+        # event loop. A configuration without templates needs none of it.
+        if not extract_template_strings_from_config(config):
+            return set()
+        known_services = async_get_all_services(hass)
+
+    # The extraction itself is pure computation over plain data, and a
+    # large configuration holds a lot of it: walking it and lexing every
+    # template in it on the event loop stalls everything else Home
+    # Assistant is doing. It runs in the executor instead.
+    return await hass.async_add_executor_job(
+        _extract_entities_from_config, config, known_services, shadowed
+    )
+
+
+def _extract_entities_from_config(
+    config: Any,
+    known_services: set[str],
+    shadowed: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Extract entity IDs referenced in templates within a configuration.
+
+    The synchronous core of `async_extract_entities_from_config`, with the
+    services already known. Pure computation over plain data, so it can
+    run in an executor, away from the event loop.
+    """
+    entities = set()
     extracted_templates: dict[str, set[str]] = {}
-    for template_str in template_strings:
+    for template_str in extract_template_strings_from_config(config):
         try:
-            # async_extract_entities_from_template_string already handles
+            # _extract_entities_from_template_string already handles
             # TemplateError and other exceptions internally, logging them.
             if template_str not in extracted_templates:
-                extracted_templates[
-                    template_str
-                ] = await async_extract_entities_from_template_string(
-                    hass, template_str, known_services, shadowed
+                extracted_templates[template_str] = (
+                    _extract_entities_from_template_string(
+                        template_str, known_services, shadowed
+                    )
                 )
-            referenced_entities = extracted_templates[template_str]
-            entities.update(referenced_entities)
+            entities.update(extracted_templates[template_str])
         # pylint: disable-next=broad-exception-caught
         except Exception as exc:  # noqa: BLE001 - Keep broad for unexpected issues
             # This catch is a safeguard; internal function should handle most.
