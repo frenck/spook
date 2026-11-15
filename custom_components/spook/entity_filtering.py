@@ -41,11 +41,16 @@ from homeassistant.helpers import (
     label_registry as lr,
 )
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.helpers.normalized_name_base_registry import normalize_name
 from homeassistant.helpers.template.helpers import resolve_area_id
 from homeassistant.util.hass_dict import HassKey
 
 from .const import LOGGER
-from .core_compat import async_get_child_device_ids, async_get_device_entries
+from .core_compat import (
+    async_get_child_device_ids,
+    async_get_child_devices,
+    async_get_device_entries,
+)
 from .listeners import async_listen_once_tracked
 
 if TYPE_CHECKING:
@@ -457,6 +462,18 @@ def async_get_all_area_ids(hass: HomeAssistant) -> set[str]:
     return set(area_registry.areas)
 
 
+def filter_known_area_ids(area_ids: set[str], known_area_ids: set[str]) -> set[str]:
+    """Filter out known area IDs.
+
+    The synchronous core of `async_filter_known_area_ids`, with the known
+    IDs already gathered: pure computation over plain data, so it can run
+    in an executor, away from the event loop.
+    """
+    return {
+        area_id for area_id in area_ids - known_area_ids if isinstance(area_id, str)
+    }
+
+
 @callback
 def async_filter_known_area_ids(
     hass: HomeAssistant, *, area_ids: set[str], known_area_ids: set[str] | None = None
@@ -464,9 +481,7 @@ def async_filter_known_area_ids(
     """Filter out known area IDs."""
     if known_area_ids is None:
         known_area_ids = async_get_all_area_ids(hass)
-    return {
-        area_id for area_id in area_ids - known_area_ids if isinstance(area_id, str)
-    }
+    return filter_known_area_ids(area_ids, known_area_ids)
 
 
 @callback
@@ -515,6 +530,22 @@ def is_device_id_shaped(value: str) -> bool:
     return bool(_DEVICE_ID_SHAPE.match(value))
 
 
+def filter_known_device_ids(
+    device_ids: set[str], known_device_ids: set[str]
+) -> set[str]:
+    """Filter out known device IDs.
+
+    The synchronous core of `async_filter_known_device_ids`, with the
+    known IDs already gathered: pure computation over plain data, so it
+    can run in an executor, away from the event loop.
+    """
+    return {
+        device_id
+        for device_id in device_ids - known_device_ids
+        if device_id and isinstance(device_id, str) and is_device_id_shaped(device_id)
+    }
+
+
 @callback
 def async_filter_known_device_ids(
     hass: HomeAssistant,
@@ -525,11 +556,7 @@ def async_filter_known_device_ids(
     """Filter out known device IDs."""
     if known_device_ids is None:
         known_device_ids = async_get_all_device_ids(hass)
-    return {
-        device_id
-        for device_id in device_ids - known_device_ids
-        if device_id and isinstance(device_id, str) and is_device_id_shaped(device_id)
-    }
+    return filter_known_device_ids(device_ids, known_device_ids)
 
 
 @callback
@@ -642,6 +669,20 @@ def async_get_all_floor_ids(hass: HomeAssistant) -> set[str]:
     return {floor.floor_id for floor in floor_registry.floors.values()}
 
 
+def filter_known_floor_ids(floor_ids: set[str], known_floor_ids: set[str]) -> set[str]:
+    """Filter out known floor IDs.
+
+    The synchronous core of `async_filter_known_floor_ids`, with the known
+    IDs already gathered: pure computation over plain data, so it can run
+    in an executor, away from the event loop.
+    """
+    return {
+        floor_id
+        for floor_id in floor_ids - known_floor_ids
+        if floor_id and isinstance(floor_id, str)
+    }
+
+
 @callback
 def async_filter_known_floor_ids(
     hass: HomeAssistant,
@@ -652,11 +693,7 @@ def async_filter_known_floor_ids(
     """Filter out known floor IDs."""
     if known_floor_ids is None:
         known_floor_ids = async_get_all_floor_ids(hass)
-    return {
-        floor_id
-        for floor_id in floor_ids - known_floor_ids
-        if floor_id and isinstance(floor_id, str)
-    }
+    return filter_known_floor_ids(floor_ids, known_floor_ids)
 
 
 @callback
@@ -664,6 +701,20 @@ def async_get_all_label_ids(hass: HomeAssistant) -> set[str]:
     """Return all label IDs, known to Home Assistant."""
     label_registry = lr.async_get(hass)
     return {label.label_id for label in label_registry.labels.values()}
+
+
+def filter_known_label_ids(label_ids: set[str], known_label_ids: set[str]) -> set[str]:
+    """Filter out known label IDs.
+
+    The synchronous core of `async_filter_known_label_ids`, with the known
+    IDs already gathered: pure computation over plain data, so it can run
+    in an executor, away from the event loop.
+    """
+    return {
+        label_id
+        for label_id in label_ids - known_label_ids
+        if label_id and isinstance(label_id, str)
+    }
 
 
 @callback
@@ -676,11 +727,7 @@ def async_filter_known_label_ids(
     """Filter out known label IDs."""
     if known_label_ids is None:
         known_label_ids = async_get_all_label_ids(hass)
-    return {
-        label_id
-        for label_id in label_ids - known_label_ids
-        if label_id and isinstance(label_id, str)
-    }
+    return filter_known_label_ids(label_ids, known_label_ids)
 
 
 @callback
@@ -752,6 +799,205 @@ def async_template_labels_not_found(hass: HomeAssistant, values: set[str]) -> se
     }
 
 
+@dataclass(frozen=True, slots=True)
+class TemplateAreaLookup:
+    """What the area lookups in templates resolve against, as plain data.
+
+    A snapshot of the area registry, taken on the event loop, so whether a
+    value finds an area can be decided away from it, in an executor.
+    `not_found` answers what `async_template_areas_not_found` answers by
+    asking the registry itself.
+    """
+
+    area_ids: frozenset[str]
+    names: frozenset[str]
+    aliases: frozenset[str]
+
+    def not_found(self, values: set[str]) -> set[str]:
+        """Return the values that find no area."""
+        return {
+            value
+            for value in values
+            if value not in self.area_ids
+            and normalize_name(value) not in self.names
+            and normalize_name(value) not in self.aliases
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class TemplateLabelLookup:
+    """What the label lookups in templates resolve against, as plain data.
+
+    A snapshot of the label registry, taken on the event loop, so whether
+    a value finds a label can be decided away from it, in an executor.
+    `not_found` answers what `async_template_labels_not_found` answers by
+    asking the registry itself.
+    """
+
+    label_ids: frozenset[str]
+    names: frozenset[str]
+
+    def not_found(self, values: set[str]) -> set[str]:
+        """Return the values that find no label."""
+        return {
+            value
+            for value in values
+            if value not in self.label_ids and normalize_name(value) not in self.names
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class TemplateFloorLookup:
+    """What the floor lookups in templates resolve against, as plain data.
+
+    A snapshot of the floor, area, entity and device registries, taken on
+    the event loop, so whether a value finds a floor can be decided away
+    from it, in an executor. `not_found` answers what
+    `async_template_floors_not_found` answers by asking the registries
+    themselves, including its detour through `resolve_area_id`: a value
+    that resolves to an area on a floor counts as finding that floor.
+    """
+
+    floor_ids: frozenset[str]
+    names: frozenset[str]
+    aliases: frozenset[str]
+    area_ids_by_name_or_alias: dict[str, str]
+    area_floor_ids: dict[str, str | None]
+    entity_area_ids: dict[str, str]
+    device_area_ids: dict[str, str]
+
+    def not_found(self, values: set[str]) -> set[str]:
+        """Return the values that find no floor."""
+        return {value for value in values if not self._finds_a_floor(value)}
+
+    def _finds_a_floor(self, value: str) -> bool:
+        if value in self.floor_ids:
+            return True
+        normalized = normalize_name(value)
+        if normalized not in self.names and normalized not in self.aliases:
+            return False
+
+        # The name only counts when `floor_name` did not take it first.
+        if (area_id := self._resolve_area_id(value)) is None:
+            return True
+        floor_id = self.area_floor_ids.get(area_id)
+        return not (floor_id and floor_id in self.floor_ids)
+
+    def _resolve_area_id(self, value: str) -> str | None:
+        """Resolve a value to an area ID, as `resolve_area_id` does."""
+        normalized = normalize_name(value)
+        if (area_id := self.area_ids_by_name_or_alias.get(normalized)) is not None:
+            return area_id
+        if (
+            valid_entity_id(value)
+            and (area_id := self.entity_area_ids.get(value)) is not None
+        ):
+            return area_id
+        return self.device_area_ids.get(value)
+
+
+@callback
+def async_get_template_area_lookup(hass: HomeAssistant) -> TemplateAreaLookup:
+    """Return what the area lookups in templates resolve against, snapshotted."""
+    areas = ar.async_get(hass).areas.values()
+    return TemplateAreaLookup(
+        area_ids=frozenset(area.id for area in areas),
+        names=frozenset(area.normalized_name for area in areas),
+        aliases=frozenset(
+            normalize_name(alias) for area in areas for alias in area.aliases
+        ),
+    )
+
+
+@callback
+def async_get_template_label_lookup(hass: HomeAssistant) -> TemplateLabelLookup:
+    """Return what the label lookups in templates resolve against, snapshotted."""
+    labels = lr.async_get(hass).labels.values()
+    return TemplateLabelLookup(
+        label_ids=frozenset(label.label_id for label in labels),
+        names=frozenset(label.normalized_name for label in labels),
+    )
+
+
+@callback
+def async_get_template_floor_lookup(hass: HomeAssistant) -> TemplateFloorLookup:
+    """Return what the floor lookups in templates resolve against, snapshotted."""
+    areas = ar.async_get(hass).areas.values()
+    floors = fr.async_get(hass).floors.values()
+
+    # An area is resolved by name before by alias, as `resolve_area_id`
+    # asks, so the aliases only fill the names no area took.
+    area_ids_by_name_or_alias = {area.normalized_name: area.id for area in areas}
+    for area in areas:
+        for alias in area.aliases:
+            # The registry hands out the first area carrying an alias.
+            area_ids_by_name_or_alias.setdefault(normalize_name(alias), area.id)
+
+    device_area_ids = _async_get_effective_device_area_ids(hass)
+
+    entity_area_ids: dict[str, str] = {}
+    for entry in er.async_get(hass).entities.values():
+        area_id = entry.area_id
+        if area_id is None and entry.device_id is not None:
+            area_id = device_area_ids.get(entry.device_id)
+        if area_id is not None:
+            entity_area_ids[entry.entity_id] = area_id
+
+    return TemplateFloorLookup(
+        floor_ids=frozenset(floor.floor_id for floor in floors),
+        names=frozenset(floor.normalized_name for floor in floors),
+        aliases=frozenset(
+            normalize_name(alias) for floor in floors for alias in floor.aliases
+        ),
+        area_ids_by_name_or_alias=area_ids_by_name_or_alias,
+        area_floor_ids={area.id: area.floor_id for area in areas},
+        entity_area_ids=entity_area_ids,
+        device_area_ids=device_area_ids,
+    )
+
+
+@callback
+def _async_get_effective_device_area_ids(hass: HomeAssistant) -> dict[str, str]:
+    """Return the area each device resolves to, by device ID.
+
+    The effective area of `async_get_effective_area_id`: a device's own
+    area, or, for a child device without one, its parent's. A pre-split
+    composite device ID resolves to the area of the split Home Assistant
+    itself would take as the composite's base.
+    """
+    device_registry = dr.async_get(hass)
+    devices = {
+        device.id: device for device in async_get_device_entries(device_registry)
+    }
+    children = {
+        device.id: device for device in async_get_child_devices(device_registry)
+    }
+
+    area_ids: dict[str, str] = {}
+    for device_id, device in {**devices, **children}.items():
+        area_id = device.area_id
+        if area_id is None and (child := children.get(device_id)) is not None:
+            parent = devices.get(child.parent_device_id)
+            area_id = parent.area_id if parent is not None else None
+        if area_id is not None:
+            area_ids[device_id] = area_id
+
+    splits: dict[str, list[Any]] = {}
+    for device in devices.values():
+        if device.composite_device_id is not None:
+            splits.setdefault(device.composite_device_id, []).append(device)
+    for composite_id, split_devices in splits.items():
+        primary = split_devices[0].composite_primary_config_entry
+        base = next(
+            (device for device in split_devices if device.config_entry_id == primary),
+            split_devices[0],
+        )
+        if base.area_id is not None:
+            area_ids.setdefault(composite_id, base.area_id)
+
+    return area_ids
+
+
 @callback
 def async_get_all_services(hass: HomeAssistant) -> set[str]:
     """Return all services, known to Home Assistant."""
@@ -779,6 +1025,27 @@ def async_get_disabled_integrations(hass: HomeAssistant) -> set[str]:
     return with_entries - with_enabled_entries
 
 
+def filter_known_services(
+    services: set[str],
+    known_services: set[str],
+    disabled_integrations: set[str],
+) -> set[str]:
+    """Filter out known services.
+
+    The synchronous core of `async_filter_known_services`, with the known
+    services and the disabled integrations already gathered: pure
+    computation over plain data, so it can run in an executor, away from
+    the event loop.
+    """
+    return {
+        service.lower()
+        for service in services - known_services
+        if isinstance(service, str)
+        and service
+        and service.lower().split(".", 1)[0] not in disabled_integrations
+    }
+
+
 @callback
 def async_filter_known_services(
     hass: HomeAssistant, *, services: set[str], known_services: set[str] | None = None
@@ -793,15 +1060,9 @@ def async_filter_known_services(
     if known_services is None:
         known_services = async_get_all_services(hass)
 
-    disabled_integrations = async_get_disabled_integrations(hass)
-
-    return {
-        service.lower()
-        for service in services - known_services
-        if isinstance(service, str)
-        and service
-        and service.lower().split(".", 1)[0] not in disabled_integrations
-    }
+    return filter_known_services(
+        services, known_services, async_get_disabled_integrations(hass)
+    )
 
 
 def split_comma_separated_entity_ids(entity_id: str) -> list[str]:

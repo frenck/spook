@@ -1483,8 +1483,7 @@ def extract_entities_from_template_regex(
     return entities - known_services
 
 
-async def _process_template_object(  # noqa: PLR0913 # pylint: disable=too-many-arguments
-    hass: HomeAssistant,
+def _process_template_object(  # pylint: disable=too-many-arguments
     template: Template,
     known_entity_ids: set[str],
     known_services: set[str],
@@ -1498,8 +1497,13 @@ async def _process_template_object(  # noqa: PLR0913 # pylint: disable=too-many-
     # Use regex patterns on the template string
     try:
         if hasattr(template, "template") and template.template:
-            regex_entities = extract_entities_from_template_regex(
-                hass, template.template, known_services, shadowed
+            regex_entities = (
+                set(
+                    _extract_entity_candidates_from_template(
+                        template.template, shadowed
+                    )
+                )
+                - known_services
             )
             template_entities.update(regex_entities)
     # pylint: disable-next=broad-exception-caught
@@ -1512,8 +1516,7 @@ async def _process_template_object(  # noqa: PLR0913 # pylint: disable=too-many-
             unknown_entities.add(template_entity)
 
 
-async def _process_template_string(  # noqa: PLR0913 # pylint: disable=too-many-arguments
-    hass: HomeAssistant,
+def _process_template_string(  # pylint: disable=too-many-arguments
     template_str: str,
     known_entity_ids: set[str],
     known_services: set[str],
@@ -1522,8 +1525,8 @@ async def _process_template_string(  # noqa: PLR0913 # pylint: disable=too-many-
     shadowed: frozenset[str],
 ) -> None:
     """Process a template string and add unknown entities to the set."""
-    template_entities = await async_extract_entities_from_template_string(
-        hass, template_str, known_services, shadowed
+    template_entities = _extract_entities_from_template_string(
+        template_str, known_services, shadowed
     )
     # Check if any of the template entities are unknown
     for template_entity in template_entities:
@@ -1535,6 +1538,63 @@ async def _process_template_string(  # noqa: PLR0913 # pylint: disable=too-many-
                 and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
             ):
                 unknown_entities.add(entity_id)
+
+
+def filter_known_entity_ids_with_templates(
+    entity_ids: Iterable[str],
+    known_entity_ids: set[str],
+    known_services: set[str],
+    shadowed: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Filter out known entity IDs, reading templates for the rest.
+
+    The synchronous core of `async_filter_known_entity_ids_with_templates`,
+    with the known entity IDs and services already gathered: pure
+    computation over plain data, so it can run in an executor, away from
+    the event loop.
+    """
+    unknown_entities: set[str] = set()
+
+    for entity_id_raw in entity_ids:
+        # Handle Template objects
+        if isinstance(entity_id_raw, Template):
+            _process_template_object(
+                entity_id_raw,
+                known_entity_ids,
+                known_services,
+                unknown_entities,
+                shadowed=shadowed,
+            )
+            continue
+
+        if not isinstance(entity_id_raw, str):
+            continue
+
+        # Check if this looks like a template string
+        if is_template_string(entity_id_raw):
+            _process_template_string(
+                entity_id_raw,
+                known_entity_ids,
+                known_services,
+                unknown_entities,
+                shadowed=shadowed,
+            )
+        else:
+            # Process as regular entity ID(s), handling comma-separated lists
+            for entity_id in split_comma_separated_entity_ids(entity_id_raw):
+                if (
+                    not entity_id.startswith(NEVER_AN_ENTITY_PREFIXES)
+                    and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
+                    and entity_id not in known_entity_ids
+                    and valid_entity_id(entity_id)
+                ):
+                    # Process as regular entity ID
+                    unknown_entities.add(entity_id)
+
+    # Names that belong to an existing action are not entities: drop every
+    # candidate the service registry knows, which is what
+    # `async_drop_existing_action_names` asks it one candidate at a time.
+    return unknown_entities - known_services
 
 
 async def async_filter_known_entity_ids_with_templates(
@@ -1560,51 +1620,28 @@ async def async_filter_known_entity_ids_with_templates(
     if known_entity_ids is None:
         known_entity_ids = async_get_all_entity_ids(hass)
 
-    unknown_entities = set()
-
-    for entity_id_raw in entity_ids:
-        # Handle Template objects
-        if isinstance(entity_id_raw, Template):
-            if known_services is None:
-                known_services = async_get_all_services(hass)
-            await _process_template_object(
+    if known_services is None:
+        # Building the services flattens every service Home Assistant has,
+        # and only a template needs them told apart from entity IDs. Plain
+        # entity IDs never pay for the set: what survives the check is
+        # compared against the registry one candidate at a time instead.
+        entity_ids = list(entity_ids)
+        if not any(
+            isinstance(entity_id, Template)
+            or (isinstance(entity_id, str) and is_template_string(entity_id))
+            for entity_id in entity_ids
+        ):
+            return async_drop_existing_action_names(
                 hass,
-                entity_id_raw,
-                known_entity_ids,
-                known_services,
-                unknown_entities,
-                shadowed=shadowed,
+                filter_known_entity_ids_with_templates(
+                    entity_ids, known_entity_ids, set(), shadowed
+                ),
             )
-            continue
+        known_services = async_get_all_services(hass)
 
-        if not isinstance(entity_id_raw, str):
-            continue
-
-        # Check if this looks like a template string
-        if is_template_string(entity_id_raw):
-            if known_services is None:
-                known_services = async_get_all_services(hass)
-            await _process_template_string(
-                hass,
-                entity_id_raw,
-                known_entity_ids,
-                known_services,
-                unknown_entities,
-                shadowed=shadowed,
-            )
-        else:
-            # Process as regular entity ID(s), handling comma-separated lists
-            for entity_id in split_comma_separated_entity_ids(entity_id_raw):
-                if (
-                    not entity_id.startswith(NEVER_AN_ENTITY_PREFIXES)
-                    and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
-                    and entity_id not in known_entity_ids
-                    and valid_entity_id(entity_id)
-                ):
-                    # Process as regular entity ID
-                    unknown_entities.add(entity_id)
-
-    return async_drop_existing_action_names(hass, unknown_entities)
+    return filter_known_entity_ids_with_templates(
+        entity_ids, known_entity_ids, known_services, shadowed
+    )
 
 
 def extract_template_strings_from_config(

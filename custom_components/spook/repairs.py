@@ -7,11 +7,12 @@ import asyncio
 from contextlib import suppress
 from dataclasses import dataclass, field
 from datetime import timedelta
+from functools import partial
 import hashlib
 import importlib
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, Literal, final
 
 from homeassistant.components import blueprint, lovelace as lovelace_const
 from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
@@ -78,12 +79,16 @@ from .helper_sources import (
 )
 from .reference_extraction import (
     AttributeValue,
+    CoreReferenceKind,
     NamedReferences,
     async_collect_mentioned_strings,
     async_referencing,
     config_to_judge,
+    core_references,
     extract_attribute_references_from_config,
     extract_state_references_from_config,
+    only_in_disabled_steps,
+    raw_config_references,
 )
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
 from .repair_documentation import repair_documentation_url
@@ -671,6 +676,32 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         await super().async_deactivate()
 
 
+@dataclass(frozen=True, slots=True)
+class InspectedEntity:
+    """One entity of a round, as the computation reads it: plain data only.
+
+    Everything an unknown-references computation takes off an entity,
+    gathered on the event loop before the round's computation runs in the
+    executor: the configuration as written, what Home Assistant itself
+    says the entity references (of the one kind the repair reads, see
+    ``core_reference_kind`` on the repair), and the steps of its script.
+    Nothing here can reach back into Home Assistant, which is what makes
+    the computation safe to run on another thread.
+    """
+
+    raw_config: Any
+    referenced: frozenset[str]
+    action_sequence: Any
+
+    def core_references(self) -> set[str]:
+        """Return what Home Assistant says this entity references.
+
+        A copy, as `reference_extraction.core_references` makes of the
+        entity's own list: the computations add to what they are handed.
+        """
+        return set(self.referenced)
+
+
 class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, ABC):
     """Base class for repairs that find unknown references in component entities.
 
@@ -705,6 +736,14 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
     #: When the references are entities, enrich each with why it is unknown
     #: (deleted on/by, or a likely rename). Only set on entity repairs.
     references_are_entities: bool = False
+
+    #: Which of Home Assistant's own reference lists the computation reads
+    #: off an entity: "areas", "devices", "entities", "floors" or "labels".
+    #: Snapshotted with the entity (see `InspectedEntity`), one kind only:
+    #: a script's lists are worked out by walking its steps, so reading all
+    #: of them for every entity would put that walk back on the event loop.
+    #: ``None`` reads none of them.
+    core_reference_kind: CoreReferenceKind | None = None
 
     def _format_references(self, references: list[str]) -> str:
         """Return the bulleted reference list for the issue message."""
@@ -745,9 +784,146 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         """
         return True
 
-    @abstractmethod
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
+        """Return the set of unknown referenced IDs for a single entity.
+
+        The computation itself, as a plain function of the snapshot and of
+        what `_async_setup_inspection` cached: it runs in the executor, so
+        it must not touch Home Assistant. A repair whose computation cannot
+        work that way overrides `_async_compute_unknown_references` instead
+        and keeps the per-entity loop on the event loop.
+        """
+        raise NotImplementedError
+
+    def _compute_unknown_references_from_config(
+        self,
+        entity: InspectedEntity,
+        *,
+        kind: Literal["areas", "floors", "labels"],
+        not_found: Callable[[set[str]], set[str]],
+        known_ids: set[str],
+        filter_known: Callable[[set[str], set[str]], set[str]],
+    ) -> set[str]:
+        """Return the unknown references of ``entity``, from its snapshot.
+
+        What the area, floor and label repairs all do: what Home Assistant
+        itself says the entity references, plus a walk of the raw
+        configuration — the built-in extraction misses references nested
+        in some step types, like repeat sequences — with what the template
+        lookups name read too, and what only a disabled step names left
+        out, because a disabled step does nothing.
+        """
+        references = entity.core_references()
+
+        if raw_config := entity.raw_config:
+            walk = partial(raw_config_references, kind=kind, not_found=not_found)
+            references.update(walk(raw_config))
+            # Read the same way, or a template there still counts.
+            references -= only_in_disabled_steps(raw_config, walk)
+
+        return filter_known(references, known_ids)
+
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
-        """Return the set of unknown referenced IDs for a single entity."""
+        """Return the set of unknown referenced IDs for a single entity.
+
+        Runs the computation in the executor, from a snapshot of the
+        entity. A repair whose computation reaches for Home Assistant
+        while it works overrides this instead of
+        `_compute_unknown_references`.
+        """
+        return await self.hass.async_add_executor_job(
+            self._compute_unknown_references, self._snapshot_entity(entity)
+        )
+
+    def _computes_from_snapshots(self) -> bool:
+        """Return whether this repair computes from snapshots, in the executor."""
+        return self._compute_unknown_references.__func__ is not (
+            AbstractSpookEntityComponentUnknownReferencesRepair._compute_unknown_references
+        )
+
+    @callback
+    def _snapshot_entity(self, entity: Any) -> InspectedEntity:
+        """Return the entity as the computation reads it, as plain data."""
+        referenced: frozenset[str] = frozenset()
+        if self.core_reference_kind is not None:
+            referenced = frozenset(core_references(entity, self.core_reference_kind))
+
+        script = getattr(entity, "action_script", None)
+        if script is None:
+            script = getattr(entity, "script", None)
+
+        return InspectedEntity(
+            raw_config=getattr(entity, "raw_config", None),
+            referenced=referenced,
+            action_sequence=getattr(script, "sequence", None),
+        )
+
+    def _compute_unknown_references_for_all(
+        self, entities: list[InspectedEntity]
+    ) -> list[set[str]]:
+        """Return the unknown references of a whole round, in order.
+
+        Runs in the executor as one job: the walking and reading of every
+        configuration in the round, away from the event loop.
+        """
+        return [self._compute_unknown_references(entity) for entity in entities]
+
+    def _is_inspected_entity(self, entity: Any) -> bool:
+        """Return whether this round inspects the entity at all."""
+        unavailable_class = self.unavailable_entity_class
+        # pylint: disable-next=isinstance-second-argument-not-valid-type
+        if unavailable_class is not None and isinstance(entity, unavailable_class):
+            return False
+        return self._should_inspect_entity(entity)
+
+    async def _async_compute_findings(
+        self, entities: list[Any]
+    ) -> list[tuple[Any, list[str]]]:
+        """Return the round's findings: what each inspected entity gets wrong.
+
+        A repair that computes from snapshots has the whole round computed
+        in the executor, in one go: walking every configuration and reading
+        every template in it there keeps the event loop free while it
+        runs. What it works on is snapshotted here, on the loop, and the
+        findings are reported by the caller, also on the loop. Any other
+        repair is computed entity by entity, on the loop, as before.
+        """
+        if self._computes_from_snapshots():
+            inspected = [
+                entity for entity in entities if self._is_inspected_entity(entity)
+            ]
+
+            snapshots: list[InspectedEntity] = []
+            for index, entity in enumerate(inspected):
+                if index and index % INSPECTION_YIELD_INTERVAL == 0:
+                    await asyncio.sleep(0)
+                snapshots.append(self._snapshot_entity(entity))
+
+            unknowns = await self.hass.async_add_executor_job(
+                self._compute_unknown_references_for_all, snapshots
+            )
+            return [
+                (entity, sorted(unknown))
+                for entity, unknown in zip(inspected, unknowns, strict=True)
+                if unknown
+            ]
+
+        findings: list[tuple[Any, list[str]]] = []
+        for index, entity in enumerate(entities):
+            if index and index % INSPECTION_YIELD_INTERVAL == 0:
+                # Inspections are CPU-bound; periodically yield to the event
+                # loop so large installations do not stall it.
+                await asyncio.sleep(0)
+
+            if not self._is_inspected_entity(entity):
+                continue
+
+            unknown = await self._async_compute_unknown_references(entity)
+            if not unknown:
+                continue
+
+            findings.append((entity, sorted(unknown)))
+        return findings
 
     def _edit_url(self, entity: Any) -> str:
         """Return the URL to edit the given entity.
@@ -794,27 +970,7 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         # working out what it was probably meant to say, which is the most
         # expensive thing in the whole inspection, and gathering the round's
         # findings first lets all of that happen in one go. #1667.
-        findings: list[tuple[Any, list[str]]] = []
-
-        for index, entity in enumerate(entities):
-            if index and index % INSPECTION_YIELD_INTERVAL == 0:
-                # Inspections are CPU-bound; periodically yield to the event
-                # loop so large installations do not stall it.
-                await asyncio.sleep(0)
-
-            unavailable_class = self.unavailable_entity_class
-            # pylint: disable-next=isinstance-second-argument-not-valid-type
-            if unavailable_class is not None and isinstance(entity, unavailable_class):
-                continue
-
-            if not self._should_inspect_entity(entity):
-                continue
-
-            unknown = await self._async_compute_unknown_references(entity)
-            if not unknown:
-                continue
-
-            findings.append((entity, sorted(unknown)))
+        findings = await self._async_compute_findings(entities)
 
         if self.references_are_entities and findings:
             await async_warm_rename_suggestions(

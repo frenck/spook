@@ -11,7 +11,7 @@ from ....trigger_ids import unknown_trigger_ids
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
-    from typing import Any
+    from ....repairs import InspectedEntity
 
 
 class SpookRepair(AbstractSpookAutomationReferencesRepair):
@@ -41,8 +41,8 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     reference_label = "trigger_ids"
     edit_url_pattern = "/config/automation/edit/{unique_id}"
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return the trigger IDs ``entity`` checks for that it never has."""
-        if not (raw_config := getattr(entity, "raw_config", None)):
+        if not (raw_config := entity.raw_config):
             return set()
         return unknown_trigger_ids(raw_config)

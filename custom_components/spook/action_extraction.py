@@ -10,7 +10,6 @@ from homeassistant.const import ATTR_ENTITY_ID, CONF_ENABLED
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.service import async_get_all_descriptions
 
-from .const import LOGGER
 from .entity_filtering import (
     NEVER_AN_ENTITY_PREFIXES,
     async_get_all_services,
@@ -29,20 +28,111 @@ from .reference_extraction import (
 )
 from .template_extraction import (
     ENTITY_ID_PATTERN,
-    async_extract_entities_from_template_string,
-    async_filter_known_entity_ids_with_templates,
+    _extract_entities_from_template_string,
     extract_not_entity_ids_from_template,
+    filter_known_entity_ids_with_templates,
     is_template_string,
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable, Mapping
+    from collections.abc import Callable, Mapping
 
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import HomeAssistant, Service
 
 # The pattern enumerates every known domain, so it is long. This walker
 # visits every value in a configuration, so compile it once.
 _ENTITY_ID_RE = re.compile(rf"^{ENTITY_ID_PATTERN}$")
+
+
+def extract_entities_from_action_config(  # pylint: disable=too-many-arguments
+    config: dict[str, Any] | list,
+    *,
+    include_disabled: bool = True,
+    known_services: set[str],
+    _in_sequence: bool = False,
+    _in_payload: bool = False,
+    _is_payload: bool = False,
+    _in_values: bool = False,
+    _service: str | None = None,
+    shadowed: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Extract entity IDs from action configuration.
+
+    The synchronous core of `async_extract_entities_from_action_config`,
+    with the services already known: pure computation over plain data, so
+    it can run in an executor, away from the event loop. See that function
+    for what the arguments are.
+    """
+    entities = set()
+
+    if not config:
+        return entities
+
+    if isinstance(config, list):
+        for item in config:
+            entities.update(
+                extract_entities_from_action_config(
+                    item,
+                    include_disabled=include_disabled,
+                    known_services=known_services,
+                    _in_sequence=True,
+                    _in_payload=_in_payload,
+                    _is_payload=_is_payload,
+                    _in_values=_in_values,
+                    _service=_service,
+                    shadowed=shadowed,
+                )
+            )
+        return entities
+
+    if not isinstance(config, dict):
+        return entities
+
+    if (
+        not include_disabled
+        and _in_sequence
+        and not _in_payload
+        and config.get(CONF_ENABLED) is False
+    ):
+        return entities
+
+    # The action's own name wins. A `service` key on the `data` payload is a
+    # field, not a new action, so the name from further out still applies.
+    service = _get_action_service(config, is_payload=_is_payload) or _service
+
+    # Extract entity IDs from direct fields
+    entities.update(
+        _extract_entities_from_action_fields(config, known_services, shadowed)
+    )
+
+    # A condition or a trigger waited for in a step can compare against an
+    # entity. Below a key that holds values, like action data, event data or
+    # variables, nothing is either, whatever its shape.
+    if not _in_values:
+        entities.update(threshold_entities(config))
+
+    # Extract entities from target configuration
+    entities.update(_extract_entities_from_target(config, known_services, shadowed))
+
+    # Extract entities from service data
+    entities.update(
+        _extract_entities_from_service_data(config, known_services, service, shadowed)
+    )
+
+    # Extract from nested configs (like if/then/else, repeat, etc.)
+    entities.update(
+        _extract_entities_from_nested_configs(
+            config,
+            known_services,
+            include_disabled=include_disabled,
+            in_payload=_in_payload,
+            _in_values=_in_values,
+            _service=service,
+            shadowed=shadowed,
+        )
+    )
+
+    return entities
 
 
 async def async_extract_entities_from_action_config(
@@ -85,87 +175,20 @@ async def async_extract_entities_from_action_config(
     templates, as `reference_extraction.names_given_to_templates` finds
     them. This walks a part of it, so it cannot find them itself.
     """
-    entities = set()
-
-    if not config:
-        return entities
-
     if known_services is None:
         known_services = async_get_all_services(hass)
 
-    if isinstance(config, list):
-        for item in config:
-            entities.update(
-                await async_extract_entities_from_action_config(
-                    hass,
-                    item,
-                    include_disabled=include_disabled,
-                    known_services=known_services,
-                    _in_sequence=True,
-                    _in_payload=_in_payload,
-                    _is_payload=_is_payload,
-                    _in_values=_in_values,
-                    _service=_service,
-                    shadowed=shadowed,
-                )
-            )
-        return entities
-
-    if not isinstance(config, dict):
-        return entities
-
-    if (
-        not include_disabled
-        and _in_sequence
-        and not _in_payload
-        and config.get(CONF_ENABLED) is False
-    ):
-        return entities
-
-    # The action's own name wins. A `service` key on the `data` payload is a
-    # field, not a new action, so the name from further out still applies.
-    service = _get_action_service(config, is_payload=_is_payload) or _service
-
-    # Extract entity IDs from direct fields
-    entities.update(
-        await _extract_entities_from_action_fields(
-            hass, config, known_services, shadowed
-        )
+    return extract_entities_from_action_config(
+        config,
+        include_disabled=include_disabled,
+        known_services=known_services,
+        _in_sequence=_in_sequence,
+        _in_payload=_in_payload,
+        _is_payload=_is_payload,
+        _in_values=_in_values,
+        _service=_service,
+        shadowed=shadowed,
     )
-
-    # A condition or a trigger waited for in a step can compare against an
-    # entity. Below a key that holds values, like action data, event data or
-    # variables, nothing is either, whatever its shape.
-    if not _in_values:
-        entities.update(threshold_entities(config))
-
-    # Extract entities from target configuration
-    entities.update(
-        await _extract_entities_from_target(hass, config, known_services, shadowed)
-    )
-
-    # Extract entities from service data
-    entities.update(
-        await _extract_entities_from_service_data(
-            hass, config, known_services, service, shadowed
-        )
-    )
-
-    # Extract from nested configs (like if/then/else, repeat, etc.)
-    entities.update(
-        await _extract_entities_from_nested_configs(
-            hass,
-            config,
-            known_services,
-            include_disabled=include_disabled,
-            in_payload=_in_payload,
-            _in_values=_in_values,
-            _service=service,
-            shadowed=shadowed,
-        )
-    )
-
-    return entities
 
 
 async def async_extract_entities_from_helper_actions(
@@ -202,8 +225,7 @@ async def async_extract_entities_from_helper_actions(
     return entities
 
 
-async def _extract_entities_from_action_fields(
-    hass: HomeAssistant,
+def _extract_entities_from_action_fields(
     config: dict[str, Any],
     known_services: set[str],
     shadowed: frozenset[str],
@@ -213,15 +235,14 @@ async def _extract_entities_from_action_fields(
     for key in ("entity_id", "device_id"):
         if key in config:
             entities.update(
-                await async_extract_entities_from_value(
-                    hass, config[key], known_services=known_services, shadowed=shadowed
+                extract_entities_from_value(
+                    config[key], known_services=known_services, shadowed=shadowed
                 )
             )
     return entities
 
 
-async def _extract_entities_from_target(
-    hass: HomeAssistant,
+def _extract_entities_from_target(
     config: dict[str, Any],
     known_services: set[str],
     shadowed: frozenset[str],
@@ -233,8 +254,7 @@ async def _extract_entities_from_target(
         for key in ("entity_id", "device_id", "area_id", "label_id"):
             if key in target:
                 entities.update(
-                    await async_extract_entities_from_value(
-                        hass,
+                    extract_entities_from_value(
                         target[key],
                         known_services=known_services,
                         shadowed=shadowed,
@@ -294,8 +314,7 @@ def _is_plain_text(service: str | None, key: str, value: Any) -> bool:
     )
 
 
-async def _extract_entities_from_service_data(
-    hass: HomeAssistant,
+def _extract_entities_from_service_data(
     config: dict[str, Any],
     known_services: set[str],
     service: str | None,
@@ -308,8 +327,8 @@ async def _extract_entities_from_service_data(
         if isinstance(data_value, str):
             # data field is a template string itself
             entities.update(
-                await async_extract_entities_from_value(
-                    hass, data_value, known_services=known_services, shadowed=shadowed
+                extract_entities_from_value(
+                    data_value, known_services=known_services, shadowed=shadowed
                 )
             )
         elif isinstance(data_value, dict):
@@ -320,23 +339,20 @@ async def _extract_entities_from_service_data(
                 if _is_plain_text(service, key, value):
                     continue
                 entities.update(
-                    await async_extract_entities_from_value(
-                        hass, value, known_services=known_services, shadowed=shadowed
+                    extract_entities_from_value(
+                        value, known_services=known_services, shadowed=shadowed
                     )
                 )
 
     if service == "script.turn_on":
         entities.update(
-            await _extract_entities_from_script_variables(
-                hass, config, known_services, shadowed
-            )
+            _extract_entities_from_script_variables(config, known_services, shadowed)
         )
 
     return entities
 
 
-async def _extract_entities_from_script_variables(
-    hass: HomeAssistant,
+def _extract_entities_from_script_variables(
     config: dict[str, Any],
     known_services: set[str],
     shadowed: frozenset[str],
@@ -361,8 +377,8 @@ async def _extract_entities_from_script_variables(
 
         for value in variables.values():
             entities.update(
-                await async_extract_entities_from_value(
-                    hass, value, known_services=known_services, shadowed=shadowed
+                extract_entities_from_value(
+                    value, known_services=known_services, shadowed=shadowed
                 )
             )
 
@@ -374,8 +390,7 @@ async def _extract_entities_from_script_variables(
 _ACTION_DATA_KEYS = frozenset({"data", "data_template"})
 
 
-async def _extract_entities_from_nested_configs(  # noqa: PLR0913 # pylint: disable=too-many-arguments
-    hass: HomeAssistant,
+def _extract_entities_from_nested_configs(  # pylint: disable=too-many-arguments
     config: dict[str, Any],
     known_services: set[str],
     *,
@@ -400,8 +415,7 @@ async def _extract_entities_from_nested_configs(  # noqa: PLR0913 # pylint: disa
             continue
         if isinstance(value, (dict, list)):
             entities.update(
-                await async_extract_entities_from_action_config(
-                    hass,
+                extract_entities_from_action_config(
                     value,
                     include_disabled=include_disabled,
                     known_services=known_services,
@@ -412,6 +426,50 @@ async def _extract_entities_from_nested_configs(  # noqa: PLR0913 # pylint: disa
                     shadowed=shadowed,
                 )
             )
+    return entities
+
+
+def extract_entities_from_value(
+    value: Any,
+    *,
+    known_services: set[str],
+    shadowed: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Extract entity IDs from a configuration value.
+
+    The synchronous core of `async_extract_entities_from_value`, with the
+    services already known: pure computation over plain data, so it can
+    run in an executor, away from the event loop.
+    """
+    entities = set()
+
+    if isinstance(value, str):
+        # Check if it's a template string using util.is_template_string
+        if is_template_string(value):
+            # Process as template to extract entity references
+            entities.update(
+                _extract_entities_from_template_string(value, known_services, shadowed)
+            )
+        elif not value.startswith(NEVER_AN_ENTITY_PREFIXES) and _ENTITY_ID_RE.match(
+            value
+        ):
+            # Check if it matches the entity ID pattern with known domains
+            entities.add(value)
+    elif isinstance(value, list):
+        for item in value:
+            entities.update(
+                extract_entities_from_value(
+                    item, known_services=known_services, shadowed=shadowed
+                )
+            )
+    elif (
+        isinstance(value, dict)
+        and isinstance(value.get("entity"), str)
+        and not value["entity"].startswith(NEVER_AN_ENTITY_PREFIXES)
+    ):
+        # Handle entity dict format like {"entity": "light.living_room"}
+        entities.add(value["entity"])
+
     return entities
 
 
@@ -427,49 +485,12 @@ async def async_extract_entities_from_value(
     See `async_extract_entities_from_action_config` for what
     ``known_services`` and ``shadowed`` are and why passing them in matters.
     """
-    entities = set()
+    if known_services is None:
+        known_services = async_get_all_services(hass)
 
-    if isinstance(value, str):
-        # Check if it's a template string using util.is_template_string
-        if is_template_string(value):
-            # Process as template to extract entity references
-            if known_services is None:
-                known_services = async_get_all_services(hass)
-            try:
-                template_entities = await async_extract_entities_from_template_string(
-                    hass, value, known_services, shadowed
-                )
-                entities.update(template_entities)
-            # pylint: disable-next=broad-exception-caught
-            except Exception as exc:  # noqa: BLE001 - Keep broad for unexpected template issues
-                LOGGER.debug(
-                    "Failed to extract entities from template: %s, error: %s",
-                    value,
-                    exc,
-                )
-        elif not value.startswith(NEVER_AN_ENTITY_PREFIXES) and _ENTITY_ID_RE.match(
-            value
-        ):
-            # Check if it matches the entity ID pattern with known domains
-            entities.add(value)
-    elif isinstance(value, list):
-        if known_services is None:
-            known_services = async_get_all_services(hass)
-        for item in value:
-            entities.update(
-                await async_extract_entities_from_value(
-                    hass, item, known_services=known_services, shadowed=shadowed
-                )
-            )
-    elif (
-        isinstance(value, dict)
-        and isinstance(value.get("entity"), str)
-        and not value["entity"].startswith(NEVER_AN_ENTITY_PREFIXES)
-    ):
-        # Handle entity dict format like {"entity": "light.living_room"}
-        entities.add(value["entity"])
-
-    return entities
+    return extract_entities_from_value(
+        value, known_services=known_services, shadowed=shadowed
+    )
 
 
 # How Home Assistant's own actions check an `entity_id` handed to them. An
@@ -483,16 +504,21 @@ _ENTITY_ID_VALIDATORS = (cv.entity_id, cv.entity_ids, cv.comp_entity_ids)
 _DATA_KEYS_LAST_FIRST = ("data_template", "data")
 
 
-def _action_checks_entity_id(hass: HomeAssistant, action: str) -> bool:
+def _action_checks_entity_id(
+    services: Mapping[str, Mapping[str, Service]], action: str
+) -> bool:
     """Return whether this action refuses an `entity_id` that is no entity ID.
 
     Home Assistant only checks action data when the action runs, against
     the action's own schema. One that has no schema, or keeps `entity_id`
     for something of its own, like a script handed it as a field, takes
     anything. So only an action that exists right now, and checks it.
+
+    ``services`` is the service registry as `hass.services.async_services`
+    hands it out, snapshotted on the event loop.
     """
     domain, _, service = action.lower().partition(".")
-    registered = hass.services.async_services_for_domain(domain).get(service)
+    registered = services.get(domain, {}).get(service)
     if registered is None or (schema := registered.schema) is None:
         return False
 
@@ -527,14 +553,16 @@ def _data_entity_id(config: dict[str, Any]) -> Any:
     return None
 
 
-def _not_entity_ids_in_data(hass: HomeAssistant, config: dict[str, Any]) -> set[str]:
+def _not_entity_ids_in_data(
+    services: Mapping[str, Mapping[str, Service]], config: dict[str, Any]
+) -> set[str]:
     """Return what an action hands over as `entity_id` data that is no entity ID.
 
     The old way of writing a target. Home Assistant takes text with commas
     as a list, and a template in there is whatever it renders to.
     """
     action = _get_action_service(config)
-    if action is None or not _action_checks_entity_id(hass, action):
+    if action is None or not _action_checks_entity_id(services, action):
         return set()
 
     value = _data_entity_id(config)
@@ -550,7 +578,7 @@ def _not_entity_ids_in_data(hass: HomeAssistant, config: dict[str, Any]) -> set[
 
 
 def _collect_not_entity_ids(
-    hass: HomeAssistant,
+    services: Mapping[str, Mapping[str, Service]],
     config: Any,
     shadowed: frozenset[str],
     found: set[str],
@@ -566,7 +594,9 @@ def _collect_not_entity_ids(
 
     if isinstance(config, list):
         for item in config:
-            _collect_not_entity_ids(hass, item, shadowed, found, in_values=in_values)
+            _collect_not_entity_ids(
+                services, item, shadowed, found, in_values=in_values
+            )
         return
 
     if not isinstance(config, dict):
@@ -574,7 +604,7 @@ def _collect_not_entity_ids(
 
     # Below a key that holds values, nothing is an action, whatever its shape.
     if not in_values:
-        found.update(_not_entity_ids_in_data(hass, config))
+        found.update(_not_entity_ids_in_data(services, config))
 
     # Somebody's own event is whatever the sender puts there.
     payload_keys = event_payload_keys_to_leave_alone(config)
@@ -582,8 +612,27 @@ def _collect_not_entity_ids(
         if key in payload_keys:
             continue
         _collect_not_entity_ids(
-            hass, value, shadowed, found, in_values=in_values or key in VALUE_KEYS
+            services, value, shadowed, found, in_values=in_values or key in VALUE_KEYS
         )
+
+
+def not_entity_ids_from_config(
+    services: Mapping[str, Mapping[str, Service]], config: Any
+) -> set[str]:
+    """Return what an automation or script names as an entity that is no entity ID.
+
+    The synchronous core of `extract_not_entity_ids_from_config`, with the
+    service registry already snapshotted: pure computation over plain
+    data, so it can run in an executor, away from the event loop.
+    """
+    found: set[str] = set()
+    _collect_not_entity_ids(
+        services,
+        without_never_rendered(without_disabled_steps(config)),
+        names_given_to_templates(config),
+        found,
+    )
+    return found
 
 
 def extract_not_entity_ids_from_config(hass: HomeAssistant, config: Any) -> set[str]:
@@ -599,24 +648,17 @@ def extract_not_entity_ids_from_config(hass: HomeAssistant, config: Any) -> set[
     rendered, so neither is read. A name the configuration gives its
     templates hides a lookup called by that name.
     """
-    found: set[str] = set()
-    _collect_not_entity_ids(
-        hass,
-        without_never_rendered(without_disabled_steps(config)),
-        names_given_to_templates(config),
-        found,
-    )
-    return found
+    return not_entity_ids_from_config(hass.services.async_services(), config)
 
 
-async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-many-arguments
-    hass: HomeAssistant,
+def unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-many-arguments
     entity_ids: set[str],
     raw_config: Any,
     *,
-    named_in: Callable[[dict[str, Any], frozenset[str]], Awaitable[set[str]]],
+    named_in: Callable[[dict[str, Any], frozenset[str]], set[str]],
     known_entity_ids: set[str],
     known_services: set[str],
+    services: Mapping[str, Mapping[str, Service]],
 ) -> set[str]:
     """Return which of what an automation or script names does not exist.
 
@@ -624,11 +666,15 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
     included, and `named_in` reads a configuration the way the repair does,
     with the names the whole configuration gives its templates. Shared by the
     automation and script repairs, which settle it the same way.
+
+    Synchronous, over plain data: the service registry is snapshotted into
+    `services` on the event loop, so the whole settlement can run in an
+    executor, away from the event loop.
     """
     entity_ids = set(entity_ids)
     shadowed = names_given_to_templates(raw_config)
     if isinstance(raw_config, dict):
-        named = await named_in(raw_config, shadowed)
+        named = named_in(raw_config, shadowed)
 
         # Home Assistant's own list takes the `entity_id` of somebody's own
         # event too, which is data from the sender, and the made-up entity
@@ -644,23 +690,22 @@ async def async_unknown_entities_named(  # noqa: PLR0913 # pylint: disable=too-m
         # a disabled part holds goes as well, whichever key it sits under.
         # The names stay those of all of it: a variable set in a disabled
         # step still hides the lookup in a template that runs.
-        still_named = await named_in(without_disabled_steps(raw_config), shadowed)
+        still_named = named_in(without_disabled_steps(raw_config), shadowed)
         entity_ids -= (
             named | mentioned_only_in_disabled_steps(raw_config)
         ) - still_named
 
-    unknown = await async_filter_known_entity_ids_with_templates(
-        hass,
-        entity_ids=entity_ids,
-        known_entity_ids=known_entity_ids,
-        known_services=known_services,
-        shadowed=shadowed,
+    unknown = filter_known_entity_ids_with_templates(
+        entity_ids,
+        known_entity_ids,
+        known_services,
+        shadowed,
     )
 
     # Where an entity ID goes, something that is no entity ID at all finds
     # nothing, whatever exists. Listed with the rest, said apart.
     if isinstance(raw_config, dict):
-        unknown |= extract_not_entity_ids_from_config(hass, raw_config)
+        unknown |= not_entity_ids_from_config(services, raw_config)
 
     return unknown
 
@@ -802,7 +847,9 @@ def extract_config_entry_references_from_config(
 
 
 def unknown_config_entries(
-    hass: HomeAssistant, config: Any, fields: ConfigEntryFields
+    config: Any,
+    fields: ConfigEntryFields,
+    entry_domains: Mapping[str, str],
 ) -> set[str]:
     """Return the config entries an automation or script names that go nowhere.
 
@@ -810,12 +857,16 @@ def unknown_config_entries(
     action asks for. Home Assistant refuses both, but only when the step runs.
     An entry that exists but is not loaded right now is runtime state, not a
     mistake in the configuration, so that one is left alone.
+
+    ``entry_domains`` is every config entry there is, by ID, with the
+    integration it belongs to: snapshotted on the event loop, so this can
+    run in an executor, away from it.
     """
     unknown: set[str] = set()
     for entry_id, integration in extract_config_entry_references_from_config(
         config, fields
     ):
-        entry = hass.config_entries.async_get_entry(entry_id)
-        if entry is None or (integration is not None and entry.domain != integration):
+        domain = entry_domains.get(entry_id)
+        if domain is None or (integration is not None and domain != integration):
             unknown.add(entry_id)
     return unknown

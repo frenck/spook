@@ -9,55 +9,100 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
-    async_extract_entities_from_action_config,
-    async_extract_entities_from_value,
-    async_unknown_entities_named,
+    extract_entities_from_action_config,
+    extract_entities_from_value,
+    unknown_entities_named,
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
     VALUE_KEYS,
-    core_references,
     event_payload_keys_to_leave_alone,
     extract_platform_keys_from_config,
     names_given_to_templates,
     threshold_entities,
     without_never_rendered,
 )
-from ....template_extraction import (
-    async_extract_entities_from_config,
-)
+from ....template_extraction import _extract_entities_from_config
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
-    from homeassistant.core import HomeAssistant
+    from collections.abc import Mapping
+
+    from homeassistant.core import HomeAssistant, Service
+
+    from ....repairs import InspectedEntity
 
 
-async def extract_template_entities_from_automation_entity(
-    hass: HomeAssistant,
-    entity: Any,
-    known_services: set[str] | None = None,
+def extract_template_entities_from_config(
+    raw_config: Any,
+    known_services: set[str],
 ) -> set[str]:
-    """Extract entities from automation configuration using Template analysis.
+    """Extract the entities the templates in a raw configuration name.
 
-    This function finds template strings in automation configuration and creates
-    Template objects to extract entity references using Template.async_render_to_info().
-    This provides more comprehensive entity detection than regex-based parsing alone.
+    Every template string in it, read the way
+    `template_extraction._extract_entities_from_config` reads them.
     """
-    # Get the automation configuration
-    config = None
-    if hasattr(entity, "raw_config") and entity.raw_config:
-        config = entity.raw_config
-    else:
+    if not raw_config:
         return set()
 
     # A description, a name or a field example is shown, never rendered: an
     # entity in an example template there is not one the automation uses.
-    return await async_extract_entities_from_config(
-        hass,
-        without_never_rendered(config),
+    return _extract_entities_from_config(
+        without_never_rendered(raw_config),
         known_services,
-        names_given_to_templates(config),
+        names_given_to_templates(raw_config),
     )
+
+
+def _extract_entities_from_automation_config(
+    config: dict[str, Any],
+    known_services: set[str],
+    shadowed: frozenset[str] | None = None,
+) -> set[str]:
+    """Extract entity IDs from automation configuration.
+
+    The synchronous core of `extract_entities_from_automation_config`,
+    with the services already known: pure computation over plain data, so
+    it can run in an executor, away from the event loop.
+    """
+    entities = set()
+
+    if not isinstance(config, dict):
+        return entities
+
+    if shadowed is None:
+        shadowed = names_given_to_templates(config)
+
+    # Extract entities from trigger config
+    for key in ("trigger", "triggers"):
+        if key in config:
+            entities.update(
+                _extract_entities_from_trigger_config(
+                    config[key], known_services, shadowed=shadowed
+                )
+            )
+
+    # Extract entities from condition config
+    for key in ("condition", "conditions"):
+        if key in config:
+            entities.update(
+                _extract_entities_from_condition_config(
+                    config[key], known_services, shadowed=shadowed
+                )
+            )
+
+    # Extract entities from action config
+    for key in ("action", "actions"):
+        if key in config:
+            entities.update(
+                extract_entities_from_action_config(
+                    config[key],
+                    known_services=known_services,
+                    shadowed=shadowed,
+                )
+            )
+
+    return entities
 
 
 async def extract_entities_from_automation_config(
@@ -77,51 +122,12 @@ async def extract_entities_from_automation_config(
     `states`, are taken from all of it here, before walking its parts,
     unless ``shadowed`` already holds them.
     """
-    entities = set()
-
-    if not isinstance(config, dict):
-        return entities
-
     if known_services is None:
         known_services = async_get_all_services(hass)
-    if shadowed is None:
-        shadowed = names_given_to_templates(config)
-
-    # Extract entities from trigger config
-    for key in ("trigger", "triggers"):
-        if key in config:
-            entities.update(
-                await extract_entities_from_trigger_config(
-                    hass, config[key], known_services, shadowed=shadowed
-                )
-            )
-
-    # Extract entities from condition config
-    for key in ("condition", "conditions"):
-        if key in config:
-            entities.update(
-                await extract_entities_from_condition_config(
-                    hass, config[key], known_services, shadowed=shadowed
-                )
-            )
-
-    # Extract entities from action config
-    for key in ("action", "actions"):
-        if key in config:
-            entities.update(
-                await async_extract_entities_from_action_config(
-                    hass,
-                    config[key],
-                    known_services=known_services,
-                    shadowed=shadowed,
-                )
-            )
-
-    return entities
+    return _extract_entities_from_automation_config(config, known_services, shadowed)
 
 
-async def _entities_from_reference_fields(
-    hass: HomeAssistant,
+def _entities_from_reference_fields(
     config: dict[str, Any],
     known_services: set[str],
     *,
@@ -140,35 +146,35 @@ async def _entities_from_reference_fields(
     for key in ("entity_id", "device_id", "zone"):
         if key in config:
             entities.update(
-                await async_extract_entities_from_value(
-                    hass, config[key], known_services=known_services, shadowed=shadowed
+                extract_entities_from_value(
+                    config[key], known_services=known_services, shadowed=shadowed
                 )
             )
     return entities
 
 
-async def extract_entities_from_trigger_config(
-    hass: HomeAssistant,
+def _extract_entities_from_trigger_config(
     config: dict[str, Any] | list,
-    known_services: set[str] | None = None,
+    known_services: set[str],
     *,
     _in_values: bool = False,
     shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
-    """Extract entity IDs from trigger configuration."""
+    """Extract entity IDs from trigger configuration.
+
+    The synchronous core of `extract_entities_from_trigger_config`, with
+    the services already known: pure computation over plain data, so it
+    can run in an executor, away from the event loop.
+    """
     entities = set()
 
     if not config:
         return entities
 
-    if known_services is None:
-        known_services = async_get_all_services(hass)
-
     if isinstance(config, list):
         for item in config:
             entities.update(
-                await extract_entities_from_trigger_config(
-                    hass,
+                _extract_entities_from_trigger_config(
                     item,
                     known_services,
                     _in_values=_in_values,
@@ -181,8 +187,8 @@ async def extract_entities_from_trigger_config(
         return entities
 
     entities.update(
-        await _entities_from_reference_fields(
-            hass, config, known_services, in_values=_in_values, shadowed=shadowed
+        _entities_from_reference_fields(
+            config, known_services, in_values=_in_values, shadowed=shadowed
         )
     )
 
@@ -195,8 +201,7 @@ async def extract_entities_from_trigger_config(
 
         if isinstance(value, (dict, list)):
             entities.update(
-                await extract_entities_from_trigger_config(
-                    hass,
+                _extract_entities_from_trigger_config(
                     value,
                     known_services,
                     _in_values=_in_values or key in VALUE_KEYS,
@@ -205,6 +210,26 @@ async def extract_entities_from_trigger_config(
             )
 
     return entities
+
+
+async def extract_entities_from_trigger_config(
+    hass: HomeAssistant,
+    config: dict[str, Any] | list,
+    known_services: set[str] | None = None,
+    *,
+    _in_values: bool = False,
+    shadowed: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Extract entity IDs from trigger configuration."""
+    if not config:
+        return set()
+
+    if known_services is None:
+        known_services = async_get_all_services(hass)
+
+    return _extract_entities_from_trigger_config(
+        config, known_services, _in_values=_in_values, shadowed=shadowed
+    )
 
 
 def extract_event_types_from_trigger_config(config: dict[str, Any] | list) -> set[str]:
@@ -235,28 +260,28 @@ def extract_event_types_from_trigger_config(config: dict[str, Any] | list) -> se
     return event_types
 
 
-async def extract_entities_from_condition_config(
-    hass: HomeAssistant,
+def _extract_entities_from_condition_config(
     config: dict[str, Any] | list,
-    known_services: set[str] | None = None,
+    known_services: set[str],
     *,
     _in_values: bool = False,
     shadowed: frozenset[str] = frozenset(),
 ) -> set[str]:
-    """Extract entity IDs from condition configuration."""
+    """Extract entity IDs from condition configuration.
+
+    The synchronous core of `extract_entities_from_condition_config`, with
+    the services already known: pure computation over plain data, so it
+    can run in an executor, away from the event loop.
+    """
     entities = set()
 
     if not config:
         return entities
 
-    if known_services is None:
-        known_services = async_get_all_services(hass)
-
     if isinstance(config, list):
         for item in config:
             entities.update(
-                await extract_entities_from_condition_config(
-                    hass,
+                _extract_entities_from_condition_config(
                     item,
                     known_services,
                     _in_values=_in_values,
@@ -269,8 +294,8 @@ async def extract_entities_from_condition_config(
         return entities
 
     entities.update(
-        await _entities_from_reference_fields(
-            hass, config, known_services, in_values=_in_values, shadowed=shadowed
+        _entities_from_reference_fields(
+            config, known_services, in_values=_in_values, shadowed=shadowed
         )
     )
 
@@ -278,8 +303,7 @@ async def extract_entities_from_condition_config(
     for key, value in config.items():
         if isinstance(value, (dict, list)):
             entities.update(
-                await extract_entities_from_condition_config(
-                    hass,
+                _extract_entities_from_condition_config(
                     value,
                     known_services,
                     _in_values=_in_values or key in VALUE_KEYS,
@@ -288,6 +312,26 @@ async def extract_entities_from_condition_config(
             )
 
     return entities
+
+
+async def extract_entities_from_condition_config(
+    hass: HomeAssistant,
+    config: dict[str, Any] | list,
+    known_services: set[str] | None = None,
+    *,
+    _in_values: bool = False,
+    shadowed: frozenset[str] = frozenset(),
+) -> set[str]:
+    """Extract entity IDs from condition configuration."""
+    if not config:
+        return set()
+
+    if known_services is None:
+        known_services = async_get_all_services(hass)
+
+    return _extract_entities_from_condition_config(
+        config, known_services, _in_values=_in_values, shadowed=shadowed
+    )
 
 
 class SpookRepair(AbstractSpookAutomationReferencesRepair):
@@ -308,9 +352,11 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     reference_label = "entities"
     references_are_entities = True
     edit_url_pattern = "/config/automation/edit/{unique_id}"
+    core_reference_kind = "entities"
 
     _known_entity_ids: set[str]
     _known_services: set[str]
+    _services: Mapping[str, Mapping[str, Service]]
 
     async def _async_setup_inspection(self) -> None:
         """Cache what every automation in this cycle needs looked up.
@@ -323,10 +369,12 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
             self.hass, include_all_none=True
         )
         self._known_services = async_get_all_services(self.hass)
+        # The registry itself, for telling what an action hands over as an
+        # `entity_id` that is no entity ID: read on the event loop, so the
+        # computation in the executor never has to reach back for it.
+        self._services = self.hass.services.async_services()
 
-    async def _async_named_in(
-        self, config: dict[str, Any], shadowed: frozenset[str]
-    ) -> set[str]:
+    def _named_in(self, config: dict[str, Any], shadowed: frozenset[str]) -> set[str]:
         """Return the entities a configuration names, the way this repair reads it.
 
         The same reading the report is built from, structure and templates
@@ -334,37 +382,36 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         exactly what only those name. ``shadowed`` comes from the whole
         configuration, as `config` can be one without its disabled steps.
         """
-        named = await extract_entities_from_automation_config(
-            self.hass, config, self._known_services, shadowed
+        named = _extract_entities_from_automation_config(
+            config, self._known_services, shadowed
         )
-        named |= await async_extract_entities_from_config(
-            self.hass,
+        named |= _extract_entities_from_config(
             without_never_rendered(config),
             self._known_services,
             shadowed,
         )
         return named
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
-        all_entities = core_references(entity, "entities")
+        all_entities = entity.core_references()
 
         # Also extract entities directly from raw configuration if available
-        if hasattr(entity, "raw_config") and entity.raw_config:
+        if entity.raw_config:
             all_entities.update(
-                await extract_entities_from_automation_config(
-                    self.hass, entity.raw_config, self._known_services
+                _extract_entities_from_automation_config(
+                    entity.raw_config, self._known_services
                 )
             )
 
-        # Extract entities from Template objects within the automation entity
+        # Extract entities from the templates within the configuration
         all_entities.update(
-            await extract_template_entities_from_automation_entity(
-                self.hass, entity, self._known_services
+            extract_template_entities_from_config(
+                entity.raw_config, self._known_services
             )
         )
 
-        raw_config = getattr(entity, "raw_config", None)
+        raw_config = entity.raw_config
         if raw_config:
             # The kinds of trigger and event this automation listens for look
             # like entity IDs, `sun.dusk` and `timer.finished` for two, and a
@@ -378,11 +425,11 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
                     extract_event_types_from_trigger_config(raw_config.get(key))
                 )
 
-        return await async_unknown_entities_named(
-            self.hass,
+        return unknown_entities_named(
             all_entities,
             raw_config,
-            named_in=self._async_named_in,
+            named_in=self._named_in,
             known_entity_ids=self._known_entity_ids,
             known_services=self._known_services,
+            services=self._services,
         )

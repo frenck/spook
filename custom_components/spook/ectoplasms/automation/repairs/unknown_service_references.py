@@ -12,14 +12,15 @@ from homeassistant.const import (
 )
 
 from ....entity_filtering import (
-    async_filter_known_services,
     async_find_services_in_sequence,
     async_get_all_services,
+    async_get_disabled_integrations,
+    filter_known_services,
 )
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
-    from typing import Any
+    from ....repairs import InspectedEntity
 
 
 class SpookRepair(AbstractSpookAutomationReferencesRepair):
@@ -42,15 +43,17 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     edit_url_pattern = "/config/automation/edit/{unique_id}"
 
     _known_services: set[str]
+    _disabled_integrations: set[str]
 
     async def _async_setup_inspection(self) -> None:
         """Cache known services for this inspection cycle."""
         self._known_services = async_get_all_services(self.hass)
+        self._disabled_integrations = async_get_disabled_integrations(self.hass)
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return unknown services called by ``entity``."""
-        return async_filter_known_services(
-            self.hass,
-            services=async_find_services_in_sequence(entity.action_script.sequence),
-            known_services=self._known_services,
+        return filter_known_services(
+            async_find_services_in_sequence(entity.action_sequence),
+            self._known_services,
+            self._disabled_integrations,
         )

@@ -368,6 +368,7 @@ async def test_event_trigger_type_reference_is_not_reported_unknown(
     # Standing in for `_async_setup_inspection`: the real service set, so
     # action names are still told apart from entity ids.
     repair._known_services = async_get_all_services(hass)
+    repair._services = hass.services.async_services()
 
     assert await repair._async_compute_unknown_references(entity) == set()
 
@@ -856,6 +857,7 @@ async def test_plural_condition_entity_is_reported_unknown(
     # Standing in for `_async_setup_inspection`: the real service set, so
     # action names are still told apart from entity ids.
     repair._known_services = async_get_all_services(hass)
+    repair._services = hass.services.async_services()
 
     assert await repair._async_compute_unknown_references(entity) == {
         "input_boolean.snooze_uptime_alerts"

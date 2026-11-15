@@ -13,8 +13,9 @@ never to replace it.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
+from functools import partial
 import re
 from typing import TYPE_CHECKING, Any, Literal
 
@@ -48,8 +49,6 @@ from .template_extraction import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from homeassistant.core import HomeAssistant
 
 # Direct reference keys, mapped to their reference type.
@@ -900,12 +899,29 @@ def async_raw_config_references(
     configuration gives its templates, as a variable or a field, is not
     Home Assistant's lookup.
     """
+    return raw_config_references(
+        config, kind, partial(_TEMPLATE_LOOKUPS_NOT_FOUND[kind], hass)
+    )
+
+
+def raw_config_references(
+    config: Any,
+    kind: Literal["areas", "floors", "labels"],
+    not_found: Callable[[set[str]], set[str]],
+) -> set[str]:
+    """Return the areas, floors or labels a raw configuration names.
+
+    The synchronous core of `async_raw_config_references`, with what the
+    template lookups find already snapshotted into `not_found` (see the
+    template lookups in `entity_filtering`): pure computation over plain
+    data, so it can run in an executor, away from the event loop.
+    """
     targets: set[str] = getattr(
         extract_targets_from_config(config), _TARGETS_OF_KIND[kind]
     )
     shadowed = names_given_to_templates(config)
-    return targets | _TEMPLATE_LOOKUPS_NOT_FOUND[kind](
-        hass, extract_registry_lookups_from_config(config, kind, shadowed)
+    return targets | not_found(
+        extract_registry_lookups_from_config(config, kind, shadowed)
     )
 
 
