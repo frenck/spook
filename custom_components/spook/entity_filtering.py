@@ -922,16 +922,24 @@ def async_get_template_label_lookup(hass: HomeAssistant) -> TemplateLabelLookup:
 @callback
 def async_get_template_floor_lookup(hass: HomeAssistant) -> TemplateFloorLookup:
     """Return what the floor lookups in templates resolve against, snapshotted."""
-    areas = ar.async_get(hass).areas.values()
+    area_registry = ar.async_get(hass)
+    areas = area_registry.areas.values()
     floors = fr.async_get(hass).floors.values()
 
     # An area is resolved by name before by alias, as `resolve_area_id`
-    # asks, so the aliases only fill the names no area took.
+    # asks, so the aliases only fill the names no area took. When several
+    # areas carry the same alias, the registry's alias index decides
+    # which area wins, and its order follows when each area got the
+    # alias, not the order the areas are iterated in here, so resolve
+    # each alias through the registry instead of guessing from here.
     area_ids_by_name_or_alias = {area.normalized_name: area.id for area in areas}
     for area in areas:
         for alias in area.aliases:
-            # The registry hands out the first area carrying an alias.
-            area_ids_by_name_or_alias.setdefault(normalize_name(alias), area.id)
+            normalized_alias = normalize_name(alias)
+            if normalized_alias not in area_ids_by_name_or_alias:
+                area_ids_by_name_or_alias[normalized_alias] = (
+                    area_registry.async_get_areas_by_alias(alias)[0].id
+                )
 
     device_area_ids = _async_get_effective_device_area_ids(hass)
 

@@ -8,9 +8,11 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.helpers import (
+    area_registry as ar,
     config_validation as cv,
     device_registry as dr,
 )
+from homeassistant.helpers.normalized_name_base_registry import normalize_name
 
 from custom_components.spook.entity_filtering import (
     async_drop_existing_action_names,
@@ -19,6 +21,7 @@ from custom_components.spook.entity_filtering import (
     async_filter_known_services,
     async_find_services_in_sequence,
     async_get_all_device_ids,
+    async_get_template_floor_lookup,
 )
 from tests.device_registry_helpers import simulate_composite_split
 
@@ -232,3 +235,29 @@ async def test_a_malformed_candidate_does_not_abort_the_check(
     ) == {"light.removed"}
 
     assert async_drop_existing_action_names(hass, {"nodomain"}) == {"nodomain"}
+
+
+def test_floor_lookup_resolves_a_shared_alias_like_the_registry(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+) -> None:
+    """Test a shared alias resolves to the area the registry hands out.
+
+    Two areas can carry the same alias. Core hands out the first area in
+    its alias index, whose order follows when each area got the alias,
+    not when the areas were created: here the second area created got
+    the alias first, so it wins even though the snapshot iterates the
+    areas in creation order. Judging floor lookups against the other
+    area would report floors for the wrong area.
+    """
+    created_first = area_registry.async_create("Created first")
+    got_alias_first = area_registry.async_create(
+        "Got the alias first", aliases={"Shared alias"}
+    )
+    area_registry.async_update(created_first.id, aliases={"Shared alias"})
+
+    lookup = async_get_template_floor_lookup(hass)
+
+    assert lookup.area_ids_by_name_or_alias[normalize_name("Shared alias")] == (
+        got_alias_first.id
+    )
