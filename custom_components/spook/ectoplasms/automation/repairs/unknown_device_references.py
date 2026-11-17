@@ -2,20 +2,22 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import automation
 from homeassistant.helpers import device_registry as dr
 
-from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
+from ....entity_filtering import async_get_all_device_ids, filter_known_device_ids
 from ....reference_extraction import (
-    core_references,
     extract_targets_from_config,
     names_given_to_templates,
     only_in_disabled_steps,
 )
 from ....template_extraction import extract_device_ids_from_config
 from . import AbstractSpookAutomationReferencesRepair
+
+if TYPE_CHECKING:
+    from ....repairs import InspectedEntity
 
 
 def extract_event_data_device_ids_from_trigger_config(
@@ -67,6 +69,7 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     entity_label = "automation"
     reference_label = "devices"
     edit_url_pattern = "/config/automation/edit/{unique_id}"
+    core_reference_kind = "devices"
 
     _known_device_ids: set[str]
 
@@ -74,43 +77,37 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         """Cache known device IDs for this inspection cycle."""
         self._known_device_ids = async_get_all_device_ids(self.hass)
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return unknown device IDs referenced by ``entity``."""
-        device_ids = core_references(entity, "devices")
+        device_ids = entity.core_references()
 
-        if hasattr(entity, "raw_config") and entity.raw_config:
+        if raw_config := entity.raw_config:
             # Also walk the raw configuration; the built-in extraction misses
             # references nested in some step types, like repeat sequences.
             # The walker never collects from event trigger payloads, so the
             # subtraction below only affects built-in extraction results.
-            device_ids.update(extract_targets_from_config(entity.raw_config).device_ids)
+            device_ids.update(extract_targets_from_config(raw_config).device_ids)
             device_ids.difference_update(
                 extract_event_data_device_ids_from_trigger_config(
-                    entity.raw_config.get("trigger")
+                    raw_config.get("trigger")
                 )
             )
             device_ids.difference_update(
                 extract_event_data_device_ids_from_trigger_config(
-                    entity.raw_config.get("triggers")
+                    raw_config.get("triggers")
                 )
             )
             # Devices referenced through the device functions in templates.
             # The variables and fields it gives its templates hide a call.
-            shadowed = names_given_to_templates(entity.raw_config)
-            device_ids.update(
-                extract_device_ids_from_config(entity.raw_config, shadowed)
-            )
+            shadowed = names_given_to_templates(raw_config)
+            device_ids.update(extract_device_ids_from_config(raw_config, shadowed))
             # A disabled step does nothing, so what only it names is left out.
             device_ids -= only_in_disabled_steps(
-                entity.raw_config,
+                raw_config,
                 lambda found: (
                     extract_targets_from_config(found).device_ids
                     | extract_device_ids_from_config(found, shadowed)
                 ),
             )
 
-        return async_filter_known_device_ids(
-            self.hass,
-            device_ids=device_ids,
-            known_device_ids=self._known_device_ids,
-        )
+        return filter_known_device_ids(device_ids, self._known_device_ids)

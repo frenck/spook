@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 from homeassistant.components import script
 from homeassistant.helpers import label_registry as lr
 
-from ....entity_filtering import async_filter_known_label_ids, async_get_all_label_ids
-from ....reference_extraction import (
-    async_raw_config_references,
-    core_references,
-    only_in_disabled_steps,
+from ....entity_filtering import (
+    TemplateLabelLookup,
+    async_get_all_label_ids,
+    async_get_template_label_lookup,
+    filter_known_label_ids,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 
 if TYPE_CHECKING:
-    from typing import Any
+    from ....repairs import InspectedEntity
 
 
 class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
@@ -32,29 +31,25 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     entity_label = "script"
     reference_label = "labels"
     edit_url_pattern = "/config/script/edit/{unique_id}"
+    core_reference_kind = "labels"
 
     _known_label_ids: set[str]
+    _template_lookup: TemplateLabelLookup
 
     async def _async_setup_inspection(self) -> None:
         """Cache known label IDs for this inspection cycle."""
         self._known_label_ids = async_get_all_label_ids(self.hass)
+        # What the label lookups in templates resolve against, snapshotted
+        # on the event loop, so the computation in the executor can decide
+        # what they find without reaching back for the registry.
+        self._template_lookup = async_get_template_label_lookup(self.hass)
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return unknown label IDs referenced by ``entity``."""
-        label_ids = core_references(entity, "labels")
-
-        # Also walk the raw configuration; the built-in extraction misses
-        # references nested in some step types, like repeat sequences.
-        if raw_config := getattr(entity, "raw_config", None):
-            # Templates that look up a label that is not there are read too.
-            references = partial(async_raw_config_references, self.hass, kind="labels")
-            label_ids.update(references(raw_config))
-            # A disabled step does nothing, so what only it names is left out.
-            # Read the same way, or a template there still counts.
-            label_ids -= only_in_disabled_steps(raw_config, references)
-
-        return async_filter_known_label_ids(
-            self.hass,
-            label_ids=label_ids,
-            known_label_ids=self._known_label_ids,
+        return self._compute_unknown_references_from_config(
+            entity,
+            kind="labels",
+            not_found=self._template_lookup.not_found,
+            known_ids=self._known_label_ids,
+            filter_known=filter_known_label_ids,
         )

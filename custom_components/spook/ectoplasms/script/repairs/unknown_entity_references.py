@@ -9,34 +9,33 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
-    async_extract_entities_from_action_config,
-    async_unknown_entities_named,
+    extract_entities_from_action_config,
+    unknown_entities_named,
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
-    core_references,
     names_given_to_templates,
     without_never_rendered,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
-from ....template_extraction import (
-    async_extract_entities_from_config,
-)
+from ....template_extraction import _extract_entities_from_config
 
 if TYPE_CHECKING:
-    from homeassistant.core import HomeAssistant
+    from collections.abc import Mapping
+
+    from homeassistant.core import Service
+
+    from ....repairs import InspectedEntity
 
 
-async def extract_template_entities_from_script_entity(
-    hass: HomeAssistant,
-    entity: Any,
-    known_services: set[str] | None = None,
+def extract_template_entities_from_config(
+    raw_config: Any,
+    known_services: set[str],
 ) -> set[str]:
-    """Extract entities from script configuration using Template analysis.
+    """Extract the entities the templates in a raw configuration name.
 
-    This function finds template strings in script configuration and creates
-    Template objects to extract entity references using Template.async_render_to_info().
-    This provides more comprehensive entity detection than regex-based parsing alone.
+    Every template string in it, read the way
+    `template_extraction._extract_entities_from_config` reads them.
 
     ``known_services`` is built once per inspection and handed down, because
     building it flattens every service Home Assistant has and every script
@@ -46,16 +45,15 @@ async def extract_template_entities_from_script_entity(
     The script helper underneath keeps no configuration of its own, so this
     used to find nothing at all.
     """
-    if not (config := getattr(entity, "raw_config", None)):
+    if not raw_config:
         return set()
 
     # A description, a name or a field example is shown, never rendered: an
     # entity in an example template there is not one the script uses.
-    return await async_extract_entities_from_config(
-        hass,
-        without_never_rendered(config),
+    return _extract_entities_from_config(
+        without_never_rendered(raw_config),
         known_services,
-        names_given_to_templates(config),
+        names_given_to_templates(raw_config),
     )
 
 
@@ -76,9 +74,11 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     reference_label = "entities"
     references_are_entities = True
     edit_url_pattern = "/config/script/edit/{unique_id}"
+    core_reference_kind = "entities"
 
     _known_entity_ids: set[str]
     _known_services: set[str]
+    _services: Mapping[str, Mapping[str, Service]]
 
     async def _async_setup_inspection(self) -> None:
         """Cache what every script in this cycle needs looked up.
@@ -91,10 +91,12 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             self.hass, include_all_none=True
         )
         self._known_services = async_get_all_services(self.hass)
+        # The registry itself, for telling what an action hands over as an
+        # `entity_id` that is no entity ID: read on the event loop, so the
+        # computation in the executor never has to reach back for it.
+        self._services = self.hass.services.async_services()
 
-    async def _async_named_in(
-        self, config: dict[str, Any], shadowed: frozenset[str]
-    ) -> set[str]:
+    def _named_in(self, config: dict[str, Any], shadowed: frozenset[str]) -> set[str]:
         """Return the entities a configuration names, the way this repair reads it.
 
         The same reading the report is built from, the steps and templates
@@ -103,52 +105,48 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         configuration, as `config` can be one without its disabled steps.
         """
         steps = config.get("sequence") or []
-        named = await async_extract_entities_from_action_config(
-            self.hass,
+        named = extract_entities_from_action_config(
             # A single step can be written without a list.
             [steps] if isinstance(steps, dict) else steps,
             known_services=self._known_services,
             shadowed=shadowed,
         )
-        named |= await async_extract_entities_from_config(
-            self.hass,
+        named |= _extract_entities_from_config(
             without_never_rendered(config),
             self._known_services,
             shadowed,
         )
         return named
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
         # Get all referenced entities from the script
-        all_entities = core_references(entity, "entities")
+        all_entities = entity.core_references()
 
         # Home Assistant's own list leaves out entities handed over as action
         # data, like `entity: light.kitchen` in a call to another script. The
         # automation repair reads those from the configuration as written, and
         # so does this one.
-        if isinstance(raw_config := getattr(entity, "raw_config", None), dict):
+        raw_config = entity.raw_config
+        if isinstance(raw_config, dict):
             all_entities.update(
-                await async_extract_entities_from_action_config(
-                    self.hass,
+                extract_entities_from_action_config(
                     raw_config.get("sequence") or [],
                     known_services=self._known_services,
                     shadowed=names_given_to_templates(raw_config),
                 )
             )
 
-        # Extract entities from Template objects within the script entity
+        # Extract entities from the templates within the configuration
         all_entities.update(
-            await extract_template_entities_from_script_entity(
-                self.hass, entity, self._known_services
-            )
+            extract_template_entities_from_config(raw_config, self._known_services)
         )
 
-        return await async_unknown_entities_named(
-            self.hass,
+        return unknown_entities_named(
             all_entities,
             raw_config,
-            named_in=self._async_named_in,
+            named_in=self._named_in,
             known_entity_ids=self._known_entity_ids,
             known_services=self._known_services,
+            services=self._services,
         )

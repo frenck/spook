@@ -23,6 +23,7 @@ async def test_script_unknown_service_repair_finds_unknown_actions(
     """Test script action sequences are inspected for unknown services."""
     repair = SpookRepair(hass)
     repair._known_services = {"light.turn_on"}  # noqa: SLF001
+    repair._disabled_integrations = set()  # noqa: SLF001
     entity = SimpleNamespace(
         script=SimpleNamespace(
             sequence=[

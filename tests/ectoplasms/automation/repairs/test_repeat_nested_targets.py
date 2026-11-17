@@ -15,8 +15,21 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from custom_components.spook.entity_filtering import (
+    async_get_template_area_lookup,
+    async_get_template_floor_lookup,
+    async_get_template_label_lookup,
+)
+
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+
+# What the template lookups of each kind resolve against.
+_TEMPLATE_LOOKUPS = {
+    "area": async_get_template_area_lookup,
+    "floor": async_get_template_floor_lookup,
+    "label": async_get_template_label_lookup,
+}
 
 
 def _raw_config_with_repeat_nested(key: str, value: str) -> dict:
@@ -59,6 +72,10 @@ async def test_repeat_nested_reference_is_detected(
     )
     repair = module.SpookRepair(hass)
     setattr(repair, f"_known_{reference_type}_ids", {"known"})
+    # Standing in for `_async_setup_inspection`: what the template lookups
+    # resolve against, from registries that hold nothing here.
+    if reference_type in _TEMPLATE_LOOKUPS:
+        repair._template_lookup = _TEMPLATE_LOOKUPS[reference_type](hass)
 
     entity = SimpleNamespace(
         raw_config=_raw_config_with_repeat_nested(f"{reference_type}_id", ghost_id),

@@ -12,7 +12,7 @@ from ....user_references import async_get_user_ids, extract_user_ids_from_config
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
-    from typing import Any
+    from ....repairs import InspectedEntity
 
 
 class SpookRepair(AbstractSpookAutomationReferencesRepair):
@@ -45,8 +45,8 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         """Cache the users there are for this inspection cycle."""
         self._known_user_ids = await async_get_user_ids(self.hass)
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return the users ``entity`` names that no longer exist."""
-        if not (raw_config := getattr(entity, "raw_config", None)):
+        if not (raw_config := entity.raw_config):
             return set()
         return extract_user_ids_from_config(raw_config) - self._known_user_ids

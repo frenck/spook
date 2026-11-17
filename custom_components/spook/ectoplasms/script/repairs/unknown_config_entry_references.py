@@ -22,7 +22,7 @@ from ....repairs import (
 )
 
 if TYPE_CHECKING:
-    from typing import Any
+    from ....repairs import InspectedEntity
 
 
 class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
@@ -46,6 +46,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     edit_url_pattern = "/config/script/edit/{unique_id}"
 
     _config_entry_fields: ConfigEntryFields
+    _entry_domains: dict[str, str]
 
     def _format_references(self, references: list[str]) -> str:
         """Return the list of config entries, saying which are of another one."""
@@ -54,9 +55,18 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     async def _async_setup_inspection(self) -> None:
         """Cache which actions take a config entry for this inspection cycle."""
         self._config_entry_fields = await async_get_config_entry_fields(self.hass)
+        # Every config entry there is, with the integration it belongs to,
+        # snapshotted on the event loop, so the computation in the executor
+        # can judge the entries a configuration names without reaching back.
+        self._entry_domains = {
+            entry.entry_id: entry.domain
+            for entry in self.hass.config_entries.async_entries()
+        }
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return the config entries ``entity`` hands its actions that go nowhere."""
-        if not (raw_config := getattr(entity, "raw_config", None)):
+        if not (raw_config := entity.raw_config):
             return set()
-        return unknown_config_entries(self.hass, raw_config, self._config_entry_fields)
+        return unknown_config_entries(
+            raw_config, self._config_entry_fields, self._entry_domains
+        )

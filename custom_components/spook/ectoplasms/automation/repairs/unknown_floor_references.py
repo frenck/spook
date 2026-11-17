@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 
-from functools import partial
 from typing import TYPE_CHECKING
 
 from homeassistant.components import automation
 from homeassistant.helpers import area_registry as ar, floor_registry as fr
 
-from ....entity_filtering import async_filter_known_floor_ids, async_get_all_floor_ids
-from ....reference_extraction import (
-    async_raw_config_references,
-    core_references,
-    only_in_disabled_steps,
+from ....entity_filtering import (
+    TemplateFloorLookup,
+    async_get_all_floor_ids,
+    async_get_template_floor_lookup,
+    filter_known_floor_ids,
 )
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
-    from typing import Any
+    from ....repairs import InspectedEntity
 
 
 class SpookRepair(AbstractSpookAutomationReferencesRepair):
@@ -37,29 +36,25 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     entity_label = "automation"
     reference_label = "floors"
     edit_url_pattern = "/config/automation/edit/{unique_id}"
+    core_reference_kind = "floors"
 
     _known_floor_ids: set[str]
+    _template_lookup: TemplateFloorLookup
 
     async def _async_setup_inspection(self) -> None:
         """Cache known floor IDs for this inspection cycle."""
         self._known_floor_ids = async_get_all_floor_ids(self.hass)
+        # What the floor lookups in templates resolve against, snapshotted
+        # on the event loop, so the computation in the executor can decide
+        # what they find without reaching back for the registries.
+        self._template_lookup = async_get_template_floor_lookup(self.hass)
 
-    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+    def _compute_unknown_references(self, entity: InspectedEntity) -> set[str]:
         """Return unknown floor IDs referenced by ``entity``."""
-        floor_ids = core_references(entity, "floors")
-
-        # Also walk the raw configuration; the built-in extraction misses
-        # references nested in some step types, like repeat sequences.
-        if raw_config := getattr(entity, "raw_config", None):
-            # Templates that look up a floor that is not there are read too.
-            references = partial(async_raw_config_references, self.hass, kind="floors")
-            floor_ids.update(references(raw_config))
-            # A disabled step does nothing, so what only it names is left out.
-            # Read the same way, or a template there still counts.
-            floor_ids -= only_in_disabled_steps(raw_config, references)
-
-        return async_filter_known_floor_ids(
-            self.hass,
-            floor_ids=floor_ids,
-            known_floor_ids=self._known_floor_ids,
+        return self._compute_unknown_references_from_config(
+            entity,
+            kind="floors",
+            not_found=self._template_lookup.not_found,
+            known_ids=self._known_floor_ids,
+            filter_known=filter_known_floor_ids,
         )

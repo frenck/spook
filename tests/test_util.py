@@ -682,23 +682,23 @@ async def test_extract_entities_from_config_reuses_duplicate_template_results(
 ) -> None:
     """Test duplicate template strings are extracted once per config scan."""
     calls = 0
-    original = template_extraction.async_extract_entities_from_template_string
+    # pylint: disable-next=protected-access
+    original = template_extraction._extract_entities_from_template_string  # noqa: SLF001
 
-    async def async_extract_entities_from_template_string(
-        hass: HomeAssistant,
+    def extract_entities_from_template_string(
         template_str: str,
-        known_services: set[str] | None = None,
+        known_services: set[str],
         shadowed: frozenset[str] = frozenset(),
     ) -> set[str]:
         """Extract entity IDs from a template string."""
         nonlocal calls
         calls += 1
-        return await original(hass, template_str, known_services, shadowed)
+        return original(template_str, known_services, shadowed)
 
     monkeypatch.setattr(
         template_extraction,
-        "async_extract_entities_from_template_string",
-        async_extract_entities_from_template_string,
+        "_extract_entities_from_template_string",
+        extract_entities_from_template_string,
     )
     template = "{{ states('sensor.duplicated') }}"
 
