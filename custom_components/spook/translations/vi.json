@@ -1343,10 +1343,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "description": "Spook đã tìm thấy một con ma trong các trợ lý giọng nói của bạn 👻\n\nCác thực thể sau được hiển thị cho Assist, và tất cả đều trả lời theo tên {name}:\n\n{entities}\n\nKhi các tên giống nhau, Assist chỉ phân biệt chúng theo khu vực: khu vực bạn nêu tên, hoặc khu vực có vệ tinh giọng nói của bạn. Một số trong chúng ở chung một khu vực, hoặc không có khu vực nào, nên Assist không thể chọn ra chúng bằng tên này từ bất cứ đâu. Khi đó hỏi {name} sẽ thất bại, và không có gì cho biết thực thể nào đang cản đường.\n\nĐể sửa điều này, hãy đặt cho mỗi thực thể một tên hoặc biệt hiệu riêng, hoặc chuyển chúng sang các khu vực khác nhau. Bạn có thể thay đổi biệt hiệu của một thực thể, và việc Assist có thấy nó hay không, tại [Thực thể được hiển thị](/config/voice-assistants/expose). Khu vực được đặt trên [trang Khu vực](/config/areas/dashboard).\n\nSpook 👻 Bạn thân của bạn.",
-            "title": "Assist không phân biệt được những thứ này: {name}"
-        },
         "automation_unknown_attribute_references": {
             "title": "Thuộc tính không xác định được dùng trong: {automation}",
             "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này sử dụng các thuộc tính sau, những thứ mà thực thể của chúng không có. Không phải lúc này, không phải thứ mà loại thực thể đó cung cấp, và cũng không ở đâu trong những gì bộ ghi còn nhớ về chúng:\n\n{attributes}\n\n\n\nMột bộ kích hoạt hoặc điều kiện chờ một thuộc tính không bao giờ xuất hiện sẽ không bao giờ kích hoạt, và không báo cho bạn biết. Một bản mẫu đọc thuộc tính đó sẽ không nhận được gì. Để sửa điều này, hãy [chỉnh sửa tự động hóa]({edit}) và dùng một thuộc tính mà thực thể có.\n\nSpook 👻 Bạn thân của bạn."

@@ -913,10 +913,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist 无法区分这些：{name}",
-            "description": "Spook 在你的语音助手中发现了一个幽灵 👻\n\n以下实体都已向 Assist 公开，并且都响应名称 {name}：\n\n{entities}\n\n名称相同时，Assist 只能通过区域来区分它们：你说出的区域，或者语音卫星所在的区域。其中一些共享同一个区域，或者根本没有区域，所以 Assist 无法在任何地方仅凭这个名称把它们挑出来。于是请求 {name} 会失败，而且不会说明是哪些实体在碍事。\n\n要修复此问题，请给每个实体一个独有的名称或别名，或者把它们移到不同的区域。你可以在[公开的实体](/config/voice-assistants/expose)中更改实体的别名，以及 Assist 是否能看到它。区域在[区域页面](/config/areas/dashboard)中设置。\n\nSpook 👻 你的好哥们。"
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n等待一个从不出现的属性的触发器或条件永远不会触发，也不会告诉你。读取它的模板什么也得不到。要修复此问题，请[编辑此自动化]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
             "title": "在以下项中使用了未知属性：{automation}"
