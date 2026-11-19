@@ -182,6 +182,7 @@ _GLUE = ("~", "+", "'", '"')
 _GLUE_OPERATORS = frozenset({"~", "+"})
 
 
+@lru_cache(maxsize=1024)
 def _lexed(template_str: str) -> list[tuple[int, str, str]] | None:
     """Return the tokens Jinja reads in a template, each with where it starts.
 
@@ -190,6 +191,10 @@ def _lexed(template_str: str) -> list[tuple[int, str, str]] | None:
     final newline goes too. So each token is found back in the source, over
     whitespace only, and checked to be really there. A template Jinja cannot
     read, or one whose tokens do not line up, has none.
+
+    Pure in its argument and only ever read by its callers, so results are
+    cached: one template is lexed four times over per extraction otherwise,
+    once for each kind of offset that wants the tokens. #2034.
     """
     try:
         tokens = list(_JINJA_LEXER.lex(template_str))
