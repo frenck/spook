@@ -42,6 +42,9 @@ from ..configuration import (
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+
 
 class SpookRepair(AbstractSpookRepair):
     """Spook repair finds unknown entities referenced in template entities.
@@ -64,6 +67,27 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = "template"
     inspect_on_reload = "template"
     automatically_clean_up_issues = True
+
+    _options: dict[str, tuple[Mapping[str, Any], dict[str, Any]]]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._options = {}
+
+    def _options_of(self, entry: ConfigEntry) -> dict[str, Any]:
+        """Return the options of a helper as a mapping to read.
+
+        The same copy every round, a new one only when the helper gets new
+        options. A copy made every round would be a configuration no one asks
+        about again, kept by every reader that remembers what it read.
+        """
+        options = entry.options
+        copied = self._options.get(entry.entry_id)
+        if copied is None or copied[0] is not options:
+            copied = (options, dict(options))
+            self._options[entry.entry_id] = copied
+        return copied[1]
 
     async def async_activate(self) -> None:
         """Activate the repair."""
@@ -97,10 +121,17 @@ class SpookRepair(AbstractSpookRepair):
         known_entity_ids = async_get_all_entity_ids(self.hass, include_all_none=True)
         known_services = async_get_all_services(self.hass)
 
-        for entry in self.hass.config_entries.async_entries(self.domain):
+        entries = self.hass.config_entries.async_entries(self.domain)
+        # Whatever is gone is forgotten.
+        self._options = {
+            entry.entry_id: self._options[entry.entry_id]
+            for entry in entries
+            if entry.entry_id in self._options
+        }
+        for entry in entries:
             self.possible_issue_ids.add(entry.entry_id)
 
-            options = dict(entry.options)
+            options = self._options_of(entry)
             shadowed = names_given_to_templates(options)
             referenced = await async_extract_entities_from_config(
                 self.hass, options, known_services, shadowed

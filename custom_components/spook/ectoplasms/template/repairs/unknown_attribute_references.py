@@ -16,6 +16,7 @@ from ....attribute_checking import (
     async_unknown_attributes,
     names_the_state,
 )
+from ....configuration_cache import read_once
 from ....const import LOGGER
 from ....entity_filtering import async_name_helper_in_the_registry
 from ....reference_extraction import (
@@ -67,7 +68,9 @@ def _references_in_template_entity(config: dict[str, Any]) -> NamedReferences:
     attributes = config.pop(CONF_ATTRIBUTES, None)
     if isinstance(attributes, dict):
         attributes = list(attributes.values())
-    return extract_attribute_references_from_config([config, attributes])
+    # Put together for this one reading, so nothing remembers it.
+    with read_once():
+        return extract_attribute_references_from_config([config, attributes])
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -119,7 +122,12 @@ class SpookRepair(AbstractSpookRepair):
         options = entry.options
         named = self._named.get(entry.entry_id)
         if named is None or named[0] is not options:
-            named = (options, extract_attribute_references_from_config(dict(options)))
+            # A copy made for this one reading, so nothing remembers it.
+            with read_once():
+                named = (
+                    options,
+                    extract_attribute_references_from_config(dict(options)),
+                )
         self._named[entry.entry_id] = named
         return named[1]
 
