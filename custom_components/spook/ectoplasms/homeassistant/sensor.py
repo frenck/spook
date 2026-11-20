@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
+from homeassistant import loader
 from homeassistant.components import (
     automation,
     counter,
@@ -73,6 +74,20 @@ def _count_active_domain_entities(hass: HomeAssistant, domain: str) -> int:
         and not state.attributes.get("restored", False)
         for entity_id in hass.states.async_entity_ids(domain)
     )
+
+
+@callback
+def _count_custom_integrations(hass: HomeAssistant) -> int | None:
+    """Count the custom integrations the loader found.
+
+    The loader fills that list lazily. It is not there until something asks
+    for it, it is dropped again to make the loader look in custom_components
+    once more, and while the loader looks, it holds a future instead.
+    """
+    custom_components = hass.data.get(loader.DATA_CUSTOM_COMPONENTS)
+    if not isinstance(custom_components, dict):
+        return None
+    return len(custom_components)
 
 
 SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
@@ -288,7 +303,7 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED},
-        value_fn=lambda hass: len(hass.data["custom_components"]),
+        value_fn=_count_custom_integrations,
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=input_boolean.DOMAIN,
