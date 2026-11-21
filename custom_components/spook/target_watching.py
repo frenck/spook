@@ -66,9 +66,16 @@ class StateChangeWatcher(TargetEntityChangeTracker):
         hass: HomeAssistant,
         target_selection: TargetSelection,
         entity_filter: Callable[[set[str]], set[str]],
+        *,
+        primary_entities_only: bool = True,
     ) -> None:
         """Initialize the watcher."""
-        super().__init__(hass, target_selection, entity_filter=entity_filter)
+        super().__init__(
+            hass,
+            target_selection,
+            entity_filter=entity_filter,
+            primary_entities_only=primary_entities_only,
+        )
         self._tracked: set[str] = set()
         self._unsub_changes: list[CALLBACK_TYPE] = []
 
