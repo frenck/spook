@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from homeassistant import loader
 from homeassistant.components import automation, counter, group, script, timer
 
 from custom_components.spook.ectoplasms.homeassistant.sensor import SENSORS
@@ -60,6 +61,32 @@ async def test_timer_count(hass: HomeAssistant) -> None:
         hass.states.async_set(entity_id, "idle")
 
     assert _value_for_sensor(hass, timer.DOMAIN) == len(timers)
+
+
+async def test_custom_integration_count(hass: HomeAssistant) -> None:
+    """Test custom integrations the loader found are counted."""
+    custom_components = {"spook": object(), "hacs": object()}
+    hass.data[loader.DATA_CUSTOM_COMPONENTS] = custom_components
+
+    assert _value_for_sensor(hass, "custom_component") == len(custom_components)
+
+
+async def test_custom_integration_count_without_loader_cache(
+    hass: HomeAssistant,
+) -> None:
+    """Test the count is unknown while the loader has no list (yet)."""
+    hass.data.pop(loader.DATA_CUSTOM_COMPONENTS, None)
+
+    assert _value_for_sensor(hass, "custom_component") is None
+
+
+async def test_custom_integration_count_while_loader_scans(
+    hass: HomeAssistant,
+) -> None:
+    """Test the count is unknown while the loader scans custom_components."""
+    hass.data[loader.DATA_CUSTOM_COMPONENTS] = hass.loop.create_future()
+
+    assert _value_for_sensor(hass, "custom_component") is None
 
 
 def test_every_sensor_has_a_translation() -> None:
