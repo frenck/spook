@@ -218,13 +218,13 @@ Turns a water heater's setpoint down a step, within its limits. _#water_heater_ 
 
 Waits until a condition is true, and carries on straight away if it already is. Takes the ordinary condition building blocks, so it needs no template. _#wait_ _#condition_
 
-`spook.wait_for_condition`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition), [documentation](other-features#wait-for-a-condition) 📚
+`spook.wait_for_condition`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition), [documentation](other_features#wait-for-a-condition) 📚
 
 ## Boo!
 
 This action call will just always spook the hell out of Home Assistant. Home Assistant will shit its pants and abort the automation or script. _#spooked_
 
-`spook.boo`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo), [documentation](other-features#boo) 📚
+`spook.boo`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo), [documentation](other_features#boo) 📚
 
 ## Delete all orphaned entities
 
@@ -692,7 +692,7 @@ Removes a device tracker from a person. _#privacy_
 
 This action call will randomly fail (and thus randomly stop your automation or script). Especially combined with `continue_on_error: true` this can be a great way to add useless action to your automation or script. _#random_
 
-`spook.random_fail`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail), [documentation](other-features#random-fail) 📚
+`spook.random_fail`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail), [documentation](other_features#random-fail) 📚
 
 ## Recorder: Import statistics
 
