@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
@@ -13,6 +13,9 @@ from ...core_compat import (
     async_is_child_device,
     async_update_any_device,
 )
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
 
 
 @callback
@@ -109,11 +112,39 @@ def async_enable_device_and_parent(
     # Home Assistant Core refuses to enable a child device while its parent is
     # disabled, so the order is not just cosmetic.
     for chain_device_id in reversed(chain):
-        # A device that is off because its integration entry is, comes back
-        # with that entry. Home Assistant ignores enabling it here, and is to
-        # refuse it outright, so it is left alone.
-        device = device_registry.async_get(chain_device_id)
-        if device.disabled_by is dr.DeviceEntryDisabler.CONFIG_ENTRY:
+        # Home Assistant ignores enabling a device its integration entry
+        # keeps off, and is to refuse it outright, so it is left alone.
+        if async_get_entry_keeping_device_disabled(device_registry, chain_device_id):
             continue
 
         async_update_any_device(device_registry, chain_device_id, disabled_by=None)
+
+
+@callback
+def async_get_entry_keeping_device_disabled(
+    device_registry: dr.DeviceRegistry,
+    device_id: str,
+) -> ConfigEntry | None:
+    """Return the disabled integration entry that keeps a device disabled.
+
+    A device cannot be enabled while its integration entry is disabled,
+    whatever disabled the device itself: one disabled by hand before its
+    entry was, keeps saying so. A child device lives on the integration
+    entry of its parent device, so this covers the parent being off too.
+    """
+    if (device := device_registry.async_get(device_id)) is None:
+        return None
+
+    # A device lives on one integration entry. Older Home Assistant Core
+    # versions let it belong to several, and named a primary one.
+    entry_id = getattr(device, "config_entry_id", None) or getattr(
+        device, "primary_config_entry", None
+    )
+    if entry_id is None:
+        return None
+
+    entry = device_registry.hass.config_entries.async_get_entry(entry_id)
+    if entry is None or not entry.disabled_by:
+        return None
+
+    return entry
