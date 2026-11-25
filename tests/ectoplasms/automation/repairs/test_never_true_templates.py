@@ -981,28 +981,37 @@ def test_only_the_word_false_is_left_out_of_what_ends_a_loop(
     ) == {" ".join(QUOTED.split())}
 
 
-def test_the_word_false_is_still_reported_anywhere_else(hass: HomeAssistant) -> None:
-    """Test false as a condition, or as what a loop runs while, is a finding.
-
-    Neither does what a loop running until false does: a condition that says
-    false stops the run there, and a loop running while false never starts.
-    """
-    config = {
-        "triggers": [EVENT],
-        "conditions": [_template_condition("{{ false }}")],
-        "actions": [
-            {"repeat": {"while": ["{{ False }}"], "sequence": []}},
-            # Nested in the `until`, where it is one of several to weigh.
-            {
-                "repeat": {
-                    "until": [{"or": [_template_condition("{{  false  }}")]}],
-                    "sequence": [],
+@pytest.mark.parametrize(
+    "config",
+    [
+        # A condition that says false stops the run right there.
+        {"triggers": [EVENT], "conditions": [_template_condition("{{ false }}")]},
+        # A loop running while false never starts.
+        {
+            "triggers": [EVENT],
+            "actions": [{"repeat": {"while": ["{{ false }}"], "sequence": []}}],
+        },
+        # Nested in the `until`, where it is one of several to weigh.
+        {
+            "triggers": [EVENT],
+            "actions": [
+                {
+                    "repeat": {
+                        "until": [{"or": [_template_condition("{{ false }}")]}],
+                        "sequence": [],
+                    }
                 }
-            },
-        ],
-    }
+            ],
+        },
+    ],
+    ids=["condition", "while", "nested in until"],
+)
+def test_the_word_false_is_still_reported_anywhere_else(
+    hass: HomeAssistant, config: dict[str, Any]
+) -> None:
+    """Test false anywhere but as what directly ends a loop is a finding.
 
-    assert never_true_templates(hass, "automation", config) == {
-        "{{ false }}",
-        "{{ False }}",
-    }
+    None of these does what a loop running until false does. Each on its
+    own, so one of them no longer being reported cannot hide behind another.
+    """
+    assert never_true_templates(hass, "automation", config) == {"{{ false }}"}
