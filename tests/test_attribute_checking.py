@@ -33,6 +33,7 @@ from custom_components.spook.attribute_checking import (
     UnknownAttribute,
     async_domain_attributes,
     async_unknown_attributes,
+    did_you_mean,
     names_the_state,
     suggest_name,
 )
@@ -861,6 +862,70 @@ def test_suggestion(name: str, known: set[str], expected: str) -> None:
 def test_no_suggestion(name: str, known: set[str]) -> None:
     """Test no suggestion is made when it would be a guess."""
     assert suggest_name(name, known) is None
+
+
+@pytest.mark.parametrize(
+    ("written", "differs"),
+    [
+        ("preset_modes ", "has a space at the end"),
+        (" preset_modes", "has a space at the start"),
+        (" preset_modes ", "has a space at the start and the end"),
+        # A tab or a space that does not break reads as a space just the same.
+        ("preset_modes\t", "has a space at the end"),
+        ("preset_modes\u00a0", "has a space at the end"),
+        # A zero-width space, pasted along from somewhere.
+        ("preset_modes\u200b", "has a character in it that does not show"),
+        ("preset\u200b_modes", "has a character in it that does not show"),
+        # A soft hyphen, and marks that have no shape of their own: the
+        # grapheme joiner and a variation selector.
+        ("preset_modes\u00ad", "has a character in it that does not show"),
+        ("preset_modes\u034f", "has a character in it that does not show"),
+        ("preset_modes\ufe0f", "has a character in it that does not show"),
+    ],
+)
+def test_a_suggestion_that_looks_the_same_says_what_differs(
+    written: str, differs: str
+) -> None:
+    """Test a name that only differs out of sight is not shown twice as is.
+
+    Home Assistant looks a name up exactly as written, so the finding is
+    true, and "`preset_modes` (did you mean `preset_modes`?)" helps nobody.
+    The suggestion comes from the same guess a repair makes. #2047.
+    """
+    suggestion = suggest_name(written, {"preset_modes", "hvac_modes"})
+
+    assert suggestion == "preset_modes"
+    assert did_you_mean(written, suggestion) == (
+        f" ({differs}, did you mean `preset_modes`?)"
+    )
+    assert did_you_mean(written, suggestion, as_code=False) == (
+        f" ({differs}, did you mean preset_modes?)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("written", "suggestion"),
+    [
+        # Differences the eye does see are left to it.
+        ("Preset_modes", "preset_modes"),
+        ("preset modes", "preset_modes"),
+        ("preset_mode", "preset_modes"),
+        # A space inside a name leaves a gap, also one that does not break.
+        ("preset\u00a0_modes", "preset_modes"),
+        # An accent changes what is seen.
+        ("preset_modes\u0301", "preset_modes"),
+        # Not a name at all: the value of an attribute that is a number.
+        (2, "3"),
+    ],
+)
+def test_a_suggestion_that_looks_different_is_given_as_is(
+    written: object, suggestion: str
+) -> None:
+    """Test nothing is added when the difference shows on screen."""
+    assert did_you_mean(written, suggestion) == f" (did you mean `{suggestion}`?)"
+    assert did_you_mean(written, suggestion, as_code=False) == (
+        f" (did you mean {suggestion}?)"
+    )
 
 
 @pytest.mark.parametrize(

@@ -55,6 +55,7 @@ from .attribute_checking import (
     NAMES_THE_STATE_HINT,
     async_note_attributes,
     async_unknown_attributes,
+    did_you_mean,
     names_the_state,
 )
 from .attribute_value_checking import as_yaml, async_unknown_attribute_values
@@ -1034,6 +1035,11 @@ class DeviceReferencesRepairMixin:  # pylint: disable=too-few-public-methods
         return False
 
 
+def _as_written(name: str | AttributeValue) -> Any:
+    """Return the attribute, state or attribute value somebody wrote."""
+    return name.value if isinstance(name, AttributeValue) else name
+
+
 def _finding_reference(entity_id: str, name: str | AttributeValue) -> str:
     """Return how an unknown attribute or state is written down in an issue.
 
@@ -1258,7 +1264,9 @@ class AbstractSpookUnknownEntityNamesRepair(
             else:
                 line = _finding_reference(finding.entity_id, name)
             if finding.suggestion is not None:
-                line += f" (did you mean {finding.suggestion}?)"
+                line += did_you_mean(
+                    _as_written(name), finding.suggestion, as_code=False
+                )
             found.append(line)
         return sorted(found)
 
@@ -1275,7 +1283,7 @@ class AbstractSpookUnknownEntityNamesRepair(
             else:
                 line = self.finding_line.format(name=name, entity_id=finding.entity_id)
             if finding.suggestion is not None:
-                line += f" (did you mean `{finding.suggestion}`?)"
+                line += did_you_mean(_as_written(name), finding.suggestion)
             elif (
                 self.names_attributes
                 and isinstance(name, str)

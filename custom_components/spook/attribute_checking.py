@@ -21,6 +21,7 @@ import importlib
 import re
 import sys
 from typing import TYPE_CHECKING, Final
+import unicodedata
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -116,6 +117,12 @@ MOST_ATTRIBUTE_SETS_PER_ENTITY: Final = 1000
 # A one-letter slip is only a slip in a name long enough to have letters to
 # spare. `mode` and `node` are both real words.
 _SHORTEST_NAME_TO_CORRECT = 5
+
+# Marks without a shape of their own that Unicode does not file under the
+# characters that only format: the joiner, and the selectors that pick a
+# variant of the character before them.
+_GRAPHEME_JOINER = "\u034f"
+_VARIATION_SELECTORS = (("\ufe00", "\ufe0f"), ("\U000e0100", "\U000e01ef"))
 
 _SEPARATORS = re.compile(r"[\s_-]+")
 
@@ -279,6 +286,58 @@ def names_the_state(entity_id: str, attribute: str) -> bool:
     domain, _ = split_entity_id(entity_id)
     return attribute.casefold() == "state" or attribute in (
         _THE_STATE_BY_ANOTHER_NAME.get(domain, frozenset())
+    )
+
+
+def did_you_mean(written: object, suggestion: str, *, as_code: bool = True) -> str:
+    """Return the best guess the way it is added to a finding.
+
+    A name can differ from the one that was meant without it showing: a
+    space at the end of `preset_modes ` is not seen on screen, and neither
+    is a character that has no shape at all. Home Assistant looks a name up
+    exactly as written, so it finds nothing, and the finding would show the
+    same name twice. What differs is said in words then. #2047.
+    """
+    meant = f"`{suggestion}`" if as_code else suggestion
+    if (differs := _differs_out_of_sight(written, suggestion)) is None:
+        return f" (did you mean {meant}?)"
+    return f" ({differs}, did you mean {meant}?)"
+
+
+def _differs_out_of_sight(written: object, suggestion: str) -> str | None:
+    """Return what tells a name from its best guess, when the eye cannot."""
+    if not isinstance(written, str) or written == suggestion:
+        return None
+
+    if written.strip() == suggestion:
+        at_the_start = written != written.lstrip()
+        at_the_end = written != written.rstrip()
+        if at_the_start and at_the_end:
+            return "has a space at the start and the end"
+        return f"has a space at the {'start' if at_the_start else 'end'}"
+
+    seen = "".join(character for character in written if not _has_no_shape(character))
+    if seen != written and seen.strip() == suggestion:
+        return "has a character in it that does not show"
+
+    return None
+
+
+def _has_no_shape(character: str) -> bool:
+    """Return whether a character takes up no room on screen at all.
+
+    Like a zero-width space or a soft hyphen pasted along, and the marks
+    that only say how the character before them is to be drawn. Not a space
+    inside a name: that leaves a gap anybody can see. And not an accent,
+    which changes what is seen.
+    """
+    if character.isspace():
+        return False
+
+    return (
+        unicodedata.category(character) in {"Cc", "Cf"}
+        or character == _GRAPHEME_JOINER
+        or any(first <= character <= last for first, last in _VARIATION_SELECTORS)
     )
 
 
