@@ -6,9 +6,14 @@ from datetime import timedelta
 
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from ....const import LOGGER
-from ....energy_preferences import async_unknown_energy_entities
+from ....energy_preferences import (
+    SIGNAL_ENERGY_SETTINGS_SAVED,
+    async_follow_energy_settings,
+    async_unknown_energy_entities,
+)
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 
@@ -37,12 +42,35 @@ class SpookRepair(AbstractSpookRepair):
 
     automatically_clean_up_issues = True
 
+    async def async_activate(self) -> None:
+        """Activate the repair, and look again when the energy settings are saved.
+
+        Somebody picking another entity in the energy settings fixes what
+        this reports, and nothing in the registries changes when they do.
+        Without this the issue stayed until the next look on the clock.
+        #2067.
+        """
+        await super().async_activate()
+
+        async def _settings_saved() -> None:
+            await self.inspect_debouncer.async_call()
+
+        self._event_subs.add(
+            async_dispatcher_connect(
+                self.hass, SIGNAL_ENERGY_SETTINGS_SAVED, _settings_saved
+            )
+        )
+
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         if "energy" not in self.hass.config.components:
             return  # Energy dashboard is not set up.
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
+
+        # Asked for here and not when activating: the energy integration may
+        # load after Spook, and this is where it is known to be there.
+        await async_follow_energy_settings(self.hass)
 
         self.possible_issue_ids.add(self.repair)
 

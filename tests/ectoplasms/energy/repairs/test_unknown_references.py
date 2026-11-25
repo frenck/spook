@@ -3,8 +3,11 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
+
+from pytest_homeassistant.common import async_fire_time_changed
 
 from homeassistant.components.energy.data import async_get_manager
 from homeassistant.components.energy.validate import (
@@ -19,6 +22,8 @@ from custom_components.spook.ectoplasms.energy.repairs.unknown_references import
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
     import pytest
@@ -376,3 +381,88 @@ async def test_a_price_in_the_older_grid_form_is_not_let_off_either(
     assert issue
     assert issue.translation_placeholders
     assert "sensor.the_price" in issue.translation_placeholders["entities"]
+
+
+async def _flush_debouncer(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
+    """Advance past the inspection debouncer cooldown and let it fire."""
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+async def test_saving_the_energy_settings_gets_a_look(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the issue goes once the energy settings are fixed and saved.
+
+    Picking another entity in the energy settings changes nothing in the
+    registries, so nothing else tells the repair to look again. #2067.
+    """
+    result = EnergyPreferencesValidation()
+    source_issues = ValidationIssues()
+    source_issues.add_issue(hass, "entity_not_defined", "sensor.ghost_meter")
+    result.energy_sources.append(source_issues)
+    _install_validation(hass, monkeypatch, result)
+
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    # The settings are fixed, and saved the way the energy panel saves them.
+    _install_validation(hass, monkeypatch, EnergyPreferencesValidation())
+    await (await async_get_manager(hass)).async_update({"energy_sources": []})
+    await _flush_debouncer(hass, freezer)
+
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+
+    await repair.async_deactivate()
+
+
+async def test_a_deactivated_repair_no_longer_follows_the_energy_settings(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test saving the energy settings reaches no repair that was deactivated."""
+    _install_validation(hass, monkeypatch, EnergyPreferencesValidation())
+
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    await repair.async_deactivate()
+
+    inspections = 0
+
+    async def _count() -> None:
+        nonlocal inspections
+        inspections += 1
+
+    monkeypatch.setattr(repair, "async_inspect", _count)
+    await (await async_get_manager(hass)).async_update({"energy_sources": []})
+    await _flush_debouncer(hass, freezer)
+
+    assert inspections == 0
+
+
+async def test_the_energy_settings_are_followed_once(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test looking again and again puts one listener in, not one per look.
+
+    Home Assistant has no way to take a listener out, so every extra one
+    would stay for as long as it runs.
+    """
+    _install_validation(hass, monkeypatch, EnergyPreferencesValidation())
+    listening: list[Any] = []
+    manager = await async_get_manager(hass)
+    monkeypatch.setattr(manager, "async_listen_updates", listening.append)
+
+    await SpookRepair(hass).async_inspect()
+    await SpookRepair(hass).async_inspect()
+
+    assert len(listening) == 1
