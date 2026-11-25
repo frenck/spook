@@ -10,6 +10,7 @@ import pytest
 
 from homeassistant.components.frontend import DATA_THEMES
 from homeassistant.components.lovelace.const import ConfigNotFound
+from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.spook.const import DOMAIN
@@ -319,3 +320,41 @@ async def test_the_old_default_dashboard_is_passed_over(
     await _async_inspect(hass)
 
     assert _issue(issue_registry, "printer")
+
+
+async def test_a_folder_that_keeps_filling_is_counted_not_kept(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test all files are counted, while only the first by name are kept.
+
+    An integration that stores every snapshot or print can leave tens of
+    thousands behind. They are written here out of order, as a folder hands
+    them out in no order either.
+    """
+    await hass.async_add_executor_job(
+        _write,
+        www,
+        *(f"printer/cover_{index:03}.png" for index in reversed(range(250))),
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    issue = _issue(issue_registry, "printer")
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["count"] == "250"
+    assert issue.translation_placeholders["files"] == "\n".join(
+        f"- `/local/printer/cover_{index:03}.png`" for index in range(10)
+    )
+
+
+def test_a_component_loading_is_no_reason_to_look() -> None:
+    """Test the repair does not look again for every component that loads.
+
+    Hundreds load while Home Assistant starts, and each look walks all of
+    the `www` folder.
+    """
+    assert EVENT_COMPONENT_LOADED not in SpookRepair.inspect_events

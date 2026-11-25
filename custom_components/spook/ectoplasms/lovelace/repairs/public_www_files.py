@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from bisect import insort
+from dataclasses import dataclass, field
 from datetime import timedelta
 from pathlib import Path
 import re
@@ -11,11 +13,7 @@ from urllib.parse import unquote
 from homeassistant.components.frontend import DATA_THEMES
 from homeassistant.components.lovelace import DOMAIN
 from homeassistant.components.lovelace.const import ConfigNotFound
-from homeassistant.const import (
-    EVENT_COMPONENT_LOADED,
-    EVENT_LOVELACE_UPDATED,
-    EVENT_THEMES_UPDATED,
-)
+from homeassistant.const import EVENT_LOVELACE_UPDATED, EVENT_THEMES_UPDATED
 from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 
@@ -23,6 +21,8 @@ from ....const import DOMAIN as SPOOK_DOMAIN, LOGGER
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from homeassistant.components.lovelace.dashboard import (
         LovelaceStorage,
         LovelaceYAML,
@@ -73,34 +73,72 @@ def _is_hidden(path: Path, www: Path) -> bool:
     return any(part.startswith(".") for part in path.relative_to(www).parts)
 
 
-def _public_files(www: Path, in_use: set[str]) -> dict[str, list[str]]:
+@dataclass(slots=True)
+class _Found:
+    """The files found in one folder: how many, and the first few by name.
+
+    Not all of them. An integration that keeps writing here can leave tens of
+    thousands behind, and only a handful are shown.
+    """
+
+    count: int = 0
+    first: list[str] = field(default_factory=list)
+
+    def add(self, file: str) -> None:
+        """Count a file, and keep it when it is among the first by name."""
+        self.count += 1
+        if len(self.first) == _SHOWN and file > self.first[-1]:
+            return
+
+        insort(self.first, file)
+        del self.first[_SHOWN:]
+
+
+def _found_among(
+    paths: Iterable[Path], www: Path, in_use: set[str], *, code_clears: bool
+) -> _Found | None:
+    """Return the files among these that nobody seems to have put up on purpose.
+
+    Nothing at all for a folder that holds code: that is a card or a theme,
+    images and all.
+    """
+    found = _Found()
+    for path in paths:
+        if not path.is_file() or _is_hidden(path, www):
+            continue
+
+        if _is_code(path):
+            if code_clears:
+                return None
+            continue
+
+        if (file := path.relative_to(www).as_posix()) not in in_use:
+            found.add(file)
+
+    return found if found.count else None
+
+
+def _public_files(www: Path, in_use: set[str]) -> dict[str, _Found]:
     """Return the files nobody seems to have put up on purpose, by folder."""
     if not www.is_dir():
         return {}
 
-    candidates: dict[str, list[Path]] = {}
-    for entry in www.iterdir():
-        if entry.name.startswith(".") or entry.name == _MARKETPLACE_FOLDER:
-            continue
+    entries = [
+        entry
+        for entry in www.iterdir()
+        if not entry.name.startswith(".") and entry.name != _MARKETPLACE_FOLDER
+    ]
 
-        if entry.is_file() and not _is_code(entry):
-            candidates.setdefault(_ROOT, []).append(entry)
-        elif entry.is_dir() and not entry.is_symlink():
-            files = [
-                path
-                for path in entry.rglob("*")
-                if path.is_file() and not _is_hidden(path, www)
-            ]
-            if not any(_is_code(path) for path in files):
-                candidates[entry.name] = files
+    # Files straight in `www` are judged one by one: a card next to them says
+    # nothing about them.
+    in_folders = {_ROOT: _found_among(entries, www, in_use, code_clears=False)}
+    for entry in entries:
+        if entry.is_dir() and not entry.is_symlink():
+            in_folders[entry.name] = _found_among(
+                entry.rglob("*"), www, in_use, code_clears=True
+            )
 
-    found: dict[str, list[str]] = {}
-    for folder, files in candidates.items():
-        for path in files:
-            if (relative := path.relative_to(www).as_posix()) not in in_use:
-                found.setdefault(folder, []).append(relative)
-
-    return {folder: sorted(files) for folder, files in found.items()}
+    return {folder: found for folder, found in in_folders.items() if found}
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -114,8 +152,10 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = DOMAIN
     repair = "lovelace_public_www_files"
+    # Not when a component loads: that happens hundreds of times while Home
+    # Assistant starts, and each look walks all of `www`. It is looked at
+    # once when Spook starts anyway.
     inspect_events = {
-        EVENT_COMPONENT_LOADED,
         EVENT_LOVELACE_UPDATED,
         EVENT_THEMES_UPDATED,
     }
@@ -164,15 +204,15 @@ class SpookRepair(AbstractSpookRepair):
         # Keyed to the folder and not to the files in it: an integration that
         # keeps adding files would otherwise bring an ignored issue back with
         # every one of them.
-        for folder, files in public.items():
+        for folder, found in public.items():
             url = _LOCAL_PREFIX if folder == _ROOT else f"{_LOCAL_PREFIX}{folder}/"
             self.async_create_issue(
                 issue_id=folder,
                 translation_placeholders={
                     "folder": url,
-                    "count": str(len(files)),
+                    "count": str(found.count),
                     "files": "\n".join(
-                        f"- `{_LOCAL_PREFIX}{file}`" for file in files[:_SHOWN]
+                        f"- `{_LOCAL_PREFIX}{file}`" for file in found.first
                     ),
                 },
             )
