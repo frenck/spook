@@ -137,11 +137,9 @@ class SpookRepair(AbstractSpookRepair):
             # Without the note on a covered icon: an icon picked or cleared
             # in the entity settings changes what the line says, not what
             # was found or where, and somebody who ignored it keeps it so.
-            references=[
-                f"{icon} {where.removesuffix(_COVERED)}" for where, icon in found
-            ],
+            references=[f"{icon} {where}" for where, icon in found],
             translation_placeholders={
-                "icons": _lines(icons, found),
+                "icons": _lines(icons, found, self._covered()),
                 "version": icons.version,
             },
         )
@@ -161,6 +159,11 @@ class SpookRepair(AbstractSpookRepair):
         for entry in self.entity_registry.entities.values():
             yield f"on the entity `{entry.entity_id}`", entry.icon
 
+        for where, entity in self._helpers_and_zones():
+            yield where, entity.icon
+
+    def _helpers_and_zones(self) -> Iterator[tuple[str, Any]]:
+        """Yield every helper and zone, with how a finding says where it is."""
         instances = self.hass.data.get(DATA_INSTANCES, {})
         for domain in sorted(_HELPER_DOMAINS | {_ZONE_DOMAIN}):
             if (component := instances.get(domain)) is None:
@@ -168,19 +171,23 @@ class SpookRepair(AbstractSpookRepair):
 
             kind = "zone" if domain == _ZONE_DOMAIN else "helper"
             for entity in list(component.entities):
-                where = f"on the {kind} `{entity.entity_id}`"
+                yield f"on the {kind} `{entity.entity_id}`", entity
 
-                # An icon picked in the entity settings is shown in place of
-                # this one nearly everywhere, but this one stays where it is:
-                # the list of zones in the settings still draws it. Picking
-                # another in the entity settings looks like the fix and
-                # changes nothing here, so the line says which is which.
-                # #2058.
-                entry = self.entity_registry.async_get(entity.entity_id)
-                if entry is not None and entry.icon:
-                    where += _COVERED
+    def _covered(self) -> set[str]:
+        """Return where a helper's or zone's own icon sits under another one.
 
-                yield where, entity.icon
+        An icon picked in the entity settings is shown in place of the
+        helper's or zone's own nearly everywhere, but the own one stays where
+        it is: the list of zones in the settings still draws it. Picking
+        another in the entity settings looks like the fix and changes nothing
+        about it, so the line of such a finding says which is which. #2058.
+        """
+        covered = set()
+        for where, entity in self._helpers_and_zones():
+            entry = self.entity_registry.async_get(entity.entity_id)
+            if entry is not None and entry.icon:
+                covered.add(where)
+        return covered
 
     def _icons_in_registries(self) -> Iterator[tuple[str, Any]]:
         """Yield the icons of areas, floors, labels and categories."""
@@ -216,6 +223,9 @@ class SpookRepair(AbstractSpookRepair):
             yield f"in `customize_domain:` for `{domain}`", attributes.get("icon")
 
 
-def _lines(icons: MdiIcons, found: list[tuple[str, str]]) -> str:
+def _lines(icons: MdiIcons, found: list[tuple[str, str]], covered: set[str]) -> str:
     """Return the findings as a list, each with where it was set."""
-    return "\n".join(f"- {icons.describe(icon)} {where}" for where, icon in found)
+    return "\n".join(
+        f"- {icons.describe(icon)} {where}{_COVERED if where in covered else ''}"
+        for where, icon in found
+    )

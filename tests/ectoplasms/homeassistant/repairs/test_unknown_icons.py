@@ -236,6 +236,38 @@ async def test_an_ignored_icon_stays_ignored_when_it_gets_covered(
         assert still.dismissed_version is not None
 
 
+async def test_a_name_that_reads_like_the_note_is_its_own_finding(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """An area named after the note on a covered icon keeps its name whole.
+
+    The note is no part of what tells one finding from another. Taking it
+    off the end of a line would also take it off a name somebody gave.
+    """
+    install_frontend(monkeypatch, tmp_path)
+    covered = "Kitchen itself, covered by the icon in its entity settings"
+    ar.async_get(hass).async_create("Kitchen", icon="mdi:kitchen-ghost")
+    ar.async_get(hass).async_create(covered, icon="mdi:kitchen-ghost")
+
+    repair = SpookRepair(hass)
+    found: list[list[str]] = []
+    monkeypatch.setattr(
+        repair,
+        "async_create_issue",
+        lambda **issue: found.append(issue["references"]),
+    )
+    await repair.async_inspect()
+
+    assert found == [
+        [
+            "mdi:kitchen-ghost on the area Kitchen",
+            f"mdi:kitchen-ghost on the area {covered}",
+        ]
+    ]
+
+
 async def test_the_issue_says_which_version_of_the_icons(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
