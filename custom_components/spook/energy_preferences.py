@@ -85,12 +85,20 @@ async def async_follow_energy_settings(hass: HomeAssistant) -> None:
     if hass.data.get(DATA_FOLLOWING_ENERGY_SETTINGS):
         return
 
-    hass.data[DATA_FOLLOWING_ENERGY_SETTINGS] = True
+    manager = await async_get_manager(hass)
+
+    # Asked again, with nothing awaited between here and the listener going
+    # in: another caller may have put it in while the manager was fetched.
+    # And only noted once it is in, so a manager that failed to load is
+    # tried again the next time.
+    if hass.data.get(DATA_FOLLOWING_ENERGY_SETTINGS):
+        return
 
     async def _saved() -> None:
         async_dispatcher_send(hass, SIGNAL_ENERGY_SETTINGS_SAVED)
 
-    (await async_get_manager(hass)).async_listen_updates(_saved)
+    manager.async_listen_updates(_saved)
+    hass.data[DATA_FOLLOWING_ENERGY_SETTINGS] = True
 
 
 async def _async_entity_settings(hass: HomeAssistant) -> set[str]:

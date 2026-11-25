@@ -7,6 +7,7 @@ from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
+import pytest
 from pytest_homeassistant.common import async_fire_time_changed
 
 from homeassistant.components.energy.data import async_get_manager
@@ -14,6 +15,7 @@ from homeassistant.components.energy.validate import (
     EnergyPreferencesValidation,
     ValidationIssues,
 )
+from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.spook import energy_preferences, statistics_sources
 from custom_components.spook.ectoplasms.energy.repairs.unknown_references import (
@@ -26,7 +28,6 @@ if TYPE_CHECKING:
 
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
-    import pytest
 
 _ISSUE_ID = "energy_unknown_references_energy_unknown_references"
 
@@ -435,17 +436,20 @@ async def test_a_deactivated_repair_no_longer_follows_the_energy_settings(
     await _flush_debouncer(hass, freezer)
     await repair.async_deactivate()
 
-    inspections = 0
+    # Counted at the debouncer, not at the inspection: deactivating shuts the
+    # debouncer down, so a save that still reached the repair would never
+    # show up as an inspection.
+    calls = 0
 
     async def _count() -> None:
-        nonlocal inspections
-        inspections += 1
+        nonlocal calls
+        calls += 1
 
-    monkeypatch.setattr(repair, "async_inspect", _count)
+    monkeypatch.setattr(repair, "inspect_debouncer", SimpleNamespace(async_call=_count))
     await (await async_get_manager(hass)).async_update({"energy_sources": []})
-    await _flush_debouncer(hass, freezer)
+    await hass.async_block_till_done()
 
-    assert inspections == 0
+    assert calls == 0
 
 
 async def test_the_energy_settings_are_followed_once(
@@ -464,5 +468,30 @@ async def test_the_energy_settings_are_followed_once(
 
     await SpookRepair(hass).async_inspect()
     await SpookRepair(hass).async_inspect()
+
+    assert len(listening) == 1
+
+
+async def test_following_the_energy_settings_is_tried_again_after_a_failure(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test energy settings that failed to load once are followed the next time."""
+    real_get_manager = energy_preferences.async_get_manager
+    listening: list[Any] = []
+    manager = await real_get_manager(hass)
+    monkeypatch.setattr(manager, "async_listen_updates", listening.append)
+
+    async def _fails(_hass: HomeAssistant) -> Any:
+        message = "The energy settings could not be loaded"
+        raise HomeAssistantError(message)
+
+    monkeypatch.setattr(energy_preferences, "async_get_manager", _fails)
+    with pytest.raises(HomeAssistantError):
+        await energy_preferences.async_follow_energy_settings(hass)
+    assert not listening
+
+    monkeypatch.setattr(energy_preferences, "async_get_manager", real_get_manager)
+    await energy_preferences.async_follow_energy_settings(hass)
 
     assert len(listening) == 1
