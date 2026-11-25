@@ -159,6 +159,8 @@ class HistoryAnswer:
     # When the whole history was read, and when anything was read last.
     asked_at: datetime
     read_until: datetime
+    # Whether a full attribute history read found only inactive states.
+    inactive_only: bool = False
 
     def holds(self, now: datetime) -> bool:
         """Return whether this is recent enough to go by."""
@@ -174,26 +176,19 @@ class _Knowledge:
     # was still real, and is never asked about again.
     seen: set[str] = field(default_factory=set)
     answer: HistoryAnswer | None = None
-    # Set once the entity is seen outside of off, unavailable and unknown.
-    # An answer from before that only says what those states carry, and is
-    # dropped so the next look reads the history again. #2020.
-    seen_active: bool = False
 
     def see(self, keys: Iterable[str], *, active: bool = False) -> None:
         """Note keys the entity shows right now.
 
         A key not seen before means the entity changed since the recorder was
-        asked, so its answer no longer tells the whole story. So does it
-        being active for the first time: history kept while it was only
-        inactive is not the whole story either.
+        asked, so its answer no longer tells the whole story. An active
+        state also makes an answer based only on inactive states stale.
         """
         if new := set(keys) - self.seen:
             self.seen |= new
             self.answer = None
-        if active and not self.seen_active:
-            self.seen_active = True
-            if self.answer is not None and not self.answer.complete:
-                self.answer = None
+        if active and self.answer is not None and self.answer.inactive_only:
+            self.answer = None
 
 
 def _attributes_from_module(module: ModuleType) -> frozenset[str]:
@@ -409,8 +404,8 @@ def _retained_an_active_state(session: Session, metadata_id: int) -> bool:
 
 def _read_recorded_attribute_keys(
     hass: HomeAssistant, since_by_entity: Mapping[str, float | None]
-) -> dict[str, tuple[set[str], bool]]:
-    """Return the attribute keys the recorder has seen per entity.
+) -> dict[str, tuple[set[str], bool, bool]]:
+    """Return keys, completeness and whether only inactive states were found.
 
     Runs on the recorder's executor, as one job in one session: which
     entities it knows, the newest attribute sets of each, bounded, and then
@@ -425,6 +420,7 @@ def _read_recorded_attribute_keys(
     instance = get_instance(hass)
     keys_by_entity: dict[str, set[str]] = {}
     complete_entities: set[str] = set()
+    inactive_only_entities: set[str] = set()
     # One set can be shared by several entities: the recorder stores each
     # distinct set once.
     entities_by_set: dict[int, list[str]] = defaultdict(list)
@@ -444,6 +440,7 @@ def _read_recorded_attribute_keys(
                 and not _retained_an_active_state(session, metadata_id)
             ):
                 complete = False
+                inactive_only_entities.add(entity_id)
             keys_by_entity[entity_id] = set()
             if complete:
                 complete_entities.add(entity_id)
@@ -461,7 +458,11 @@ def _read_recorded_attribute_keys(
                     complete_entities.discard(entity_id)
 
     return {
-        entity_id: (keys, entity_id in complete_entities)
+        entity_id: (
+            keys,
+            entity_id in complete_entities,
+            entity_id in inactive_only_entities,
+        )
         for entity_id, keys in keys_by_entity.items()
     }
 
@@ -533,14 +534,17 @@ async def _async_ask_the_recorder(
         return
 
     for entity_id, previous in previous_answers.items():
-        keys, complete = recorded.get(entity_id, (set(), False))
+        keys, complete, inactive_only = recorded.get(entity_id, (set(), False, False))
         knowledge = _knowledge(hass, entity_id)
         # Taken in before the answer is written down: these are what the
         # answer is about, not news that makes it stale.
         knowledge.seen |= keys
         if previous is None:
             knowledge.answer = HistoryAnswer(
-                complete=complete, asked_at=started, read_until=started
+                complete=complete,
+                asked_at=started,
+                read_until=started,
+                inactive_only=inactive_only,
             )
         # Only added to the answer it continues. One dropped meanwhile,
         # because the entity showed something new, is read in full next time.

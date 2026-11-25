@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from functools import partial
 from typing import TYPE_CHECKING
 
 import pytest
@@ -12,8 +13,16 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 )
 from sqlalchemy.exc import OperationalError
 
-from homeassistant.core import State
-from homeassistant.const import STATE_OFF, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.components.recorder.purge import purge_old_data
+from homeassistant.const import (
+    ATTR_ENTITY_ID,
+    EVENT_STATE_CHANGED,
+    STATE_OFF,
+    STATE_ON,
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
+from homeassistant.core import State, callback
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util import dt as dt_util
 
@@ -30,7 +39,7 @@ from custom_components.spook.attribute_checking import (
 
 if TYPE_CHECKING:
     from homeassistant.components.recorder import Recorder
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import Event, HomeAssistant
 
 
 @pytest.fixture(autouse=True)
@@ -135,7 +144,7 @@ async def test_known_from_memory_is_not_reported(
     """
 
     def _remembers_nothing(_hass: HomeAssistant, entity_ids: list[str]) -> dict:
-        return {entity_id: (set(), True) for entity_id in entity_ids}
+        return {entity_id: (set(), True, False) for entity_id in entity_ids}
 
     monkeypatch.setattr(
         attribute_checking, "_read_recorded_attribute_keys", _remembers_nothing
@@ -353,6 +362,83 @@ async def test_becoming_active_clears_an_inactive_only_answer(
         {_METEOALARM: None},
         {_METEOALARM: None},
     ]
+
+
+async def test_active_history_is_retried_after_recorder_lag(
+    hass: HomeAssistant,
+    recorder_mock: Recorder,
+    count_recorder_reads: list[dict[str, float | None]],
+) -> None:
+    """Test an active state can reach the recorder after the first read."""
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    events: list[Event] = []
+
+    @callback
+    def _remember(event: Event) -> None:
+        if event.data[ATTR_ENTITY_ID] == _METEOALARM:
+            events.append(event)
+
+    # Hold back the active event until after the first look.
+    unsubscribe = hass.bus.async_listen(EVENT_STATE_CHANGED, _remember)
+    recorder_mock.set_enable(False)
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    unsubscribe()
+    recorder_mock.set_enable(True)
+
+    missing = {(_METEOALARM, "missing")}
+    assert not await async_unknown_attributes(hass, missing)
+    assert count_recorder_reads == [{_METEOALARM: None}]
+
+    (event,) = events
+    recorder_mock.queue_task(event)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(hass, missing) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+    assert count_recorder_reads == [{_METEOALARM: None}, {_METEOALARM: None}]
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert answer.complete
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_second_activation_retries_inactive_only_history_after_purge(
+    hass: HomeAssistant,
+    count_recorder_reads: list[dict[str, float | None]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a new on state calls for a full read after older ones were purged."""
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    missing = {(_METEOALARM, "missing")}
+    expected = {UnknownAttribute(_METEOALARM, "missing", None)}
+    assert await async_unknown_attributes(hass, missing) == expected
+
+    cutoff = dt_util.utcnow()
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    recorder = get_instance(hass)
+    await recorder.async_add_executor_job(
+        partial(purge_old_data, recorder, cutoff, repack=False)
+    )
+
+    tomorrow = dt_util.utcnow() + timedelta(days=1, minutes=1)
+    with monkeypatch.context() as patch:
+        patch.setattr(attribute_checking.dt_util, "utcnow", lambda: tomorrow)
+        assert not await async_unknown_attributes(hass, missing)
+        answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+        assert answer is not None
+        assert answer.inactive_only
+        assert not answer.complete
+
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    assert await async_unknown_attributes(hass, missing) == expected
+    assert count_recorder_reads == [{_METEOALARM: None}] * 3
 
 
 @pytest.mark.usefixtures("recorder_mock")
@@ -607,7 +693,7 @@ async def test_what_was_seen_is_kept_after_a_purge(
     assert not await async_unknown_attributes(hass, {("sensor.one", "old")})
 
     def _purged(_hass: HomeAssistant, entity_ids: list[str]) -> dict:
-        return {entity_id: ({"a"}, True) for entity_id in entity_ids}
+        return {entity_id: ({"a"}, True, False) for entity_id in entity_ids}
 
     monkeypatch.setattr(attribute_checking, "_read_recorded_attribute_keys", _purged)
     tomorrow = dt_util.utcnow() + timedelta(days=2)
@@ -635,7 +721,7 @@ async def test_history_is_bounded_in_the_database(
         {"sensor.long": None, "sensor.never_recorded": None},
     )
 
-    assert recorded == {"sensor.long": ({"a"}, False)}
+    assert recorded == {"sensor.long": ({"a"}, False, False)}
 
 
 @pytest.fixture(name="recorder_remembers_only_a")
@@ -647,7 +733,7 @@ def fixture_recorder_remembers_only_a(
 
     def _only_a(_hass: HomeAssistant, entity_ids: list[str]) -> dict:
         asked.append(list(entity_ids))
-        return {entity_id: ({"a"}, True) for entity_id in entity_ids}
+        return {entity_id: ({"a"}, True, False) for entity_id in entity_ids}
 
     monkeypatch.setattr(attribute_checking, "_read_recorded_attribute_keys", _only_a)
     return asked

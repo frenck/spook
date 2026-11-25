@@ -360,7 +360,7 @@ async def test_custom_attribute_present_now_is_fine(
     """
 
     def _never_seen_it(_hass: HomeAssistant, entity_ids: list[str]) -> dict:
-        return {entity_id: ({"brightness"}, True) for entity_id in entity_ids}
+        return {entity_id: ({"brightness"}, True, False) for entity_id in entity_ids}
 
     monkeypatch.setattr(
         attribute_checking, "_read_recorded_attribute_keys", _never_seen_it
