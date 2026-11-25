@@ -109,4 +109,11 @@ def async_enable_device_and_parent(
     # Home Assistant Core refuses to enable a child device while its parent is
     # disabled, so the order is not just cosmetic.
     for chain_device_id in reversed(chain):
+        # A device that is off because its integration entry is, comes back
+        # with that entry. Home Assistant ignores enabling it here, and is to
+        # refuse it outright, so it is left alone.
+        device = device_registry.async_get(chain_device_id)
+        if device.disabled_by is dr.DeviceEntryDisabler.CONFIG_ENTRY:
+            continue
+
         async_update_any_device(device_registry, chain_device_id, disabled_by=None)

@@ -11,6 +11,7 @@ from pytest_homeassistant.common import MockConfigEntry
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.core import Context, HomeAssistant
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.device_registry import DeviceEntryDisabler
 
 from custom_components.spook.ectoplasms.homeassistant.services import (
@@ -311,3 +312,93 @@ async def test_device_services_survive_via_device_cycle(
 
     assert device_registry.async_get(first.id).disabled_by is None
     assert device_registry.async_get(second.id).disabled_by is None
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_enable_device_service_refuses_device_disabled_by_its_entry(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    disabled_config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test enabling a device says so when only its integration entry can.
+
+    Home Assistant ignores the enable, so the action would do nothing without
+    a word. The refusal comes before anything is written: the device that
+    could have been enabled stays as it was. #2082.
+    """
+    disabled_by_user = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "disabled-by-user")},
+        disabled_by=DeviceEntryDisabler.USER,
+    )
+    disabled_by_entry = device_registry.async_get_or_create(
+        config_entry_id=disabled_config_entry.entry_id,
+        identifiers={("test", "disabled-by-entry")},
+    )
+
+    assert disabled_by_entry.disabled_by is DeviceEntryDisabler.CONFIG_ENTRY
+
+    with pytest.raises(HomeAssistantError) as raised:
+        await hass.services.async_call(
+            DOMAIN,
+            "enable_device",
+            {"device_id": [disabled_by_user.id, disabled_by_entry.id]},
+            blocking=True,
+            context=Context(user_id=hass_admin_user.id),
+        )
+
+    assert raised.value.translation_key == "device_disabled_by_integration_entry"
+    assert raised.value.translation_placeholders == {
+        "device_id": disabled_by_entry.id,
+        "entry": "Disabled test",
+    }
+    assert (
+        device_registry.async_get(disabled_by_user.id).disabled_by
+        is DeviceEntryDisabler.USER
+    )
+    assert (
+        device_registry.async_get(disabled_by_entry.id).disabled_by
+        is DeviceEntryDisabler.CONFIG_ENTRY
+    )
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_enable_device_service_leaves_parent_disabled_by_its_entry(
+    hass: HomeAssistant,
+    config_entry: MockConfigEntry,
+    disabled_config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test enabling a device passes over a parent only its entry can enable.
+
+    The device asked for is enabled. The one it is connected through stays
+    off with its integration entry, without Home Assistant having to ignore
+    an enable that could not work.
+    """
+    parent = device_registry.async_get_or_create(
+        config_entry_id=disabled_config_entry.entry_id,
+        identifiers={("test", "parent-device")},
+    )
+    child = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "child-device")},
+        disabled_by=DeviceEntryDisabler.USER,
+        via_device_id=parent.id,
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "enable_device",
+        {"device_id": child.id},
+        blocking=True,
+    )
+
+    assert device_registry.async_get(child.id).disabled_by is None
+    assert (
+        device_registry.async_get(parent.id).disabled_by
+        is DeviceEntryDisabler.CONFIG_ENTRY
+    )
+    assert "sets disabled_by to None" not in caplog.text
