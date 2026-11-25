@@ -30,6 +30,23 @@ if TYPE_CHECKING:
 SPOOK_ROOT = Path(__file__).parents[1] / "custom_components" / "spook"
 
 
+def _in_dutch(*path: str) -> str:
+    """Return a string of the restart action as the Dutch translation has it.
+
+    Read from the file, not written out here: how it is worded is up to the
+    translators, and these tests are about the string getting there at all.
+    """
+    found = json.loads((SPOOK_ROOT / "translations" / "nl.json").read_text("utf-8"))
+    for key in ("services", "homeassistant_restart", *path):
+        found = found[key]
+    return found
+
+
+# Spook adds a ghost to the name of its own actions, unless the translation
+# brought one along.
+DUTCH_RESTART_NAME = name if "👻" in (name := _in_dutch("name")) else f"{name} 👻"
+
+
 def _given_a_cached_translation(hass: HomeAssistant, key: str, value: str) -> None:
     """Put a Home Assistant translation string in the cache.
 
@@ -80,13 +97,13 @@ async def test_actions_are_translated_in_a_profile_language(
         hass, "nl", "services", {"homeassistant"}
     )
 
-    assert translations["component.homeassistant.services.restart.name"] == (
-        "Herstart 👻"
-    )
     assert (
-        translations["component.homeassistant.services.restart.fields.force.name"]
-        == "Forceer herstart"
+        translations["component.homeassistant.services.restart.name"]
+        == DUTCH_RESTART_NAME
     )
+    assert translations[
+        "component.homeassistant.services.restart.fields.force.name"
+    ] == _in_dutch("fields", "force", "name")
 
     # The test harness shares one translation cache between tests, so leave
     # it the way it was found.
@@ -131,7 +148,7 @@ async def test_requests_for_a_new_language_all_wait_for_spook(
     )
 
     key = "component.homeassistant.services.restart.name"
-    assert first[key] == second[key] == "Herstart 👻"
+    assert first[key] == second[key] == DUTCH_RESTART_NAME
 
     manager.async_clear_service_translation_overrides()
     for undo in manager._on_unload:
@@ -166,8 +183,9 @@ async def test_a_language_that_failed_is_tried_again(
     translations = await async_get_translations(
         hass, "nl", "services", {"homeassistant"}
     )
-    assert translations["component.homeassistant.services.restart.name"] == (
-        "Herstart 👻"
+    assert (
+        translations["component.homeassistant.services.restart.name"]
+        == DUTCH_RESTART_NAME
     )
 
     manager.async_clear_service_translation_overrides()
