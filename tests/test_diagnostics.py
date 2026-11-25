@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 import json
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.config_entries import ConfigEntryDisabler, ConfigEntryState
 from homeassistant.helpers import issue_registry as ir

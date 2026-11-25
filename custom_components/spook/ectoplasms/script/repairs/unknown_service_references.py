@@ -52,4 +52,6 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             self.hass,
             services=async_find_services_in_sequence(entity.script.sequence),
             known_services=self._known_services,
+            made_from_blueprint=getattr(entity, "referenced_blueprint", None)
+            is not None,
         )

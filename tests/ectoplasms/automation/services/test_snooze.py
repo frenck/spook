@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from homeassistant.core import Context, CoreState
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
 

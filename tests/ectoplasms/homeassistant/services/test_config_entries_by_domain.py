@@ -9,7 +9,7 @@ from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.setup import async_setup_component
 import pytest
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     mock_integration,
@@ -27,14 +27,12 @@ if TYPE_CHECKING:
 pytestmark = pytest.mark.usefixtures("spook_translations")
 
 
-async def _async_setup_entry(_hass: HomeAssistant, _entry: MockConfigEntry) -> bool:
+async def _async_setup_entry(_hass: HomeAssistant, _entry: MockConfigEntry) -> None:
     """Set up nothing, successfully."""
-    return True
 
 
-async def _async_unload_entry(_hass: HomeAssistant, _entry: MockConfigEntry) -> bool:
+async def _async_unload_entry(_hass: HomeAssistant, _entry: MockConfigEntry) -> None:
     """Unload nothing, successfully."""
-    return True
 
 
 @pytest.fixture(name="entries")

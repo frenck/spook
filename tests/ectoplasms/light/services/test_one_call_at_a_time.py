@@ -23,7 +23,7 @@ from custom_components.spook.ectoplasms.light.services import (
 from .conftest import BRIGHT, COLOUR, DIM, WHITES, async_set_up_lights
 
 if TYPE_CHECKING:
-    from pytest_homeassistant_custom_component.common import MockUser
+    from pytest_homeassistant.common import MockUser
 
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import (

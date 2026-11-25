@@ -8,7 +8,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 import pytest
 import yaml
 
@@ -19,6 +19,7 @@ from custom_components.spook import draft_checking
 from custom_components.spook.ectoplasms.automation.repairs.never_true_templates import (
     SpookRepair,
 )
+from custom_components.spook.never_true_templates import never_true_templates
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
@@ -916,3 +917,101 @@ async def test_a_draft_is_checked_for_templates_that_never_pass(
             "actions": [],
         },
     ) == {"templates": [QUOTED]}
+
+
+def _until(*conditions: Any) -> dict[str, Any]:
+    """Return an automation that repeats until the conditions pass."""
+    return {
+        "triggers": [EVENT],
+        "actions": [{"repeat": {"until": list(conditions), "sequence": []}}],
+    }
+
+
+@pytest.mark.parametrize(
+    "condition",
+    [
+        _template_condition("{{ false }}"),
+        _template_condition("{{ False }}"),
+        _template_condition("{{false}}"),
+        _template_condition(" {{ false }} "),
+        _template_condition("  {{ false }}\n\n"),
+        _template_condition("false"),
+        _template_condition(False),  # noqa: FBT003
+        "{{ false }}",
+        {"condition": "{{ false }}"},
+    ],
+)
+def test_a_loop_told_to_go_on_forever_is_not_reported(
+    hass: HomeAssistant, condition: Any
+) -> None:
+    """Test `until` the word false is a loop meant to run until it is stopped.
+
+    The loop goes on until something in it stops the run, which is what
+    somebody writing false there asks for. #2011.
+    """
+    assert never_true_templates(hass, "automation", _until(condition)) == set()
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        QUOTED,
+        WITHOUT_DELIMITERS,
+        "{{ 'false' if is_state('light.hall', 'on') else 'off' }}",
+        "{{ false }} # never",
+    ],
+)
+def test_a_loop_that_cannot_end_by_mistake_is_still_reported(
+    hass: HomeAssistant, template: str
+) -> None:
+    """Test `until` anything else that never passes is still a finding."""
+    assert never_true_templates(
+        hass, "automation", _until(_template_condition(template))
+    ) == {" ".join(template.split())}
+
+
+def test_only_the_word_false_is_left_out_of_what_ends_a_loop(
+    hass: HomeAssistant,
+) -> None:
+    """Test other conditions next to the word false are judged as before."""
+    assert never_true_templates(
+        hass,
+        "automation",
+        _until(_template_condition("{{ false }}"), _template_condition(QUOTED)),
+    ) == {" ".join(QUOTED.split())}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        # A condition that says false stops the run right there.
+        {"triggers": [EVENT], "conditions": [_template_condition("{{ false }}")]},
+        # A loop running while false never starts.
+        {
+            "triggers": [EVENT],
+            "actions": [{"repeat": {"while": ["{{ false }}"], "sequence": []}}],
+        },
+        # Nested in the `until`, where it is one of several to weigh.
+        {
+            "triggers": [EVENT],
+            "actions": [
+                {
+                    "repeat": {
+                        "until": [{"or": [_template_condition("{{ false }}")]}],
+                        "sequence": [],
+                    }
+                }
+            ],
+        },
+    ],
+    ids=["condition", "while", "nested in until"],
+)
+def test_the_word_false_is_still_reported_anywhere_else(
+    hass: HomeAssistant, config: dict[str, Any]
+) -> None:
+    """Test false anywhere but as what directly ends a loop is a finding.
+
+    None of these does what a loop running until false does. Each on its
+    own, so one of them no longer being reported cannot hide behind another.
+    """
+    assert never_true_templates(hass, "automation", config) == {"{{ false }}"}

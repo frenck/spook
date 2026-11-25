@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.energy.data import async_get_manager
 from homeassistant.components.energy.validate import async_validate
+from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.util.hass_dict import HassKey
 
 from .statistics_sources import async_known_to_home_assistant
 
@@ -20,6 +22,14 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from homeassistant.core import HomeAssistant
+
+#: Sent whenever the energy settings are saved, once
+#: `async_follow_energy_settings` has been called.
+SIGNAL_ENERGY_SETTINGS_SAVED = "spook_energy_settings_saved"
+
+DATA_FOLLOWING_ENERGY_SETTINGS: HassKey[bool] = HassKey(
+    "spook_following_energy_settings"
+)
 
 # The energy validation issue type raised when a referenced entity or
 # statistic has no state at all: it was removed. Other issue types
@@ -62,6 +72,33 @@ def _entity_settings_in(value: Any) -> set[str]:
             else:
                 found |= _entity_settings_in(setting)
     return found
+
+
+async def async_follow_energy_settings(hass: HomeAssistant) -> None:
+    """Send `SIGNAL_ENERGY_SETTINGS_SAVED` whenever the energy settings are saved.
+
+    Home Assistant tells a listener when they are, and raises no event for
+    it. It has no way to take a listener out again either, so one goes in,
+    once for as long as Home Assistant runs, and passes it on as a signal.
+    Whoever wants to know connects to that, and can disconnect again.
+    """
+    if hass.data.get(DATA_FOLLOWING_ENERGY_SETTINGS):
+        return
+
+    manager = await async_get_manager(hass)
+
+    # Asked again, with nothing awaited between here and the listener going
+    # in: another caller may have put it in while the manager was fetched.
+    # And only noted once it is in, so a manager that failed to load is
+    # tried again the next time.
+    if hass.data.get(DATA_FOLLOWING_ENERGY_SETTINGS):
+        return
+
+    async def _saved() -> None:
+        async_dispatcher_send(hass, SIGNAL_ENERGY_SETTINGS_SAVED)
+
+    manager.async_listen_updates(_saved)
+    hass.data[DATA_FOLLOWING_ENERGY_SETTINGS] = True
 
 
 async def _async_entity_settings(hass: HomeAssistant) -> set[str]:

@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 import pytest
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.setup import async_setup_component
 
@@ -28,6 +28,8 @@ from custom_components.spook.ectoplasms.template.repairs.unknown_service_referen
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
@@ -378,3 +380,58 @@ async def test_template_reloaded_event_makes_it_look(
 
     assert call.called
     await repair.async_deactivate()
+
+
+# Shaped after the blueprint in #2019: one branch per integration that can
+# hand out prices, picked by an input.
+PRICES_BLUEPRINT = """
+blueprint:
+  name: Prices
+  domain: template
+  input:
+    source:
+      default: nordpool
+variables:
+  source: !input source
+triggers:
+  - trigger: event
+    event_type: spook_test
+actions:
+  - choose:
+      - conditions: "{{ source == 'tibber' }}"
+        sequence:
+          - action: tibber.get_prices
+            response_variable: prices
+      - conditions: "{{ source == 'nordpool' }}"
+        sequence:
+          - action: script.ghost
+sensor:
+  state: "{{ source }}"
+"""
+
+
+async def test_a_blueprint_for_integrations_that_are_not_there(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    tmp_path: Path,
+) -> None:
+    """Test a blueprint's actions of integrations that are not loaded are left out.
+
+    The branch for an integration that is not there never runs, and whoever
+    uses the blueprint cannot edit it. `script` is loaded, so a script that
+    is missing is still reported. #2019.
+    """
+    hass.config.config_dir = str(tmp_path)
+    blueprint = tmp_path / "blueprints" / "template" / "frenck" / "prices.yaml"
+    blueprint.parent.mkdir(parents=True)
+    blueprint.write_text(PRICES_BLUEPRINT, encoding="utf-8")
+    assert await async_setup_component(hass, "script", {})
+
+    await _setup(
+        hass,
+        {"use_blueprint": {"path": "frenck/prices.yaml"}, "name": "Day Ahead Prices"},
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _services(issue_registry, "sensor.day_ahead_prices") == "- `script.ghost`"

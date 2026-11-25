@@ -14,14 +14,19 @@ from ....reference_extraction import (
     names_given_to_templates,
     only_in_disabled_steps,
 )
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from ....repairs import (
+    AbstractSpookEntityComponentUnknownReferencesRepair,
+    DeviceReferencesRepairMixin,
+)
 from ....template_extraction import extract_device_ids_from_config
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(
+    DeviceReferencesRepairMixin, AbstractSpookEntityComponentUnknownReferencesRepair
+):
     """Spook repair tries to find unknown referenced devices in scripts."""
 
     domain = script.DOMAIN
@@ -62,6 +67,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
                 ),
             )
 
+        self._remember_referenced_device_ids(device_ids)
         return async_filter_known_device_ids(
             self.hass,
             device_ids=device_ids,

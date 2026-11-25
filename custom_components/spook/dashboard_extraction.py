@@ -17,6 +17,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
+from .configuration_cache import per_dashboard_node
 from .entity_filtering import (
     FILLED_IN_LATER,
     is_not_an_entity_id,
@@ -236,6 +237,7 @@ def _walk_node(node: dict[str, Any], entities: set[str]) -> None:
         _walk(child, entities)
 
 
+@per_dashboard_node
 def extract_entities_from_dashboard_node(node: Any) -> set[str]:
     """Return the entity references found anywhere in a dashboard node.
 
@@ -485,17 +487,23 @@ def is_view_node(node: dict[str, Any]) -> bool:
     )
 
 
+@per_dashboard_node
 def extract_not_entity_ids_from_dashboard_node(node: Any) -> set[str]:
     """Return what a core card's entity field holds that is no entity ID.
 
     Accepts a whole dashboard, a view or a single card. Only the core cards,
     and only their fields that take an entity ID and nothing else.
     """
+    return _not_entity_ids(node)
+
+
+def _not_entity_ids(node: Any) -> set[str]:
+    """Return what the core cards in a part of a dashboard hold as no entity ID."""
     found: set[str] = set()
 
     if isinstance(node, list):
         for item in node:
-            found |= extract_not_entity_ids_from_dashboard_node(item)
+            found |= _not_entity_ids(item)
         return found
 
     if not isinstance(node, dict):
@@ -578,6 +586,7 @@ def _walk_areas(node: Any, areas: set[str]) -> None:
         _walk_areas(child, areas)
 
 
+@per_dashboard_node
 def extract_areas_from_dashboard_node(node: Any) -> set[str]:
     """Return the area references found anywhere in a dashboard node."""
     areas: set[str] = set()
@@ -727,6 +736,7 @@ def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) 
         _walk_actions(child, actions, card_domain)
 
 
+@per_dashboard_node
 def extract_actions_from_dashboard_node(node: Any) -> set[str]:
     """Return the actions performed anywhere in a dashboard node."""
     actions: set[str] = set()
@@ -782,6 +792,7 @@ def _walk_navigation(node: Any, paths: set[str]) -> None:
         _walk_navigation(child, paths)
 
 
+@per_dashboard_node
 def extract_navigation_paths_from_dashboard_node(node: Any) -> set[str]:
     """Return the paths navigated to anywhere in a dashboard node."""
     paths: set[str] = set()
@@ -832,6 +843,7 @@ def _walk_icons(node: Any, icons: set[str], *, in_custom: bool) -> None:
         _walk_icons(child, icons, in_custom=in_custom)
 
 
+@per_dashboard_node
 def extract_icons_from_dashboard_node(node: Any) -> set[str]:
     """Return the icons shown anywhere in a dashboard node."""
     icons: set[str] = set()
@@ -994,6 +1006,7 @@ def _collect_section_themes(sections: Any, themes: set[str]) -> None:
             _collect_section_themes(section.get("sections"), themes)
 
 
+@per_dashboard_node
 def extract_themes_from_dashboard_view(view: Any) -> set[str]:
     """Return the themes a view, its sections and its core cards put on.
 

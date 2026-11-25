@@ -14,7 +14,7 @@ import importlib
 import logging
 from typing import TYPE_CHECKING, Any
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.helpers import (
     area_registry as ar,

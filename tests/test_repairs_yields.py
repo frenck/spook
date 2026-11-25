@@ -9,8 +9,12 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
+from custom_components.spook import repairs, template_extraction
 from custom_components.spook.repairs import (
     AbstractSpookEntityComponentUnknownReferencesRepair,
+)
+from custom_components.spook.template_extraction import (
+    async_extract_entities_from_config,
 )
 
 if TYPE_CHECKING:
@@ -67,12 +71,66 @@ async def test_component_inspection_yields_to_event_loop(
         entities=entities,
     )
 
+    # Only the count is under test here; a slow machine would otherwise add
+    # turns given by the clock.
+    monkeypatch.setattr(repairs, "YIELD_AFTER", float("inf"))
     repair = _ReferencesRepair(hass)
     calls = _count_sleeps(monkeypatch)
 
     await repair.async_inspect()
 
     assert calls == [0] * EXPECTED_YIELDS
+
+
+async def test_component_inspection_yields_by_the_clock(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The inspection hands the loop back once its time is up, at any count.
+
+    Fewer entities than one count interval, so every turn comes from the
+    clock. A time limit that is always exceeded gives one turn per entity.
+    #2005.
+    """
+    entities = [
+        SimpleNamespace(entity_id=f"automation.spooky_{index}") for index in range(5)
+    ]
+    hass.data.setdefault(DATA_INSTANCES, {})["automation"] = SimpleNamespace(
+        entities=entities,
+    )
+    monkeypatch.setattr(repairs, "YIELD_AFTER", -1.0)
+    calls = _count_sleeps(monkeypatch)
+
+    await _ReferencesRepair(hass).async_inspect()
+
+    assert calls == [0] * len(entities)
+
+
+async def test_reading_the_templates_of_a_configuration_yields_by_the_clock(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Reading a configuration's templates hands the loop back by the clock.
+
+    Without a time limit nothing in there waits for anything; with one that
+    is always exceeded, there is a turn before every template. What is found
+    stays the same either way. #2005.
+    """
+    config = {
+        "first": "{{ states('sensor.one') }}",
+        "second": "{{ states('sensor.two') }}",
+        "third": "{{ states('sensor.three') }}",
+    }
+    expected = {"sensor.one", "sensor.two", "sensor.three"}
+    calls = _count_sleeps(monkeypatch)
+
+    monkeypatch.setattr(template_extraction, "YIELD_AFTER", float("inf"))
+    assert await async_extract_entities_from_config(hass, config, set()) == expected
+    assert not calls
+
+    monkeypatch.setattr(template_extraction, "YIELD_AFTER", -1.0)
+    assert await async_extract_entities_from_config(hass, config, set()) == expected
+    assert calls == [0] * len(config)
 
 
 async def test_an_entity_arriving_mid_inspection_does_not_kill_the_round(
