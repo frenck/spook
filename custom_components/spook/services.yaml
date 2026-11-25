@@ -71,6 +71,7 @@ light_set_brightness:
       description: The brightness to set, as a percentage.
       required: true
       example: 50
+      default: 50
       selector:
         number:
           min: 1
@@ -101,6 +102,7 @@ light_increase_brightness:
       description: How much brighter to go, as a percentage.
       required: true
       example: 10
+      default: 10
       selector:
         number:
           min: 1
@@ -130,6 +132,7 @@ light_decrease_brightness:
       description: How much dimmer to go, as a percentage.
       required: true
       example: 10
+      default: 10
       selector:
         number:
           min: 1
@@ -185,6 +188,7 @@ light_set_color_temperature:
       description: The color temperature to set.
       required: true
       example: 2700
+      default: 2700
       selector:
         color_temp:
           unit: kelvin
