@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import asyncio
+import gc
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
+from weakref import WeakKeyDictionary
 
 import pytest
 
@@ -16,6 +19,7 @@ from custom_components.spook.configuration_cache import (
     per_configuration,
     per_dashboard_node,
     read_once,
+    reading_for,
 )
 from custom_components.spook.reference_extraction import without_disabled_steps
 from custom_components.spook.template_extraction import (
@@ -37,6 +41,18 @@ def _counted() -> tuple[Any, list[Any]]:
         return len(read)
 
     return _reader, read
+
+
+class _Owner:  # pylint: disable=too-few-public-methods
+    """Something readings can be kept with, like an automation."""
+
+
+@pytest.fixture(name="owned", autouse=True)
+def owned_fixture(monkeypatch: pytest.MonkeyPatch) -> WeakKeyDictionary[Any, Any]:
+    """Return what is kept with owners, without what other tests left there."""
+    owned: WeakKeyDictionary[Any, Any] = WeakKeyDictionary()
+    monkeypatch.setattr(configuration_cache, "_READINGS", owned)
+    return owned
 
 
 def test_the_same_configuration_is_read_once() -> None:
@@ -169,6 +185,129 @@ async def test_reading_once_stays_with_its_task() -> None:
     assert read == [elsewhere]
 
 
+def test_what_is_read_for_an_owner_is_read_once() -> None:
+    """Test a configuration read for the same owner is read one time."""
+    reader, read = _counted()
+    owner = _Owner()
+    config = {"actions": []}
+
+    with reading_for(owner):
+        assert reader(config) == 1
+        assert reader(config) == 1
+
+    with reading_for(owner):
+        assert reader(config) == 1
+
+    assert read == [config]
+
+
+def test_what_is_read_for_an_owner_goes_with_it(
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test readings kept with an owner are dropped when the owner is. #2028."""
+    reader, _ = _counted()
+    owner = _Owner()
+
+    with reading_for(owner):
+        reader({"actions": []})
+
+    assert len(owned) == 1
+
+    del owner
+    gc.collect()
+
+    assert len(owned) == 0
+
+
+def test_what_is_read_for_an_owner_takes_no_room_elsewhere(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test readings kept with an owner push nothing else out."""
+    monkeypatch.setattr(configuration_cache, "CACHE_SIZE", 1)
+    reader, read = _counted()
+    owner = _Owner()
+    kept, owned = {"actions": [1]}, {"actions": [2]}
+
+    reader(kept)
+    with reading_for(owner):
+        reader(owned)
+    reader(kept)
+
+    assert read == [kept, owned]
+
+
+def test_each_owner_has_its_own_readings() -> None:
+    """Test one owner going leaves what another read in place."""
+    reader, read = _counted()
+    stays, goes = _Owner(), _Owner()
+    config = {"actions": []}
+
+    with reading_for(stays):
+        reader(config)
+    with reading_for(goes):
+        reader(config)
+
+    del goes
+    gc.collect()
+
+    with reading_for(stays):
+        reader(config)
+
+    assert read == [config, config]
+
+
+def test_a_configuration_read_once_is_not_kept_with_an_owner() -> None:
+    """Test reading once keeps nothing, with an owner around as well."""
+    reader, read = _counted()
+    owner = _Owner()
+    config = {"actions": []}
+
+    with reading_for(owner), read_once():
+        reader(config)
+        reader(config)
+
+    assert read == [config, config]
+
+
+def test_an_owner_that_cannot_be_held_weakly_is_no_owner(
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test readings for such an owner are kept the way they are without one."""
+    reader, read = _counted()
+    config = {"actions": []}
+
+    with reading_for(SimpleNamespace()):
+        reader(config)
+    reader(config)
+
+    assert read == [config]
+    assert len(owned) == 0
+
+
+async def test_the_owner_stays_with_its_task(
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test another task taking a turn does not read for this task's owner."""
+    reader, _ = _counted()
+    owner = _Owner()
+    inside = asyncio.Event()
+    done = asyncio.Event()
+
+    async def _reads_for_the_owner() -> None:
+        with reading_for(owner):
+            inside.set()
+            await done.wait()
+
+    async def _reads_for_no_one() -> None:
+        await inside.wait()
+        reader({"actions": []})
+        done.set()
+
+    await asyncio.gather(_reads_for_the_owner(), _reads_for_no_one())
+
+    assert len(owned) == 0
+
+
 def test_disabled_steps_are_left_out_once() -> None:
     """Test the configuration without its disabled steps is worked out once.
 
@@ -242,41 +381,82 @@ async def test_named_in_is_read_once_until_the_actions_change(
         return {"light.kitchen"}
 
     config = {"actions": []}
+    owner = _Owner()
     remembered.start_round({"light.turn_on"})
 
-    assert await remembered.async_named_in(config, frozenset(), _read) == {
-        "light.kitchen"
-    }
-    await remembered.async_named_in(config, frozenset(), _read)
-    assert len(read) == 1
+    with reading_for(owner):
+        assert await remembered.async_named_in(config, frozenset(), _read) == {
+            "light.kitchen"
+        }
+        await remembered.async_named_in(config, frozenset(), _read)
+        assert len(read) == 1
 
-    # Other names given to the templates are another reading.
-    await remembered.async_named_in(config, frozenset({"states"}), _read)
-    assert len(read) == 2  # noqa: PLR2004
+        # Other names given to the templates are another reading.
+        await remembered.async_named_in(config, frozenset({"states"}), _read)
+        assert len(read) == 2  # noqa: PLR2004
 
-    # The same actions next round: still remembered.
-    remembered.start_round({"light.turn_on"})
-    await remembered.async_named_in(config, frozenset(), _read)
-    assert len(read) == 2  # noqa: PLR2004
+        # The same actions next round: still remembered.
+        remembered.start_round({"light.turn_on"})
+        await remembered.async_named_in(config, frozenset(), _read)
+        assert len(read) == 2  # noqa: PLR2004
 
-    # Other actions at the start of a round: read again.
-    remembered.start_round({"light.turn_on", "light.toggle"})
-    await remembered.async_named_in(config, frozenset(), _read)
-    assert len(read) == 3  # noqa: PLR2004
+        # Other actions at the start of a round: read again.
+        remembered.start_round({"light.turn_on", "light.toggle"})
+        await remembered.async_named_in(config, frozenset(), _read)
+        assert len(read) == 3  # noqa: PLR2004
 
-    # An action registered in between: read again.
-    hass.bus.async_fire(EVENT_SERVICE_REGISTERED, {"domain": "x", "service": "y"})
-    await hass.async_block_till_done()
-    await remembered.async_named_in(config, frozenset(), _read)
-    assert len(read) == 4  # noqa: PLR2004
+        # An action registered in between: read again.
+        hass.bus.async_fire(EVENT_SERVICE_REGISTERED, {"domain": "x", "service": "y"})
+        await hass.async_block_till_done()
+        await remembered.async_named_in(config, frozenset(), _read)
+        assert len(read) == 4  # noqa: PLR2004
 
-    # And one removed.
-    hass.bus.async_fire(EVENT_SERVICE_REMOVED, {"domain": "x", "service": "y"})
-    await hass.async_block_till_done()
-    await remembered.async_named_in(config, frozenset(), _read)
-    assert len(read) == 5  # noqa: PLR2004
+        # And one removed.
+        hass.bus.async_fire(EVENT_SERVICE_REMOVED, {"domain": "x", "service": "y"})
+        await hass.async_block_till_done()
+        await remembered.async_named_in(config, frozenset(), _read)
+        assert len(read) == 5  # noqa: PLR2004
 
     stop()
+
+
+async def test_named_in_goes_with_its_owner(
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test what a configuration names is dropped along with its owner. #2028."""
+    remembered = RememberedNames()
+    remembered.start_round(set())
+    owner = _Owner()
+
+    async def _read(_config: dict[str, Any], _shadowed: frozenset[str]) -> set[str]:
+        return {"light.kitchen"}
+
+    with reading_for(owner):
+        await remembered.async_named_in({"actions": []}, frozenset(), _read)
+
+    assert len(owned) == 1
+
+    del owner
+    gc.collect()
+
+    assert len(owned) == 0
+
+
+async def test_named_in_is_always_read_without_an_owner() -> None:
+    """Test nothing is kept when there is no one to keep it with, like a draft."""
+    remembered = RememberedNames()
+    remembered.start_round(set())
+    read: list[Any] = []
+
+    async def _read(config: dict[str, Any], _shadowed: frozenset[str]) -> set[str]:
+        read.append(config)
+        return {"light.kitchen"}
+
+    config = {"actions": []}
+    await remembered.async_named_in(config, frozenset(), _read)
+    await remembered.async_named_in(config, frozenset(), _read)
+
+    assert read == [config, config]
 
 
 async def test_named_in_hands_out_a_copy(hass: HomeAssistant) -> None:
@@ -288,9 +468,12 @@ async def test_named_in_hands_out_a_copy(hass: HomeAssistant) -> None:
         return {"light.kitchen"}
 
     config = {"actions": []}
-    (await remembered.async_named_in(config, frozenset(), _read)).add("x.y")
+    owner = _Owner()
 
-    assert await remembered.async_named_in(config, frozenset(), _read) == {
-        "light.kitchen"
-    }
+    with reading_for(owner):
+        (await remembered.async_named_in(config, frozenset(), _read)).add("x.y")
+
+        assert await remembered.async_named_in(config, frozenset(), _read) == {
+            "light.kitchen"
+        }
     _ = hass

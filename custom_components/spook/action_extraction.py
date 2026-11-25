@@ -16,7 +16,7 @@ from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.service import async_get_all_descriptions
 
-from .configuration_cache import CACHE_SIZE
+from .configuration_cache import owned_readings
 from .const import LOGGER
 from .entity_filtering import (
     NEVER_AN_ENTITY_PREFIXES,
@@ -843,14 +843,20 @@ class RememberedNames:
     as an action is registered, removed, or the set of actions looks
     different at the start of a round. #2005.
 
-    Keyed by the configuration itself, which is kept along so no other can
-    take its key, and by the names it gives its templates.
+    Kept with the automation or script being read, see `reading_for`, so it
+    goes when Home Assistant drops that one. Keyed by the configuration
+    itself, which is kept along so no other can take its key, and by the
+    names it gives its templates. Without an automation or script to keep it
+    with, like for a draft, nothing is kept.
     """
 
     def __init__(self) -> None:
         """Start with nothing remembered."""
         self._actions: set[str] | None = None
-        self._named: dict[tuple[int, frozenset[str]], tuple[Any, set[str]]] = {}
+
+        # Replaced whenever the actions change. A reading made under an
+        # earlier one is read again, and takes the place of the old one.
+        self._actions_seen = object()
 
     @callback
     def async_follow_actions(self, hass: HomeAssistant) -> Callable[[], None]:
@@ -858,7 +864,7 @@ class RememberedNames:
 
         @callback
         def _forget(_: Event) -> None:
-            self._named.clear()
+            self._actions_seen = object()
 
         stops = [
             hass.bus.async_listen(event, _forget)
@@ -875,19 +881,24 @@ class RememberedNames:
     def start_round(self, known_services: set[str]) -> None:
         """Forget everything if the actions are not the ones it was read with."""
         if known_services != self._actions:
-            self._named.clear()
+            self._actions_seen = object()
             self._actions = known_services
 
     async def async_named_in(
         self, config: dict[str, Any], shadowed: frozenset[str], read: NamedReader
     ) -> set[str]:
         """Return what ``read`` finds in ``config``, read once."""
+        if (readings := owned_readings(self)) is None:
+            return await read(config, shadowed)
+
         key = (id(config), shadowed)
-        if (known := self._named.get(key)) is not None and known[0] is config:
-            return set(known[1])
+        if (
+            (known := readings.get(key)) is not None
+            and known[0] is config
+            and known[1] is self._actions_seen
+        ):
+            return set(known[2])
 
         named = await read(config, shadowed)
-        if len(self._named) >= CACHE_SIZE:
-            self._named.clear()
-        self._named[key] = (config, set(named))
+        readings[key] = (config, self._actions_seen, set(named))
         return named
