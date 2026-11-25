@@ -20,6 +20,7 @@ from homeassistant.helpers import entity_registry as er
 from ...attribute_checking import (
     NAMES_THE_STATE_HINT,
     async_unknown_attributes,
+    did_you_mean,
     names_the_state,
 )
 from ...const import LOGGER
@@ -127,7 +128,7 @@ class AbstractSpookDashboardEntityNamesRepair(AbstractSpookRepair, ABC):
         for entity_id, name in findings:
             line = self.finding_line.format(name=name, entity_id=entity_id)
             if (suggestion := unknown[entity_id, name]) is not None:
-                line += f" (did you mean `{suggestion}`?)"
+                line += did_you_mean(name, suggestion)
             elif self.names_attributes and names_the_state(entity_id, name):
                 line += f" ({NAMES_THE_STATE_HINT})"
             lines.append(line)
@@ -277,7 +278,7 @@ async def async_check_dashboard_draft(
         for pair in reported(groups, unknown):
             line = finding_reference(pair)
             if (suggestion := unknown[pair]) is not None:
-                line += f" (did you mean {suggestion}?)"
+                line += did_you_mean(pair[1], suggestion, as_code=False)
             lines.append(line)
         if lines:
             found[label] = sorted(lines)

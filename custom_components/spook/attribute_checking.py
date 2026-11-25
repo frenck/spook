@@ -282,6 +282,41 @@ def names_the_state(entity_id: str, attribute: str) -> bool:
     )
 
 
+def did_you_mean(written: object, suggestion: str, *, as_code: bool = True) -> str:
+    """Return the best guess the way it is added to a finding.
+
+    A name can differ from the one that was meant without it showing: a
+    space at the end of `preset_modes ` is not seen on screen, and neither
+    is a character that has no shape at all. Home Assistant looks a name up
+    exactly as written, so it finds nothing, and the finding would show the
+    same name twice. What differs is said in words then. #2047.
+    """
+    meant = f"`{suggestion}`" if as_code else suggestion
+    if (differs := _differs_out_of_sight(written, suggestion)) is None:
+        return f" (did you mean {meant}?)"
+    return f" ({differs}, did you mean {meant}?)"
+
+
+def _differs_out_of_sight(written: object, suggestion: str) -> str | None:
+    """Return what tells a name from its best guess, when the eye cannot."""
+    if not isinstance(written, str) or written == suggestion:
+        return None
+
+    if written.strip() == suggestion:
+        at_the_start = written != written.lstrip()
+        at_the_end = written != written.rstrip()
+        if at_the_start and at_the_end:
+            return "has a space at the start and the end"
+        return f"has a space at the {'start' if at_the_start else 'end'}"
+
+    # Characters without a shape, like a zero-width space pasted along.
+    seen = "".join(character for character in written if character.isprintable())
+    if seen.strip() == suggestion:
+        return "has a character in it that does not show"
+
+    return None
+
+
 def suggest_name(name: str, known: Iterable[str]) -> str | None:
     """Return what somebody most likely meant, but only when it is near certain.
 

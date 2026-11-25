@@ -14,6 +14,7 @@ from ....attribute_checking import (
     NAMES_THE_STATE_HINT,
     UnknownAttribute,
     async_unknown_attributes,
+    did_you_mean,
     names_the_state,
 )
 from ....configuration_cache import read_once
@@ -51,7 +52,7 @@ def _finding_line(finding: UnknownAttribute) -> str:
     """Return how one unknown attribute reads in the issue."""
     line = f"- `{finding.attribute}` of `{finding.entity_id}`"
     if finding.suggestion is not None:
-        line += f" (did you mean `{finding.suggestion}`?)"
+        line += did_you_mean(finding.attribute, finding.suggestion)
     elif names_the_state(finding.entity_id, finding.attribute):
         line += f" ({NAMES_THE_STATE_HINT})"
     return line
