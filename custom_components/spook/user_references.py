@@ -12,6 +12,7 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
+from .configuration_cache import per_dashboard_node
 from .reference_extraction import (
     VALUE_KEYS,
     names_given_to_templates,
@@ -130,6 +131,7 @@ def _walk(node: Any, found: set[str], *, is_view: bool = False) -> None:
             _walk(value, found, is_view=key == "views")
 
 
+@per_dashboard_node
 def extract_user_ids_from_dashboard_node(node: Any) -> set[str]:
     """Return the user IDs named anywhere in a dashboard node.
 

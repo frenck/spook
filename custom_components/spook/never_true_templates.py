@@ -29,6 +29,7 @@ from homeassistant.helpers.template import (
     result_as_boolean,
 )
 
+from .configuration_cache import CACHE_SIZE
 from .reference_extraction import without_disabled_steps, without_never_rendered
 
 if TYPE_CHECKING:
@@ -193,7 +194,7 @@ def _pieces(body: list[nodes.Node]) -> list[_Piece] | None:
     return pieces
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _output_pieces(template_str: str) -> tuple[_Piece, ...] | None:
     """Return the pieces a template's output is made of, in order.
 
@@ -210,7 +211,7 @@ def _output_pieces(template_str: str) -> tuple[_Piece, ...] | None:
     return tuple(pieces)
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _is_constant(template_str: str) -> bool:
     """Return whether a template is made of constants alone.
 
