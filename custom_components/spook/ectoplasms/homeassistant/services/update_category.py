@@ -9,7 +9,6 @@ import voluptuous as vol
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import category_registry as cr, config_validation as cv
-from homeassistant.helpers.typing import UNDEFINED
 
 from ....const import DOMAIN as SPOOK_DOMAIN
 from ....services import AbstractSpookAdminService
@@ -63,7 +62,7 @@ class SpookService(AbstractSpookAdminService):
             cr.async_get(self.hass).async_update(
                 scope=scope,
                 category_id=category.category_id,
-                **{field: changes.get(field, UNDEFINED) for field in _UPDATABLE},
+                **changes,
             )
         except ValueError as err:
             # Renaming onto a name another category in this scope already has.
