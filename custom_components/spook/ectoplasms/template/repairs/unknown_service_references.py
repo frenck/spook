@@ -120,6 +120,7 @@ class SpookRepair(AbstractSpookRepair):
                     _action_lists(template_entity.config)
                 ),
                 known_services=known_services,
+                made_from_blueprint=template_entity.made_from_blueprint,
             )
             if not unknown_services:
                 continue
