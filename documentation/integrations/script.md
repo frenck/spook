@@ -129,6 +129,14 @@ An entity spelled out after `states`, like `states.light.kitchen.state`, is not 
 
 To resolve the raised issue, you can either remove the reference to the non-existing entity ID or fix the referenced entity ID. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Renamed entities
+
+Renaming an {term}`entity <entity>` does not update the scripts that refer to it: they keep pointing at the old {term}`entity ID <entity id>` and break quietly. When Spook sees an entity renamed in the entity registry, it checks every script for references to the old ID and raises a repair issue for each one it finds.
+
+For scripts that can be edited in the UI, the issue is fixable: select **Submit** and Spook rewrites the old entity ID to the new one in `scripts.yaml` and reloads the scripts. References inside Jinja templates, like `states('light.old')`, are rewritten as well. If the stored configuration cannot be updated - for example when the script lives in a YAML file the editor cannot write - Spook says so and points at where to fix it yourself.
+
+Only a rename actually seen is reported: one that happened while Home Assistant was off, or before Spook was installed, is just an unknown entity to Spook and shows up under unknown referenced entities instead.
+
 ### Unknown referenced actions
 
 Scripts are inspected for the use of actions. If a script is using an action that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the action that is referenced but not found.

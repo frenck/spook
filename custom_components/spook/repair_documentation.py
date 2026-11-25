@@ -14,6 +14,7 @@ REPAIR_DOCUMENTATION: Final = {
     "alert_unknown_entity_references": "alert#unknown-watched-entity",
     "alert_unknown_notifiers": "alert#unknown-notifiers",
     "automation_never_true_templates": "automation#templates-that-can-never-pass",
+    "automation_renamed_entity_references": "automation#renamed-entities",
     "automation_unknown_area_references": "automation#unknown-referenced-areas",
     "automation_unknown_attribute_references": (
         "automation#unknown-referenced-attributes"
@@ -63,6 +64,7 @@ REPAIR_DOCUMENTATION: Final = {
     "proximity_unknown_zone": "proximity#unknown-zone",
     "scene_unknown_entity_references": "scene#unknown-referenced-entities",
     "script_never_true_templates": "script#templates-that-can-never-pass",
+    "script_renamed_entity_references": "script#renamed-entities",
     "script_unknown_area_references": "script#unknown-referenced-areas",
     "script_unknown_attribute_references": "script#unknown-referenced-attributes",
     "script_unknown_condition_references": "script#unknown-referenced-conditions",

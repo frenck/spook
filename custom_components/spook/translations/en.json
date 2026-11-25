@@ -901,6 +901,25 @@
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation has the following templates, which can never pass, whatever happens in your home:\n\n{templates}\n\n\n\nA template condition passes only when it renders `true`, and a `wait_template` too, unless it changes into something that reads as true later. A template trigger fires when its template turns into something that reads as true, like `true`, `on`, `yes` or `1`. These templates always render something else, because of how they are written. The usual causes:\n\n- Quotes around the template. A `>-` block takes them as text, so they end up in the result.\n- No template delimiters at all, so the text is taken as it is.\n- YAML pasted into the template field.\n- A YAML `#` comment inside the Jinja, which Jinja prints as text.\n- A condition that renders `on` instead of `true`.\n\nNothing tells you: the condition never passes, the wait only ends on its timeout, and the trigger never fires. To fix this, [edit the automation]({edit}) and make the template render `true` when it should pass.\n\nSpook 👻 Your homie.",
       "title": "Templates that can never pass in: {automation}"
     },
+    "automation_renamed_entity_references": {
+      "title": "Automation still refers to a renamed entity: {automation}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Automation still refers to a renamed entity: {automation}",
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation refers to `{old_entity_id}`, which was renamed to `{new_entity_id}` in the entity registry. The rename did not update the automation, so it keeps pointing at an entity ID that no longer exists.\n\nSpook can replace all references to `{old_entity_id}` in the stored automation configuration and reload the automation for you. One heads-up: a reference can also be an entity ID used as a *name*, that you swap between entities on purpose; in that case leave it alone.\n\nTo make the change yourself instead, [edit the automation]({edit}).\n\nSpook 👻 Your homie."
+          }
+        },
+        "abort": {
+          "cannot_update": "The automation could not be updated automatically. To fix this error, replace `{old_entity_id}` with `{new_entity_id}` in the file where the automation is defined (e.g. [the editor]({edit}) for automations stored in automations.yaml), then reload it.\n\nSpook 👻 Your homie.",
+          "still_referenced": "The stored references were updated, but the automation still refers to `{old_entity_id}` elsewhere (for example inside a blueprint). [Edit the automation]({edit}) to finish the repair manually.\n\nSpook 👻 Your homie."
+        }
+      }
+    },
+    "automation_renamed_entity_references_yaml": {
+      "title": "Automation still refers to a renamed entity: {automation}",
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation refers to `{old_entity_id}`, which was renamed to `{new_entity_id}` in the entity registry. The rename did not update the automation, so it keeps pointing at an entity ID that no longer exists.\n\nThis automation is defined in YAML, so Spook cannot update it for you. To fix this error, replace `{old_entity_id}` with `{new_entity_id}` in the file where the automation is defined, then reload it.\n\nSpook 👻 Your homie."
+    },
     "automation_unknown_attribute_references": {
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA trigger or condition waiting on an attribute that never shows up never fires, and does not tell you so. A template reading one gets nothing. To fix this, [edit the automation]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",
       "title": "Unknown attributes used in: {automation}"
@@ -1214,6 +1233,25 @@
     "script_never_true_templates": {
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script has the following templates, which can never pass, whatever happens in your home:\n\n{templates}\n\n\n\nA template condition passes only when it renders `true`, and a `wait_template` too, unless it changes into something that reads as true later. A template trigger in a `wait_for_trigger` fires when its template turns into something that reads as true, like `true`, `on`, `yes` or `1`. These templates always render something else, because of how they are written. The usual causes:\n\n- Quotes around the template. A `>-` block takes them as text, so they end up in the result.\n- No template delimiters at all, so the text is taken as it is.\n- YAML pasted into the template field.\n- A YAML `#` comment inside the Jinja, which Jinja prints as text.\n- A condition that renders `on` instead of `true`.\n\nNothing tells you: the condition never passes, and the wait only ends on its timeout. To fix this, [edit the script]({edit}) and make the template render `true` when it should pass.\n\nSpook 👻 Your homie.",
       "title": "Templates that can never pass in: {script}"
+    },
+    "script_renamed_entity_references": {
+      "title": "Script still refers to a renamed entity: {script}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Script still refers to a renamed entity: {script}",
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script refers to `{old_entity_id}`, which was renamed to `{new_entity_id}` in the entity registry. The rename did not update the script, so it keeps pointing at an entity ID that no longer exists.\n\nSpook can replace all references to `{old_entity_id}` in the stored script configuration and reload the scripts for you. One heads-up: a reference can also be an entity ID used as a *name*, that you swap between entities on purpose; in that case leave it alone.\n\nTo make the change yourself instead, [edit the script]({edit}).\n\nSpook 👻 Your homie."
+          }
+        },
+        "abort": {
+          "cannot_update": "The script could not be updated automatically. To fix this error, replace `{old_entity_id}` with `{new_entity_id}` in the file where the script is defined (e.g. [the editor]({edit}) for scripts stored in scripts.yaml), then reload it.\n\nSpook 👻 Your homie.",
+          "still_referenced": "The stored references were updated, but the script still refers to `{old_entity_id}` elsewhere (for example inside a blueprint). [Edit the script]({edit}) to finish the repair manually.\n\nSpook 👻 Your homie."
+        }
+      }
+    },
+    "script_renamed_entity_references_yaml": {
+      "title": "Script still refers to a renamed entity: {script}",
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script refers to `{old_entity_id}`, which was renamed to `{new_entity_id}` in the entity registry. The rename did not update the script, so it keeps pointing at an entity ID that no longer exists.\n\nThis script is defined in YAML, so Spook cannot update it for you. To fix this error, replace `{old_entity_id}` with `{new_entity_id}` in the file where the script is defined, then reload it.\n\nSpook 👻 Your homie."
     },
     "script_unknown_attribute_references": {
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following attributes, which their entities do not have. Not right now, not as something that kind of entity offers, and not anywhere in what the recorder remembers of them:\n\n{attributes}\n\n\n\nA trigger or condition waiting on an attribute that never shows up never fires, and does not tell you so. A template reading one gets nothing. To fix this, [edit the script]({edit}) and use an attribute the entity has.\n\nSpook 👻 Your homie.",

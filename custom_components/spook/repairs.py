@@ -26,7 +26,11 @@ from homeassistant.config_entries import (
     ConfigEntry,
     ConfigEntryChange,
 )
-from homeassistant.const import CONF_ENTITIES, EVENT_STATE_CHANGED
+from homeassistant.const import (
+    CONF_ENTITIES,
+    EVENT_COMPONENT_LOADED,
+    EVENT_STATE_CHANGED,
+)
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
@@ -65,6 +69,12 @@ from .entity_filtering import (
     async_get_all_entity_ids,
     async_name_helper_in_the_registry,
     is_not_an_entity_id,
+)
+from .entity_renames import (
+    async_get_entity_renames,
+    async_track_entity_renames,
+    async_update_entity_references,
+    entity_id_in_config,
 )
 from .entity_suggestions import (
     async_describe_warmed_unknown_entities,
@@ -1168,6 +1178,111 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         return unknown
 
 
+class AbstractSpookRenamedEntityReferencesRepair(
+    AbstractSpookEntityComponentUnknownReferencesRepair, ABC
+):
+    """Base for repairs that find references to entities that were renamed.
+
+    The unknown-reference repairs this shares the entity iteration with can
+    only *guess* at what a missing entity ID was meant to be. A rename seen
+    in the registry is a fact: `entity_renames` journals it, and anything an
+    entity still points at that journal has the rewrite as a fix, not a
+    suggestion.
+
+    Each (entity, old entity ID) pair is its own issue. It is fixable when
+    the entity carries a unique ID - that is what makes its stored config
+    one the editor, and so the rewrite, can reach. One in YAML without an
+    `id` gets the same finding as advice instead.
+    """
+
+    inspect_events = {
+        EVENT_COMPONENT_LOADED,
+        er.EVENT_ENTITY_REGISTRY_UPDATED,
+    }
+    inspect_on_reload = True
+
+    async def async_activate(self) -> None:
+        """Start journaling renames on top of the usual listeners."""
+        await super().async_activate()
+        async_track_entity_renames(self.hass)
+
+    async def _async_compute_unknown_references(self, _entity: Any) -> set[str]:
+        """Unused hook; this repair writes its own inspection below."""
+        return set()
+
+    def _renamed_references(self, entity: Any, renames: Mapping[str, str]) -> set[str]:
+        """Return the journaled old entity IDs an entity still refers to."""
+        referenced = set(getattr(entity, "referenced_entities", None) or ())
+        raw_config = getattr(entity, "raw_config", None)
+        return {
+            old_entity_id
+            for old_entity_id in renames
+            if old_entity_id in referenced
+            or (
+                raw_config is not None
+                and entity_id_in_config(raw_config, old_entity_id)
+            )
+        }
+
+    async def async_inspect(self) -> None:
+        """Report entities still referring to an entity ID seen renamed."""
+        renames = async_get_entity_renames(self.hass)
+        if not renames or self.domain not in (
+            instances := self.hass.data.get(DATA_INSTANCES, {})
+        ):
+            return
+
+        entity_component = instances[self.domain]
+
+        LOGGER.debug("Spook is inspecting: %s", self.repair)
+
+        # See the base inspection for why the entity list is taken as a
+        # snapshot and why the loop yields every so often.
+        findings: list[tuple[Any, list[str]]] = []
+        for index, entity in enumerate(list(entity_component.entities)):
+            if index and index % INSPECTION_YIELD_INTERVAL == 0:
+                await asyncio.sleep(0)
+
+            if not self._should_inspect_entity(entity):
+                continue
+
+            if hits := self._renamed_references(entity, renames):
+                findings.append((entity, sorted(hits)))
+
+        for entity, sorted_old in findings:
+            name = entity.name if isinstance(entity.name, str) else entity.entity_id
+            unique_id = getattr(entity, "unique_id", None)
+            fixable = unique_id is not None
+            for old_entity_id in sorted_old:
+                new_entity_id = renames[old_entity_id]
+                self.async_create_issue(
+                    issue_id=f"{entity.entity_id}_{old_entity_id}",
+                    is_fixable=fixable,
+                    is_persistent=True,
+                    severity=ir.IssueSeverity.ERROR,
+                    translation_key=(self.repair if fixable else f"{self.repair}_yaml"),
+                    translation_placeholders={
+                        self.entity_label: name,
+                        "entity_id": entity.entity_id,
+                        "edit": self._edit_url(entity),
+                        "old_entity_id": old_entity_id,
+                        "new_entity_id": new_entity_id,
+                    },
+                    data={
+                        "renamed_entity": old_entity_id,
+                        "renamed_to": new_entity_id,
+                        "rename_domain": self.domain,
+                        "rename_config_id": unique_id or "",
+                    },
+                )
+                LOGGER.debug(
+                    "Spook found a renamed entity %s is still referenced by %s "
+                    "and created an issue for it",
+                    old_entity_id,
+                    entity.entity_id,
+                )
+
+
 class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):
     """Abstract class to hold repairs that are single a shot."""
 
@@ -1329,6 +1444,58 @@ def _first_inspection_delays(modules: Iterable[ModuleType]) -> dict[str, timedel
 
     turn = FIRST_INSPECTIONS_SPREAD_OVER / len(taking_turns)
     return {name: turn * index for index, name in enumerate(taking_turns)}
+
+
+class EntityRenameFixFlow(RepairsFlow):
+    """Rewrite what a renamed-entity repair reported pointing at the old ID.
+
+    The issue's data names the domain, the config's ID and both entity IDs;
+    the rewrite itself lives in `entity_renames`, which the repairs for
+    automations and for scripts share.
+    """
+
+    def _issue_placeholders(self) -> dict[str, str] | None:
+        """Return the issue's translation placeholders, for forms and aborts."""
+        issue = ir.async_get(self.hass).async_get_issue(self.handler, self.issue_id)
+        return issue.translation_placeholders if issue is not None else None
+
+    async def async_step_init(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Ask before rewriting somebody's automation or script.
+
+        The reference is ambiguous by nature: it can name this one entity,
+        or an entity ID somebody swaps between entities on purpose. Only the
+        person looking at it knows which, so the rewrite is theirs to take.
+        """
+        return self.async_show_form(
+            step_id="confirm",
+            description_placeholders=self._issue_placeholders(),
+        )
+
+    async def async_step_confirm(
+        self,
+        user_input: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Rewrite the references and reload, or say why that cannot be."""
+        if user_input is None:
+            return await self.async_step_init()
+        data = self.data or {}
+        match await async_update_entity_references(
+            self.hass,
+            str(data["rename_domain"]),
+            str(data["rename_config_id"]),
+            str(data["renamed_entity"]),
+            str(data["renamed_to"]),
+        ):
+            case "updated":
+                return self.async_create_entry(data={})
+            case reason:
+                return self.async_abort(
+                    reason=reason,
+                    description_placeholders=self._issue_placeholders(),
+                )
 
 
 class RestartRequiredFixFlow(RepairsFlow):
@@ -2123,6 +2290,8 @@ async def async_create_fix_flow(
     if issue_id == "restart_required":
         return RestartRequiredFixFlow()
     if data:
+        if data.get("renamed_entity"):
+            return EntityRenameFixFlow()
         for key, flow in _REMOVE_OR_IGNORE_FLOWS.items():
             if data.get(key):
                 return flow()
