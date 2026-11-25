@@ -21,6 +21,7 @@ import importlib
 import re
 import sys
 from typing import TYPE_CHECKING, Final
+import unicodedata
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -116,6 +117,12 @@ MOST_ATTRIBUTE_SETS_PER_ENTITY: Final = 1000
 # A one-letter slip is only a slip in a name long enough to have letters to
 # spare. `mode` and `node` are both real words.
 _SHORTEST_NAME_TO_CORRECT = 5
+
+# Marks without a shape of their own that Unicode does not file under the
+# characters that only format: the joiner, and the selectors that pick a
+# variant of the character before them.
+_GRAPHEME_JOINER = "\u034f"
+_VARIATION_SELECTORS = (("\ufe00", "\ufe0f"), ("\U000e0100", "\U000e01ef"))
 
 _SEPARATORS = re.compile(r"[\s_-]+")
 
@@ -309,12 +316,29 @@ def _differs_out_of_sight(written: object, suggestion: str) -> str | None:
             return "has a space at the start and the end"
         return f"has a space at the {'start' if at_the_start else 'end'}"
 
-    # Characters without a shape, like a zero-width space pasted along.
-    seen = "".join(character for character in written if character.isprintable())
-    if seen.strip() == suggestion:
+    seen = "".join(character for character in written if not _has_no_shape(character))
+    if seen != written and seen.strip() == suggestion:
         return "has a character in it that does not show"
 
     return None
+
+
+def _has_no_shape(character: str) -> bool:
+    """Return whether a character takes up no room on screen at all.
+
+    Like a zero-width space or a soft hyphen pasted along, and the marks
+    that only say how the character before them is to be drawn. Not a space
+    inside a name: that leaves a gap anybody can see. And not an accent,
+    which changes what is seen.
+    """
+    if character.isspace():
+        return False
+
+    return (
+        unicodedata.category(character) in {"Cc", "Cf"}
+        or character == _GRAPHEME_JOINER
+        or any(first <= character <= last for first, last in _VARIATION_SELECTORS)
+    )
 
 
 def suggest_name(name: str, known: Iterable[str]) -> str | None:

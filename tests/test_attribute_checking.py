@@ -876,6 +876,11 @@ def test_no_suggestion(name: str, known: set[str]) -> None:
         # A zero-width space, pasted along from somewhere.
         ("preset_modes\u200b", "has a character in it that does not show"),
         ("preset\u200b_modes", "has a character in it that does not show"),
+        # A soft hyphen, and marks that have no shape of their own: the
+        # grapheme joiner and a variation selector.
+        ("preset_modes\u00ad", "has a character in it that does not show"),
+        ("preset_modes\u034f", "has a character in it that does not show"),
+        ("preset_modes\ufe0f", "has a character in it that does not show"),
     ],
 )
 def test_a_suggestion_that_looks_the_same_says_what_differs(
@@ -905,6 +910,10 @@ def test_a_suggestion_that_looks_the_same_says_what_differs(
         ("Preset_modes", "preset_modes"),
         ("preset modes", "preset_modes"),
         ("preset_mode", "preset_modes"),
+        # A space inside a name leaves a gap, also one that does not break.
+        ("preset\u00a0_modes", "preset_modes"),
+        # An accent changes what is seen.
+        ("preset_modes\u0301", "preset_modes"),
         # Not a name at all: the value of an attribute that is a number.
         (2, "3"),
     ],
