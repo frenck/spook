@@ -1137,7 +1137,7 @@ Target: `light` entities, or the devices, areas, floors and labels holding them.
 
 Data:
 
-- `step_pct` (required, number, 1 to 100 %): How much dimmer to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out. Example: `10`.
+- `step_pct` (required, number, 1 to 100 %): How much dimmer to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out. Default: `10`. Example: `10`.
 - `transition` (optional, number, 0 to 300 seconds): How long the change should take, in seconds. Example: `2`.
 
 Documentation: https://spook.boo/light#decrease-brightness
@@ -1150,7 +1150,7 @@ Target: `light` entities, or the devices, areas, floors and labels holding them.
 
 Data:
 
-- `step_pct` (required, number, 1 to 100 %): How much brighter to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out. Example: `10`.
+- `step_pct` (required, number, 1 to 100 %): How much brighter to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out. Default: `10`. Example: `10`.
 - `transition` (optional, number, 0 to 300 seconds): How long the change should take, in seconds. Example: `2`.
 
 Documentation: https://spook.boo/light#increase-brightness
@@ -1163,7 +1163,7 @@ Target: `light` entities, or the devices, areas, floors and labels holding them.
 
 Data:
 
-- `brightness_pct` (required, number, 1 to 100 %): The brightness to set, as a percentage. Groups are adjusted light by light, so a light that is off stays off. Example: `50`.
+- `brightness_pct` (required, number, 1 to 100 %): The brightness to set, as a percentage. Groups are adjusted light by light, so a light that is off stays off. Default: `50`. Example: `50`.
 - `transition` (optional, number, 0 to 300 seconds): How long the change should take, in seconds. Example: `2`.
 
 Documentation: https://spook.boo/light#set-brightness
@@ -1189,7 +1189,7 @@ Target: `light` entities, or the devices, areas, floors and labels holding them.
 
 Data:
 
-- `kelvin` (required, color_temp): The color temperature to set. Every light is held to its own range, since warm white on one lamp is a number another cannot reach. Example: `2700`.
+- `kelvin` (required, color_temp): The color temperature to set. Every light is held to its own range, since warm white on one lamp is a number another cannot reach. Default: `2700`. Example: `2700`.
 - `transition` (optional, number, 0 to 300 seconds): How long the change should take, in seconds. Example: `2`.
 
 Documentation: https://spook.boo/light#set-color-temperature
