@@ -6,7 +6,6 @@ from bisect import insort
 from dataclasses import dataclass, field
 from datetime import timedelta
 from pathlib import Path
-import re
 from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote
 
@@ -30,9 +29,6 @@ if TYPE_CHECKING:
 
 _LOCAL_PREFIX = "/local/"
 
-# Up to whatever ends a link in markdown, HTML or CSS.
-_LOCAL_LINK = re.compile(r"/local/([^\s?#\"'()<>]+)")
-
 # Where the Marketplace, and HACS before it, installs dashboard cards.
 _MARKETPLACE_FOLDER = "community"
 
@@ -47,20 +43,24 @@ _ROOT = "."
 _SHOWN = 10
 
 
-def _collect_local_paths(node: Any, found: set[str]) -> None:
-    """Collect every `www` path linked to from anywhere in this config.
+def _collect_local_links(node: Any, found: set[str]) -> None:
+    """Collect every text in this config that links into `www`.
 
     Cards keep their images under all sorts of keys, custom cards most of all,
-    so every string is looked at rather than a list of known keys.
+    so every string is looked at rather than a list of known keys. The text
+    is kept whole: where a link ends cannot be told from the outside, as a
+    file may be called `plan (1).png`. A file is in use when its own link is
+    somewhere in there, written out or encoded the way a URL is.
     """
     if isinstance(node, str):
-        found.update(unquote(path) for path in _LOCAL_LINK.findall(node))
+        if _LOCAL_PREFIX in node:
+            found.update((node, unquote(node)))
     elif isinstance(node, dict):
         for value in node.values():
-            _collect_local_paths(value, found)
+            _collect_local_links(value, found)
     elif isinstance(node, list):
         for value in node:
-            _collect_local_paths(value, found)
+            _collect_local_links(value, found)
 
 
 def _is_code(path: Path) -> bool:
@@ -95,7 +95,7 @@ class _Found:
 
 
 def _found_among(
-    paths: Iterable[Path], www: Path, in_use: set[str], *, code_clears: bool
+    paths: Iterable[Path], www: Path, links: str, *, code_clears: bool
 ) -> _Found | None:
     """Return the files among these that nobody seems to have put up on purpose.
 
@@ -112,13 +112,14 @@ def _found_among(
                 return None
             continue
 
-        if (file := path.relative_to(www).as_posix()) not in in_use:
+        file = path.relative_to(www).as_posix()
+        if f"{_LOCAL_PREFIX}{file}" not in links:
             found.add(file)
 
     return found if found.count else None
 
 
-def _public_files(www: Path, in_use: set[str]) -> dict[str, _Found]:
+def _public_files(www: Path, links: str) -> dict[str, _Found]:
     """Return the files nobody seems to have put up on purpose, by folder."""
     if not www.is_dir():
         return {}
@@ -131,11 +132,11 @@ def _public_files(www: Path, in_use: set[str]) -> dict[str, _Found]:
 
     # Files straight in `www` are judged one by one: a card next to them says
     # nothing about them.
-    in_folders = {_ROOT: _found_among(entries, www, in_use, code_clears=False)}
+    in_folders = {_ROOT: _found_among(entries, www, links, code_clears=False)}
     for entry in entries:
         if entry.is_dir() and not entry.is_symlink():
             in_folders[entry.name] = _found_among(
-                entry.rglob("*"), www, in_use, code_clears=True
+                entry.rglob("*"), www, links, code_clears=True
             )
 
     return {folder: found for folder, found in in_folders.items() if found}
@@ -194,11 +195,11 @@ class SpookRepair(AbstractSpookRepair):
                 )
                 self._async_keep_issues()
                 return
-            _collect_local_paths(config, in_use)
-        _collect_local_paths(self.hass.data.get(DATA_THEMES, {}), in_use)
+            _collect_local_links(config, in_use)
+        _collect_local_links(self.hass.data.get(DATA_THEMES, {}), in_use)
 
         public = await self.hass.async_add_executor_job(
-            _public_files, Path(self.hass.config.path("www")), in_use
+            _public_files, Path(self.hass.config.path("www")), "\n".join(in_use)
         )
 
         # Keyed to the folder and not to the files in it: an integration that

@@ -159,6 +159,9 @@ async def test_what_is_put_up_on_purpose_is_left_alone(
         "floorplan/first.png",
         "floorplan/legend.png",
         "floorplan/notes.png",
+        # Names a link cannot be cut out of by looking for where it ends.
+        "floorplan/plan(1).png",
+        "floorplan/attic (2).png",
         "backgrounds/night.jpg",
     )
     hass.data[DATA_THEMES] = {
@@ -189,8 +192,10 @@ async def test_what_is_put_up_on_purpose_is_left_alone(
                             "content": (
                                 "![Legend](/local/floorplan/legend.png) "
                                 '<img src="/local/floorplan/notes.png">'
+                                '<img src="/local/floorplan/plan(1).png">'
                             ),
                         },
+                        {"type": "picture", "image": "/local/floorplan/attic (2).png"},
                     ]
                 }
             ]
