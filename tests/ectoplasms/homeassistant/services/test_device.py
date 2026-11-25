@@ -19,6 +19,8 @@ from custom_components.spook.ectoplasms.homeassistant.services import (
     enable_device,
 )
 
+from tests.device_registry_helpers import simulate_composite_split
+
 if TYPE_CHECKING:
     from homeassistant.helpers.device_registry import DeviceRegistry
 
@@ -435,6 +437,53 @@ async def test_enable_device_service_refuses_child_of_device_disabled_by_its_ent
     assert device_registry.async_get(child.id).disabled
     assert device_registry.async_get(parent.id).disabled
     assert "sets disabled_by to None" not in caplog.text
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_enable_device_service_refuses_old_id_with_a_disabled_entry_behind_it(
+    hass: HomeAssistant,
+    config_entry: MockConfigEntry,
+    disabled_config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test an ID from before the split is judged by every device behind it.
+
+    Home Assistant split a device that belonged to several integration
+    entries into one per entry, and the ID it had still reaches all of them.
+    One of them on a disabled entry is enough to refuse, before the others
+    are written to.
+    """
+    disabled_by_user = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "disabled-by-user")},
+        disabled_by=DeviceEntryDisabler.USER,
+    )
+    on_enabled_entry = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "on-enabled-entry")},
+        disabled_by=DeviceEntryDisabler.USER,
+    )
+    on_disabled_entry = device_registry.async_get_or_create(
+        config_entry_id=disabled_config_entry.entry_id,
+        identifiers={("test", "on-disabled-entry")},
+    )
+    simulate_composite_split(device_registry, on_enabled_entry, "old-id")
+    simulate_composite_split(device_registry, on_disabled_entry, "old-id")
+
+    with pytest.raises(ServiceValidationError) as raised:
+        await hass.services.async_call(
+            DOMAIN,
+            "enable_device",
+            {"device_id": [disabled_by_user.id, "old-id"]},
+            blocking=True,
+        )
+
+    assert raised.value.translation_placeholders == {
+        "device_id": "old-id",
+        "entry": "Disabled test",
+    }
+    for device in (disabled_by_user, on_enabled_entry, on_disabled_entry):
+        assert device_registry.async_get(device.id).disabled
 
 
 @pytest.mark.usefixtures("device_services")

@@ -132,19 +132,35 @@ def async_get_entry_keeping_device_disabled(
     entry was, keeps saying so. A child device lives on the integration
     entry of its parent device, so this covers the parent being off too.
     """
-    if (device := device_registry.async_get(device_id)) is None:
-        return None
+    for device in _async_get_devices_behind_id(device_registry, device_id):
+        if (entry_id := getattr(device, "config_entry_id", None)) is None:
+            continue
 
-    # A device lives on one integration entry. Older Home Assistant Core
-    # versions let it belong to several, and named a primary one.
-    entry_id = getattr(device, "config_entry_id", None) or getattr(
-        device, "primary_config_entry", None
+        entry = device_registry.hass.config_entries.async_get_entry(entry_id)
+        if entry is not None and entry.disabled_by:
+            return entry
+
+    return None
+
+
+@callback
+def _async_get_devices_behind_id(
+    device_registry: dr.DeviceRegistry,
+    device_id: str,
+) -> list[Any]:
+    """Return the devices a device ID stands for.
+
+    Home Assistant Core split a device that belonged to several integration
+    entries into one device per entry. The ID it had still works: automations
+    written before that keep using it, and an update through it reaches every
+    one of those devices. Each lives on its own entry, so each has to be
+    looked at. Can be removed when Core drops those IDs in 2027.8.
+    """
+    devices_for_old_id = getattr(
+        device_registry, "async_get_devices_for_composite_device_id", None
     )
-    if entry_id is None:
-        return None
+    if devices_for_old_id is not None and (devices := devices_for_old_id(device_id)):
+        return list(devices)
 
-    entry = device_registry.hass.config_entries.async_get_entry(entry_id)
-    if entry is None or not entry.disabled_by:
-        return None
-
-    return entry
+    device = device_registry.async_get(device_id)
+    return [] if device is None else [device]
