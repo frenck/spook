@@ -7,8 +7,14 @@ import re
 from pathlib import Path
 from typing import Any
 
+from homeassistant.generated.languages import LANGUAGES
+
 COMPONENT_PATH = Path("custom_components/spook")
 PLACEHOLDER_PATTERN = re.compile(r"\{[^{}]+\}")
+
+# Languages translators picked up that Home Assistant does not offer. Their
+# files are never loaded, and are kept for the day it does.
+NOT_OFFERED_BY_HOME_ASSISTANT = {"be", "mt"}
 
 
 def _translation_paths() -> list[Path]:
@@ -125,3 +131,22 @@ def test_translations_hold_no_blank_strings() -> None:
     ]
 
     assert not blanks, f"{len(blanks)} blank strings found:\n" + "\n".join(blanks)
+
+
+def test_every_translation_file_is_named_after_a_language_that_is_loaded() -> None:
+    """Test no translation is left out over how its file is called.
+
+    Home Assistant loads `<language>.json`, with the language written the way
+    it knows it: `pt-BR`, not `pt_BR`, and `nb`, not `nb_NO`. A file called
+    anything else is not an error to anybody. It is just never read, and the
+    people speaking that language get English. The helpers had nineteen of
+    those, from the names the translation platform gave new languages.
+    """
+    never_loaded = sorted(
+        str(file)
+        for path in _translation_paths()
+        for file in path.glob("*.json")
+        if file.stem not in LANGUAGES | NOT_OFFERED_BY_HOME_ASSISTANT
+    )
+
+    assert not never_loaded
