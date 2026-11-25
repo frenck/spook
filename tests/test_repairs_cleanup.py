@@ -19,6 +19,7 @@ from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntryChange,
     ConfigEntryDisabler,
+    ConfigEntryState,
 )
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import issue_registry as ir
@@ -322,6 +323,60 @@ async def test_config_entry_update_without_changes_skips_inspection(
     )
     await _flush_debouncer(hass, freezer)
     assert repair.inspections == EXPECTED_DISABLED_INSPECTIONS
+
+    await repair.async_deactivate()
+
+
+async def test_config_entry_loading_or_unloading_gets_a_look(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An entry that loaded or unloaded is a reason to look, a retry is not.
+
+    A repair reading what a loaded entry holds finds nothing while the entry
+    is still setting up. Skipping the update that says it loaded would leave
+    that as the last word.
+    """
+    entry = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    repair = MockRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    async def _state_changes_to(state: ConfigEntryState) -> None:
+        entry.mock_state(hass, state)
+        async_dispatcher_send(
+            hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+        )
+        await _flush_debouncer(hass, freezer)
+
+    # The first UPDATED gets a look, whatever it says.
+    await _state_changes_to(ConfigEntryState.SETUP_IN_PROGRESS)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # A setup that keeps failing goes from one state to the next without
+    # ever being loaded, and gets no look.
+    await _state_changes_to(ConfigEntryState.SETUP_RETRY)
+    await _state_changes_to(ConfigEntryState.SETUP_IN_PROGRESS)
+    await _state_changes_to(ConfigEntryState.SETUP_RETRY)
+    await _state_changes_to(ConfigEntryState.SETUP_IN_PROGRESS)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # Once it loads, it does.
+    await _state_changes_to(ConfigEntryState.LOADED)
+    assert repair.inspections == EXPECTED_CHANGED_INSPECTIONS
+
+    # And when it starts unloading, and again when that is done: the look
+    # at the start may come before everything it brought is gone.
+    await _state_changes_to(ConfigEntryState.UNLOAD_IN_PROGRESS)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    await _state_changes_to(ConfigEntryState.NOT_LOADED)
+    assert repair.inspections == EXPECTED_RENAMED_INSPECTIONS
 
     await repair.async_deactivate()
 

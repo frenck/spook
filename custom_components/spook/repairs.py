@@ -26,6 +26,7 @@ from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
     ConfigEntryChange,
+    ConfigEntryState,
 )
 from homeassistant.const import (
     CONF_ENTITIES,
@@ -109,6 +110,10 @@ if TYPE_CHECKING:
 # entities; inspections are CPU-bound and must not stall the loop on
 # large installations.
 INSPECTION_YIELD_INTERVAL = 50
+
+# Where a config entry comes to rest: set up, or not set up at all. Every
+# other state is one it is passing through, or stuck in.
+_SETTLED_STATES = frozenset({ConfigEntryState.LOADED, ConfigEntryState.NOT_LOADED})
 
 # How long to give the recorder to say it has cleared what it was asked to.
 # The same as Home Assistant allows its own Statistics page, which asks the
@@ -640,9 +645,20 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     # UPDATED rides along on more than data and options:
                     # renames, disables and subentry changes leave those
                     # untouched, so they go into the fingerprint as well.
+                    #
+                    # So does having loaded or unloaded, and only that much
+                    # of the state: a repair reading what a loaded entry
+                    # holds, or naming the entities it brings, has to look
+                    # again when it gets there. A failing setup goes from
+                    # one try to the next without ever being either.
                     fingerprint = hashlib.sha256(
                         json.dumps(
                             {
+                                "settled": (
+                                    entry.state.value
+                                    if entry.state in _SETTLED_STATES
+                                    else None
+                                ),
                                 "data": dict(entry.data),
                                 "options": dict(entry.options),
                                 "title": entry.title,
