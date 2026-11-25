@@ -160,7 +160,19 @@ class SpookRepair(AbstractSpookRepair):
 
             kind = "zone" if domain == _ZONE_DOMAIN else "helper"
             for entity in list(component.entities):
-                yield f"on the {kind} `{entity.entity_id}`", entity.icon
+                where = f"on the {kind} `{entity.entity_id}`"
+
+                # An icon picked in the entity settings is shown in place of
+                # this one nearly everywhere, but this one stays where it is:
+                # the list of zones in the settings still draws it. Picking
+                # another in the entity settings looks like the fix and
+                # changes nothing here, so the line says which is which.
+                # #2058.
+                entry = self.entity_registry.async_get(entity.entity_id)
+                if entry is not None and entry.icon:
+                    where += " itself, covered by the icon in its entity settings"
+
+                yield where, entity.icon
 
     def _icons_in_registries(self) -> Iterator[tuple[str, Any]]:
         """Yield the icons of areas, floors, labels and categories."""

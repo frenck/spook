@@ -133,6 +133,59 @@ async def test_every_place_with_an_icon_is_looked_at(
     )
 
 
+async def test_an_icon_covered_in_the_entity_settings_says_so(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """A zone's own icon is still reported under another one, and says where.
+
+    The icon picked in the entity settings is shown in its place nearly
+    everywhere, but the zone keeps its own, and the list of zones still
+    draws that one. #2058.
+    """
+    install_frontend(monkeypatch, tmp_path)
+    hass_storage["zone"] = {
+        "key": "zone",
+        "version": 1,
+        "data": {
+            "items": [
+                {
+                    "id": "work",
+                    "name": "Work",
+                    "latitude": 52.37,
+                    "longitude": 4.89,
+                    "radius": 100,
+                    "passive": False,
+                    "icon": "mdi:work-ghost",
+                }
+            ]
+        },
+    }
+    assert await async_setup_component(hass, "zone", {})
+    await hass.async_block_till_done()
+
+    repair = SpookRepair(hass)
+
+    async def _reported() -> str:
+        await repair._async_inspect_with_cleanup()  # noqa: SLF001
+        issue = async_issue_about(issue_registry, _ISSUE)
+        assert issue
+        assert issue.translation_placeholders
+        return issue.translation_placeholders["icons"]
+
+    assert await _reported() == "- `mdi:work-ghost` on the zone `zone.work`"
+
+    er.async_get(hass).async_update_entity("zone.work", icon="mdi:sofa")
+
+    assert await _reported() == (
+        "- `mdi:work-ghost` on the zone `zone.work` itself, "
+        "covered by the icon in its entity settings"
+    )
+
+
 async def test_the_issue_says_which_version_of_the_icons(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
