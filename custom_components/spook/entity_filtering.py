@@ -781,7 +781,11 @@ def async_get_disabled_integrations(hass: HomeAssistant) -> set[str]:
 
 @callback
 def async_filter_known_services(
-    hass: HomeAssistant, *, services: set[str], known_services: set[str] | None = None
+    hass: HomeAssistant,
+    *,
+    services: set[str],
+    known_services: set[str] | None = None,
+    made_from_blueprint: bool = False,
 ) -> set[str]:
     """Filter out known services.
 
@@ -789,19 +793,38 @@ def async_filter_known_services(
     switched off, sometimes by Spook's own `homeassistant.disable_config_entry`.
     Those are left out too. A typo in such an action only shows up once the
     integration is enabled again, which is when it would break anyway.
+
+    With `made_from_blueprint`, an action of an integration that is not
+    loaded at all is left out as well. A blueprint written for several
+    integrations calls each of them in a branch of its own, and only the
+    branch for what is installed ever runs. Whoever uses the blueprint cannot
+    edit the others, so a repair about them asks for something they cannot
+    do. An action that is missing from an integration that is loaded is still
+    reported: that one does break when its branch runs. In configuration
+    somebody wrote themselves, all of it is reported, since there it can be
+    fixed. #2068, #2019.
     """
     if known_services is None:
         known_services = async_get_all_services(hass)
 
     disabled_integrations = async_get_disabled_integrations(hass)
 
-    return {
+    unknown = {
         service.lower()
         for service in services - known_services
         if isinstance(service, str)
         and service
         and service.lower().split(".", 1)[0] not in disabled_integrations
     }
+    if not unknown or not made_from_blueprint:
+        return unknown
+
+    # Loaded, or with actions all the same: some come from a platform of
+    # another integration, like the notifiers of `notify`.
+    loaded = hass.config.components | {
+        service.partition(".")[0] for service in known_services
+    }
+    return {service for service in unknown if service.partition(".")[0] in loaded}
 
 
 def split_comma_separated_entity_ids(entity_id: str) -> list[str]:

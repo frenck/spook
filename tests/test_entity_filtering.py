@@ -232,3 +232,40 @@ async def test_a_malformed_candidate_does_not_abort_the_check(
     ) == {"light.removed"}
 
     assert async_drop_existing_action_names(hass, {"nodomain"}) == {"nodomain"}
+
+
+def test_a_blueprint_calling_an_integration_that_is_not_there(
+    hass: HomeAssistant,
+) -> None:
+    """In a blueprint, an action of an integration that is not loaded is left out.
+
+    A blueprint for several integrations calls each in a branch of its own,
+    and whoever uses it cannot edit the branches for what they do not have.
+    Written by hand, the same action is reported: there it can be fixed.
+    #2068, #2019.
+    """
+    services = {"telegram_bot.send_photo", "tibber.get_prices"}
+
+    assert async_filter_known_services(hass, services=services) == services
+    assert (
+        async_filter_known_services(hass, services=services, made_from_blueprint=True)
+        == set()
+    )
+
+
+def test_a_blueprint_calling_what_a_loaded_integration_does_not_have(
+    hass: HomeAssistant,
+) -> None:
+    """In a blueprint, a missing action of a loaded integration is still reported.
+
+    That one breaks when its branch runs, whoever wrote it. Loaded, or with
+    actions all the same: some come from a platform of another integration.
+    """
+    hass.config.components.add("light")
+    hass.services.async_register("notify", "phone", lambda _call: None)
+
+    assert async_filter_known_services(
+        hass,
+        services={"light.turn_onn", "notify.ghost", "telegram_bot.send_photo"},
+        made_from_blueprint=True,
+    ) == {"light.turn_onn", "notify.ghost"}
