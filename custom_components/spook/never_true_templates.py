@@ -362,8 +362,12 @@ def _says_false(template_str: str) -> bool:
     with that by a slip of the quotes or a missing brace: it says "never" in
     so many words. Pure in its argument, so cached.
     """
+    # Home Assistant strips what a template renders, so whitespace around it,
+    # like the indent and line end a YAML block leaves, says nothing more.
+    template_str = template_str.strip()
+
     if not is_template_string(template_str):
-        return template_str.strip().lower() == "false"
+        return template_str.lower() == "false"
 
     try:
         body = _JINJA_PARSER.parse(template_str).body

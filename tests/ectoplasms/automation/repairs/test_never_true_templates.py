@@ -933,6 +933,8 @@ def _until(*conditions: Any) -> dict[str, Any]:
         _template_condition("{{ false }}"),
         _template_condition("{{ False }}"),
         _template_condition("{{false}}"),
+        _template_condition(" {{ false }} "),
+        _template_condition("  {{ false }}\n\n"),
         _template_condition("false"),
         _template_condition(False),  # noqa: FBT003
         "{{ false }}",
