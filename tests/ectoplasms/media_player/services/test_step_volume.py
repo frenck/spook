@@ -15,7 +15,7 @@ from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import Platform
 from homeassistant.exceptions import ServiceNotSupported
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     MockPlatform,
@@ -75,11 +75,10 @@ async def _setup(
     """Set up these media players and both actions."""
     assert await async_setup_component(hass, "homeassistant", {})
 
-    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+    async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         await hass.config_entries.async_forward_entry_setups(
             entry, [Platform.MEDIA_PLAYER]
         )
-        return True
 
     async def _setup_platform(
         _hass: HomeAssistant,

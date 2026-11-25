@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.core import State
-from pytest_homeassistant_custom_component import common
+from pytest_homeassistant import common
 import pytest
 
 if TYPE_CHECKING:

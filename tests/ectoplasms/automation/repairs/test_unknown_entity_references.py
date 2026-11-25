@@ -22,7 +22,7 @@ from homeassistant.helpers.condition import Condition
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.trigger import Trigger
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockModule,
     mock_integration,
     mock_platform,
