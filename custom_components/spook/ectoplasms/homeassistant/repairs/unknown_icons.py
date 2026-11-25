@@ -51,6 +51,9 @@ _HELPER_DOMAINS = frozenset(
 # Zones keep one the same way, but are made under areas, not helpers.
 _ZONE_DOMAIN = "zone"
 
+# Said of a zone's or helper's own icon when its entity settings hold one too.
+_COVERED = " itself, covered by the icon in its entity settings"
+
 
 class SpookRepair(AbstractSpookRepair):
     """Spook repair finds icons in settings that the frontend does not have.
@@ -131,7 +134,12 @@ class SpookRepair(AbstractSpookRepair):
 
         self.async_create_issue(
             issue_id=self.repair,
-            references=[f"{icon} {where}" for where, icon in found],
+            # Without the note on a covered icon: an icon picked or cleared
+            # in the entity settings changes what the line says, not what
+            # was found or where, and somebody who ignored it keeps it so.
+            references=[
+                f"{icon} {where.removesuffix(_COVERED)}" for where, icon in found
+            ],
             translation_placeholders={
                 "icons": _lines(icons, found),
                 "version": icons.version,
@@ -170,7 +178,7 @@ class SpookRepair(AbstractSpookRepair):
                 # #2058.
                 entry = self.entity_registry.async_get(entity.entity_id)
                 if entry is not None and entry.icon:
-                    where += " itself, covered by the icon in its entity settings"
+                    where += _COVERED
 
                 yield where, entity.icon
 
