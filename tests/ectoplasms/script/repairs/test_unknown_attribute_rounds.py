@@ -212,6 +212,10 @@ async def test_reading_every_configuration_yields(
 
     monkeypatch.setattr(asyncio, "sleep", _counting_sleep)
 
+    # Only the count is under test here; a slow machine would otherwise add
+    # turns given by the clock.
+    monkeypatch.setattr(repairs, "YIELD_AFTER", float("inf"))
+
     await SpookRepair(hass).async_inspect()
 
     assert sleeps == [0] * 122
