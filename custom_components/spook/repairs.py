@@ -57,7 +57,7 @@ from .attribute_checking import (
     names_the_state,
 )
 from .attribute_value_checking import as_yaml, async_unknown_attribute_values
-from .configuration_cache import forget_dashboards
+from .configuration_cache import forget_dashboards, reading_for
 from .const import DOMAIN, LOGGER, YIELD_AFTER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
@@ -827,7 +827,8 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
             if not self._should_inspect_entity(entity):
                 continue
 
-            unknown = await self._async_compute_unknown_references(entity)
+            with reading_for(entity):
+                unknown = await self._async_compute_unknown_references(entity)
             if not unknown:
                 continue
 
@@ -1023,7 +1024,8 @@ class AbstractSpookUnknownEntityNamesRepair(
                 continue
 
             configs[entity.entity_id] = config
-            named[entity.entity_id] = self._named_in(entity, config)
+            with reading_for(entity):
+                named[entity.entity_id] = self._named_in(entity, config)
 
         # Whatever is gone or not looked at this round is forgotten.
         self._named = {

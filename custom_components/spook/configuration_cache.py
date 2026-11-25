@@ -13,6 +13,11 @@ worked out once per configuration and handed out again after that. Home
 Assistant builds a new configuration on every reload and never changes one
 it has handed out, so a configuration that is still the same object still
 reads the same.
+
+What is read for an automation or a script is kept with that automation or
+script, see `reading_for`. A reload that changes one makes Home Assistant
+drop it for a new one, and what was read from the old configuration goes
+with it. Kept anywhere else, those readings would pile up with every reload.
 """
 
 from __future__ import annotations
@@ -22,6 +27,7 @@ from contextlib import contextmanager
 from contextvars import ContextVar
 from functools import wraps
 from typing import TYPE_CHECKING, Any
+from weakref import WeakKeyDictionary
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
@@ -62,6 +68,42 @@ def read_once() -> Iterator[None]:
         _REMEMBERING.reset(token)
 
 
+# Whose configuration is being read: the automation or script a repair is
+# looking at. Held per task, like `_REMEMBERING`.
+_OWNER: ContextVar[Any] = ContextVar("spook_reading_for", default=None)
+
+# What was read, per owner and per reader. Held weakly: when Home Assistant
+# drops an automation or script, everything read from it is dropped with it,
+# the copies made of its configuration included.
+_READINGS: WeakKeyDictionary[Any, dict[Any, dict[Any, Any]]] = WeakKeyDictionary()
+
+
+@contextmanager
+def reading_for(owner: Any) -> Iterator[None]:
+    """Keep what is read in here with ``owner``, for as long as it lives."""
+    token = _OWNER.set(owner)
+    try:
+        yield
+    finally:
+        _OWNER.reset(token)
+
+
+def owned_readings(reader: Any) -> dict[Any, Any] | None:
+    """Return what ``reader`` read for the current owner, to look up and add to.
+
+    None when there is no owner to keep readings with.
+    """
+    if (owner := _OWNER.get()) is None:
+        return None
+
+    try:
+        return _READINGS.setdefault(owner, {}).setdefault(reader, {})
+    except TypeError:
+        # An owner that cannot be held weakly would be kept alive by its own
+        # readings, so it is treated as no owner at all.
+        return None
+
+
 def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:
     """Remember what ``func`` reads from a configuration, per configuration.
 
@@ -70,6 +112,10 @@ def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:
     with what was read from it, so no other one can take its place under the
     same key while it is remembered. Only a configuration read as a whole,
     a mapping or a list, and only when nothing else is handed in.
+
+    Inside `reading_for` it is kept with the automation or script being read,
+    and goes when that one goes. Anywhere else it is kept here, up to
+    `CACHE_SIZE` readings.
 
     What is handed out is shared, so whoever gets it reads it and never
     changes it.
@@ -82,6 +128,16 @@ def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:
             return func(*args, **kwargs)
 
         config = args[0]
+        if (readings := owned_readings(func)) is not None:
+            known = readings.get(id(config))
+            if known is not None and known[0] is config:
+                return known[1]
+
+            result = func(*args, **kwargs)
+            if _REMEMBERING.get():
+                readings[id(config)] = (config, result)
+            return result
+
         if (known := remembered.get(id(config))) is not None and known[0] is config:
             remembered.move_to_end(id(config))
             return known[1]
