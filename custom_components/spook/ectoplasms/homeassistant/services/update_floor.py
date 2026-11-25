@@ -9,7 +9,6 @@ import voluptuous as vol
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, floor_registry as fr
-from homeassistant.helpers.typing import UNDEFINED
 
 from ....const import DOMAIN as SPOOK_DOMAIN
 from ....errors import floor_not_found
@@ -88,5 +87,5 @@ class SpookService(AbstractSpookAdminService):
 
         floor_registry.async_update(
             floor_id,
-            **{field: changes.get(field, UNDEFINED) for field in _UPDATABLE},
+            **changes,
         )

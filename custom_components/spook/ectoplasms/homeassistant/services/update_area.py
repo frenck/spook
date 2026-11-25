@@ -13,7 +13,6 @@ from homeassistant.helpers import (
     config_validation as cv,
     floor_registry as fr,
 )
-from homeassistant.helpers.typing import UNDEFINED
 
 from ....const import DOMAIN as SPOOK_DOMAIN
 from ....errors import area_not_found, entity_not_found, floor_not_found
@@ -96,7 +95,7 @@ class SpookService(AbstractSpookAdminService):
         try:
             area_registry.async_update(
                 area_id,
-                **{field: changes.get(field, UNDEFINED) for field in _UPDATABLE},
+                **changes,
             )
         except ValueError as err:
             # The registry refuses a sensor of the wrong kind. Its wording says
