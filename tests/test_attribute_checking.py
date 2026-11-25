@@ -392,7 +392,8 @@ async def test_active_history_is_retried_after_recorder_lag(
     assert not await async_unknown_attributes(hass, missing)
     assert count_recorder_reads == [{_METEOALARM: None}]
 
-    (event,) = events
+    assert len(events) == 1
+    event = events[0]
     recorder_mock.queue_task(event)
     await async_wait_recording_done(hass)
 

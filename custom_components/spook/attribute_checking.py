@@ -426,10 +426,9 @@ def _read_recorded_attribute_keys(
     entities_by_set: dict[int, list[str]] = defaultdict(list)
 
     with session_scope(hass=hass, read_only=True) as session:
-        metadata_ids = recorder_metadata_ids(
+        for metadata_id, entity_id in recorder_metadata_ids(
             session, list(since_by_entity), instance.max_bind_vars
-        )
-        for metadata_id, entity_id in metadata_ids.items():
+        ).items():
             since = since_by_entity[entity_id]
             attribute_ids, complete = newest_attribute_sets(session, metadata_id, since)
             # Only a full read can call a history nothing but inactive states.
