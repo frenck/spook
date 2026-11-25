@@ -12,6 +12,7 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
     async_wait_recording_done,
 )
 
+from homeassistant.const import STATE_OFF
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 
@@ -210,6 +211,68 @@ async def test_attribute_never_had_is_reported(
     assert issue.translation_placeholders["attributes"] == (
         "- `wobble` of `light.kitchen`"
     )
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_off_only_meteoalarm_attributes_are_not_unknown(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test dynamic alert attributes are not reported from off-only history.
+
+    MeteoAlarm only carries them while the binary sensor is on, and the
+    recorder may have purged every on state. The automation in issue #2020
+    is not a ghost.
+    """
+    hass.states.async_set(
+        "binary_sensor.meteoalarm",
+        STATE_OFF,
+        {"friendly_name": "MeteoAlarm", "device_class": "safety"},
+    )
+    await async_wait_recording_done(hass)
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "mode": "single",
+                    "triggers": [
+                        {
+                            "trigger": "state",
+                            "entity_id": ["binary_sensor.meteoalarm"],
+                            "from": "off",
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "action": "notify.familia",
+                            "data": {
+                                "title": (
+                                    "{{ state_attr('binary_sensor.meteoalarm',"
+                                    " 'headline') }}"
+                                ),
+                                "message": (
+                                    "{{ state_attr('binary_sensor.meteoalarm',"
+                                    " 'description') }} es efectiva desde "
+                                    "{{ state_attr('binary_sensor.meteoalarm',"
+                                    " 'effective') }}"
+                                ),
+                            },
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get("automation.haunted").state == "on"
+
+    await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, ISSUE) is None
 
 
 @pytest.mark.usefixtures("recorder_mock")

@@ -13,7 +13,7 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 from sqlalchemy.exc import OperationalError
 
 from homeassistant.core import State
-from homeassistant.const import STATE_UNAVAILABLE
+from homeassistant.const import STATE_OFF, STATE_ON, STATE_UNAVAILABLE, STATE_UNKNOWN
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util import dt as dt_util
 
@@ -254,6 +254,135 @@ async def test_unavailable_entity_history_cannot_prove_attribute_is_unknown(
     ) == {
         UnknownAttribute("media_player.projector", "Friendly_Name", "friendly_name"),
     }
+
+
+_METEOALARM = "binary_sensor.meteoalarm"
+_METEOALARM_QUIET = {"friendly_name": "MeteoAlarm", "device_class": "safety"}
+_METEOALARM_ALERT = {
+    **_METEOALARM_QUIET,
+    "headline": "Storm",
+    "description": "Wind",
+    "effective": "now",
+}
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_inactive_only_history_cannot_prove_an_attribute_is_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Test off-only history is not proof a dynamic attribute was never there.
+
+    MeteoAlarm carries `headline`, `description` and `effective` only while
+    it is on, and drops them while off. Unavailable and unknown, a network
+    blip while nothing is alerted, drop them too. Once the recorder has
+    purged every on state, what is left cannot say they do not exist. A
+    case-only mistake next to an attribute it still shows remains certain.
+    Issue #2020.
+    """
+    for state in (STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN, STATE_OFF):
+        hass.states.async_set(_METEOALARM, state, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(
+        hass,
+        {
+            (_METEOALARM, "headline"),
+            (_METEOALARM, "description"),
+            (_METEOALARM, "effective"),
+            (_METEOALARM, "Friendly_Name"),
+        },
+    ) == {
+        UnknownAttribute(_METEOALARM, "Friendly_Name", "friendly_name"),
+    }
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert not answer.complete
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_attributes_seen_while_on_stay_known_once_off(
+    hass: HomeAssistant,
+) -> None:
+    """Test attributes from an earlier on state are known once it is off.
+
+    The history did include an active state, so it is whole. One the entity
+    never had is still reported, with the name it was one letter from.
+    """
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_ALERT)
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(
+        hass,
+        {
+            (_METEOALARM, "headline"),
+            (_METEOALARM, "description"),
+            (_METEOALARM, "effective"),
+            (_METEOALARM, "hedline"),
+        },
+    ) == {
+        UnknownAttribute(_METEOALARM, "hedline", "headline"),
+    }
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert answer.complete
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_becoming_active_clears_an_inactive_only_answer(
+    hass: HomeAssistant,
+    count_recorder_reads: list[dict[str, float | None]],
+) -> None:
+    """Test turning on, with no new attribute key, is read from scratch.
+
+    The first look cannot say `missing` was never an attribute. Once the
+    entity is on, that incomplete answer is stale, and the next look reads
+    the whole history again. Then it can.
+    """
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    assert not await async_unknown_attributes(hass, {(_METEOALARM, "missing")})
+
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(hass, {(_METEOALARM, "missing")}) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+    assert count_recorder_reads == [
+        {_METEOALARM: None},
+        {_METEOALARM: None},
+    ]
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_later_off_states_do_not_undo_a_complete_history(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test rows since the last read being off do not hide an unknown attribute.
+
+    The full read already saw an on state. No overlap, so the next read's
+    rows are only the off state that came after it, and that must not make
+    the history incomplete.
+    """
+    monkeypatch.setattr(attribute_checking, "NEWS_OVERLAP", timedelta(0))
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_ALERT)
+    await async_wait_recording_done(hass)
+    missing = {(_METEOALARM, "missing")}
+    assert await async_unknown_attributes(hass, missing) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(hass, missing) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert answer.complete
 
 
 @pytest.mark.usefixtures("recorder_mock")
