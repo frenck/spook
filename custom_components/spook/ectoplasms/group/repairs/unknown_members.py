@@ -64,7 +64,7 @@ class SpookRepair(AbstractSpookRepair):
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
         super().__init__(hass)
-        self._group_entity_ids: frozenset[str] = frozenset()
+        self._group_entity_ids: set[str] = set()
 
     async def async_activate(self) -> None:
         """Look again once a group lists other members.
@@ -121,7 +121,10 @@ class SpookRepair(AbstractSpookRepair):
 
         known_entity_ids = async_get_all_entity_ids(self.hass)
         groups = list(async_group_members(self.hass))
-        self._group_entity_ids = frozenset(entity.entity_id for entity, _ in groups)
+        # Added to, never replaced: a group being reloaded is missing from its
+        # platform until it is back, and a look in between would forget it
+        # right before it returns. One that is gone for good sends nothing.
+        self._group_entity_ids |= {entity.entity_id for entity, _ in groups}
 
         for entity, members in groups:
             self.possible_issue_ids.add(entity.entity_id)

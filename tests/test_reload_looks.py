@@ -554,3 +554,42 @@ async def test_group_repair_looks_when_group_set_changes_the_members(
     await repair.async_deactivate()
 
     assert looks
+
+
+async def test_group_repair_remembers_a_group_through_its_reload(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a group missed by a look in the middle of its reload still counts.
+
+    A group being reloaded is missing from its platform until it is back.
+    When it comes back unavailable it lists no members, so the restored
+    state it leaves is all there is to go by.
+    """
+    assert await async_setup_component(hass, "group", {"group": {}})
+    assert await async_setup_component(hass, "light", _light_group(["light.gone"]))
+    await hass.async_block_till_done()
+    repair = _repair_class(_GROUP_REPAIR)(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+
+    # The look in the middle of the reload, with the group not back yet.
+    monkeypatch.setattr(
+        "custom_components.spook.ectoplasms.group.repairs.unknown_members"
+        ".async_group_members",
+        lambda _hass: iter(()),
+    )
+    await repair.async_inspect()
+
+    looks = await _count_looks_asked_for(
+        hass,
+        repair,
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "light.kitchen",
+            "old_state": State("light.kitchen", "unavailable", {"restored": True}),
+            "new_state": State("light.kitchen", "unavailable"),
+        },
+    )
+    await repair.async_deactivate()
+
+    assert looks == 1
