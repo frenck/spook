@@ -1,0 +1,276 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/13.homeassistant.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/13.homeassistant.md",
+  "language": "fr",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "3b60506b25a9cc22",
+      "source": "369a2a06e6dcb106",
+      "glossary": {
+        "area": "pièce",
+        "blueprint": "blueprint",
+        "floor": "étage",
+        "helper": "entrée",
+        "label": "étiquette"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "b598a5fec7457da1",
+      "source": "64b218002cafc0b3",
+      "glossary": {
+        "area": "pièce",
+        "device": "appareil",
+        "floor": "étage",
+        "helper": "entrée",
+        "integration": "intégration",
+        "label": "étiquette",
+        "list": "liste"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "devices-entities",
+      "hash": "2b57370f8bcc37bf",
+      "source": "1b0bf38ba0d58ad8",
+      "glossary": {
+        "area": "pièce",
+        "device": "appareil",
+        "entity": "entité",
+        "integration": "intégration",
+        "restart": "redémarrer",
+        "list": "liste"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "4294b7715f99e8da",
+      "source": "3eba30a132630fc9",
+      "glossary": {
+        "action": "action",
+        "area": "pièce",
+        "device": "appareil",
+        "entity": "entité",
+        "floor": "étage",
+        "label": "étiquette",
+        "user": "utilisateur",
+        "number": "nombre"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "4cc8e720ca440029",
+      "source": "344a0f6d513c0ad1",
+      "glossary": {
+        "area": "pièce",
+        "blueprint": "blueprint",
+        "dashboard": "tableau de bord",
+        "floor": "étage",
+        "label": "étiquette",
+        "repair": "correction",
+        "repairs dashboard": "page des corrections"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-area-sensors",
+      "hash": "edb5f021c45c6030",
+      "source": "19ba3f07eebf293c",
+      "glossary": {
+        "Clear the setting": "Effacer le réglage",
+        "Let me fix it myself": "Laissez-moi le corriger",
+        "Keep it, stop telling me": "Gardez-le et arrêtez de me le demander",
+        "area": "pièce",
+        "entity": "entité",
+        "entity ID": "ID d'entité",
+        "label": "étiquette",
+        "repair": "correction",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-customized-entities",
+      "hash": "f2daf7b8b82bc149",
+      "source": "08b2e5e9ffb14032",
+      "glossary": {
+        "attribute": "attribut",
+        "entity": "entité",
+        "icon": "icône",
+        "integration": "intégration",
+        "label": "étiquette",
+        "repair": "correction",
+        "restart": "redémarrer",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-helper-sources",
+      "hash": "413f95fcb76c14b6",
+      "source": "11dc74235e07f9be",
+      "glossary": {
+        "Remove this helper": "Supprimer l'entrée",
+        "Let me fix it myself": "Laissez-moi le corriger",
+        "Keep it, stop telling me": "Gardez-le et arrêtez de me le demander",
+        "entity": "entité",
+        "helper": "entrée",
+        "label": "étiquette",
+        "repair": "correction",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie",
+        "number": "nombre"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-min-max-helper-members",
+      "hash": "ebb67cb3c8c751fb",
+      "source": "11c49e8fdadc6998",
+      "glossary": {
+        "Remove these members": "Enlever ces membres",
+        "Let me fix it myself": "Laissez-moi le corriger",
+        "Keep them, stop telling me": "Gardez-les et arrêtez de me le demander",
+        "helper": "entrée",
+        "label": "étiquette",
+        "repair": "correction",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie",
+        "number": "nombre"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "23fb565ce561326d",
+      "source": "4526c7a38e9a9912",
+      "glossary": {
+        "area": "pièce",
+        "entity": "entité",
+        "floor": "étage",
+        "helper": "entrée",
+        "icon": "icône",
+        "integration": "intégration",
+        "label": "étiquette",
+        "repair": "correction",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie",
+        "known limitations": "limites connues",
+        "list": "liste"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-areas",
+      "hash": "5ec1762a16f3f08d",
+      "source": "6447e37649959ea8",
+      "glossary": {
+        "Remove this empty area": "Supprimer la pièce vide",
+        "Let me fix it myself": "Laissez-moi le corriger",
+        "Keep it, stop telling me": "Gardez-le et arrêtez de me le demander",
+        "action": "action",
+        "area": "pièce",
+        "automation": "automatisation",
+        "device": "appareil",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie",
+        "list": "liste"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-floors",
+      "hash": "749214cd90ad314b",
+      "source": "1dc8dffbc38858a2",
+      "glossary": {
+        "Remove this empty floor": "Supprimer l'étage vide",
+        "Let me fix it myself": "Laissez-moi le corriger",
+        "Keep it, stop telling me": "Gardez-le et arrêtez de me le demander",
+        "area": "pièce",
+        "automation": "automatisation",
+        "floor": "étage",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-labels",
+      "hash": "a10b1bbc274f25cf",
+      "source": "b56369896b90e4ff",
+      "glossary": {
+        "Remove this unused label": "Supprimer l'étiquette inutilisée",
+        "Let me fix it myself": "Laissez-moi le corriger",
+        "Keep it, stop telling me": "Gardez-le et arrêtez de me le demander",
+        "area": "pièce",
+        "automation": "automatisation",
+        "device": "appareil",
+        "entity": "entité",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-blueprints",
+      "hash": "139e167d1a2baef8",
+      "source": "0c9d0302630f7b97",
+      "glossary": {
+        "Remove this unused blueprint": "Supprimer le blueprint inutilisé",
+        "Let me fix it myself": "Laissez-moi le corriger",
+        "Keep it, stop telling me": "Gardez-le et arrêtez de me le demander",
+        "automation": "automatisation",
+        "blueprint": "blueprint",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "853cad4271de73f1",
+      "source": "1b7d2e38b0428375",
+      "glossary": {
+        "area": "pièce",
+        "floor": "étage",
+        "helper": "entrée",
+        "label": "étiquette",
+        "use cases": "cas d'usage"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

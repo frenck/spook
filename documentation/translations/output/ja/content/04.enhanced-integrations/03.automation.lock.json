@@ -1,0 +1,453 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/03.automation.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/03.automation.md",
+  "language": "ja",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "0a5b582df175b9b5",
+      "source": "6d9e2300cba2453f",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "automation": "オートメーション",
+        "entity": "エンティティ",
+        "snooze": "スヌーズ"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "0aaa472b9ce7a713",
+      "source": "1a75e345c97e2e04",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "integration": "統合",
+        "issue": "問題",
+        "repair": "修復",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "4f797cf44fea3e33",
+      "source": "eb7b67e177f675a2",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "snooze",
+      "hash": "296497395839d13c",
+      "source": "a8222e6700da8e64",
+      "glossary": {
+        "Add action": "アクションを追加",
+        "Automation: Snooze 👻": "オートメーション: スヌーズ 👻",
+        "Targets": "対象",
+        "Duration": "期間",
+        "Save": "保存",
+        "Attribute": "属性",
+        "Type": "タイプ",
+        "Required": "必須",
+        "action": "アクション",
+        "area": "エリア",
+        "attribute": "属性",
+        "automation": "オートメーション",
+        "entity": "エンティティ",
+        "helper": "ヘルパー",
+        "label": "ラベル",
+        "restart": "再起動",
+        "script": "スクリプト",
+        "snooze": "スヌーズ",
+        "state": "状態",
+        "how to use it": "使い方",
+        "technical details": "技術的な詳細",
+        "known limitations": "既知の制限",
+        "example actions in YAML": "YAMLでのアクションの例",
+        "action properties": "アクションのプロパティ",
+        "action data parameters": "アクションのデータパラメーター",
+        "action name": "アクション名",
+        "action targets": "アクションの対象",
+        "action response": "アクションのレスポンス",
+        "default / example": "デフォルト / 例",
+        "Spook's influence": "Spookの影響",
+        "tools": "ツール",
+        "newly added action": "新しく追加されたアクション",
+        "no response": "レスポンスなし",
+        "string": "文字列",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "turn-on-for",
+      "hash": "57d428faade7f18f",
+      "source": "b8dad0715304b049",
+      "glossary": {
+        "Add action": "アクションを追加",
+        "Automation: Turn on for 👻": "オートメーション: 一定時間オンにする 👻",
+        "Targets": "対象",
+        "Duration": "期間",
+        "Save": "保存",
+        "Attribute": "属性",
+        "Type": "タイプ",
+        "Required": "必須",
+        "action": "アクション",
+        "attribute": "属性",
+        "automation": "オートメーション",
+        "label": "ラベル",
+        "restart": "再起動",
+        "script": "スクリプト",
+        "snooze": "スヌーズ",
+        "state": "状態",
+        "how to use it": "使い方",
+        "technical details": "技術的な詳細",
+        "known limitations": "既知の制限",
+        "example actions in YAML": "YAMLでのアクションの例",
+        "action properties": "アクションのプロパティ",
+        "action data parameters": "アクションのデータパラメーター",
+        "action name": "アクション名",
+        "action targets": "アクションの対象",
+        "action response": "アクションのレスポンス",
+        "default / example": "デフォルト / 例",
+        "Spook's influence": "Spookの影響",
+        "tools": "ツール",
+        "newly added action": "新しく追加されたアクション",
+        "no response": "レスポンスなし",
+        "string": "文字列",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "repairs",
+      "hash": "14ad484c1314a693",
+      "source": "514387a1fd054bab",
+      "glossary": {
+        "area": "エリア",
+        "automation": "オートメーション",
+        "condition": "条件",
+        "dashboard": "ダッシュボード",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "floor": "フロア",
+        "label": "ラベル",
+        "repair": "修復",
+        "repairs dashboard": "修復ページ",
+        "trigger": "トリガー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "90eaa05dcbbfd4da",
+      "source": "f9866d1b36324166",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "automation": "オートメーション",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "issue": "問題",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "10d714bcd1f0f8e7",
+      "source": "5d3591d4798068c8",
+      "glossary": {
+        "attribute": "属性",
+        "automation": "オートメーション",
+        "condition": "条件",
+        "entity": "エンティティ",
+        "integration": "統合",
+        "label": "ラベル",
+        "repair": "修復",
+        "state": "状態",
+        "template": "テンプレート",
+        "trigger": "トリガー",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "4f0748d6643ba089",
+      "source": "a061cf5cdddeb02f",
+      "glossary": {
+        "action": "アクション",
+        "attribute": "属性",
+        "automation": "オートメーション",
+        "condition": "条件",
+        "cover": "カバー",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "helper": "ヘルパー",
+        "integration": "統合",
+        "issue": "問題",
+        "label": "ラベル",
+        "person": "人",
+        "repair": "修復",
+        "script": "スクリプト",
+        "state": "状態",
+        "template": "テンプレート",
+        "trigger": "トリガー",
+        "zone": "ゾーン",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "boolean": "ブール値",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "ce441806b06c181b",
+      "source": "c2c9d51beeacf48d",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "condition": "条件",
+        "device": "デバイス",
+        "integration": "統合",
+        "issue": "問題",
+        "label": "ラベル",
+        "repair": "修復",
+        "trigger": "トリガー",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "37c4bf04eb664b6f",
+      "source": "aaa8982ecf6bf512",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "integration": "統合",
+        "integration entry": "統合エントリ",
+        "label": "ラベル",
+        "repair": "修復",
+        "state": "状態",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "56d784260087b7ad",
+      "source": "d1ec65727456cb67",
+      "glossary": {
+        "automation": "オートメーション",
+        "entity": "エンティティ",
+        "entity ID": "エンティティ ID",
+        "issue": "問題",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "unknown referenced entities": "参照先が不明なエンティティ",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "c932c7916c8e9fb2",
+      "source": "456bc017d190bdf6",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "integration": "統合",
+        "label": "ラベル",
+        "repair": "修復",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "4abb5e1a8fc2fca2",
+      "source": "a577b33d4e85f423",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "automation": "オートメーション",
+        "helper": "ヘルパー",
+        "icon": "アイコン",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "c895a0ea7de80a18",
+      "source": "9a53cc54fd89a5a3",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "automation": "オートメーション",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "floor": "フロア",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "f282eba307a0e575",
+      "source": "03690a0b1cdfa403",
+      "glossary": {
+        "area": "エリア",
+        "automation": "オートメーション",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "5c0c5374d974eaa1",
+      "source": "c4c6d77d13c2bcfe",
+      "glossary": {
+        "automation": "オートメーション",
+        "condition": "条件",
+        "integration": "統合",
+        "issue": "問題",
+        "label": "ラベル",
+        "repair": "修復",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "219a125f3d6fbbe9",
+      "source": "fb2b3aa4cc926899",
+      "glossary": {
+        "automation": "オートメーション",
+        "condition": "条件",
+        "integration": "統合",
+        "issue": "問題",
+        "label": "ラベル",
+        "repair": "修復",
+        "trigger": "トリガー",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-trigger-ids",
+      "hash": "01fbea6d3d3d7a1b",
+      "source": "18f0e53be9622669",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "blueprint": "ブループリント",
+        "condition": "条件",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "trigger": "トリガー",
+        "trigger ID": "トリガー ID",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "98a1227867991117",
+      "source": "ddde558b08404b8a",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "blueprint": "ブループリント",
+        "condition": "条件",
+        "issue": "問題",
+        "label": "ラベル",
+        "repair": "修復",
+        "state": "状態",
+        "template": "テンプレート",
+        "trigger": "トリガー",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "4f78bb609296f359",
+      "source": "4cbad7ba1c95a312",
+      "glossary": {
+        "attribute": "属性",
+        "automation": "オートメーション",
+        "label": "ラベル",
+        "person": "人",
+        "repair": "修復",
+        "template": "テンプレート",
+        "trigger": "トリガー",
+        "user": "ユーザー",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

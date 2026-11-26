@@ -1,0 +1,451 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/03.automation.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/03.automation.md",
+  "language": "it",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "8d1e72830812a1ac",
+      "source": "6d9e2300cba2453f",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "automation": "automazione",
+        "entity": "entità",
+        "snooze": "rimandare"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "91a5e238a66710f7",
+      "source": "1a75e345c97e2e04",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "integration": "integrazione",
+        "issue": "problema",
+        "repair": "riparazione",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "6f0c083ca91243ed",
+      "source": "eb7b67e177f675a2",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "snooze",
+      "hash": "494125cbcfaafaca",
+      "source": "a8222e6700da8e64",
+      "glossary": {
+        "Add action": "Aggiungi azione",
+        "Automation: Snooze 👻": "Automazione: Rimanda 👻",
+        "Targets": "Destinatari",
+        "Duration": "Durata",
+        "Save": "Salva",
+        "Attribute": "Attributo",
+        "Type": "Tipo",
+        "Required": "Obbligatorio",
+        "action": "azione",
+        "area": "area",
+        "attribute": "attributo",
+        "automation": "automazione",
+        "entity": "entità",
+        "helper": "aiutante",
+        "label": "etichetta",
+        "restart": "riavviare",
+        "script": "script",
+        "snooze": "rimandare",
+        "state": "stato",
+        "how to use it": "come si usa",
+        "technical details": "dettagli tecnici",
+        "known limitations": "limiti noti",
+        "example actions in YAML": "esempi di azioni in YAML",
+        "action properties": "proprietà dell'azione",
+        "action data parameters": "parametri dei dati dell'azione",
+        "default / example": "predefinito / esempio",
+        "action name": "nome dell'azione",
+        "action targets": "destinatari dell'azione",
+        "action response": "risposta dell'azione",
+        "spook's influence": "influenza di Spook",
+        "tools": "strumenti",
+        "no response": "nessuna risposta",
+        "newly added action": "nuova azione aggiunta",
+        "string": "stringa",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "turn-on-for",
+      "hash": "9828de1c6a54c581",
+      "source": "b8dad0715304b049",
+      "glossary": {
+        "Add action": "Aggiungi azione",
+        "Automation: Turn on for 👻": "Automazione: Accendi per 👻",
+        "Targets": "Destinatari",
+        "Duration": "Durata",
+        "Save": "Salva",
+        "Attribute": "Attributo",
+        "Type": "Tipo",
+        "Required": "Obbligatorio",
+        "action": "azione",
+        "attribute": "attributo",
+        "automation": "automazione",
+        "label": "etichetta",
+        "restart": "riavviare",
+        "script": "script",
+        "snooze": "rimandare",
+        "state": "stato",
+        "how to use it": "come si usa",
+        "technical details": "dettagli tecnici",
+        "known limitations": "limiti noti",
+        "example actions in YAML": "esempi di azioni in YAML",
+        "action properties": "proprietà dell'azione",
+        "action data parameters": "parametri dei dati dell'azione",
+        "default / example": "predefinito / esempio",
+        "action name": "nome dell'azione",
+        "action targets": "destinatari dell'azione",
+        "action response": "risposta dell'azione",
+        "spook's influence": "influenza di Spook",
+        "tools": "strumenti",
+        "no response": "nessuna risposta",
+        "newly added action": "nuova azione aggiunta",
+        "string": "stringa",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "repairs",
+      "hash": "fde558463b34ceb9",
+      "source": "514387a1fd054bab",
+      "glossary": {
+        "area": "area",
+        "automation": "automazione",
+        "condition": "condizione",
+        "dashboard": "plancia",
+        "device": "dispositivo",
+        "entity": "entità",
+        "floor": "piano",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "repairs dashboard": "pagina delle riparazioni",
+        "trigger": "attivazione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "142f119528ad3d7f",
+      "source": "f9866d1b36324166",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "automation": "automazione",
+        "device": "dispositivo",
+        "entity": "entità",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "6ec3b419e763617c",
+      "source": "5d3591d4798068c8",
+      "glossary": {
+        "attribute": "attributo",
+        "automation": "automazione",
+        "condition": "condizione",
+        "entity": "entità",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "state": "stato",
+        "template": "modello",
+        "trigger": "attivazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "fef463ee703af198",
+      "source": "a061cf5cdddeb02f",
+      "glossary": {
+        "action": "azione",
+        "attribute": "attributo",
+        "automation": "automazione",
+        "condition": "condizione",
+        "cover": "copertura",
+        "device": "dispositivo",
+        "entity": "entità",
+        "helper": "aiutante",
+        "integration": "integrazione",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "script": "script",
+        "state": "stato",
+        "template": "modello",
+        "trigger": "attivazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "list": "lista",
+        "boolean": "booleano",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "7e4e8e59ca9d64f0",
+      "source": "c2c9d51beeacf48d",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "condition": "condizione",
+        "device": "dispositivo",
+        "integration": "integrazione",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "trigger": "attivazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "4cec34631290d164",
+      "source": "aaa8982ecf6bf512",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "integration": "integrazione",
+        "integration entry": "voce dell'integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "state": "stato",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "1ac9dafa69d1ff1d",
+      "source": "d1ec65727456cb67",
+      "glossary": {
+        "automation": "automazione",
+        "entity": "entità",
+        "entity ID": "ID entità",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "029ea202585842e5",
+      "source": "456bc017d190bdf6",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "c3a649e19e9b9471",
+      "source": "a577b33d4e85f423",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "automation": "automazione",
+        "helper": "aiutante",
+        "icon": "icona",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "6dd87efd9b35bf51",
+      "source": "9a53cc54fd89a5a3",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "automation": "automazione",
+        "device": "dispositivo",
+        "entity": "entità",
+        "floor": "piano",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "a9116430c8cf1ea1",
+      "source": "03690a0b1cdfa403",
+      "glossary": {
+        "area": "area",
+        "automation": "automazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "313f26635c1e70c2",
+      "source": "c4c6d77d13c2bcfe",
+      "glossary": {
+        "automation": "automazione",
+        "condition": "condizione",
+        "integration": "integrazione",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "24f619042e0a6561",
+      "source": "fb2b3aa4cc926899",
+      "glossary": {
+        "automation": "automazione",
+        "condition": "condizione",
+        "integration": "integrazione",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "trigger": "attivazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-trigger-ids",
+      "hash": "274c62aa5f5147af",
+      "source": "18f0e53be9622669",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "blueprint": "progetto",
+        "condition": "condizione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "trigger": "attivazione",
+        "trigger ID": "ID attivatore",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "ce75334fdba51dae",
+      "source": "ddde558b08404b8a",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "blueprint": "progetto",
+        "condition": "condizione",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "state": "stato",
+        "template": "modello",
+        "trigger": "attivazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "ed6f15c266525394",
+      "source": "4cbad7ba1c95a312",
+      "glossary": {
+        "attribute": "attributo",
+        "automation": "automazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "trigger": "attivazione",
+        "user": "utente",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

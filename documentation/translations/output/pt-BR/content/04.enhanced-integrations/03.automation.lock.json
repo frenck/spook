@@ -1,0 +1,383 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/03.automation.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/03.automation.md",
+  "language": "pt-BR",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "74536a844d6e1105",
+      "source": "6d9e2300cba2453f",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "automation": "automação",
+        "entity": "entidade",
+        "snooze": "adiar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "e223b26f46f47712",
+      "source": "1a75e345c97e2e04",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "integration": "integração",
+        "issue": "problema",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "b22af978fb8c6cf5",
+      "source": "eb7b67e177f675a2",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "snooze",
+      "hash": "1a8c036bb9531b60",
+      "source": "a8222e6700da8e64",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "Automation: Snooze 👻": "Automação: Adiar 👻",
+        "Targets": "Alvos",
+        "Duration": "Duração",
+        "Save": "Salvar",
+        "Attribute": "Atributo",
+        "Type": "Tipo",
+        "Required": "Obrigatório",
+        "action": "ação",
+        "area": "área",
+        "attribute": "atributo",
+        "automation": "automação",
+        "entity": "entidade",
+        "helper": "helper",
+        "label": "etiqueta",
+        "restart": "reiniciar",
+        "script": "script",
+        "snooze": "adiar",
+        "state": "estado",
+        "search for": "pesquise por",
+        "string": "texto"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "turn-on-for",
+      "hash": "5edc1243d1f007a4",
+      "source": "b8dad0715304b049",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "Automation: Turn on for 👻": "Automação: Ligar por 👻",
+        "Targets": "Alvos",
+        "Duration": "Duração",
+        "Save": "Salvar",
+        "Attribute": "Atributo",
+        "Type": "Tipo",
+        "Required": "Obrigatório",
+        "action": "ação",
+        "attribute": "atributo",
+        "automation": "automação",
+        "label": "etiqueta",
+        "restart": "reiniciar",
+        "script": "script",
+        "snooze": "adiar",
+        "state": "estado",
+        "search for": "pesquise por",
+        "string": "texto"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "repairs",
+      "hash": "d3324259be198efb",
+      "source": "514387a1fd054bab",
+      "glossary": {
+        "area": "área",
+        "automation": "automação",
+        "condition": "condição",
+        "dashboard": "dashboard",
+        "device": "dispositivo",
+        "entity": "entidade",
+        "floor": "andar",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "repairs dashboard": "página de reparos",
+        "trigger": "gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "7d0a7ec18437f572",
+      "source": "f9866d1b36324166",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "automation": "automação",
+        "device": "dispositivo",
+        "entity": "entidade",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "c6bad2d9ad3b85d8",
+      "source": "5d3591d4798068c8",
+      "glossary": {
+        "attribute": "atributo",
+        "automation": "automação",
+        "condition": "condição",
+        "entity": "entidade",
+        "integration": "integração",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "state": "estado",
+        "template": "template",
+        "trigger": "gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "83489e205d23c3cd",
+      "source": "a061cf5cdddeb02f",
+      "glossary": {
+        "action": "ação",
+        "attribute": "atributo",
+        "automation": "automação",
+        "condition": "condição",
+        "cover": "cobertura",
+        "device": "dispositivo",
+        "entity": "entidade",
+        "helper": "helper",
+        "integration": "integração",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "script": "script",
+        "state": "estado",
+        "template": "template",
+        "trigger": "gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "39f382ea95bb3712",
+      "source": "c2c9d51beeacf48d",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "condition": "condição",
+        "device": "dispositivo",
+        "integration": "integração",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "trigger": "gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "8761b2e62e118363",
+      "source": "aaa8982ecf6bf512",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "integration": "integração",
+        "integration entry": "entrada da integração",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "state": "estado",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "068c77aa4adf3e72",
+      "source": "d1ec65727456cb67",
+      "glossary": {
+        "automation": "automação",
+        "entity": "entidade",
+        "entity ID": "ID da entidade",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "316d95ce57f98083",
+      "source": "456bc017d190bdf6",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "integration": "integração",
+        "label": "etiqueta",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "95e3fbb3384df7a5",
+      "source": "a577b33d4e85f423",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "automation": "automação",
+        "helper": "helper",
+        "icon": "ícone",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "24b3dfeed714cc15",
+      "source": "9a53cc54fd89a5a3",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "automation": "automação",
+        "device": "dispositivo",
+        "entity": "entidade",
+        "floor": "andar",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "6f5f26d49ca56895",
+      "source": "03690a0b1cdfa403",
+      "glossary": {
+        "area": "área",
+        "automation": "automação",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "7b7b63446606931a",
+      "source": "c4c6d77d13c2bcfe",
+      "glossary": {
+        "automation": "automação",
+        "condition": "condição",
+        "integration": "integração",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "302197d5c697fd04",
+      "source": "fb2b3aa4cc926899",
+      "glossary": {
+        "automation": "automação",
+        "condition": "condição",
+        "integration": "integração",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "trigger": "gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-trigger-ids",
+      "hash": "a7159390fd8a6430",
+      "source": "18f0e53be9622669",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "blueprint": "blueprint",
+        "condition": "condição",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "template": "template",
+        "trigger": "gatilho",
+        "trigger ID": "ID do gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "427c29e3dcd7d2e3",
+      "source": "ddde558b08404b8a",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "blueprint": "blueprint",
+        "condition": "condição",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "state": "estado",
+        "template": "template",
+        "trigger": "gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "a295d9371e35298f",
+      "source": "4cbad7ba1c95a312",
+      "glossary": {
+        "attribute": "atributo",
+        "automation": "automação",
+        "label": "etiqueta",
+        "repair": "reparo",
+        "template": "template",
+        "trigger": "gatilho",
+        "user": "usuário"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

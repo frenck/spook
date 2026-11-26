@@ -1,0 +1,325 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/33.script.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/33.script.md",
+  "language": "zh-Hans",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "2f41fbea8f8ae117",
+      "source": "a186f5fc9d567f52",
+      "glossary": {
+        "action": "动作",
+        "device": "设备",
+        "entity": "实体",
+        "script": "脚本"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "d752f8923a1fe94e",
+      "source": "c95dc7873579e146",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "dashboard": "仪表盘",
+        "issue": "问题",
+        "repair": "修复",
+        "script": "脚本",
+        "trigger": "触发条件"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "2d743eb6f2fbb340",
+      "source": "238d7a5b8cb4f6d9",
+      "glossary": {
+        "area": "区域",
+        "dashboard": "仪表盘",
+        "device": "设备",
+        "entity": "实体",
+        "floor": "楼层",
+        "label": "标签",
+        "repair": "修复",
+        "repairs dashboard": "修复页面",
+        "script": "脚本"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "9d62164f42d705f3",
+      "source": "f31cfdc884dc9291",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "automation": "自动化",
+        "device": "设备",
+        "entity": "实体",
+        "issue": "问题",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "b299897c80a20f8a",
+      "source": "45d90bf7d5abd035",
+      "glossary": {
+        "attribute": "属性",
+        "condition": "条件",
+        "entity": "实体",
+        "integration": "集成",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "state": "状态",
+        "template": "模板",
+        "trigger": "触发条件",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "ef7d239156025ef0",
+      "source": "1dbdb11142d34aec",
+      "glossary": {
+        "action": "动作",
+        "attribute": "属性",
+        "condition": "条件",
+        "cover": "卷帘",
+        "device": "设备",
+        "entity": "实体",
+        "helper": "辅助元素",
+        "integration": "集成",
+        "issue": "问题",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "state": "状态",
+        "template": "模板",
+        "trigger": "触发条件",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "boolean": "布尔值",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "a5cf14d90af5b99f",
+      "source": "5c310fb0f64631b3",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "condition": "条件",
+        "device": "设备",
+        "integration": "集成",
+        "issue": "问题",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "68678666e7d88d5c",
+      "source": "06fc19893331578f",
+      "glossary": {
+        "action": "动作",
+        "integration": "集成",
+        "integration entry": "集成条目",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "state": "状态",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "b117c08a69ca10e3",
+      "source": "1525b70bd94cbec5",
+      "glossary": {
+        "automation": "自动化",
+        "entity": "实体",
+        "entity ID": "实体标识符",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "81872ecd2476c456",
+      "source": "8efb129ad2e0df26",
+      "glossary": {
+        "action": "动作",
+        "integration": "集成",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "678b1812072607c3",
+      "source": "00fb50b7f41b8752",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "helper": "辅助元素",
+        "icon": "图标",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "621a28907fe0958c",
+      "source": "582e3c6d947cddca",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "automation": "自动化",
+        "floor": "楼层",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "ad41806e96fb032a",
+      "source": "63d82355d9e7d4cc",
+      "glossary": {
+        "automation": "自动化",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "ab2da145c5020b84",
+      "source": "097d0ffcb508b484",
+      "glossary": {
+        "condition": "条件",
+        "integration": "集成",
+        "issue": "问题",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "c6f2e08416748b34",
+      "source": "1e594acecf97bbe5",
+      "glossary": {
+        "Wait for a trigger": "等待某个触发条件",
+        "integration": "集成",
+        "issue": "问题",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "trigger": "触发条件",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "1d2f0ec9723c169c",
+      "source": "3de48595e096da8e",
+      "glossary": {
+        "automation": "自动化",
+        "condition": "条件",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "state": "状态",
+        "template": "模板",
+        "trigger": "触发条件",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "6a5f1bded15afe62",
+      "source": "67b31552830f566c",
+      "glossary": {
+        "automation": "自动化",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "template": "模板",
+        "trigger": "触发条件",
+        "user": "用户",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

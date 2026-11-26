@@ -1,0 +1,293 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/07.lovelace.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/07.lovelace.md",
+  "language": "it",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "93688b9299a1d506",
+      "source": "d6e1802148a1734d",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "dashboard": "plancia",
+        "icon": "icona"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "b9dcf11ef9f464e6",
+      "source": "f22479c7da53d224",
+      "glossary": {
+        "dashboard": "plancia",
+        "state": "stato"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "b700670642979e9e",
+      "source": "1f52858c49c462d9",
+      "glossary": {
+        "Save": "Salva",
+        "dashboard": "plancia",
+        "repair": "riparazione",
+        "repairs dashboard": "pagina delle riparazioni"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "9b9ae9522db47f52",
+      "source": "7c2725b0d5b65e0e",
+      "glossary": {
+        "Save": "Salva",
+        "automation": "automazione",
+        "dashboard": "plancia",
+        "entity": "entità",
+        "entity ID": "ID entità",
+        "issue": "problema",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "829d008bb71e0282",
+      "source": "63c37ee9830cb4a0",
+      "glossary": {
+        "Save": "Salva",
+        "action": "azione",
+        "area": "area",
+        "dashboard": "plancia",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "3e678f103b5ff900",
+      "source": "b7052112b1797649",
+      "glossary": {
+        "Save": "Salva",
+        "attribute": "attributo",
+        "automation": "automazione",
+        "condition": "condizione",
+        "dashboard": "plancia",
+        "entity": "entità",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "state": "stato",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "99d1e31f00239f8c",
+      "source": "a3af8c70eb585406",
+      "glossary": {
+        "Save": "Salva",
+        "attribute": "attributo",
+        "automation": "automazione",
+        "condition": "condizione",
+        "dashboard": "plancia",
+        "entity": "entità",
+        "entity ID": "ID entità",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "state": "stato",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-actions",
+      "hash": "3147d42685657b72",
+      "source": "c88b3f0332201693",
+      "glossary": {
+        "Save": "Salva",
+        "action": "azione",
+        "cover": "copertura",
+        "dashboard": "plancia",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "script": "script",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-views",
+      "hash": "eed2f8e7dc786313",
+      "source": "06a75c1b22e0273e",
+      "glossary": {
+        "Save": "Salva",
+        "action": "azione",
+        "area": "area",
+        "dashboard": "plancia",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti",
+        "made in the UI": "creato nell'interfaccia",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "876ebdb04d4b5e7e",
+      "source": "8ab97f2621bdb7ba",
+      "glossary": {
+        "Save": "Salva",
+        "Settings": "Impostazioni",
+        "Dashboards": "Plance",
+        "action": "azione",
+        "dashboard": "plancia",
+        "icon": "icona",
+        "label": "etichetta",
+        "logs": "registri",
+        "repair": "riparazione",
+        "sidebar": "barra laterale",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "ff6a92504c3fe461",
+      "source": "d80406184140503a",
+      "glossary": {
+        "Save": "Salva",
+        "action": "azione",
+        "area": "area",
+        "condition": "condizione",
+        "dashboard": "plancia",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "user": "utente",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-themes",
+      "hash": "414c2d56400c8aca",
+      "source": "02d95cca1ade497d",
+      "glossary": {
+        "Save": "Salva",
+        "condition": "condizione",
+        "dashboard": "plancia",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "missing-dashboard-resources",
+      "hash": "8fe65fbc33e9d395",
+      "source": "e2596533f7728ad8",
+      "glossary": {
+        "Settings": "Impostazioni",
+        "Dashboards": "Plance",
+        "Resources": "Risorse",
+        "dashboard": "plancia",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "duplicate-dashboard-resources",
+      "hash": "3c358c3b084af5da",
+      "source": "0288a5728c8a5ac5",
+      "glossary": {
+        "Clear the extra copies, keep the most recent": "Ripulisci le copie di troppo e tieni la più recente",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Settings": "Impostazioni",
+        "Dashboards": "Plance",
+        "Resources": "Risorse",
+        "Leave them, stop telling me": "Lasciale stare, e non dirmelo più",
+        "dashboard": "plancia",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "string": "stringa",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "public-files-in-the-www-folder",
+      "hash": "0aa674d68105b654",
+      "source": "72fffd7d4a29767a",
+      "glossary": {
+        "dashboard": "plancia",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "logs": "registri",
+        "repair": "riparazione",
+        "template": "modello",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

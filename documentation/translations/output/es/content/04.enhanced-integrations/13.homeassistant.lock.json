@@ -1,0 +1,277 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/13.homeassistant.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/13.homeassistant.md",
+  "language": "es",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "5d0d3933cfd70257",
+      "source": "369a2a06e6dcb106",
+      "glossary": {
+        "area": "área",
+        "blueprint": "plano",
+        "floor": "planta",
+        "helper": "ayudante",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "c7e6e9be1be5771f",
+      "source": "64b218002cafc0b3",
+      "glossary": {
+        "area": "área",
+        "device": "dispositivo",
+        "floor": "planta",
+        "helper": "ayudante",
+        "integration": "integración",
+        "label": "etiqueta",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "devices-entities",
+      "hash": "26676e982ca8b3fd",
+      "source": "1b0bf38ba0d58ad8",
+      "glossary": {
+        "area": "área",
+        "device": "dispositivo",
+        "entity": "entidad",
+        "integration": "integración",
+        "restart": "reiniciar",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "30b71b3dac5650ac",
+      "source": "3eba30a132630fc9",
+      "glossary": {
+        "action": "acción",
+        "area": "área",
+        "device": "dispositivo",
+        "entity": "entidad",
+        "floor": "planta",
+        "label": "etiqueta",
+        "user": "usuario",
+        "number": "número"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "7591fafc2711f753",
+      "source": "344a0f6d513c0ad1",
+      "glossary": {
+        "area": "área",
+        "blueprint": "plano",
+        "dashboard": "panel de control",
+        "floor": "planta",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "repairs dashboard": "página de reparaciones"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-area-sensors",
+      "hash": "56fe9d8d9a8d152a",
+      "source": "19ba3f07eebf293c",
+      "glossary": {
+        "Clear the setting": "Borrar el ajuste",
+        "Let me fix it myself": "Lo arreglo yo mismo",
+        "Keep it, stop telling me": "Conservarlo, no me avises más",
+        "area": "área",
+        "entity": "entidad",
+        "entity ID": "ID de entidad",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-customized-entities",
+      "hash": "29bd16f0c5fc6c9a",
+      "source": "08b2e5e9ffb14032",
+      "glossary": {
+        "attribute": "atributo",
+        "entity": "entidad",
+        "icon": "icono",
+        "integration": "integración",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "restart": "reiniciar",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-helper-sources",
+      "hash": "6895c64e31b233d1",
+      "source": "11dc74235e07f9be",
+      "glossary": {
+        "Remove this helper": "Quitar este ayudante",
+        "Let me fix it myself": "Lo arreglo yo mismo",
+        "Keep it, stop telling me": "Conservarlo, no me avises más",
+        "entity": "entidad",
+        "helper": "ayudante",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "number": "número"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-min-max-helper-members",
+      "hash": "c630a4ff538952cf",
+      "source": "11c49e8fdadc6998",
+      "glossary": {
+        "Remove these members": "Quitar estos miembros",
+        "Let me fix it myself": "Lo arreglo yo mismo",
+        "Keep them, stop telling me": "Conservarlas, no me avises más",
+        "helper": "ayudante",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "number": "número"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "2d5518fd4684bb0c",
+      "source": "4526c7a38e9a9912",
+      "glossary": {
+        "area": "área",
+        "entity": "entidad",
+        "floor": "planta",
+        "helper": "ayudante",
+        "icon": "icono",
+        "integration": "integración",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "known limitations": "limitaciones conocidas",
+        "list": "lista",
+        "frontend": "frontend"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-areas",
+      "hash": "9b7aa7d8ed269af9",
+      "source": "6447e37649959ea8",
+      "glossary": {
+        "Remove this empty area": "Quitar esta área vacía",
+        "Let me fix it myself": "Lo arreglo yo mismo",
+        "Keep it, stop telling me": "Conservarlo, no me avises más",
+        "action": "acción",
+        "area": "área",
+        "automation": "automatización",
+        "device": "dispositivo",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-floors",
+      "hash": "ac36648a54a3cf40",
+      "source": "1dc8dffbc38858a2",
+      "glossary": {
+        "Remove this empty floor": "Quitar esta planta vacía",
+        "Let me fix it myself": "Lo arreglo yo mismo",
+        "Keep it, stop telling me": "Conservarlo, no me avises más",
+        "area": "área",
+        "automation": "automatización",
+        "floor": "planta",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-labels",
+      "hash": "060ea4cc202e5c75",
+      "source": "b56369896b90e4ff",
+      "glossary": {
+        "Remove this unused label": "Quitar esta etiqueta sin usar",
+        "Let me fix it myself": "Lo arreglo yo mismo",
+        "Keep it, stop telling me": "Conservarlo, no me avises más",
+        "area": "área",
+        "automation": "automatización",
+        "device": "dispositivo",
+        "entity": "entidad",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-blueprints",
+      "hash": "0a50d7fbe3a354dd",
+      "source": "0c9d0302630f7b97",
+      "glossary": {
+        "Remove this unused blueprint": "Quitar este blueprint sin usar",
+        "Let me fix it myself": "Lo arreglo yo mismo",
+        "Keep it, stop telling me": "Conservarlo, no me avises más",
+        "automation": "automatización",
+        "blueprint": "plano",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "c36f5780a5580508",
+      "source": "1b7d2e38b0428375",
+      "glossary": {
+        "area": "área",
+        "floor": "planta",
+        "helper": "ayudante",
+        "label": "etiqueta",
+        "use cases": "casos de uso"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/answers.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+# The questions people ask before they install Spook, and the honest
+# answers. Keep them short, true, and checked against the code: this page only
+# works if every answer holds up.
+title: 直白的回答
+description: 大家关于 Spook 问的问题，诚实回答。它是什么，要花多少钱，可能出什么问题，以及怎么再把它删掉。
+
+groups:
+  - title: 安装之前
+    icon: i-mdi-magnify
+    questions:
+      - question: 这是 Home Assistant 官方的东西吗？
+        answer: 不是。Spook 是一个自定义集成，由 Frenck 制作。他参与 Home Assistant 本身的开发，但 Spook 是他自己的项目，Home Assistant 项目不支持它。所以有关 Spook 的问题，请不要去找他们。来这里问。
+        link: { label: 去哪里获取帮助, to: /support }
+      - question: 那为什么 Home Assistant 里没有这些？
+        answer: 有些太特殊、太实验性，或者会打破 Home Assistant 有充分理由坚持的规则。Spook 不必遵守。还有些是试水。模板函数和几条修复最初就出自 Spook，后来进了 Home Assistant 本身。
+        link: { label: 已经搬走的功能, to: /previous-features }
+      - question: 要花多少钱？
+        answer: 不花钱。Spook 免费，采用 MIT 许可，没有专业版，也没有什么陷阱。想说声谢谢的话，在 GitHub 上赞助 Frenck，幽灵就有饭吃。
+        link: { label: 赞助 Frenck, to: "https://github.com/sponsors/frenck" }
+      - question: 它会往外发送什么吗？
+        answer: 不会。没有账户，没有云，没有跟踪。Spook 唯一会从互联网获取的，是你导入的蓝图的新版本，从你导入它的地方获取。如果你分享了 Home Assistant 自己的分析数据，Spook 会出现在那个统计里，和你装的其他集成一样。
+
+  - title: 用起来怎么样
+    icon: i-mdi-home-heart
+    questions:
+      - question: 它会搞乱我的系统吗？
+        answer: 发现问题不会改变任何东西。Spook 主动提出要修什么时，会先问你，并在动手之前再检查一遍。它的动作只做你在自己的自动化里让它们做的事。
+      - question: 它会拖慢 Home Assistant 吗？
+        answer: Spook 确实要干活，它会读取你的自动化、仪表盘等等。较重的检查会等到 Home Assistant 启动完成后才进行，并在有东西变化时再次运行，而不是一直在跑。如果你还是察觉到了变慢，那就是 bug，我们想知道。
+      - question: 它会出错吗？
+        answer: 会，有时候。Spook 尽力只报告真正坏掉的东西，喊“狼来了”的修复就是 bug。修好之前，忽略这条修复，Spook 就不会再对这些发现出声。
+        link: { label: 报告一个, to: "https://github.com/frenck/spook/issues" }
+      - question: Home Assistant 更新会把它弄坏吗？
+        answer: 会。Spook 用到了 Home Assistant 中并非为外部准备的部分。它就是靠这个做到它做的事，这也是更新可能绊倒它的原因。出现这种情况时，更新 Spook 就能解决。
+
+  - title: 想要离开时
+    icon: i-mdi-door-open
+    questions:
+      - question: 删掉它会怎样？
+        answer: 它的修复和传感器会随之消失。你用 Spook 创建的辅助元素会留下来，但再也无法加载，所以先删掉它们。使用了 Spook 的动作、触发条件或条件的自动化会停止工作，而 Spook 已经不在，没法告诉你。所以先检查这些。你的设备、实体和其他一切都会保持原样。
+        link: { label: 如何删除它, to: /uninstalling }
+      - question: 它会一直在吗？
+        answer: Spook 从 2023 年 2 月就有了，每当有值得发布的东西就发布一次。当 Home Assistant 接管某个功能时，它就会离开 Spook，发布说明和文档会写明它去了哪里。
+        link: { label: Spook 背后的故事, to: /background-and-history }
+
+  - title: 这个项目
+    icon: i-mdi-ghost-outline
+    questions:
+      - question: 为什么叫 Spook？
+        answer: Spook 是荷兰语里“幽灵”的意思，也是在向《鬼马小精灵》致意。它找出你的 Home Assistant 里的幽灵：那些还留着、却早已不在的东西。
+        link: { label: 更长的故事, to: /background-and-history }
+      - question: 听说我不被允许使用 Spook。这是怎么回事？
+        answer: 以前确实如此。3.0.0 版本之前，Spook 的许可证允许你阅读代码，但不允许你使用，这是故意的。那是一次实验，口号是“Not your homie”。大家照用不误，而且很喜欢。所以从 3.0.0 起它采用 MIT 许可，口号变成了“Your homie”。
+        link: { label: 许可证, to: /license }
+      - question: 版本号是什么意思？
+        answer: 主版本、次版本、补丁版本。新的主版本会更改或移除你可能依赖的东西，次版本会添加东西，补丁版本会修复东西。每次发布都在 GitHub 上附有说明，写明改了什么。
+        link: { label: 发布说明, to: "https://github.com/frenck/spook/releases" }
+      - question: 下一个版本什么时候发布？
+        answer: 准备好的时候。Spook 是一个业余项目，利用空闲时间做的，所以没有日期，也没有承诺。
+      - question: 我对 Spook 有个想法。该提到哪里？
+        answer: 提到 GitHub 上的讨论区。Spook 今天做的很多事情，最初都是某个人在那里提出的想法。
+        link: { label: 分享想法, to: "https://github.com/frenck/spook/discussions" }

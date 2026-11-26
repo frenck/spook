@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/automations.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 2
+title: Automações sem gambiarras
+description: O Spook adiciona gatilhos, condições e ações ao editor de automação do Home Assistant, para as coisas para as quais você vivia criando helpers.
+
+hero:
+  headline: Gatilhos, condições e ações 🧰
+  title: Automações, sem gambiarras.
+  description: O Spook adiciona {triggers} gatilhos, {conditions} condições e {actions} ações para as coisas para as quais você vivia criando helpers. Eles ficam no editor de automação, bem ao lado dos que o Home Assistant traz.
+  screenshot: automation-editor
+  alt: Uma automação no editor do Home Assistant com o gatilho Agendamento cron e a condição Tempo de espera do Spook, e uma ação de luz comum.
+
+sections:
+  - headline: Diga quando, do jeito que você quer dizer
+    title: Todo dia útil às seis e meia.
+    description: Os gatilhos de horário do Home Assistant cobrem uma hora do dia e um padrão. O agendamento cron do Spook diz "dias úteis às seis e meia" ou "a última sexta-feira do mês" em uma linha, com a explicação ali mesmo no editor.
+    screenshot: automation-cron
+    alt: O gatilho Agendamento cron do Spook aberto no editor de automação, com sua descrição e o agendamento 30 6 * * 1-5.
+    features:
+      - title: Para os momentos que o Home Assistant não sabe nomear
+        description: Um dispositivo que acabou de aparecer, uma automação desativada, uma entidade que ficou em silêncio.
+        icon: i-mdi-timer-cog-outline
+      - title: Condições com memória
+        description: Um tempo de espera desde a última execução, ou só quando uma pessoa iniciou, não uma automação.
+        icon: i-mdi-account-check-outline
+      - title: Nada novo para aprender
+        description: Escolhidos, preenchidos e salvos como qualquer outro. No editor, em scripts, em YAML.
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: Ações que você vivia procurando
+    title: Adie, não desligue.
+    description: Desative uma automação por uma hora, e ela volta sozinha, mesmo depois de reiniciar. Uma de {actions} ações, de adiar automações a criar áreas, etiquetas e helpers a partir de uma automação.
+    screenshot: action-snooze
+    alt: A caixa de diálogo Adicionar ação no editor de automação, com a pesquisa adiar e a ação Adiar do Spook destacada.
+    features:
+      - title: Pesquise, selecione, pronto
+        description: As ações do Spook aparecem quando você adiciona uma ação, cada uma marcada com um 👻.
+        icon: i-mdi-magnify
+      - title: Sobrevive a uma reinicialização
+        description: Adiado é adiado. Se o Home Assistant reiniciar no meio do caminho, ela não acorda antes da hora.
+        icon: i-mdi-restart
+      - title: Gerencie sua casa a partir de uma automação
+        description: Crie e remova áreas, etiquetas, zonas e helpers, ou desative um dispositivo.
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: Tudo na caixa de ferramentas
+  links:
+    - title: Todos os gatilhos
+      description: Cada gatilho que o Spook adiciona, para que serve e um exemplo.
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: Todas as condições
+      description: As condições, de um tempo de espera a um watchdog.
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: Todas as ações
+      description: A lista completa, com um botão para experimentar cada uma no seu próprio Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Adiar, passo a passo
+      description: Como usar nas suas automações, com exemplos.
+      icon: i-mdi-sleep
+      to: /automation#snooze

@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/automations.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 2
+title: 不用变通办法的自动化
+description: Spook 为 Home Assistant 的自动化编辑器添加触发条件、条件和动作，用在那些你一直靠搭辅助元素来解决的事情上。
+
+hero:
+  headline: 触发条件、条件和动作 🧰
+  title: 自动化，不用变通办法。
+  description: Spook 添加了 {triggers} 个触发条件、{conditions} 个条件和 {actions} 个动作，用在那些你一直靠搭辅助元素来解决的事情上。它们就在自动化编辑器里，紧挨着 Home Assistant 自带的那些。
+  screenshot: automation-editor
+  alt: Home Assistant 编辑器中的一个自动化，用了 Spook 的“Cron 计划”触发条件和“冷却时间”条件，外加一个普通的灯光动作。
+
+sections:
+  - headline: 什么时候，按你的意思说
+    title: 每个工作日六点半。
+    description: Home Assistant 的时间触发条件能处理一天中的某个时间和一种模式。Spook 的 Cron 计划用一行就能说出“工作日六点半”或“每月最后一个星期五”，编辑器里还直接附上解释。
+    screenshot: automation-cron
+    alt: 在自动化编辑器中打开的 Spook“Cron 计划”触发条件，带有说明和计划 30 6 * * 1-5。
+    features:
+      - title: 用于 Home Assistant 说不出名字的时刻
+        description: 刚出现的设备、被关掉的自动化、不再出声的实体。
+        icon: i-mdi-timer-cog-outline
+      - title: 有记忆的条件
+        description: 距上次运行的冷却时间，或者只在由人而不是自动化启动时。
+        icon: i-mdi-account-check-outline
+      - title: 不用学新东西
+        description: 和其他的一样选择、填写、保存。在编辑器里、在脚本里、在 YAML 里都行。
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: 你一直想用的动作
+    title: 让它打盹，别把它关掉。
+    description: 把一个自动化关掉一小时，它会自己回来，重启之后也一样。这只是 {actions} 个动作之一，从让自动化打盹，到在自动化里创建区域、标签和辅助元素。
+    screenshot: action-snooze
+    alt: 自动化编辑器中的“添加动作”对话框，搜索了“打盹”，Spook 的“自动化：打盹”动作被框了出来。
+    features:
+      - title: 搜索、选择、完成
+        description: 添加动作时就能看到 Spook 的动作，每个都标着 👻。
+        icon: i-mdi-magnify
+      - title: 重启也不怕
+        description: 打盹就是打盹。中途 Home Assistant 重启，也不会提前把它叫醒。
+        icon: i-mdi-restart
+      - title: 在自动化里管理你的家
+        description: 创建和删除区域、标签、地点和辅助元素，或者禁用一个设备。
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: 工具箱里的一切
+  links:
+    - title: 所有触发条件
+      description: Spook 添加的每个触发条件，附带用途和示例。
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: 所有条件
+      description: 各种条件，从冷却时间到看门狗。
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: 所有动作
+      description: 完整列表，每个都有按钮，可以在你自己的 Home Assistant 里试一试。
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: 打盹，一步一步
+      description: 怎么在你的自动化里用它，附带示例。
+      icon: i-mdi-sleep
+      to: /automation#snooze

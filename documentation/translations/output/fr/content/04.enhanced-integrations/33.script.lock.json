@@ -1,0 +1,326 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/33.script.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/33.script.md",
+  "language": "fr",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "033240495391c33f",
+      "source": "a186f5fc9d567f52",
+      "glossary": {
+        "action": "action",
+        "device": "appareil",
+        "entity": "entité",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "13de33b2d706f909",
+      "source": "c95dc7873579e146",
+      "glossary": {
+        "action": "action",
+        "automation": "automatisation",
+        "dashboard": "tableau de bord",
+        "issue": "problème",
+        "repair": "correction",
+        "script": "script",
+        "trigger": "déclencheur"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "8f3f69f31f1b191b",
+      "source": "238d7a5b8cb4f6d9",
+      "glossary": {
+        "area": "pièce",
+        "dashboard": "tableau de bord",
+        "device": "appareil",
+        "entity": "entité",
+        "floor": "étage",
+        "label": "étiquette",
+        "repair": "correction",
+        "repairs dashboard": "page des corrections",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "6e486f22078201c7",
+      "source": "f31cfdc884dc9291",
+      "glossary": {
+        "action": "action",
+        "area": "pièce",
+        "automation": "automatisation",
+        "device": "appareil",
+        "entity": "entité",
+        "issue": "problème",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "template": "modèle",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "9178fd5e1598fa59",
+      "source": "45d90bf7d5abd035",
+      "glossary": {
+        "attribute": "attribut",
+        "condition": "condition",
+        "entity": "entité",
+        "integration": "intégration",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "state": "état",
+        "template": "modèle",
+        "trigger": "déclencheur",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "e68c04a065648d0a",
+      "source": "1dbdb11142d34aec",
+      "glossary": {
+        "action": "action",
+        "attribute": "attribut",
+        "condition": "condition",
+        "cover": "ouverture",
+        "device": "appareil",
+        "entity": "entité",
+        "helper": "entrée",
+        "integration": "intégration",
+        "issue": "problème",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "state": "état",
+        "template": "modèle",
+        "trigger": "déclencheur",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie",
+        "boolean": "booléen",
+        "list": "liste",
+        "number": "nombre"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "a31a0bb4e8b6883b",
+      "source": "5c310fb0f64631b3",
+      "glossary": {
+        "action": "action",
+        "automation": "automatisation",
+        "condition": "condition",
+        "device": "appareil",
+        "integration": "intégration",
+        "issue": "problème",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "5353c8470f22e189",
+      "source": "06fc19893331578f",
+      "glossary": {
+        "action": "action",
+        "integration": "intégration",
+        "integration entry": "entrée d'intégration",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "state": "état",
+        "template": "modèle",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "336dd6cbc29c49dc",
+      "source": "1525b70bd94cbec5",
+      "glossary": {
+        "automation": "automatisation",
+        "entity": "entité",
+        "entity ID": "ID d'entité",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "template": "modèle",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "89a26c88fb35ec58",
+      "source": "8efb129ad2e0df26",
+      "glossary": {
+        "action": "action",
+        "integration": "intégration",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "db61e8f4cc339182",
+      "source": "00fb50b7f41b8752",
+      "glossary": {
+        "action": "action",
+        "area": "pièce",
+        "helper": "entrée",
+        "icon": "icône",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "template": "modèle",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie",
+        "known limitations": "limites connues",
+        "list": "liste"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "30579d1d123d8712",
+      "source": "582e3c6d947cddca",
+      "glossary": {
+        "action": "action",
+        "area": "pièce",
+        "automation": "automatisation",
+        "floor": "étage",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "template": "modèle",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "93bb5ee667192cf6",
+      "source": "63d82355d9e7d4cc",
+      "glossary": {
+        "automation": "automatisation",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "template": "modèle",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "f3498bc9888a75ae",
+      "source": "097d0ffcb508b484",
+      "glossary": {
+        "condition": "condition",
+        "integration": "intégration",
+        "issue": "problème",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "cc24c1838304ef91",
+      "source": "1e594acecf97bbe5",
+      "glossary": {
+        "Wait for a trigger": "Attendre un déclencheur",
+        "integration": "intégration",
+        "issue": "problème",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "trigger": "déclencheur",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "7c3c03450365068c",
+      "source": "3de48595e096da8e",
+      "glossary": {
+        "automation": "automatisation",
+        "condition": "condition",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "state": "état",
+        "template": "modèle",
+        "trigger": "déclencheur",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "1b272b3aa0a94c16",
+      "source": "67b31552830f566c",
+      "glossary": {
+        "automation": "automatisation",
+        "label": "étiquette",
+        "repair": "correction",
+        "script": "script",
+        "template": "modèle",
+        "trigger": "déclencheur",
+        "user": "utilisateur",
+        "how to fix it": "comment le régler",
+        "how Spook checks this": "comment Spook le vérifie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

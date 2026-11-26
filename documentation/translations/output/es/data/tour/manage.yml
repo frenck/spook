@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/manage.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 3
+title: Todo lo que Spook añade a tu Home Assistant
+description: Spook añade acciones, ayudantes y sensores en los sitios de Home Assistant que ya usas. Busca el fantasma y lo ves todo.
+
+hero:
+  headline: El resto de la caja de herramientas 🧰
+  title: Escribe 👻. Lo verás todo.
+  description: Spook añade {actions} acciones, tres ayudantes y un sensor para todo lo que hay en tu casa. Sin lista que memorizar. Busca el fantasma cuando añadas una acción o un ayudante, y te sale justo lo que trae Spook. Y funciona en todos los idiomas.
+  screenshot: actions-ghost-search
+  alt: El cuadro de diálogo Añadir acción de Home Assistant, con la búsqueda del emoji del fantasma, que lista acciones de Spook como Posponer, Subir la temperatura y Aumentar la posición.
+
+sections:
+  - headline: Tu casa, contada
+    title: ¿Cuántas automatizaciones eran?
+    description: Spook le da al propio Home Assistant un dispositivo, con un sensor para todo lo que hay en tu casa. Áreas, automatizaciones, dispositivos, entidades, integraciones, los 53. Ponlos en un panel de control, úsalos en una automatización, o simplemente mira cómo crecen los números.
+    screenshot: home-assistant-numbers
+    alt: Los sensores de diagnóstico del dispositivo Home Assistant de Spook, que cuentan áreas, automatizaciones, botones y más.
+    features:
+      - title: Un número para todo
+        description: Desde áreas y automatizaciones hasta integraciones personalizadas y zonas.
+        icon: i-mdi-counter
+      - title: Con historial
+        description: Estadísticas a largo plazo, como cualquier otro sensor. Mira cómo crece tu casa, o cómo encoge después de una buena limpieza.
+        icon: i-mdi-chart-line
+      - title: Listos para tu panel de control
+        description: Sensores normales, así que cualquier tarjeta y cualquier automatización puede usarlos.
+        icon: i-mdi-view-dashboard-outline
+
+  - headline: Ayudantes que Home Assistant no tiene
+    title: Invertido, corregido y cronometrado.
+    description: Un interruptor que funciona al revés, un sensor que marca un grado de más, una puerta de la que quieres saber que lleva cerrada toda la semana. Los ayudantes de Spook lo arreglan, y se crean en la interfaz como cualquier otro ayudante.
+    screenshot: helpers-ghost-search
+    alt: El cuadro de diálogo Crear ayudante de Home Assistant, con la búsqueda del emoji del fantasma, que muestra los ayudantes Calibración, Invertir y Tiempo en estado de Spook.
+    features:
+      - title: Invertir
+        description: Encendido pasa a apagado, abierto pasa a cerrado, y las acciones también se invierten. Para las persianas con el motor del otro lado.
+        icon: i-mdi-swap-horizontal
+      - title: Calibración
+        description: Corrige un sensor que mide mal, con un factor y un desplazamiento.
+        icon: i-mdi-tune-variant
+      - title: Tiempo en estado
+        description: Desde cuándo está cerrada la puerta. A diferencia de "último cambio", un reinicio no lo pone a cero.
+        icon: i-mdi-timer-sand
+
+more:
+  title: Explora la caja de herramientas
+  links:
+    - title: Todas las acciones
+      description: La lista completa, con un botón para probar cada una en tu propio Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Tu casa, gestionada
+      description: Áreas, plantas, etiquetas, dispositivos y entidades, desde una automatización.
+      icon: i-mdi-home-edit-outline
+      to: /core-extensions
+    - title: Ayudantes
+      description: Invertir, calibración y tiempo en estado, explicados.
+      icon: i-mdi-tools
+      to: /helpers
+    - title: Las integraciones
+      description: Lo que Spook añade a cada una de las integraciones que usas.
+      icon: i-mdi-puzzle-outline
+      to: /enhanced-integrations

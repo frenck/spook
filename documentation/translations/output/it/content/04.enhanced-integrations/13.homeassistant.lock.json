@@ -1,0 +1,276 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/13.homeassistant.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/13.homeassistant.md",
+  "language": "it",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "5782a7826bc0074b",
+      "source": "369a2a06e6dcb106",
+      "glossary": {
+        "area": "area",
+        "blueprint": "progetto",
+        "floor": "piano",
+        "helper": "aiutante",
+        "label": "etichetta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "2b9427076398b8c7",
+      "source": "64b218002cafc0b3",
+      "glossary": {
+        "area": "area",
+        "device": "dispositivo",
+        "floor": "piano",
+        "helper": "aiutante",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "devices-entities",
+      "hash": "9b0f91ed3bb8a852",
+      "source": "1b0bf38ba0d58ad8",
+      "glossary": {
+        "area": "area",
+        "device": "dispositivo",
+        "entity": "entità",
+        "integration": "integrazione",
+        "restart": "riavviare",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "3da19caad49b8483",
+      "source": "3eba30a132630fc9",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "device": "dispositivo",
+        "entity": "entità",
+        "floor": "piano",
+        "label": "etichetta",
+        "user": "utente",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "fde43698bede58e1",
+      "source": "344a0f6d513c0ad1",
+      "glossary": {
+        "area": "area",
+        "blueprint": "progetto",
+        "dashboard": "plancia",
+        "floor": "piano",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "repairs dashboard": "pagina delle riparazioni"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-area-sensors",
+      "hash": "23696d3fd656f27b",
+      "source": "19ba3f07eebf293c",
+      "glossary": {
+        "Clear the setting": "Svuota l'impostazione",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Keep it, stop telling me": "Tienilo e non dirmelo più",
+        "area": "area",
+        "entity": "entità",
+        "entity ID": "ID entità",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-customized-entities",
+      "hash": "6cba57baa4c38078",
+      "source": "08b2e5e9ffb14032",
+      "glossary": {
+        "attribute": "attributo",
+        "entity": "entità",
+        "icon": "icona",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "restart": "riavviare",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-helper-sources",
+      "hash": "592a2c4498cb2596",
+      "source": "11dc74235e07f9be",
+      "glossary": {
+        "Remove this helper": "Rimuovi questo aiutante",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Keep it, stop telling me": "Tienilo e non dirmelo più",
+        "entity": "entità",
+        "helper": "aiutante",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-min-max-helper-members",
+      "hash": "dd783adaf2fb485d",
+      "source": "11c49e8fdadc6998",
+      "glossary": {
+        "Remove these members": "Rimuovi questi membri",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Keep them, stop telling me": "Tienili e non dirmelo più",
+        "helper": "aiutante",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "number": "numero"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "019abc671f129399",
+      "source": "4526c7a38e9a9912",
+      "glossary": {
+        "area": "area",
+        "entity": "entità",
+        "floor": "piano",
+        "helper": "aiutante",
+        "icon": "icona",
+        "integration": "integrazione",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "known limitations": "limiti noti",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-areas",
+      "hash": "6403e3f8feeac064",
+      "source": "6447e37649959ea8",
+      "glossary": {
+        "Remove this empty area": "Rimuovi questa area vuota",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Keep it, stop telling me": "Tienilo e non dirmelo più",
+        "action": "azione",
+        "area": "area",
+        "automation": "automazione",
+        "device": "dispositivo",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "script": "script",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-floors",
+      "hash": "c29786b776ef6ee8",
+      "source": "1dc8dffbc38858a2",
+      "glossary": {
+        "Remove this empty floor": "Rimuovi questo piano vuoto",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Keep it, stop telling me": "Tienilo e non dirmelo più",
+        "area": "area",
+        "automation": "automazione",
+        "floor": "piano",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "script": "script",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-labels",
+      "hash": "3467d2f6f2f83e2c",
+      "source": "b56369896b90e4ff",
+      "glossary": {
+        "Remove this unused label": "Rimuovi questa etichetta non usata",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Keep it, stop telling me": "Tienilo e non dirmelo più",
+        "area": "area",
+        "automation": "automazione",
+        "device": "dispositivo",
+        "entity": "entità",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "script": "script",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-blueprints",
+      "hash": "7aad0784cc327613",
+      "source": "0c9d0302630f7b97",
+      "glossary": {
+        "Remove this unused blueprint": "Rimuovi questo progetto non usato",
+        "Let me fix it myself": "Lo sistemo da solo",
+        "Keep it, stop telling me": "Tienilo e non dirmelo più",
+        "automation": "automazione",
+        "blueprint": "progetto",
+        "label": "etichetta",
+        "repair": "riparazione",
+        "script": "script",
+        "how to fix it": "come risolverlo",
+        "how spook checks this": "come lo controlla Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "5d7adb0fea5496ba",
+      "source": "1b7d2e38b0428375",
+      "glossary": {
+        "area": "area",
+        "floor": "piano",
+        "helper": "aiutante",
+        "label": "etichetta",
+        "use cases": "casi d'uso"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

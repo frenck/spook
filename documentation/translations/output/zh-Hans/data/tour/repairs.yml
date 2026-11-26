@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/repairs.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 1
+title: Spook 会找出悄悄坏掉的东西
+description: Spook 检查你的 Home Assistant，找出那些不声不响就停止工作的东西，并在修复页面上报告。很多都附带修复方法。
+
+hero:
+  headline: 找出幽灵 👻
+  title: 它会找出悄悄坏掉的东西。
+  description: 给灯改个名、换个传感器、删掉一个集成，某个地方的自动化就一声不吭地停止工作了。Spook 会注意到，并在修复页面上告诉你。能发现 {repairs} 种问题，而且它一直在找。
+  screenshot: repairs-list
+  alt: Home Assistant 的修复页面，上面有 Spook 的七条修复，比如一个空区域、一个未使用的标签，以及一个使用了已不存在实体的自动化。
+
+sections:
+  - headline: 具体是什么，在哪里
+    title: 不用在 YAML 里翻找。
+    description: 每条修复都会写明出问题的地方，以及哪里不对。选择那个名称，你就进入了编辑器，正好停在需要修的地方。
+    screenshot: repair-unknown-entities
+    alt: Spook 的一条修复，写明了“电影之夜”自动化以及它用到的三个已不存在的实体，还附上了原本可能指的是什么。
+    features:
+      - title: 直指问题所在
+        description: 自动化、脚本或仪表盘，附带直达它的链接。
+        icon: i-mdi-target
+      - title: 猜出你本来的意思
+        description: 给灯改了名？当 Spook 几乎可以确定时，它会建议新名称。
+        icon: i-mdi-lightbulb-question-outline
+      - title: 自己消失
+        description: 修好并保存。Spook 会再检查一遍，然后清除这条修复。不用你去勾选什么。
+        icon: i-mdi-check-circle-outline
+
+  - headline: 替你修好
+    title: 点头同意，它就没了。
+    description: 很多修复都附带修复方法。一个空区域、一个未使用的标签、一个还在追踪旧手机的人员。Spook 会主动提出清理，而且会先问你。
+    screenshot: repair-fix-empty-area
+    alt: Spook 针对空的“阁楼”区域的一条修复，提供三个选择：删除它、让你自己修，或者保留它并不再询问。
+    features:
+      - title: 你来决定
+        description: 删除、自己修，或者保留。Spook 从不在没问过你的情况下清理。
+        icon: i-mdi-hand-back-right-outline
+      - title: 保留它，它就不再出声
+        description: 本来就是这样？说一次，Spook 就不再指出来了。
+        icon: i-mdi-bell-off-outline
+      - title: 动手前再检查一遍
+        description: 如果自 Spook 检查后有东西变了，它就不去动它。
+        icon: i-mdi-shield-check-outline
+
+more:
+  title: Spook 检查哪里
+  links:
+    - title: 自动化和脚本
+      description: 已经不存在的实体、设备、区域、动作和触发条件，以及永远不可能通过的模板。
+      icon: i-mdi-robot-outline
+      to: /automation#repairs
+    - title: 仪表盘
+      description: 指向已不存在的实体、动作或视图的卡片。
+      icon: i-mdi-view-dashboard-outline
+      to: /lovelace#repairs
+    - title: 区域、楼层和标签
+      description: 空的、没用到的，以及不见了的传感器。
+      icon: i-mdi-floor-plan
+      to: /homeassistant#repairs
+    - title: 你的第一条修复
+      description: 一步一步，从修复页面到一个正常工作的自动化。
+      icon: i-mdi-wrench-outline
+      to: /fix-your-first-repair

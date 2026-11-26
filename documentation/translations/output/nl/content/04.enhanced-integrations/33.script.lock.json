@@ -1,0 +1,293 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/33.script.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/33.script.md",
+  "language": "nl",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "f14c8ee27d18574a",
+      "source": "a186f5fc9d567f52",
+      "glossary": {
+        "action": "actie",
+        "device": "apparaat",
+        "entity": "entiteit",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "c30b18f64296dfe8",
+      "source": "c95dc7873579e146",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "dashboard": "dashboard",
+        "issue": "probleem",
+        "repair": "reparatie",
+        "script": "script",
+        "trigger": "trigger"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "cc3adfe4206d4d88",
+      "source": "238d7a5b8cb4f6d9",
+      "glossary": {
+        "area": "ruimte",
+        "dashboard": "dashboard",
+        "device": "apparaat",
+        "entity": "entiteit",
+        "floor": "verdieping",
+        "label": "label",
+        "repair": "reparatie",
+        "repairs dashboard": "reparatiedashboard",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "4cb7be57d7f22295",
+      "source": "f31cfdc884dc9291",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "automation": "automatisering",
+        "device": "apparaat",
+        "entity": "entiteit",
+        "issue": "probleem",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "4b4f77eea2a21937",
+      "source": "45d90bf7d5abd035",
+      "glossary": {
+        "attribute": "attribuut",
+        "condition": "voorwaarde",
+        "entity": "entiteit",
+        "integration": "integratie",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "state": "status",
+        "template": "template",
+        "trigger": "trigger"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "0b59121c5c012f58",
+      "source": "1dbdb11142d34aec",
+      "glossary": {
+        "action": "actie",
+        "attribute": "attribuut",
+        "condition": "voorwaarde",
+        "cover": "bedekking",
+        "device": "apparaat",
+        "entity": "entiteit",
+        "helper": "helper",
+        "integration": "integratie",
+        "issue": "probleem",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "state": "status",
+        "template": "template",
+        "trigger": "trigger"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "626fb40bbf0d8b4d",
+      "source": "5c310fb0f64631b3",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "condition": "voorwaarde",
+        "device": "apparaat",
+        "integration": "integratie",
+        "issue": "probleem",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "574e610939ffb265",
+      "source": "06fc19893331578f",
+      "glossary": {
+        "action": "actie",
+        "integration": "integratie",
+        "integration entry": "integratie-instantie",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "state": "status",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "ef67f370309aa6cc",
+      "source": "1525b70bd94cbec5",
+      "glossary": {
+        "automation": "automatisering",
+        "entity": "entiteit",
+        "entity ID": "entiteit-ID",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "f0b38255b08af448",
+      "source": "8efb129ad2e0df26",
+      "glossary": {
+        "action": "actie",
+        "integration": "integratie",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "657c8736f4396ff4",
+      "source": "00fb50b7f41b8752",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "helper": "helper",
+        "icon": "icoon",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "496bfba3a5cbc03d",
+      "source": "582e3c6d947cddca",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "b0df4036f86c2fbb",
+      "source": "63d82355d9e7d4cc",
+      "glossary": {
+        "automation": "automatisering",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "f3c357275248f935",
+      "source": "097d0ffcb508b484",
+      "glossary": {
+        "condition": "voorwaarde",
+        "integration": "integratie",
+        "issue": "probleem",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "c6270f5f018dbb28",
+      "source": "1e594acecf97bbe5",
+      "glossary": {
+        "Wait for a trigger": "Wachten op een trigger",
+        "integration": "integratie",
+        "issue": "probleem",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "trigger": "trigger"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "21661e0efaa98a5e",
+      "source": "3de48595e096da8e",
+      "glossary": {
+        "automation": "automatisering",
+        "condition": "voorwaarde",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "state": "status",
+        "template": "template",
+        "trigger": "trigger"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "797dd4a54613512c",
+      "source": "67b31552830f566c",
+      "glossary": {
+        "automation": "automatisering",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script",
+        "template": "template",
+        "trigger": "trigger",
+        "user": "gebruiker"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

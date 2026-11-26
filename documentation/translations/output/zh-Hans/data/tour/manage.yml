@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/manage.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 3
+title: Spook 为你的 Home Assistant 添加的一切
+description: Spook 在你已经在用的 Home Assistant 各处添加动作、辅助元素和传感器。搜索那个幽灵，就能看到全部。
+
+hero:
+  headline: 工具箱的其余部分 🧰
+  title: 输入 👻。全部都能看到。
+  description: Spook 添加了 {actions} 个动作、三个辅助元素，以及为家里每样东西准备的传感器。不用背清单。添加动作或辅助元素时搜索那个幽灵，就能看到 Spook 带来的全部东西。而且在每种语言里都管用。
+  screenshot: actions-ghost-search
+  alt: Home Assistant 的“添加动作”对话框，搜索了幽灵表情符号，列出了 Spook 的动作，比如“打盹”、“提高温度”和“增加位置”。
+
+sections:
+  - headline: 你的家，数一数
+    title: 到底有多少个自动化来着？
+    description: Spook 给 Home Assistant 本身一个设备，带有为家里每样东西准备的传感器。区域、自动化、设备、实体、集成，一共 53 个。放到仪表盘上，用在自动化里，或者就看着数字往上涨。
+    screenshot: home-assistant-numbers
+    alt: Spook 的 Home Assistant 设备上的诊断传感器，统计区域、自动化、按钮等等。
+    features:
+      - title: 每样东西一个数字
+        description: 从区域和自动化，到自定义集成和地点。
+        icon: i-mdi-counter
+      - title: 带历史记录
+        description: 和其他传感器一样有长期统计。看着你的家变大，或者在一次大扫除之后变小。
+        icon: i-mdi-chart-line
+      - title: 可以直接放上仪表盘
+        description: 普通的传感器，所以每张卡片、每个自动化都能用。
+        icon: i-mdi-view-dashboard-outline
+
+  - headline: Home Assistant 没有的辅助元素
+    title: 反转、校准、计时。
+    description: 一个反着工作的开关，一个读数高了一度的传感器，一扇你想知道是不是一整周都关着的门。Spook 的辅助元素能解决这些，和其他辅助元素一样在界面里创建。
+    screenshot: helpers-ghost-search
+    alt: Home Assistant 的“创建辅助元素”对话框，搜索了幽灵表情符号，显示了 Spook 的 Calibration、Inverse 和 Time in state 辅助元素。
+    features:
+      - title: Inverse（反转）
+        description: 开变成关，打开变成关闭，动作也会反过来。适合电机装在另一侧的卷帘。
+        icon: i-mdi-swap-horizontal
+      - title: Calibration（校准）
+        description: 用一个系数和一个偏移量，校正读数不准的传感器。
+        icon: i-mdi-tune-variant
+      - title: Time in state（状态持续时间）
+        description: 门从什么时候起关着的。和“上次变化”不同，重启不会让它从头算起。
+        icon: i-mdi-timer-sand
+
+more:
+  title: 深入工具箱
+  links:
+    - title: 所有动作
+      description: 完整列表，每个都有按钮，可以在你自己的 Home Assistant 里试一试。
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: 管理你的家
+      description: 在自动化里管理区域、楼层、标签、设备和实体。
+      icon: i-mdi-home-edit-outline
+      to: /core-extensions
+    - title: 辅助元素
+      description: Inverse、Calibration 和 Time in state，逐一讲解。
+      icon: i-mdi-tools
+      to: /helpers
+    - title: 集成
+      description: Spook 为你用的每个集成添加了什么。
+      icon: i-mdi-puzzle-outline
+      to: /enhanced-integrations

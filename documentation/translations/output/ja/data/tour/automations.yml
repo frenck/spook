@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/automations.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 2
+title: 回り道のいらないオートメーション
+description: SpookはHome Assistantのオートメーションエディタに、トリガー、条件、アクションを追加します。これまでヘルパーを作ってしのいできたことのために。
+
+hero:
+  headline: トリガー、条件、アクション 🧰
+  title: 回り道のいらないオートメーション。
+  description: Spookは、これまでヘルパーを作ってしのいできたことのために、{triggers}個のトリガー、{conditions}個の条件、{actions}個のアクションを追加します。どれもオートメーションエディタの中、Home Assistantに最初からあるもののすぐ隣にあります。
+  screenshot: automation-editor
+  alt: Home Assistantのエディタで開いたオートメーション。Spookのcronスケジュールトリガーとクールダウン条件に、普通の照明のアクションを組み合わせています。
+
+sections:
+  - headline: 「いつ」を思ったとおりに
+    title: 毎週平日の6時半に。
+    description: Home Assistantの時刻トリガーは、時刻とパターンを扱います。Spookのcronスケジュールなら「平日の6時半」や「毎月最後の金曜日」を1行で書け、エディタにその説明がそのまま表示されます。
+    screenshot: automation-cron
+    alt: オートメーションエディタで開いたSpookのcronスケジュールトリガー。説明と、スケジュール30 6 * * 1-5が表示されています。
+    features:
+      - title: Home Assistantが名前を付けられない瞬間のために
+        description: 現れたばかりのデバイス、オフにされたオートメーション、黙り込んだエンティティ。
+        icon: i-mdi-timer-cog-outline
+      - title: 記憶を持つ条件
+        description: 前回の実行からのクールダウンや、オートメーションではなく人が始めたときだけ、など。
+        icon: i-mdi-account-check-outline
+      - title: 新しく覚えることはありません
+        description: ほかと同じように選び、入力して、保存します。エディタでも、スクリプトでも、YAMLでも。
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: いつも探していたアクション
+    title: オフにせず、スヌーズする。
+    description: オートメーションを1時間オフにすると、再起動をはさんでも、自分で戻ってきます。オートメーションのスヌーズから、オートメーションでのエリア、ラベル、ヘルパーの作成まで、{actions}個あるアクションのひとつです。
+    screenshot: action-snooze
+    alt: オートメーションエディタの「アクションを追加」ダイアログ。スヌーズで検索し、Spookのスヌーズのアクションが囲まれています。
+    features:
+      - title: 検索して、選んで、完了
+        description: アクションを追加するとSpookのアクションが表示され、どれにも👻の印が付いています。
+        icon: i-mdi-magnify
+      - title: 再起動しても続く
+        description: スヌーズはスヌーズです。途中でHome Assistantが再起動しても、早く目を覚ますことはありません。
+        icon: i-mdi-restart
+      - title: オートメーションから家を管理
+        description: エリア、ラベル、ゾーン、ヘルパーを作成・削除したり、デバイスを無効にしたり。
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: 道具箱のすべて
+  links:
+    - title: すべてのトリガー
+      description: Spookが追加するすべてのトリガーを、用途と例とともに。
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: すべての条件
+      description: クールダウンからウォッチドッグまで、条件の一覧。
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: すべてのアクション
+      description: 全一覧。それぞれ、自分のHome Assistantで試せるボタン付きです。
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: スヌーズを順番に
+      description: オートメーションでの使い方を、例とともに。
+      icon: i-mdi-sleep
+      to: /automation#snooze

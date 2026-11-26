@@ -1,0 +1,1682 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/06.reference/01.actions.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/06.reference/01.actions.md",
+  "language": "it",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "99bd70e94762ae58",
+      "source": "7e78315b3a6fc094",
+      "glossary": {
+        "action": "azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "6fb314f5a90135bd",
+      "source": "14debb4969877b50",
+      "glossary": {
+        "Add action": "Aggiungi azione",
+        "action": "azione",
+        "automation": "automazione",
+        "script": "script",
+        "how to use it": "come si usa",
+        "list": "lista"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-create-an-area",
+      "hash": "0dfca37533fdf990",
+      "source": "45363e20afdcda24",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-update-an-area",
+      "hash": "19f3b97a0693f711",
+      "source": "147235e48b01a768",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-delete-an-area",
+      "hash": "f515d3e5edfb7710",
+      "source": "a29512aa4300b464",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-alias-to-an-area",
+      "hash": "249eb631020b8174",
+      "source": "e4d1747d2a017522",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-alias-from-an-area",
+      "hash": "33de927ea10d48ca",
+      "source": "6ca2ac5592c963f3",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-set-aliases-for-an-area",
+      "hash": "6f1b703ca8c3e03f",
+      "source": "7e9d888288400c68",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-a-device-to-an-area",
+      "hash": "db6996f573853c7c",
+      "source": "4c202c096c7d2410",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "device": "dispositivo",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-a-device-from-an-area",
+      "hash": "4277a0e670b8511e",
+      "source": "736ac6fbdf98c25e",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "device": "dispositivo",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-entity-to-an-area",
+      "hash": "5510ed1c7a3e769b",
+      "source": "7fee1b296bed1e7b",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-entity-from-an-area",
+      "hash": "266397b70ccbe573",
+      "source": "43187a122242003f",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-snooze",
+      "hash": "ec3f1288d0c8c7d5",
+      "source": "38f32d05691898ef",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "restart": "riavviare",
+        "snooze": "rimandare",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-turn-on-for",
+      "hash": "893d3b1f1e0eae4f",
+      "source": "319c5f79a85e0ea9",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "restart": "riavviare",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "blueprint-import-blueprint",
+      "hash": "909fd02ed4b85e87",
+      "source": "10965e29fe0627be",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "blueprint": "progetto",
+        "script": "script",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-delete-event",
+      "hash": "07170376f694d865",
+      "source": "c41a3ca47547624e",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-update-event",
+      "hash": "4bec650be61c49ef",
+      "source": "059e83d8b27feec9",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-create-a-category",
+      "hash": "40f14fe921fa0a36",
+      "source": "58639afb175f4b59",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "helper": "aiutante",
+        "scene": "scena",
+        "script": "script",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-update-a-category",
+      "hash": "e34520bc9b785441",
+      "source": "c7ea912d3dd1fbcc",
+      "glossary": {
+        "action": "azione",
+        "icon": "icona",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-delete-a-category",
+      "hash": "1a20493dd96f7a1a",
+      "source": "fc34b1c6fbfbf1fb",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-add-a-category-to-an-entity",
+      "hash": "76caa7c8d74ba2f1",
+      "source": "528a705c50a89d40",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "entity": "entità",
+        "helper": "aiutante",
+        "scene": "scena",
+        "script": "script",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-remove-a-category-from-an-entity",
+      "hash": "bf226a7590c39f7f",
+      "source": "1f324254a8141e73",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "entity": "entità",
+        "helper": "aiutante",
+        "scene": "scena",
+        "script": "script",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-increase-temperature",
+      "hash": "50c9652a0a781042",
+      "source": "3f2c0f5b770cc4f7",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-decrease-temperature",
+      "hash": "057349beca436d09",
+      "source": "206847c25376a58a",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-create",
+      "hash": "3e57f3b05ea44ca3",
+      "source": "f0df5c3077f1c9cc",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-delete",
+      "hash": "826e6c4f154b86af",
+      "source": "11b3334e6161eed4",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-increase-position",
+      "hash": "d00f644b7254e4e5",
+      "source": "54587b992c95b8ad",
+      "glossary": {
+        "action": "azione",
+        "cover": "copertura",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-decrease-position",
+      "hash": "86e5dd7cf40d456e",
+      "source": "346b63c59f6b3f1a",
+      "glossary": {
+        "action": "azione",
+        "cover": "copertura",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-disable",
+      "hash": "63c7154be006df8d",
+      "source": "2d65b54df3adf0cc",
+      "glossary": {
+        "action": "azione",
+        "device": "dispositivo",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-enable",
+      "hash": "a9cc8971fcae35a5",
+      "source": "08a9a3c6d00c5e94",
+      "glossary": {
+        "action": "azione",
+        "device": "dispositivo",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-update",
+      "hash": "e6e801daf5e8fb8f",
+      "source": "5a82aae7771e5b72",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "device": "dispositivo",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "delete-all-orphaned-entities",
+      "hash": "e4be6acc52db1ce2",
+      "source": "96a90ba8b0440c68",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "integration": "integrazione",
+        "restart": "riavviare",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-disable",
+      "hash": "f5613a49841659f8",
+      "source": "7bf83fbd3c54489f",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-enable",
+      "hash": "d03ca249d6e827a4",
+      "source": "e1587c9cf927d93f",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-hide",
+      "hash": "21d1462185325361",
+      "source": "2515fc8b87300941",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-unhide",
+      "hash": "2753dd69f45e8619",
+      "source": "1ba4109a1161e3b0",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-rename",
+      "hash": "c36e1b983797bfe8",
+      "source": "eb36dfbc05e48074",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-icon",
+      "hash": "b80722fe7a7959ee",
+      "source": "bf4e306920ce0d7d",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "icon": "icona",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-add-an-alias",
+      "hash": "25c2c7697481d6cd",
+      "source": "ae66375ea7e68988",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-remove-an-alias",
+      "hash": "6c0f7369f31ab026",
+      "source": "0e1a71b930edf934",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-aliases",
+      "hash": "795b5dd5b686f969",
+      "source": "4377d0257d0eedeb",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-expose-to-assistants",
+      "hash": "3d3a0cd777fb1d4c",
+      "source": "58cd034d696a80cc",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-stop-exposing-to-assistants",
+      "hash": "f8c72aa21b1bc18e",
+      "source": "c1aa37b13a740217",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-update-id",
+      "hash": "d0b3a86aabdf5a9d",
+      "source": "87b75dd839af5a4f",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "list-all-orphaned-database-entities",
+      "hash": "8321203792155dde",
+      "source": "e8071212452fedd4",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-create-a-floor",
+      "hash": "a9abf4f9f4b893e0",
+      "source": "f013fde69736ec00",
+      "glossary": {
+        "action": "azione",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-update-a-floor",
+      "hash": "b760f070fa84fdb8",
+      "source": "27fc103b228da07d",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-delete-a-floor",
+      "hash": "7c66117e9372171c",
+      "source": "187892c90bdedf01",
+      "glossary": {
+        "action": "azione",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-alias-to-a-floor",
+      "hash": "31270ebaa7f0d594",
+      "source": "286fdd62f1fc246c",
+      "glossary": {
+        "action": "azione",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-alias-from-a-floor",
+      "hash": "012fa0eaf57eaa2b",
+      "source": "38bbc968049f2de8",
+      "glossary": {
+        "action": "azione",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-set-aliases-for-a-floor",
+      "hash": "867e09487899f512",
+      "source": "a817438fb5d18a0c",
+      "glossary": {
+        "action": "azione",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-area-to-a-floor",
+      "hash": "c0f3d3dc3519c8d7",
+      "source": "fab6e98bd700aa4a",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-area-from-a-floor",
+      "hash": "37253316cf357107",
+      "source": "b2a6dab5b0feab3f",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "floor": "piano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-add-members",
+      "hash": "b71dafa4642278f9",
+      "source": "f71df2953fa7d168",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-remove-members",
+      "hash": "559629461bcbbe38",
+      "source": "4575af4189040dad",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-set-members",
+      "hash": "6a346f186b457bf5",
+      "source": "03023f3aab11b3d6",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "restart",
+      "hash": "7dda9a66dee660e7",
+      "source": "d3d56d244deb0ce0",
+      "glossary": {
+        "action": "azione",
+        "restart": "riavviare",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-increase-humidity",
+      "hash": "1ff8194c24f22838",
+      "source": "ee8e1c579fbfe7c1",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-decrease-humidity",
+      "hash": "205c855a1b72cf13",
+      "source": "cacd68ec074639ff",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-create",
+      "hash": "b01b7da93bf5eae1",
+      "source": "f7812cf040570ee8",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "boolean": "booleano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-delete",
+      "hash": "f63fd7d0036e929d",
+      "source": "b6d6d5f9b92faaf6",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "boolean": "booleano",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-create",
+      "hash": "2331565c02565502",
+      "source": "f9932c2286f44825",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-delete",
+      "hash": "c6b5afcae2ca7979",
+      "source": "0bd2ed2cdad955f7",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-create",
+      "hash": "fc87d03a95832ca2",
+      "source": "f64bad322606e1ac",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "datetime": "data e ora",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-delete",
+      "hash": "2d49a72cb68b67b1",
+      "source": "0adaf4e950b99697",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "datetime": "data e ora",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-create",
+      "hash": "94400e9b04e93963",
+      "source": "50d14866a6f13b85",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-delete",
+      "hash": "1ed0516fcd9bb2dd",
+      "source": "566263b8c8a90a6e",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-decrease-value",
+      "hash": "07366168163139c8",
+      "source": "134e7331ee4c4454",
+      "glossary": {
+        "action": "azione",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-increase-value",
+      "hash": "cdfeaed984ab9c9d",
+      "source": "cdc3bef29610730e",
+      "glossary": {
+        "action": "azione",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-maximum-value",
+      "hash": "372c4e54797d3439",
+      "source": "14738757955cd2a1",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-minimum-value",
+      "hash": "441f1a10bdc36c13",
+      "source": "881051a428403506",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-range",
+      "hash": "99b05ad1230a8a39",
+      "source": "c690b509aa3834b4",
+      "glossary": {
+        "action": "azione",
+        "made in the UI": "creato nell'interfaccia",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-create",
+      "hash": "3a3aa489d472b05f",
+      "source": "70df3e925b7f666d",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-delete",
+      "hash": "7d2bdfe7cdea2801",
+      "source": "721ff7c60fccfa3f",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-select-random-option",
+      "hash": "a86255bbf35eceb4",
+      "source": "589bebfabf24bbaa",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "optional": "facoltativo",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-reverse-options",
+      "hash": "583522d5e53f4968",
+      "source": "9b946636eb745c08",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-shuffle-options",
+      "hash": "9ff22cf0b6411e7c",
+      "source": "eb9c7dcdee515ca6",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-sort-options",
+      "hash": "e077e509ccac9098",
+      "source": "e3d8bbe3f7fd690b",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-create",
+      "hash": "7d69fce93efe5c2c",
+      "source": "f65dd272abc769ca",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-delete",
+      "hash": "074d0f34a7964671",
+      "source": "d336d44982db6ad3",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "ignore-all-discovered-devices-services",
+      "hash": "7efea0dd5906344e",
+      "source": "1e0686ce57c0ff90",
+      "glossary": {
+        "action": "azione",
+        "dashboard": "plancia",
+        "device": "dispositivo",
+        "integration": "integrazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable",
+      "hash": "0923ead1f1725811",
+      "source": "8c477108ebd6470a",
+      "glossary": {
+        "action": "azione",
+        "dashboard": "plancia",
+        "integration": "integrazione",
+        "integration entry": "voce dell'integrazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable",
+      "hash": "c100d580a3aac80a",
+      "source": "00df5770bca6d9a9",
+      "glossary": {
+        "action": "azione",
+        "integration": "integrazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable-polling-for-updates",
+      "hash": "9a9710829cecaa5c",
+      "source": "8fe544cee98d435e",
+      "glossary": {
+        "action": "azione",
+        "dashboard": "plancia",
+        "integration": "integrazione",
+        "integration entry": "voce dell'integrazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable-polling-for-updates",
+      "hash": "b1eb7758a2864724",
+      "source": "89af14a7d955067a",
+      "glossary": {
+        "action": "azione",
+        "dashboard": "plancia",
+        "integration": "integrazione",
+        "integration entry": "voce dell'integrazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-create-a-label",
+      "hash": "e6add3ee73869236",
+      "source": "aae2e31ec3ebd56a",
+      "glossary": {
+        "action": "azione",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-update-a-label",
+      "hash": "5f9ff914dd93e6f2",
+      "source": "9aba8fe880ef45a2",
+      "glossary": {
+        "action": "azione",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-delete-a-label",
+      "hash": "4510b3bcc35dc83f",
+      "source": "b5244dbfa714aa43",
+      "glossary": {
+        "action": "azione",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-area",
+      "hash": "b8aa773265af2ade",
+      "source": "aa6400d84df2e5e0",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-area",
+      "hash": "b86c84b102fcdf8f",
+      "source": "0c105083bf7450a9",
+      "glossary": {
+        "action": "azione",
+        "area": "area",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-a-device",
+      "hash": "8930e3e3b626837f",
+      "source": "e0668f0d78cb6cf9",
+      "glossary": {
+        "action": "azione",
+        "device": "dispositivo",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-a-device",
+      "hash": "eff7f9ccf0d8ace4",
+      "source": "6e056912c9a3f9b6",
+      "glossary": {
+        "action": "azione",
+        "device": "dispositivo",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-entity",
+      "hash": "8cac4731a5aed71e",
+      "source": "8595f13ce982d316",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-entity",
+      "hash": "0022e834226b3cca",
+      "source": "257c2b2b46c88802",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "label": "etichetta",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-brightness",
+      "hash": "7688230661b4e995",
+      "source": "68a205bacaf6b2fc",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-increase-brightness",
+      "hash": "b0ccac8af1053e94",
+      "source": "e3f48b829279af10",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-decrease-brightness",
+      "hash": "d4ee1ce0efa92047",
+      "source": "8cd4775f20b68333",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color",
+      "hash": "4263492e7254369a",
+      "source": "13830bd6bdd89cb9",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color-temperature",
+      "hash": "805629fbdb56853d",
+      "source": "e7df1233759a686b",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-effect",
+      "hash": "52510b6e400eae76",
+      "source": "a389ea5f3ddbcd1d",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-increase-volume",
+      "hash": "fc47e86e2d552245",
+      "source": "e3877319b2187f0a",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-decrease-volume",
+      "hash": "969509f8cc987919",
+      "source": "fd5fbe306c81d56c",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-decrease-value",
+      "hash": "1b372ce725334e1f",
+      "source": "35485b249f9d26f2",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-increase-value",
+      "hash": "cb5f1065858f47b9",
+      "source": "5403c49c15a0239a",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-maximum-value",
+      "hash": "d76fc7993be7142e",
+      "source": "4ef6d2bfca521e08",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-minimum-value",
+      "hash": "8440662554f7ddb1",
+      "source": "5455cf7bebca98c3",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "number": "numero",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-add-a-device-tracker",
+      "hash": "511254b13fa15ce0",
+      "source": "49e6c182192889dc",
+      "glossary": {
+        "action": "azione",
+        "device": "dispositivo",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-remove-a-device-tracker",
+      "hash": "28b660ca63ae71ed",
+      "source": "c6f9b77d9f63b3b9",
+      "glossary": {
+        "action": "azione",
+        "device": "dispositivo",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "recorder-import-statistics",
+      "hash": "6685c2b9c31a95e2",
+      "source": "24ea765fabc46c1d",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-create-issue",
+      "hash": "e23fe46f555c7f1a",
+      "source": "744c786a00750dc1",
+      "glossary": {
+        "action": "azione",
+        "issue": "problema",
+        "repair": "riparazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-ignore-all-issues",
+      "hash": "9126bdf7bb45c952",
+      "source": "c5e262e8084c1510",
+      "glossary": {
+        "action": "azione",
+        "issue": "problema",
+        "repair": "riparazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-list-issues",
+      "hash": "217a6cf6c133b7f9",
+      "source": "4827f6642473f134",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "dashboard": "plancia",
+        "issue": "problema",
+        "repair": "riparazione",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-remove-issue",
+      "hash": "7aeed91a6b60624e",
+      "source": "15ddeedd3336231e",
+      "glossary": {
+        "action": "azione",
+        "issue": "problema",
+        "repair": "riparazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-unignore-all-issues",
+      "hash": "c95a89c359336fc1",
+      "source": "4afe7012cfcdf14e",
+      "glossary": {
+        "action": "azione",
+        "issue": "problema",
+        "repair": "riparazione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-create",
+      "hash": "d3000a91b5ec55f2",
+      "source": "93397dde51f95061",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-delete",
+      "hash": "4c3d056ef5e34469",
+      "source": "cea37985b6a22849",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-set-the-time-blocks-of-a-day",
+      "hash": "b41aed5fdebd10c3",
+      "source": "6a8316128da4acd2",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "select-select-random-option",
+      "hash": "899668b307fc1d64",
+      "source": "b6d353c408aa135a",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "optional": "facoltativo",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "sensor-set-display-precision",
+      "hash": "b200afcbcc0f4dfe",
+      "source": "d628b43e7535cb1a",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "wait-for-a-condition",
+      "hash": "9e4ecd3dbfb2f374",
+      "source": "e708f91ce886296e",
+      "glossary": {
+        "action": "azione",
+        "condition": "condizione",
+        "template": "modello",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "boo",
+      "hash": "79b4c68affc9902e",
+      "source": "f92ff152411b1478",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "script": "script",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "random-fail",
+      "hash": "5dfbd33d157e2d18",
+      "source": "14fbea313c1bb34a",
+      "glossary": {
+        "action": "azione",
+        "automation": "automazione",
+        "script": "script",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-create",
+      "hash": "9235f94785739142",
+      "source": "00844ea89714d0d8",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-delete",
+      "hash": "5fbd5eb3a07f6620",
+      "source": "4ceb5f9060116c94",
+      "glossary": {
+        "action": "azione",
+        "helper": "aiutante",
+        "made in the UI": "creato nell'interfaccia",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-set-duration",
+      "hash": "cef9c261ecb3ea85",
+      "source": "955c1da4b85959ff",
+      "glossary": {
+        "action": "azione",
+        "entity": "entità",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "to-do-list-move-item",
+      "hash": "47e55ed79e610af7",
+      "source": "bbb15cc31bde37a2",
+      "glossary": {
+        "action": "azione",
+        "list": "lista",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-disable",
+      "hash": "f07515cf2197dbdc",
+      "source": "314b1eedb14f3eea",
+      "glossary": {
+        "action": "azione",
+        "user": "utente",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-enable",
+      "hash": "0555e97ac1e35fc4",
+      "source": "2fb8ac151a26c5f9",
+      "glossary": {
+        "action": "azione",
+        "user": "utente",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-increase-position",
+      "hash": "071db617b10e7a63",
+      "source": "f2f4e45d5feab91b",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-decrease-position",
+      "hash": "0b4d18079c98515a",
+      "source": "c92856e472c3bf2b",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-increase-temperature",
+      "hash": "845f585af8403c28",
+      "source": "7adafb60f6679ce9",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-decrease-temperature",
+      "hash": "cffea79745911fff",
+      "source": "bcb3ef24d232159e",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-create",
+      "hash": "1da6714daa69f0cd",
+      "source": "5f4a74834751d2b2",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-update",
+      "hash": "6009f8ae17989b36",
+      "source": "8e0629178742af2a",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-delete",
+      "hash": "92eb585785ba2243",
+      "source": "4af7f899353def9e",
+      "glossary": {
+        "action": "azione",
+        "try this action": "prova questa azione"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

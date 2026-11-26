@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/repairs.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 1
+title: Spook findet, was still und leise kaputtging
+description: Spook prüft dein Home Assistant auf Dinge, die nicht mehr funktionieren, ohne es dir zu sagen, und meldet sie auf deinem Reparaturen-Dashboard. Viele kommen mit einer Lösung.
+
+hero:
+  headline: Findet die Geister 👻
+  title: Es findet, was still und leise kaputtging.
+  description: Benenne eine Lampe um, ersetze einen Sensor, entferne eine Integration, und irgendwo hört eine Automation wortlos auf zu funktionieren. Spook merkt es und sagt es dir auf deinem Reparaturen-Dashboard. {repairs} Arten von Problemen, und es sucht weiter.
+  screenshot: repairs-list
+  alt: Das Reparaturen-Dashboard von Home Assistant mit sieben Reparaturen von Spook, etwa ein leerer Bereich, ein unbenutztes Label und eine Automation mit Entitäten, die es nicht mehr gibt.
+
+sections:
+  - headline: Genau was, und wo
+    title: Kein Suchen im YAML.
+    description: Jede Reparatur nennt die Stelle mit dem Problem und was daran nicht stimmt. Wähle den Namen aus, und du bist im Editor, genau da, wo es repariert werden muss.
+    screenshot: repair-unknown-entities
+    alt: Eine Reparatur von Spook, die die Automation Movie night nennt und die drei Entitäten, die sie nutzt und die es nicht mehr gibt, mit einem Vorschlag, was gemeint war.
+    features:
+      - title: Zeigt auf die Stelle
+        description: Die Automation, das Skript oder das Dashboard, mit einem direkten Link dorthin.
+        icon: i-mdi-target
+      - title: Errät, was du gemeint hast
+        description: Eine Lampe umbenannt? Ist Spook fast sicher, schlägt es den neuen Namen vor.
+        icon: i-mdi-lightbulb-question-outline
+      - title: Verschwindet von selbst
+        description: Beheb es und speichere. Spook schaut noch einmal und räumt die Reparatur weg. Nichts abzuhaken.
+        icon: i-mdi-check-circle-outline
+
+  - headline: Für dich behoben
+    title: Sag ja, und es ist weg.
+    description: Viele Reparaturen kommen mit einer Lösung. Ein leerer Bereich, ein unbenutztes Label, eine Person, die noch ein altes Handy verfolgt. Spook bietet an, aufzuräumen, und fragt zuerst.
+    screenshot: repair-fix-empty-area
+    alt: Eine Reparatur von Spook für den leeren Bereich Attic, die anbietet, ihn zu entfernen, dich ihn selbst beheben zu lassen oder ihn zu behalten und nicht mehr zu fragen.
+    features:
+      - title: Du entscheidest
+        description: Entfernen, selbst beheben oder behalten. Spook räumt nie auf, ohne zu fragen.
+        icon: i-mdi-hand-back-right-outline
+      - title: Behalte es, und es bleibt still
+        description: Soll das so sein? Sag es einmal, und Spook weist nicht mehr darauf hin.
+        icon: i-mdi-bell-off-outline
+      - title: Noch einmal geprüft, bevor es handelt
+        description: Hat sich etwas geändert, seit Spook nachgesehen hat, lässt es die Finger davon.
+        icon: i-mdi-shield-check-outline
+
+more:
+  title: Wo Spook nachsieht
+  links:
+    - title: Automationen und Skripte
+      description: Entitäten, Geräte, Bereiche, Aktionen und Auslöser, die weg sind, und Templates, die nie zutreffen können.
+      icon: i-mdi-robot-outline
+      to: /automation#repairs
+    - title: Dashboards
+      description: Karten, die auf Entitäten, Aktionen oder Ansichten zeigen, die es nicht mehr gibt.
+      icon: i-mdi-view-dashboard-outline
+      to: /lovelace#repairs
+    - title: Bereiche, Etagen und Labels
+      description: Die leeren, die unbenutzten und Sensoren, die verschwunden sind.
+      icon: i-mdi-floor-plan
+      to: /homeassistant#repairs
+    - title: Deine erste Reparatur
+      description: Schritt für Schritt, vom Reparaturen-Dashboard zu einer funktionierenden Automation.
+      icon: i-mdi-wrench-outline
+      to: /fix-your-first-repair
