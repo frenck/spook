@@ -25,6 +25,7 @@ from custom_components.spook.reference_extraction import without_disabled_steps
 from custom_components.spook.template_extraction import (
     extract_template_strings_from_config,
 )
+from custom_components.spook.trigger_ids import unknown_trigger_ids
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -267,6 +268,38 @@ def test_a_configuration_read_once_is_not_kept_with_an_owner() -> None:
         reader(config)
 
     assert read == [config, config]
+
+
+def test_checked_trigger_ids_keep_no_more_with_every_round(
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test looking again at an automation keeps nothing new with it.
+
+    The trigger IDs it checks are read from a copy of its configuration, a
+    new one every time. Each of those used to be kept with the automation,
+    so every round kept another set until it reloaded.
+    """
+    owner = _Owner()
+    config = {
+        "triggers": [{"trigger": "event", "event_type": "ding", "id": "door"}],
+        "actions": [
+            {"condition": "trigger", "id": "window"},
+            {"action": "notify.notify", "data": {"message": "{{ trigger.id }}"}},
+        ],
+    }
+
+    def _kept() -> int:
+        return sum(len(readings) for readings in owned[owner].values())
+
+    with reading_for(owner):
+        assert unknown_trigger_ids(config) == {"window"}
+    kept_after_one_round = _kept()
+
+    for _ in range(5):
+        with reading_for(owner):
+            assert unknown_trigger_ids(config) == {"window"}
+
+    assert _kept() == kept_after_one_round
 
 
 def test_an_owner_that_cannot_be_held_weakly_is_no_owner(
