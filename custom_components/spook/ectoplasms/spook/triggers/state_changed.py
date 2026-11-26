@@ -85,7 +85,7 @@ _VALUES = vol.All(cv.ensure_list, [cv.string])
 
 # HA's ENTITY_CATEGORIES list augmented with a label for the default primary
 # entity category (eg. when the entity does not have an entity category)
-_EXTENTED_ENTITY_CATEGORIES = ["primary", *ENTITY_CATEGORIES]
+_EXTENTED_ENTITY_CATEGORIES = vol.All(cv.ensure_list, [vol.In(["primary", *ENTITY_CATEGORIES])])
 
 
 def _no_contradictions(options: dict[str, Any]) -> dict[str, Any]:
@@ -143,15 +143,13 @@ _OPTIONS_SCHEMA = vol.All(
             vol.Optional(CONF_INTEGRATION): _VALUES,
             vol.Optional(CONF_CONFIG_ENTRY): _VALUES,
             vol.Optional(CONF_DEVICE_CLASS): _VALUES,
-            vol.Optional(CONF_ENTITY_CATEGORY): [vol.In(_EXTENTED_ENTITY_CATEGORIES)],
+            vol.Optional(CONF_ENTITY_CATEGORY): _EXTENTED_ENTITY_CATEGORIES,
             vol.Optional(CONF_EXCLUDE_TARGET): _EXCLUDE_TARGET_SCHEMA,
             vol.Optional(CONF_EXCLUDE_DOMAIN): _VALUES,
             vol.Optional(CONF_EXCLUDE_INTEGRATION): _VALUES,
             vol.Optional(CONF_EXCLUDE_CONFIG_ENTRY): _VALUES,
             vol.Optional(CONF_EXCLUDE_DEVICE_CLASS): _VALUES,
-            vol.Optional(CONF_EXCLUDE_ENTITY_CATEGORY): [
-                vol.In(_EXTENTED_ENTITY_CATEGORIES)
-            ],
+            vol.Optional(CONF_EXCLUDE_ENTITY_CATEGORY): _EXTENTED_ENTITY_CATEGORIES,
             vol.Optional(CONF_ATTRIBUTE): cv.string,
             vol.Optional(CONF_FROM): _VALUES,
             vol.Optional(CONF_NOT_FROM): _VALUES,
