@@ -10,6 +10,25 @@
     "automerge": true
   },
   "commitMessagePrefix": "⬆️",
+  "constraints": {
+    "ghActionsLock": "v0.5.0"
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Keep gh-actions-lock in CI and Renovate's lockfile generator on the same version",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/actions-lock\\.yaml$/",
+        "/^\\.github/renovate\\.json$/"
+      ],
+      "matchStrings": [
+        "GH_ACTIONS_LOCK_VERSION: (?<currentValue>v\\d+\\.\\d+\\.\\d+)",
+        "\"ghActionsLock\": \"(?<currentValue>v\\d+\\.\\d+\\.\\d+)\""
+      ],
+      "depNameTemplate": "github/gh-actions-lock",
+      "datasourceTemplate": "github-releases"
+    }
+  ],
   "packageRules": [
     {
       "matchManagers": ["npm", "nvm"],
@@ -36,6 +55,11 @@
       "matchDepTypes": ["dependency-groups"],
       "addLabels": ["python:uv"],
       "rangeStrategy": "pin"
+    },
+    {
+      "matchManagers": ["custom.regex"],
+      "matchPackageNames": ["github/gh-actions-lock"],
+      "addLabels": ["github_actions"]
     }
   ]
 }

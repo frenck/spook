@@ -14,7 +14,7 @@ jobs:
       contents: read
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
           # The whole history: every page says when it last changed, from
@@ -22,7 +22,7 @@ jobs:
           fetch-depth: 0
 
       - name: 🏗 Set up Node.js
-        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        uses: actions/setup-node@v7.1.0
         with:
           node-version-file: "documentation/.nvmrc"
 
@@ -39,7 +39,7 @@ jobs:
         run: npm run build
 
       - name: 🆙 Upload artifact
-        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        uses: actions/upload-pages-artifact@v5.0.0
         with:
           path: ./documentation/.output/public
 
@@ -68,7 +68,7 @@ jobs:
 
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+        uses: actions/deploy-pages@v5.0.1
 
       # Bing, Yandex and the others that take IndexNow hear about the pages
       # that are new, or changed since the last deploy (`lastmod`), right

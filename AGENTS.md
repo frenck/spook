@@ -15,6 +15,7 @@ The integration uses [uv](https://docs.astral.sh/uv/). From the repository root:
 - `uv run prek run --all-files`: every hook in `.pre-commit-config.yaml`.
 - `uv run zizmor .github/workflows/`: check the workflows.
 - `uv run python script/generate_skill.py`: rebuild the agent skill references after adding or changing an action, trigger, condition or repair. A test fails when they are stale.
+- `gh actions-lock --no-narrow`: lock the actions the workflows use, after changing a `uses:` line. Commit `.github/workflows/actions.lock` with the change. Install it with `gh extension install github/gh-actions-lock`.
 
 The website, from `documentation/`:
 
@@ -28,6 +29,7 @@ The website, from `documentation/`:
 - Headings on documentation pages are a contract: their anchors are linked from the integration and from other sites. Do not rename an existing heading.
 - `custom_components/spook/translations/en.json` is the only translation file of the integration edited by hand. Weblate owns the other languages.
 - Write "Home Assistant" in full.
+- Do not edit `.github/workflows/actions.lock` by hand. Always run `gh actions-lock` with `--no-narrow`: without it, the branch pins like `@<sha> # main` become plain branches again. On a merge conflict, take the lockfile from `main` and run it again.
 
 ## Website translations
 
