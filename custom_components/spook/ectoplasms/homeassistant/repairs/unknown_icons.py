@@ -22,6 +22,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from ....const import LOGGER
+from ....customize_reloads import async_follow_customize_reloads
 from ....icon_checking import async_get_mdi_icons, async_suggest
 from ....repairs import AbstractSpookRepair
 
@@ -109,6 +110,14 @@ class SpookRepair(AbstractSpookRepair):
         self._event_subs.add(
             self.hass.bus.async_listen(
                 EVENT_STATE_CHANGED, _look_again, event_filter=_icon_changed
+            )
+        )
+
+        # An icon can come from `customize:` too, and reading that again
+        # changes no entity until it writes its state.
+        self._event_subs.add(
+            async_follow_customize_reloads(
+                self.hass, self.inspect_debouncer.async_schedule_call
             )
         )
 
