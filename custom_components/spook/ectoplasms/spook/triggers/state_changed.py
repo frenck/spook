@@ -541,24 +541,13 @@ class _StateWatcher(StateChangeWatcher):
 
     @callback
     def _everything(self) -> set[str]:
-        """Return everything the include lists can pick from.
+        """Return all registered and unregistered entities.
 
-        If entity_category or exclude_entity_category is specified in options,
-        returns all entities in the registry. Otherwise, returns primary
-        entities (where entry.entity_category is None) and unregistered entities.
+        The include and exclude filters in `_wanted()` decide which of these
+        entities are actually watched.
         """
         registry = er.async_get(self._hass)
-        has_category_option = bool(self._settings.include.entity_categories) or bool(
-            self._settings.exclude.entity_categories
-        )
-        if has_category_option:
-            registered = set(registry.entities.keys())
-        else:
-            registered = {
-                entity_id
-                for entity_id, entry in registry.entities.items()
-                if entry.entity_category is None
-            }
+        registered = set(registry.entities.keys())
         unregistered = {
             entity_id
             for entity_id in self._hass.states.async_entity_ids()
