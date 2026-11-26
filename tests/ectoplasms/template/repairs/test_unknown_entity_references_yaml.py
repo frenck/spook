@@ -14,6 +14,7 @@ from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook import configuration_cache
 from custom_components.spook.ectoplasms.template.configuration import (
     EVENT_TEMPLATE_RELOADED,
 )
@@ -524,3 +525,33 @@ async def test_template_reloaded_event_makes_it_look(
 
     assert call.called
     await repair.async_deactivate()
+
+
+async def test_yaml_configurations_are_read_without_remembering(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test what a template entity from YAML holds is not remembered.
+
+    Its configuration is put together anew every round. Remembered, every
+    round kept another set of readings no one asks for again, pushing out
+    what the other repairs remembered.
+    """
+    await _setup(
+        hass,
+        {"sensor": {"name": "Haunted", "state": "{{ states('sensor.ghost') }}"}},
+    )
+    remembering: list[bool] = []
+    original = unknown_entity_references.async_extract_entities_from_config
+
+    async def _reading(*args: Any, **kwargs: Any) -> set[str]:
+        remembering.append(configuration_cache._REMEMBERING.get())
+        return await original(*args, **kwargs)
+
+    monkeypatch.setattr(
+        unknown_entity_references, "async_extract_entities_from_config", _reading
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert remembering
+    assert not any(remembering)

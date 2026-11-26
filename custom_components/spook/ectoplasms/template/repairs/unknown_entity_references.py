@@ -13,6 +13,7 @@ from ....action_extraction import (
     async_extract_entities_from_helper_actions,
     extract_not_entity_ids_from_config,
 )
+from ....configuration_cache import read_once
 from ....const import LOGGER
 from ....entity_filtering import (
     async_filter_known_entity_ids,
@@ -174,6 +175,17 @@ class SpookRepair(AbstractSpookRepair):
                 },
             )
 
+        # A template entity's configuration is put together anew every round,
+        # so it is read without remembering. Remembered, every round would
+        # keep another set of readings that no one asks for again, pushing
+        # out what the other repairs remembered.
+        with read_once():
+            await self._async_inspect_yaml(known_entity_ids, known_services)
+
+    async def _async_inspect_yaml(
+        self, known_entity_ids: set[str], known_services: set[str]
+    ) -> None:
+        """Inspect the template entities from the `template:` section."""
         for template_entity in async_get_yaml_template_entities(self.hass):
             # Reading a configuration is CPU-bound, and there can be many
             # template entities: the event loop gets a turn after each.
