@@ -17,6 +17,7 @@ from homeassistant.components.light import LightEntity
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 
+from custom_components.spook import repairs
 from custom_components.spook.ectoplasms.automation.repairs.unknown_state_references import (
     SpookRepair,
 )
@@ -357,6 +358,14 @@ async def test_an_option_added_later_gets_a_look(
     await repair.async_inspect()
     assert async_issue_about(issue_registry, ISSUE)
 
+    # Checking a draft that names nothing is no reason to stop waiting.
+    assert (
+        await repair.async_check_draft(
+            SimpleNamespace(entity_id="automation.draft", raw_config={"triggers": []})
+        )
+        == []
+    )
+
     repair.inspect_debouncer.async_shutdown()
     looks: list[None] = []
     repair.inspect_debouncer = SimpleNamespace(  # type: ignore[assignment]
@@ -379,6 +388,73 @@ async def test_an_option_added_later_gets_a_look(
         blocking=True,
     )
     await hass.async_block_till_done()
+    await repair.async_deactivate()
+
+    assert looks == [None]
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_an_option_added_while_the_round_runs_gets_a_look(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an option added while attribute values are asked about is heard.
+
+    The states are waited on before the attribute values are asked about, so
+    one that becomes possible meanwhile is not missed.
+    """
+    assert await async_setup_component(
+        hass,
+        "input_select",
+        {"input_select": {"mode": {"options": ["home", "away"]}}},
+    )
+    await hass.async_block_till_done()
+    await async_wait_recording_done(hass)
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "triggers": [
+                        {
+                            "trigger": "state",
+                            "entity_id": "input_select.mode",
+                            "to": "Away",
+                        }
+                    ],
+                    "actions": [],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    looks: list[None] = []
+    repair.inspect_debouncer = SimpleNamespace(  # type: ignore[assignment]
+        async_schedule_call=lambda: looks.append(None),
+        async_shutdown=lambda: None,
+    )
+
+    async def _option_added_meanwhile(*_args: Any) -> set[Any]:
+        await hass.services.async_call(
+            "input_select",
+            "set_options",
+            {"entity_id": "input_select.mode", "options": ["home", "away", "Away"]},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
+        return set()
+
+    monkeypatch.setattr(
+        repairs, "async_unknown_attribute_values", _option_added_meanwhile
+    )
+
+    await repair.async_inspect()
     await repair.async_deactivate()
 
     assert looks == [None]

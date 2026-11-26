@@ -1218,6 +1218,16 @@ class AbstractSpookUnknownEntityNamesRepair(
     ) -> set[_UnknownName]:
         """Return the (entity ID, name) pairs the entity never has."""
 
+    async def _async_unknown_this_round(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
+        """Return the pairs never there, for the round itself.
+
+        The round's own, where what it finds may be remembered for later. A
+        draft is asked about with `_async_unknown`, and changes nothing.
+        """
+        return await self._async_unknown(pairs)
+
     async def async_activate(self) -> None:
         """Look again once one of its own entities was added or removed.
 
@@ -1305,7 +1315,7 @@ class AbstractSpookUnknownEntityNamesRepair(
             if entity_id in named
         }
 
-        unknown = await self._async_unknown(
+        unknown = await self._async_unknown_this_round(
             {pair for pairs in named.values() for pair in pairs}
         )
         by_pair = {(finding.entity_id, finding.name): finding for finding in unknown}
@@ -1456,6 +1466,39 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         self, pairs: set[tuple[str, str | AttributeValue]]
     ) -> set[_UnknownName]:
         """Return the (entity ID, state or attribute value) pairs never there."""
+        return await self._async_find_unknown(pairs, found_states=None)
+
+    async def _async_unknown_this_round(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
+        """Return the pairs never there, and wait on the states among them."""
+        return await self._async_find_unknown(pairs, found_states=self._await_states)
+
+    @callback
+    def _await_states(self, unknown: set[_UnknownName]) -> None:
+        """Wait on the states this round reported, and on nothing else.
+
+        Replaced every round, so what is fixed or gone is no longer waited on.
+        """
+        awaited: dict[str, set[str]] = defaultdict(set)
+        for finding in unknown:
+            if isinstance(finding.name, str):
+                awaited[finding.entity_id].add(finding.name)
+        self._states_awaited = {
+            entity_id: frozenset(states) for entity_id, states in awaited.items()
+        }
+
+    async def _async_find_unknown(
+        self,
+        pairs: set[tuple[str, str | AttributeValue]],
+        *,
+        found_states: Callable[[set[_UnknownName]], None] | None,
+    ) -> set[_UnknownName]:
+        """Return the (entity ID, state or attribute value) pairs never there.
+
+        ``found_states`` hears the states first, before the attribute values
+        are asked about: one that becomes possible meanwhile is heard then.
+        """
         states: set[tuple[str, str]] = set()
         values: set[tuple[str, AttributeValue]] = set()
         for entity_id, name in pairs:
@@ -1468,6 +1511,9 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
             _UnknownName(finding.entity_id, finding.state, finding.suggestion)
             for finding in await async_unknown_states(self.hass, states)
         }
+        if found_states is not None:
+            found_states(unknown)
+
         unknown.update(
             _UnknownName(
                 finding.entity_id,
@@ -1478,15 +1524,6 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
             )
             for finding in await async_unknown_attribute_values(self.hass, values)
         )
-
-        # Replaced every round, so what is fixed or gone is no longer waited on.
-        awaited: dict[str, set[str]] = defaultdict(set)
-        for finding in unknown:
-            if isinstance(finding.name, str):
-                awaited[finding.entity_id].add(finding.name)
-        self._states_awaited = {
-            entity_id: frozenset(states) for entity_id, states in awaited.items()
-        }
         return unknown
 
 
