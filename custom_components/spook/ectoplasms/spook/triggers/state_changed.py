@@ -229,7 +229,7 @@ class _EntityFilter:
     integrations: frozenset[str] = frozenset()
     config_entries: frozenset[str] = frozenset()
     device_classes: frozenset[str] = frozenset()
-    entity_categories: frozenset[str | None] = frozenset()
+    entity_categories: frozenset[str] = frozenset()
     entity_categories_explicit: bool = False
 
     @classmethod
@@ -292,7 +292,7 @@ class _EntityFilter:
         self,
         entity_id: str,
         entry: er.RegistryEntry | None,
-        entity_categories: frozenset[str | None],
+        entity_categories: frozenset[str],
     ) -> bool:
         """Return whether one entity passes every list that was given.
 
