@@ -8,7 +8,8 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
 from homeassistant.components.automation import EVENT_AUTOMATION_RELOADED
-from homeassistant.const import EVENT_CALL_SERVICE
+from homeassistant.const import EVENT_CALL_SERVICE, EVENT_STATE_CHANGED
+from homeassistant.core import State
 
 import pytest
 
@@ -18,7 +19,8 @@ if TYPE_CHECKING:
     from custom_components.spook.repairs import AbstractSpookRepair
 
 # Repairs that hear about every change they care about where it happens, so
-# a reload of some other domain is no reason for them to look.
+# a reload of some other domain is no reason for them to look, and neither
+# is the call of their own: they hear when that one is done.
 _NOT_WOKEN_BY_OTHER_RELOADS = [
     "alert.repairs.unknown_entity_references",
     "alert.repairs.unknown_notifiers",
@@ -39,10 +41,24 @@ _NOT_WOKEN_BY_OTHER_RELOADS = [
     "lovelace.repairs.unknown_user_references",
     "lovelace.repairs.unknown_view_references",
     "notify.repairs.unknown_group_members",
+    "script.repairs.never_true_templates",
+    "script.repairs.unknown_area_references",
+    "script.repairs.unknown_condition_references",
+    "script.repairs.unknown_config_entry_references",
+    "script.repairs.unknown_device_references",
+    "script.repairs.unknown_floor_references",
+    "script.repairs.unknown_icons",
+    "script.repairs.unknown_label_references",
+    "script.repairs.unknown_service_references",
+    "script.repairs.unknown_trigger_references",
+    "script.repairs.unknown_user_references",
 ]
 
 _AUTOMATION_REPAIRS = [
     name for name in _NOT_WOKEN_BY_OTHER_RELOADS if name.startswith("automation.")
+]
+_SCRIPT_REPAIRS = [
+    name for name in _NOT_WOKEN_BY_OTHER_RELOADS if name.startswith("script.")
 ]
 
 
@@ -92,7 +108,8 @@ async def test_a_reload_elsewhere_is_no_reason_to_look(
     Every one of them used to look again after every reload of any domain,
     45 rounds for a single `template.reload`, for changes they already hear
     about where those happen: entities and actions coming and going,
-    registries, dashboards, or their own reload event.
+    registries, dashboards, their own reload event, or their own entities
+    coming back once their reload is done.
     """
     repair = _repair_class(module)(hass)
     await repair.async_activate()
@@ -124,3 +141,40 @@ async def test_automation_repairs_look_once_their_reload_is_done(
     await repair.async_deactivate()
 
     assert looks == 1
+
+
+_ADDED = {"old_state": None, "new_state": State("script.wake_up", "off")}
+_REMOVED = {"old_state": State("script.wake_up", "off"), "new_state": None}
+_RAN = {
+    "old_state": State("script.wake_up", "off"),
+    "new_state": State("script.wake_up", "on"),
+}
+
+
+@pytest.mark.parametrize("module", _SCRIPT_REPAIRS)
+@pytest.mark.parametrize(
+    ("change", "expected_looks"),
+    [
+        ({"entity_id": "script.wake_up", **_ADDED}, 1),
+        ({"entity_id": "script.wake_up", **_REMOVED}, 1),
+        ({"entity_id": "script.wake_up", **_RAN}, 0),
+        ({"entity_id": "light.kitchen", **_ADDED}, 0),
+    ],
+    ids=["script added", "script removed", "script ran", "other entity added"],
+)
+async def test_script_repairs_look_once_their_reload_is_done(
+    hass: HomeAssistant, module: str, change: dict, expected_looks: int
+) -> None:
+    """Test a script repair looks again when one of the scripts comes or goes.
+
+    Scripts send no event when they reloaded. What a reload does: every
+    script that changed is removed, and added back once it is done, so that
+    is the look that sees the new configuration.
+    """
+    repair = _repair_class(module)(hass)
+    await repair.async_activate()
+
+    looks = await _count_looks_asked_for(hass, repair, EVENT_STATE_CHANGED, change)
+    await repair.async_deactivate()
+
+    assert looks == expected_looks

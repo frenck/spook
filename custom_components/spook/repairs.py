@@ -159,6 +159,28 @@ _INSPECTION_TURN: HassKey[asyncio.Lock] = HassKey("spook_inspection_turn")
 REGISTRY_CHANGES_NO_REPAIR_LOOKS_AT = frozenset({"capabilities", "supported_features"})
 
 
+def _entity_added_or_removed(
+    *, domain: bool | str
+) -> Callable[[Mapping[str, Any]], bool]:
+    """Return an event filter for entities appearing or going.
+
+    Of any domain for `True`, of the one domain named otherwise.
+    """
+    prefix = None if domain is True else f"{domain}."
+
+    @callback
+    def _added_or_removed(event_data: Mapping[str, Any]) -> bool:
+        """Return whether an entity appeared or went, not just changed."""
+        if prefix is not None and not event_data["entity_id"].startswith(prefix):
+            return False
+
+        return (
+            event_data.get("old_state") is None or event_data.get("new_state") is None
+        )
+
+    return _added_or_removed
+
+
 def _plural(items: Sized) -> str:
     """Return the plural suffix for a sized collection."""
     return "" if len(items) == 1 else "s"
@@ -458,7 +480,12 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     #: about entity references, as plenty of entities never touch the entity
     #: registry: one set by a script or a template without a unique ID arrives
     #: as a state and nothing else, often well after Home Assistant started.
-    inspect_on_entity_added_or_removed: bool = False
+    #:
+    #: A domain instead of `True` narrows it to that domain's own entities.
+    #: A reload removes what changed and adds it back once it is done, so that
+    #: is when there is something new to look at, where the reload being
+    #: called, `inspect_on_reload`, comes before anything was reloaded.
+    inspect_on_entity_added_or_removed: bool | str = False
 
     #: Re-run the inspection when an entity gains an attribute it was reported
     #: without, handed over with `_await_attributes`. A sensor that lost its
@@ -646,14 +673,6 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         if self.inspect_on_entity_added_or_removed:
 
             @callback
-            def _entity_added_or_removed(event_data: Mapping[str, Any]) -> bool:
-                """Return whether an entity appeared or went, not just changed."""
-                return (
-                    event_data.get("old_state") is None
-                    or event_data.get("new_state") is None
-                )
-
-            @callback
             def _async_entity_added_or_removed(_: Event) -> None:
                 self.inspect_debouncer.async_schedule_call()
 
@@ -661,7 +680,9 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                 self.hass.bus.async_listen(
                     EVENT_STATE_CHANGED,
                     _async_entity_added_or_removed,
-                    event_filter=_entity_added_or_removed,
+                    event_filter=_entity_added_or_removed(
+                        domain=self.inspect_on_entity_added_or_removed
+                    ),
                 ),
             )
 

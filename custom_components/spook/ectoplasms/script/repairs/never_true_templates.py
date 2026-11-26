@@ -28,7 +28,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     domain = script.DOMAIN
     repair = "script_never_true_templates"
     inspect_events = {EVENT_COMPONENT_LOADED}
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
 
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"

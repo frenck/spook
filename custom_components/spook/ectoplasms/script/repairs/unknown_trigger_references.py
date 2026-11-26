@@ -29,7 +29,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     domain = script.DOMAIN
     repair = "script_unknown_trigger_references"
     inspect_events = {EVENT_COMPONENT_LOADED}
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
 
     entity_label = "script"
     reference_label = "triggers"
