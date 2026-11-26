@@ -62,7 +62,6 @@ class SpookRepair(DeviceReferencesRepairMixin, AbstractSpookAutomationReferences
         dr.EVENT_DEVICE_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
 
     unavailable_entity_class = automation.UnavailableAutomationEntity
     entity_label = "automation"

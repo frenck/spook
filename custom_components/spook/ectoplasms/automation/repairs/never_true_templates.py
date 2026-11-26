@@ -35,7 +35,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         automation.EVENT_AUTOMATION_RELOADED,
         EVENT_COMPONENT_LOADED,
     }
-    inspect_on_reload = True
 
     unavailable_entity_class = automation.UnavailableAutomationEntity
     entity_label = "automation"

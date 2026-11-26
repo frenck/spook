@@ -36,7 +36,6 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
-    inspect_on_reload = True
     automatically_clean_up_issues = True
 
     def __init__(self, hass: HomeAssistant) -> None:
@@ -52,11 +51,10 @@ class SpookRepair(AbstractSpookRepair):
         # the entity registry hearing about it. Registry events alone would
         # miss both the moment it breaks and the moment it recovers.
         #
-        # Narrowed to the entities some alert actually watches, because an
-        # inspection here re-reads the configuration from disk. The sibling
-        # repairs filter on add/remove alone, but they only walk objects
-        # already in memory. The set comes from the last inspection, so a
-        # newly watched entity is picked up by the reload that introduced it.
+        # Narrowed to the entities some alert actually watches: one coming or
+        # going anywhere else changes nothing here. The set comes from the
+        # last inspection, and alerts cannot be reloaded, so it holds every
+        # entity a running alert watches.
         @callback
         def _watched_entity_changed(event_data: Mapping[str, Any]) -> bool:
             """Return if a watched state entity was added or removed."""
