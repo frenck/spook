@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from .configuration_cache import per_configuration, read_once
 from .reference_extraction import (
     VALUE_KEYS,
     names_given_to_templates,
@@ -133,6 +134,7 @@ def _walk_trigger_conditions(config: Any, found: set[str]) -> None:
         _walk_trigger_conditions(value, found)
 
 
+@per_configuration
 def checked_trigger_ids(config: Any) -> frozenset[str] | None:
     """Return the trigger IDs an automation checks for.
 
@@ -148,21 +150,30 @@ def checked_trigger_ids(config: Any) -> frozenset[str] | None:
     if not isinstance(config, dict) or "trigger" in names_given_to_templates(config):
         return None
 
-    after_a_trigger = without_disabled_steps(
-        {key: value for key, value in config.items() if key not in _BEFORE_A_TRIGGER}
-    )
+    # Read from a copy made right here, a new one on every call, so read
+    # without remembering. Remembered, every round would keep another set of
+    # readings with the automation, piling up until it reloads. What this
+    # hands back is remembered instead, so each configuration is read once.
+    with read_once():
+        after_a_trigger = without_disabled_steps(
+            {
+                key: value
+                for key, value in config.items()
+                if key not in _BEFORE_A_TRIGGER
+            }
+        )
 
-    # The automation itself is no condition, whatever its keys are: its own
-    # `id` is the automation's, not a trigger's.
-    found: set[str] = set()
-    for key, value in after_a_trigger.items():
-        if key not in VALUE_KEYS:
-            _walk_trigger_conditions(value, found)
+        # The automation itself is no condition, whatever its keys are: its
+        # own `id` is the automation's, not a trigger's.
+        found: set[str] = set()
+        for key, value in after_a_trigger.items():
+            if key not in VALUE_KEYS:
+                _walk_trigger_conditions(value, found)
 
-    for template in extract_template_strings_from_config(
-        without_never_rendered(after_a_trigger)
-    ):
-        found.update(extract_trigger_ids_from_template(template))
+        for template in extract_template_strings_from_config(
+            without_never_rendered(after_a_trigger)
+        ):
+            found.update(extract_trigger_ids_from_template(template))
 
     return frozenset(found)
 

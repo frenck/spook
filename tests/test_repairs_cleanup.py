@@ -238,10 +238,24 @@ async def test_config_entry_update_without_changes_skips_inspection(
     await _flush_debouncer(hass, freezer)
     assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
 
-    # New data on the same entry is a real change, and does get one.
+    # New data gets none either: no repair reads it, and it is where an
+    # integration keeps its tokens, so every token refresh fires UPDATED.
+    refreshed = MockConfigEntry(
+        domain="mock",
+        data={"key": "value", "token": "refreshed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, refreshed
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # New options on the same entry are a real change, and do get one.
     changed = MockConfigEntry(
         domain="mock",
-        data={"key": "changed"},
+        data={"key": "value"},
+        options={"key": "changed"},
         entry_id="0123456789abcdef0123456789abcdef",
     )
     async_dispatcher_send(
@@ -254,7 +268,8 @@ async def test_config_entry_update_without_changes_skips_inspection(
     # UPDATED, and does get a look too.
     with_subentry = MockConfigEntry(
         domain="mock",
-        data={"key": "changed"},
+        data={"key": "value"},
+        options={"key": "changed"},
         entry_id="0123456789abcdef0123456789abcdef",
         subentries_data=[
             {
@@ -278,7 +293,8 @@ async def test_config_entry_update_without_changes_skips_inspection(
     # on UPDATED too, and does get a look.
     renamed = MockConfigEntry(
         domain="mock",
-        data={"key": "changed"},
+        data={"key": "value"},
+        options={"key": "changed"},
         entry_id="0123456789abcdef0123456789abcdef",
         subentries_data=[
             {
@@ -302,7 +318,8 @@ async def test_config_entry_update_without_changes_skips_inspection(
     # Disabling the entry does the same.
     disabled = MockConfigEntry(
         domain="mock",
-        data={"key": "changed"},
+        data={"key": "value"},
+        options={"key": "changed"},
         entry_id="0123456789abcdef0123456789abcdef",
         subentries_data=[
             {

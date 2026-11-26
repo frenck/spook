@@ -643,15 +643,20 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                 ):
                     return
                 if change == ConfigEntryChange.UPDATED:
-                    # UPDATED rides along on more than data and options:
-                    # renames, disables and subentry changes leave those
-                    # untouched, so they go into the fingerprint as well.
+                    # UPDATED rides along on more than options: renames,
+                    # disables and subentry changes leave those untouched,
+                    # so they go into the fingerprint as well.
                     #
                     # So does having loaded or unloaded, and only that much
                     # of the state: a repair reading what a loaded entry
                     # holds, or naming the entities it brings, has to look
                     # again when it gets there. A failing setup goes from
                     # one try to the next without ever being either.
+                    #
+                    # The entry's data stays out. No repair reads it, and it
+                    # is where an integration keeps its tokens: every token
+                    # refresh fires UPDATED, and used to send every repair
+                    # listening here through a full look.
                     fingerprint = hashlib.sha256(
                         json.dumps(
                             {
@@ -660,7 +665,6 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                                     if entry.state in _SETTLED_STATES
                                     else None
                                 ),
-                                "data": dict(entry.data),
                                 "options": dict(entry.options),
                                 "title": entry.title,
                                 "disabled_by": entry.disabled_by,
