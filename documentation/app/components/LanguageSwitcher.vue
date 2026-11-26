@@ -20,11 +20,7 @@ const current = computed(
 const flag = flagOf;
 
 async function pick(code: string) {
-  try {
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
-  } catch {
-    // Without storage the pick lasts as long as the visit, which is fine.
-  }
+  rememberLanguage(code);
 
   // Stay on the same page, and on the same spot on it.
   if (isTranslated(pagePath.value, code)) {

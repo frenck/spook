@@ -14,11 +14,7 @@ const route = useRoute();
 const report = computed(() => translationReportUrl(language.value, route.path));
 
 function pickEnglish() {
-  try {
-    localStorage.setItem(LANGUAGE_STORAGE_KEY, DEFAULT_LANGUAGE);
-  } catch {
-    // The link still goes to the English page.
-  }
+  rememberLanguage(DEFAULT_LANGUAGE);
 }
 </script>
 

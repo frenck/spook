@@ -28,9 +28,28 @@ export function isTranslated(path: string, language: string): boolean {
  */
 export const LANGUAGE_STORAGE_KEY = "spook-language";
 
+// The pick of this visit, for a browser that blocks storage. Without it,
+// picking English sends somebody straight back to their browser's language.
+let pickedThisVisit: string | undefined;
+
+/** Remember the language somebody picked by hand, for good when allowed. */
+export function rememberLanguage(code: string): void {
+  pickedThisVisit = code;
+
+  try {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, code);
+  } catch {
+    // Storage can be blocked. Then the pick lasts as long as the visit.
+  }
+}
+
 export function preferredLanguage(): string {
   if (import.meta.server) {
     return DEFAULT_LANGUAGE;
+  }
+
+  if (pickedThisVisit) {
+    return pickedThisVisit;
   }
 
   const known = LANGUAGES.map((language) => language.code);
