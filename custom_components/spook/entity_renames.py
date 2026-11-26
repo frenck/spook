@@ -40,14 +40,22 @@ class _StoredRename(TypedDict):
     """A rename the way it goes on disk."""
 
     entity_id: str
+    registry_id: str
     renamed_at: str
 
 
 @dataclass(frozen=True, slots=True)
 class EntityRename:
-    """What an entity ID was renamed to, and when."""
+    """What an entity ID was renamed to, and when.
+
+    With the entity registry ID of the entity that was renamed. The entity ID
+    is a name, and another entity can take it. The registry ID is the entity:
+    it stays through renames, and an entity that is removed and comes back,
+    like an integration added again, gets it back.
+    """
 
     entity_id: str
+    registry_id: str
     renamed_at: datetime
 
 
@@ -76,10 +84,13 @@ class EntityRenames:
         for old_entity_id, rename in (stored or {}).items():
             renamed_at = dt_util.parse_datetime(rename.get("renamed_at", ""))
             new_entity_id = rename.get("entity_id")
-            if renamed_at is None or not new_entity_id:
+            registry_id = rename.get("registry_id")
+            if renamed_at is None or not new_entity_id or not registry_id:
                 continue
 
-            self._renames[old_entity_id] = EntityRename(new_entity_id, renamed_at)
+            self._renames[old_entity_id] = EntityRename(
+                new_entity_id, registry_id, renamed_at
+            )
 
         if self._async_forget_old():
             self._async_schedule_save()
@@ -93,13 +104,18 @@ class EntityRenames:
     def async_renamed_to(self, entity_id: str) -> EntityRename | None:
         """Return what this entity ID was renamed to, if it was, recently.
 
-        The ID it ends up at, after however many renames since. Whether that
-        one still exists is for the caller to check, at the moment it matters.
+        The ID it ends up at, after however many renames since. Only while the
+        entity carrying that ID is the one that was renamed. Gone, or another
+        entity under that name, and there is nothing to point at.
         """
         if (rename := self._renames.get(entity_id)) is None:
             return None
 
         if rename.renamed_at < dt_util.utcnow() - KEEP_RENAMES_FOR:
+            return None
+
+        entry = er.async_get(self._hass).async_get(rename.entity_id)
+        if entry is None or entry.id != rename.registry_id:
             return None
 
         return rename
@@ -119,18 +135,27 @@ class EntityRenames:
         if data["action"] != "update" or "old_entity_id" not in data:
             return
 
-        self._async_renamed(data["old_entity_id"], data["entity_id"])
+        if (entry := er.async_get(self._hass).async_get(data["entity_id"])) is None:
+            return
+
+        self._async_renamed(data["old_entity_id"], data["entity_id"], entry.id)
 
     @callback
-    def _async_renamed(self, old_entity_id: str, new_entity_id: str) -> None:
+    def _async_renamed(
+        self, old_entity_id: str, new_entity_id: str, registry_id: str
+    ) -> None:
         """Write down that one entity ID became another."""
         self._async_taken(new_entity_id)
 
         # When it was renamed is when the references to it broke, and that is
         # what the clock runs from. A rename further down the line moves where
         # they should point, not how long they have been pointing nowhere.
+        #
+        # Followed by the entity, not by its name. A stranger that took the ID
+        # an earlier rename went to is not the entity those references are for,
+        # and neither is wherever it is renamed to next.
         for earlier_id, earlier in list(self._renames.items()):
-            if earlier.entity_id != old_entity_id:
+            if earlier.registry_id != registry_id:
                 continue
 
             # Renamed back to what it once was: nothing to point at any more,
@@ -139,10 +164,12 @@ class EntityRenames:
                 del self._renames[earlier_id]
             else:
                 self._renames[earlier_id] = EntityRename(
-                    new_entity_id, earlier.renamed_at
+                    new_entity_id, registry_id, earlier.renamed_at
                 )
 
-        self._renames[old_entity_id] = EntityRename(new_entity_id, dt_util.utcnow())
+        self._renames[old_entity_id] = EntityRename(
+            new_entity_id, registry_id, dt_util.utcnow()
+        )
         self._async_schedule_save()
 
     @callback
@@ -152,6 +179,10 @@ class EntityRenames:
         A reference to it works again, and whatever it is written for now is
         not the entity that left. Should the newcomer go too, its references
         are not the renamed one's to have.
+
+        A stranger taking the ID a rename went to is left alone here. The
+        lookup sees it is not the renamed entity, and should that one come
+        back under its name, the rename holds again.
         """
         return self._renames.pop(entity_id, None) is not None
 
@@ -182,6 +213,7 @@ class EntityRenames:
         return {
             old_entity_id: {
                 "entity_id": rename.entity_id,
+                "registry_id": rename.registry_id,
                 "renamed_at": rename.renamed_at.isoformat(),
             }
             for old_entity_id, rename in sorted(self._renames.items())

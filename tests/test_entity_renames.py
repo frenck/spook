@@ -67,6 +67,7 @@ async def test_a_rename_is_written_down(
     assert await _written_down(hass, hass_storage) == {
         "light.kitchen": {
             "entity_id": "light.keuken",
+            "registry_id": entity_registry.async_get("light.keuken").id,
             "renamed_at": "2026-11-26T12:00:00+00:00",
         }
     }
@@ -194,24 +195,29 @@ async def test_the_clock_runs_from_the_first_rename(
 
 async def test_too_old_on_disk_is_dropped_on_load(
     hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
     hass_storage: dict[str, Any],
     freezer: FrozenDateTimeFactory,
 ) -> None:
     """Test what was too old by the time Home Assistant came back is let go."""
     freezer.move_to("2026-11-26 12:00:00+00:00")
+    new = entity_registry.async_get(_create(entity_registry, "new"))
+    newer = entity_registry.async_get(_create(entity_registry, "newer"))
     hass_storage[STORAGE_KEY] = {
         "version": 1,
         "key": STORAGE_KEY,
         "data": {
             "light.old": {
                 "entity_id": "light.new",
+                "registry_id": new.id,
                 "renamed_at": "2026-01-01T00:00:00+00:00",
             },
             "light.recent": {
                 "entity_id": "light.newer",
+                "registry_id": newer.id,
                 "renamed_at": "2026-11-01T00:00:00+00:00",
             },
-            "light.broken": {"entity_id": "light.what"},
+            "light.broken": {"entity_id": "light.newer"},
         },
     }
     await async_setup_entity_renames(hass)
@@ -220,6 +226,70 @@ async def test_too_old_on_disk_is_dropped_on_load(
     assert _renamed_to(hass, "light.recent") == "light.newer"
     assert _renamed_to(hass, "light.broken") is None
     assert set(await _written_down(hass, hass_storage)) == {"light.recent"}
+
+
+async def test_a_stranger_under_the_new_id_is_not_pointed_at(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a different entity taking the new ID ends the rename.
+
+    The renamed entity was removed, and something else got its name. The
+    references to the old ID were never written for that one, here or
+    wherever it gets renamed to next.
+    """
+    await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    entity_registry.async_remove("light.b")
+    stranger = _create(entity_registry, "b", unique_id="stranger")
+    await hass.async_block_till_done()
+    assert stranger == "light.b"
+
+    assert _renamed_to(hass, "light.a") is None
+
+    _rename(entity_registry, stranger, "light.c")
+    await hass.async_block_till_done()
+
+    assert _renamed_to(hass, "light.a") is None
+    assert _renamed_to(hass, "light.b") == "light.c"
+
+
+async def test_a_stranger_renamed_into_the_new_id_is_not_pointed_at(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a different entity renamed into the new ID ends the rename too."""
+    await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    entity_registry.async_remove("light.b")
+    _rename(entity_registry, _create(entity_registry, "stranger"), "light.b")
+    await hass.async_block_till_done()
+
+    assert _renamed_to(hass, "light.a") is None
+    assert _renamed_to(hass, "light.stranger") == "light.b"
+
+
+async def test_the_renamed_entity_coming_back_keeps_the_rename(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the same entity removed and added again is still pointed at.
+
+    Like an integration removed and added again: Home Assistant gives the
+    entity its old registry entry back, and with it its ID.
+    """
+    await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    entity_registry.async_remove("light.b")
+    await hass.async_block_till_done()
+
+    # Gone for now: nothing to point at.
+    assert _renamed_to(hass, "light.a") is None
+
+    assert _create(entity_registry, "a") == "light.b"
+    await hass.async_block_till_done()
+
+    assert _renamed_to(hass, "light.a") == "light.b"
 
 
 async def test_a_rename_survives_a_restart(
