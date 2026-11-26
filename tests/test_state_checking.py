@@ -7,6 +7,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from pytest_homeassistant.common import async_capture_events
 from pytest_homeassistant.components.recorder.common import (
     async_wait_recording_done,
 )
@@ -21,6 +22,7 @@ from homeassistant.components.select import SelectEntity
 from homeassistant.components.sensor import SensorEntity
 from homeassistant.components.switch import SwitchEntity
 from homeassistant.components.recorder.db_schema import States
+from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.helpers.recorder import get_instance, session_scope
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
@@ -835,12 +837,19 @@ async def test_looks_again_once_an_awaited_state_is_possible(
     hass.states.async_set(entity_id, "home", old)
     await hass.async_block_till_done()
     asked.clear()
+    changes = async_capture_events(hass, EVENT_STATE_CHANGED)
+
+    # Something else changes along every time, or there is no event at all,
+    # and nothing to tell the listener's choice from.
     hass.states.async_set(
-        entity_id, "Away" if new is None else "home", old if new is None else new
+        entity_id,
+        "Away" if new is None else "home",
+        {**(old if new is None else new), "updated": True},
     )
     await hass.async_block_till_done()
     stop()
 
+    assert len(changes) == 1
     assert len(asked) == looks
 
 
