@@ -12,6 +12,12 @@ const { language } = useSiteLanguage();
 const format = (value: number) =>
   Math.round(value).toLocaleString(language.value);
 
+// Gone before it was ever seen, like a reader leaving the home page before
+// scrolling down: the observer goes with it, rather than watching a number
+// that is no longer on the page.
+let observer: IntersectionObserver | undefined;
+onBeforeUnmount(() => observer?.disconnect());
+
 onMounted(() => {
   if (
     !element.value ||
@@ -21,11 +27,11 @@ onMounted(() => {
   }
 
   shown.value = 0;
-  const observer = new IntersectionObserver(([entry]) => {
+  observer = new IntersectionObserver(([entry]) => {
     if (!entry?.isIntersecting) {
       return;
     }
-    observer.disconnect();
+    observer?.disconnect();
 
     const start = performance.now();
     const duration = 1400;
