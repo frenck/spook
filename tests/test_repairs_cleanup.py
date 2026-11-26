@@ -42,6 +42,7 @@ EXPECTED_CHANGED_INSPECTIONS = 3
 EXPECTED_SUBENTRY_INSPECTIONS = 4
 EXPECTED_RENAMED_INSPECTIONS = 5
 EXPECTED_DISABLED_INSPECTIONS = 6
+EXPECTED_LOOKED_AGAIN_INSPECTIONS = 2
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -414,6 +415,71 @@ class MockFailingRepair(AbstractSpookRepair):
         if self.raise_on_inspect:
             msg = "Inspection went bump in the night"
             raise HomeAssistantError(msg)
+
+
+class MockSlowRepair(AbstractSpookRepair):
+    """Mock repair whose first inspection takes as long as the test wants."""
+
+    domain = "mock"
+    repair = "mock_repair"
+    inspect_events = {"mock_event"}
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self.inspections = 0
+        self.started = asyncio.Event()
+        self.release = asyncio.Event()
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair, waiting to be released."""
+        self.inspections += 1
+        self.started.set()
+        await self.release.wait()
+
+
+async def _let_tasks_run() -> None:
+    """Give tasks started along the way their turns, without waiting for all."""
+    for _ in range(5):
+        await asyncio.sleep(0)
+
+
+async def test_a_look_asked_for_mid_round_is_not_lost(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a look asked for while a round runs gets a round of its own.
+
+    Home Assistant's debouncer drops a call when its cooldown runs out while
+    the function still runs. Whatever changed after the round read it, like
+    the new configuration behind an `automation_reloaded`, went unseen.
+    """
+    repair = MockSlowRepair(hass)
+    await repair.async_activate()
+
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await repair.started.wait()
+
+    # Asked for a look while the first round runs, and the cooldown runs
+    # out before that round is done.
+    hass.bus.async_fire("mock_event")
+    await _let_tasks_run()
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await _let_tasks_run()
+
+    repair.release.set()
+    await hass.async_block_till_done()
+    await _flush_debouncer(hass, freezer)
+
+    assert repair.inspections == EXPECTED_LOOKED_AGAIN_INSPECTIONS
+
+    # Nothing asked for meanwhile, so nothing more.
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_LOOKED_AGAIN_INSPECTIONS
+
+    await repair.async_deactivate()
 
 
 async def test_config_entry_update_retries_after_failed_inspection(
