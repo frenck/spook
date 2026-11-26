@@ -78,6 +78,7 @@ _SCRIPT_REPAIRS = [
 _ENTITY_REFERENCE_REPAIRS = [
     "automation.repairs.unknown_entity_references",
     "lovelace.repairs.unknown_entity_references",
+    "scene.repairs.unknown_entity_references",
     "script.repairs.unknown_entity_references",
 ]
 
@@ -590,6 +591,42 @@ async def test_group_repair_remembers_a_group_through_its_reload(
             "new_state": State("light.kitchen", "unavailable"),
         },
     )
+    await repair.async_deactivate()
+
+    assert looks == 1
+
+
+_SCENE_REPAIR = "scene.repairs.unknown_entity_references"
+
+
+def _scenes(state: str) -> dict[str, Any]:
+    """Return a configuration holding one scene, in the registry like an edited one."""
+    return {
+        "scene": [
+            {"id": "evening", "name": "Evening", "entities": {"light.ceiling": state}}
+        ]
+    }
+
+
+async def test_scene_repair_looks_after_a_scene_reload(hass: HomeAssistant) -> None:
+    """Test a scene, really reloaded with other states, gets a look."""
+    looks = await _looks_after_a_reload(
+        hass, _SCENE_REPAIR, _scenes("on"), _scenes("off")
+    )
+
+    assert looks
+
+
+async def test_scene_repair_looks_once_scenes_reloaded(hass: HomeAssistant) -> None:
+    """Test the scene repair looks again once the scenes reloaded.
+
+    That is the look that sees the new configuration, an edit in the scene
+    editor included: saving one reloads the scenes.
+    """
+    repair = _repair_class(_SCENE_REPAIR)(hass)
+    await repair.async_activate()
+
+    looks = await _count_looks_asked_for(hass, repair, "scene_reloaded", {})
     await repair.async_deactivate()
 
     assert looks == 1
