@@ -404,9 +404,13 @@ async def _looks_after_a_group_reload(
     hass: HomeAssistant, before: dict[str, Any], after: dict[str, Any]
 ) -> int:
     """Return how many looks a real group reload asks the group repair for."""
-    assert await async_setup_component(hass, "group", {"group": {}})
+    # Set up once, with what it holds: a second setup is not read again.
+    assert await async_setup_component(
+        hass, "group", {"group": before.get("group", {})}
+    )
     for domain, config in before.items():
-        assert await async_setup_component(hass, domain, {domain: config})
+        if domain != "group":
+            assert await async_setup_component(hass, domain, {domain: config})
     await hass.async_block_till_done()
     repair = _repair_class(_GROUP_REPAIR)(hass)
     await repair.async_activate()
@@ -468,6 +472,10 @@ async def test_group_repair_looks_after_an_old_style_group_reloads(
         {"group": {"kitchen": {"entities": ["light.ceiling", "light.counter"]}}},
     )
 
+    assert hass.states.get("group.kitchen").attributes["entity_id"] == (
+        "light.ceiling",
+        "light.counter",
+    )
     assert looks
 
 
@@ -479,9 +487,16 @@ async def test_group_repair_looks_after_an_old_style_group_reloads(
             {"entity_id": ["light.ceiling"]},
             {"entity_id": ["light.ceiling"]},
         ),
+        ("light.kitchen", {"entity_id": ["light.ceiling"]}, {}),
+        ("sensor.calibrated", {"entity_id": "sensor.raw"}, {}),
         ("light.ceiling", {"brightness": 10}, {"brightness": 200}),
     ],
-    ids=["group switched on", "other entity changed"],
+    ids=[
+        "group switched on",
+        "group went unavailable",
+        "helper naming its source went unavailable",
+        "other entity changed",
+    ],
 )
 async def test_group_repair_leaves_a_group_doing_its_job_alone(
     hass: HomeAssistant,

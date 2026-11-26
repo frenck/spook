@@ -26,9 +26,18 @@ if TYPE_CHECKING:
     from homeassistant.core import Event, HomeAssistant, State
 
 
-def _members_of(state: State | None) -> Any:
-    """Return the members a group's state lists, if any."""
-    return None if state is None else state.attributes.get(ATTR_ENTITY_ID)
+def _members_of(state: State | None) -> list[Any] | tuple[Any, ...] | None:
+    """Return the members a group's state lists, if it lists any.
+
+    A list, or a tuple for the old `group.` ones. Other entities can have an
+    `entity_id` of a single one, like a helper naming its source, and that
+    is no list of members.
+    """
+    if state is None:
+        return None
+
+    members = state.attributes.get(ATTR_ENTITY_ID)
+    return members if isinstance(members, (list, tuple)) else None
 
 
 def _restored(state: State | None) -> bool:
@@ -66,13 +75,15 @@ class SpookRepair(AbstractSpookRepair):
         did not have, and it writes them down once it has. The reload being
         called comes before anything was reloaded.
 
-        Except for a group that is unavailable, which lists nothing: what an
-        unavailable entity writes leaves its extra attributes out, and a
-        group with every member gone is exactly that. A reload still shows,
-        for one in the entity registry: it waits the reload out in the state
-        Home Assistant keeps for it while it is away. That is looked for on
-        the groups the last look found. A new one comes with an entity
-        registry entry, or as a state where there was none.
+        Only when both states list members, though. A group that is
+        unavailable lists nothing: what an unavailable entity writes leaves
+        its extra attributes out. One losing or regaining its members' states
+        that way is no change to what it is made of, and a group with every
+        member gone is exactly that. A reload still shows, for one in the
+        entity registry: it waits the reload out in the state Home Assistant
+        keeps for it while it is away. That is looked for on the groups the
+        last look found. A new one comes with an entity registry entry, or
+        as a state where there was none.
         """
         await super().async_activate()
 
@@ -81,7 +92,13 @@ class SpookRepair(AbstractSpookRepair):
             """Return if a group now lists other members, or reloaded."""
             old_state = event_data.get("old_state")
             new_state = event_data.get("new_state")
-            if _members_of(old_state) != _members_of(new_state):
+            old_members = _members_of(old_state)
+            new_members = _members_of(new_state)
+            if (
+                old_members is not None
+                and new_members is not None
+                and old_members != new_members
+            ):
                 return True
 
             return event_data.get("entity_id") in self._group_entity_ids and (
