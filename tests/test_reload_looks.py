@@ -9,7 +9,12 @@ from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from homeassistant.components.automation import EVENT_AUTOMATION_RELOADED
-from homeassistant.const import EVENT_CALL_SERVICE, EVENT_STATE_CHANGED
+from homeassistant.const import (
+    EVENT_CALL_SERVICE,
+    EVENT_SERVICE_REGISTERED,
+    EVENT_SERVICE_REMOVED,
+    EVENT_STATE_CHANGED,
+)
 from homeassistant.core import State
 from homeassistant.setup import async_setup_component
 
@@ -63,11 +68,21 @@ _SCRIPT_REPAIRS = [
     name for name in _NOT_WOKEN_BY_OTHER_RELOADS if name.startswith("script.")
 ]
 
+# Repairs about entity references: an entity of any domain coming or going
+# is a reason for them to look, and so is an action, as a name that is an
+# action is no unknown entity.
+_ENTITY_REFERENCE_REPAIRS = [
+    "automation.repairs.unknown_entity_references",
+    "lovelace.repairs.unknown_entity_references",
+    "script.repairs.unknown_entity_references",
+]
+
 # Every script repair that looks again when a script comes or goes, the
-# ones about attributes and states included.
+# ones about attributes, states and entities included.
 _LOOKING_WHEN_SCRIPTS_COME_OR_GO = [
     *_SCRIPT_REPAIRS,
     "script.repairs.unknown_attribute_references",
+    "script.repairs.unknown_entity_references",
     "script.repairs.unknown_state_references",
 ]
 
@@ -110,7 +125,9 @@ def dashboards_fixture(hass: HomeAssistant) -> None:
     hass.data["lovelace"] = SimpleNamespace(dashboards={})
 
 
-@pytest.mark.parametrize("module", _NOT_WOKEN_BY_OTHER_RELOADS)
+@pytest.mark.parametrize(
+    "module", [*_NOT_WOKEN_BY_OTHER_RELOADS, *_ENTITY_REFERENCE_REPAIRS]
+)
 @pytest.mark.parametrize("domain", ["template", "group", "script", "input_select"])
 async def test_a_reload_elsewhere_is_no_reason_to_look(
     hass: HomeAssistant, module: str, domain: str
@@ -137,7 +154,9 @@ async def test_a_reload_elsewhere_is_no_reason_to_look(
     assert looks == 0
 
 
-@pytest.mark.parametrize("module", _AUTOMATION_REPAIRS)
+@pytest.mark.parametrize(
+    "module", [*_AUTOMATION_REPAIRS, "automation.repairs.unknown_entity_references"]
+)
 async def test_automation_repairs_look_once_their_reload_is_done(
     hass: HomeAssistant, module: str
 ) -> None:
@@ -232,9 +251,60 @@ async def test_script_repairs_look_after_an_edited_script_reloads(
     assert await _looks_after_a_script_reload(hass, module, [{"delay": 1}])
 
 
-@pytest.mark.parametrize("module", _SCRIPT_REPAIRS)
+@pytest.mark.parametrize("module", _LOOKING_WHEN_SCRIPTS_COME_OR_GO)
 async def test_script_repairs_leave_a_reload_that_changed_nothing_alone(
     hass: HomeAssistant, module: str
 ) -> None:
     """Test a reload that left every script as it was asks for no look."""
     assert await _looks_after_a_script_reload(hass, module, []) == 0
+
+
+@pytest.mark.parametrize("module", _ENTITY_REFERENCE_REPAIRS)
+@pytest.mark.parametrize(
+    "event_type", [EVENT_SERVICE_REGISTERED, EVENT_SERVICE_REMOVED]
+)
+async def test_entity_reference_repairs_look_when_an_action_comes_or_goes(
+    hass: HomeAssistant, module: str, event_type: str
+) -> None:
+    """Test a legacy notify action coming or going gets a look.
+
+    A name like `notify.my_phone` is an action, not an unknown entity, for
+    as long as that action is there. A reload of the integration behind it
+    used to be the only thing that brought a look when it went.
+    """
+    repair = _repair_class(module)(hass)
+    await repair.async_activate()
+
+    looks = await _count_looks_asked_for(
+        hass, repair, event_type, {"domain": "notify", "service": "my_phone"}
+    )
+    await repair.async_deactivate()
+
+    assert looks == 1
+
+
+@pytest.mark.parametrize("module", _ENTITY_REFERENCE_REPAIRS)
+async def test_entity_reference_repairs_look_when_any_entity_comes(
+    hass: HomeAssistant, module: str
+) -> None:
+    """Test an entity of another domain appearing gets a look.
+
+    Plenty of entities never touch the entity registry. One set by a script
+    or a template without a unique ID only ever arrives as a state.
+    """
+    repair = _repair_class(module)(hass)
+    await repair.async_activate()
+
+    looks = await _count_looks_asked_for(
+        hass,
+        repair,
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "sensor.made_up",
+            "old_state": None,
+            "new_state": State("sensor.made_up", "1"),
+        },
+    )
+    await repair.async_deactivate()
+
+    assert looks == 1
