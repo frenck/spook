@@ -2,10 +2,16 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from homeassistant.components import group
 from homeassistant.const import (
+    ATTR_ENTITY_ID,
+    ATTR_RESTORED,
     EVENT_COMPONENT_LOADED,
+    EVENT_STATE_CHANGED,
 )
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
@@ -13,6 +19,21 @@ from ....entity_filtering import async_filter_known_entity_ids, async_get_all_en
 from ....entity_suggestions import async_describe_unknown_entities
 from ....helper_sources import async_group_members
 from ....repairs import AbstractSpookRepair
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from homeassistant.core import Event, HomeAssistant, State
+
+
+def _members_of(state: State | None) -> Any:
+    """Return the members a group's state lists, if any."""
+    return None if state is None else state.attributes.get(ATTR_ENTITY_ID)
+
+
+def _restored(state: State | None) -> bool:
+    """Return whether a state is the one Home Assistant keeps while away."""
+    return state is not None and state.attributes.get(ATTR_RESTORED) is True
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -25,17 +46,67 @@ class SpookRepair(AbstractSpookRepair):
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = group.DOMAIN
-    inspect_on_reload = True
+    # A member can be state-only, set by a template or a script without a
+    # unique ID, coming and going without the entity registry hearing.
+    inspect_on_entity_added_or_removed = True
 
     automatically_clean_up_issues = True
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._group_entity_ids: frozenset[str] = frozenset()
+
+    async def async_activate(self) -> None:
+        """Look again once a group lists other members.
+
+        Every kind of group lists its members in its state, the old `group.`
+        ones and the light, switch, sensor and other groups alike. A reload,
+        an edit in the UI or `group.set` leaves the group with members it
+        did not have, and it writes them down once it has. The reload being
+        called comes before anything was reloaded.
+
+        Except for a group that is unavailable, which lists nothing: what an
+        unavailable entity writes leaves its extra attributes out, and a
+        group with every member gone is exactly that. A reload still shows,
+        for one in the entity registry: it waits the reload out in the state
+        Home Assistant keeps for it while it is away. That is looked for on
+        the groups the last look found. A new one comes with an entity
+        registry entry, or as a state where there was none.
+        """
+        await super().async_activate()
+
+        @callback
+        def _members_changed(event_data: Mapping[str, Any]) -> bool:
+            """Return if a group now lists other members, or reloaded."""
+            old_state = event_data.get("old_state")
+            new_state = event_data.get("new_state")
+            if _members_of(old_state) != _members_of(new_state):
+                return True
+
+            return event_data.get("entity_id") in self._group_entity_ids and (
+                _restored(old_state) or _restored(new_state)
+            )
+
+        @callback
+        def _look_again(_: Event) -> None:
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED, _look_again, event_filter=_members_changed
+            )
+        )
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         known_entity_ids = async_get_all_entity_ids(self.hass)
+        groups = list(async_group_members(self.hass))
+        self._group_entity_ids = frozenset(entity.entity_id for entity, _ in groups)
 
-        for entity, members in async_group_members(self.hass):
+        for entity, members in groups:
             self.possible_issue_ids.add(entity.entity_id)
 
             if unknown_entities := async_filter_known_entity_ids(

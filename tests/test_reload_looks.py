@@ -62,6 +62,7 @@ _NOT_WOKEN_BY_OTHER_RELOADS = [
     "script.repairs.unknown_trigger_references",
     "script.repairs.unknown_user_references",
     "person.repairs.unknown_device_trackers",
+    "group.repairs.unknown_members",
 ]
 
 _AUTOMATION_REPAIRS = [
@@ -301,7 +302,9 @@ async def test_entity_reference_repairs_look_when_an_action_comes_or_goes(
     assert looks == 1
 
 
-@pytest.mark.parametrize("module", _ENTITY_REFERENCE_REPAIRS)
+@pytest.mark.parametrize(
+    "module", [*_ENTITY_REFERENCE_REPAIRS, "group.repairs.unknown_members"]
+)
 async def test_entity_reference_repairs_look_when_any_entity_comes(
     hass: HomeAssistant, module: str
 ) -> None:
@@ -392,3 +395,147 @@ async def test_person_repair_leaves_a_person_moving_around_alone(
     await repair.async_deactivate()
 
     assert looks == 0
+
+
+_GROUP_REPAIR = "group.repairs.unknown_members"
+
+
+async def _looks_after_a_group_reload(
+    hass: HomeAssistant, before: dict[str, Any], after: dict[str, Any]
+) -> int:
+    """Return how many looks a real group reload asks the group repair for."""
+    assert await async_setup_component(hass, "group", {"group": {}})
+    for domain, config in before.items():
+        assert await async_setup_component(hass, domain, {domain: config})
+    await hass.async_block_till_done()
+    repair = _repair_class(_GROUP_REPAIR)(hass)
+    await repair.async_activate()
+    # The look before the reload, that knows which groups there are.
+    await repair.async_inspect()
+    looks = _counted_looks(repair)
+
+    with patch(
+        "homeassistant.config.load_yaml_config_file",
+        autospec=True,
+        return_value=after,
+    ):
+        await hass.services.async_call("group", "reload", blocking=True)
+    await hass.async_block_till_done()
+    await repair.async_deactivate()
+
+    return len(looks)
+
+
+def _light_group(members: list[str]) -> dict[str, Any]:
+    """Return a configuration holding one light group, in the registry."""
+    return {
+        "light": [
+            {
+                "platform": "group",
+                "name": "Kitchen",
+                "unique_id": "kitchen",
+                "entities": members,
+            }
+        ]
+    }
+
+
+async def test_group_repair_looks_after_a_light_group_reloads(
+    hass: HomeAssistant,
+) -> None:
+    """Test a light group, really reloaded with other members, gets a look.
+
+    It is in the entity registry, so the reload never takes its state away:
+    it turns unavailable and restored, and comes back with its new members.
+    No entity goes or comes along the way, and there is no reload event.
+    """
+    looks = await _looks_after_a_group_reload(
+        hass,
+        _light_group(["light.ceiling"]),
+        _light_group(["light.ceiling", "light.counter"]),
+    )
+
+    assert looks
+
+
+async def test_group_repair_looks_after_an_old_style_group_reloads(
+    hass: HomeAssistant,
+) -> None:
+    """Test a `group.` group, really reloaded with other members, gets a look."""
+    looks = await _looks_after_a_group_reload(
+        hass,
+        {"group": {"kitchen": {"entities": ["light.ceiling"]}}},
+        {"group": {"kitchen": {"entities": ["light.ceiling", "light.counter"]}}},
+    )
+
+    assert looks
+
+
+@pytest.mark.parametrize(
+    ("entity_id", "old_attributes", "new_attributes"),
+    [
+        (
+            "light.kitchen",
+            {"entity_id": ["light.ceiling"]},
+            {"entity_id": ["light.ceiling"]},
+        ),
+        ("light.ceiling", {"brightness": 10}, {"brightness": 200}),
+    ],
+    ids=["group switched on", "other entity changed"],
+)
+async def test_group_repair_leaves_a_group_doing_its_job_alone(
+    hass: HomeAssistant,
+    entity_id: str,
+    old_attributes: dict[str, Any],
+    new_attributes: dict[str, Any],
+) -> None:
+    """Test a state change that lists the same members asks for no look."""
+    repair = _repair_class(_GROUP_REPAIR)(hass)
+    await repair.async_activate()
+
+    looks = await _count_looks_asked_for(
+        hass,
+        repair,
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": entity_id,
+            "old_state": State(entity_id, "off", old_attributes),
+            "new_state": State(entity_id, "on", new_attributes),
+        },
+    )
+    await repair.async_deactivate()
+
+    assert looks == 0
+
+
+async def test_group_repair_looks_when_group_set_changes_the_members(
+    hass: HomeAssistant,
+) -> None:
+    """Test `group.set` changing a group's members in place gets a look.
+
+    Nothing goes, comes or reloads: the group that is there takes other
+    members and writes them down, and that is all there is to hear.
+    """
+    assert await async_setup_component(hass, "group", {"group": {}})
+    await hass.services.async_call(
+        "group",
+        "set",
+        {"object_id": "kitchen", "entities": ["light.ceiling"]},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+    repair = _repair_class(_GROUP_REPAIR)(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+    looks = _counted_looks(repair)
+
+    await hass.services.async_call(
+        "group",
+        "set",
+        {"object_id": "kitchen", "entities": ["light.ceiling", "light.counter"]},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+    await repair.async_deactivate()
+
+    assert looks
