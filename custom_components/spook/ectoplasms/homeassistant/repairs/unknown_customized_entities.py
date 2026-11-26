@@ -7,6 +7,7 @@ from homeassistant.core_config import DATA_CUSTOMIZE
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
+from ....customize_reloads import async_follow_customize_reloads
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
@@ -33,6 +34,15 @@ class SpookRepair(AbstractSpookRepair):
     # #1622.
     inspect_on_entity_added_or_removed = True
     automatically_clean_up_issues = True
+
+    async def async_activate(self) -> None:
+        """Look again once `customize:` was read again."""
+        await super().async_activate()
+        self._event_subs.add(
+            async_follow_customize_reloads(
+                self.hass, self.inspect_debouncer.async_schedule_call
+            )
+        )
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""

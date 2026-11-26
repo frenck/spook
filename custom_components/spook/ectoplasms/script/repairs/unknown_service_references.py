@@ -33,7 +33,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         EVENT_SERVICE_REMOVED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
 
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"
@@ -52,4 +52,6 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             self.hass,
             services=async_find_services_in_sequence(entity.script.sequence),
             known_services=self._known_services,
+            made_from_blueprint=getattr(entity, "referenced_blueprint", None)
+            is not None,
         )

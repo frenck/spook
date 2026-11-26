@@ -1,6 +1,7 @@
 """Tests for event loop yielding during repair inspections."""
 
-# pylint: disable=wrong-import-order
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 import asyncio
@@ -9,8 +10,13 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
+from custom_components.spook import repairs, template_extraction
 from custom_components.spook.repairs import (
     AbstractSpookEntityComponentUnknownReferencesRepair,
+    AbstractSpookRepair,
+)
+from custom_components.spook.template_extraction import (
+    async_extract_entities_from_config,
 )
 
 if TYPE_CHECKING:
@@ -67,12 +73,66 @@ async def test_component_inspection_yields_to_event_loop(
         entities=entities,
     )
 
+    # Only the count is under test here; a slow machine would otherwise add
+    # turns given by the clock.
+    monkeypatch.setattr(repairs, "YIELD_AFTER", float("inf"))
     repair = _ReferencesRepair(hass)
     calls = _count_sleeps(monkeypatch)
 
     await repair.async_inspect()
 
     assert calls == [0] * EXPECTED_YIELDS
+
+
+async def test_component_inspection_yields_by_the_clock(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The inspection hands the loop back once its time is up, at any count.
+
+    Fewer entities than one count interval, so every turn comes from the
+    clock. A time limit that is always exceeded gives one turn per entity.
+    #2005.
+    """
+    entities = [
+        SimpleNamespace(entity_id=f"automation.spooky_{index}") for index in range(5)
+    ]
+    hass.data.setdefault(DATA_INSTANCES, {})["automation"] = SimpleNamespace(
+        entities=entities,
+    )
+    monkeypatch.setattr(repairs, "YIELD_AFTER", -1.0)
+    calls = _count_sleeps(monkeypatch)
+
+    await _ReferencesRepair(hass).async_inspect()
+
+    assert calls == [0] * len(entities)
+
+
+async def test_reading_the_templates_of_a_configuration_yields_by_the_clock(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Reading a configuration's templates hands the loop back by the clock.
+
+    Without a time limit nothing in there waits for anything; with one that
+    is always exceeded, there is a turn before every template. What is found
+    stays the same either way. #2005.
+    """
+    config = {
+        "first": "{{ states('sensor.one') }}",
+        "second": "{{ states('sensor.two') }}",
+        "third": "{{ states('sensor.three') }}",
+    }
+    expected = {"sensor.one", "sensor.two", "sensor.three"}
+    calls = _count_sleeps(monkeypatch)
+
+    monkeypatch.setattr(template_extraction, "YIELD_AFTER", float("inf"))
+    assert await async_extract_entities_from_config(hass, config, set()) == expected
+    assert not calls
+
+    monkeypatch.setattr(template_extraction, "YIELD_AFTER", -1.0)
+    assert await async_extract_entities_from_config(hass, config, set()) == expected
+    assert calls == [0] * len(config)
 
 
 async def test_an_entity_arriving_mid_inspection_does_not_kill_the_round(
@@ -123,3 +183,59 @@ async def test_an_entity_arriving_mid_inspection_does_not_kill_the_round(
     await _ReferencesRepair(hass).async_inspect()
 
     assert added, "the inspection never yielded, so nothing was tested"
+
+
+class _TurnTakingRepair(AbstractSpookRepair):
+    """Mock repair writing down when its inspection starts and ends."""
+
+    domain = "mock"
+    repair = "mock_repair"
+
+    def __init__(self, hass: HomeAssistant, name: str, log: list[str]) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self.name = name
+        self.log = log
+
+    async def async_inspect(self) -> None:
+        """Inspect in a few slices, handing the loop back in between."""
+        self.log.append(f"{self.name} starts")
+        for _ in range(3):
+            await asyncio.sleep(0)
+        self.log.append(f"{self.name} ends")
+
+
+async def test_inspections_take_turns(hass: HomeAssistant) -> None:
+    """Test rounds started together run one after the other.
+
+    Side by side, every hand-back went to the next round instead of to Home
+    Assistant, and the loop was only free once all of them had their slice.
+    """
+    log: list[str] = []
+    first = _TurnTakingRepair(hass, "first", log)
+    second = _TurnTakingRepair(hass, "second", log)
+
+    await asyncio.gather(
+        first._async_inspect_with_cleanup(),
+        second._async_inspect_with_cleanup(),
+    )
+
+    assert log == ["first starts", "first ends", "second starts", "second ends"]
+
+
+async def test_a_repair_unloaded_while_waiting_its_turn_does_not_look(
+    hass: HomeAssistant,
+) -> None:
+    """Test a round waiting for its turn is dropped once its repair is gone."""
+    log: list[str] = []
+    first = _TurnTakingRepair(hass, "first", log)
+    unloaded = _TurnTakingRepair(hass, "unloaded", log)
+    await unloaded.async_activate()
+
+    first_round = asyncio.create_task(first._async_inspect_with_cleanup())
+    waiting_round = asyncio.create_task(unloaded._async_inspect_with_cleanup())
+    await asyncio.sleep(0)
+    await unloaded.async_deactivate()
+    await asyncio.gather(first_round, waiting_round)
+
+    assert log == ["first starts", "first ends"]

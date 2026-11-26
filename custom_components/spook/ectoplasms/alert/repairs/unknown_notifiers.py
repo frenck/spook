@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
+
 from homeassistant.components.alert.const import DOMAIN
 from homeassistant.components.notify import DOMAIN as NOTIFY_DOMAIN
 from homeassistant.const import (
@@ -36,8 +38,12 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_SERVICE_REGISTERED,
         EVENT_SERVICE_REMOVED,
     }
-    inspect_on_reload = True
     automatically_clean_up_issues = True
+    # A configuration that could not be read is read again on the next look,
+    # and nothing about a broken file says when that is. Once a day, so it
+    # is not left to whatever happens to come along. Cheap, as a read that
+    # worked is kept for the rest of the run.
+    inspect_interval = timedelta(days=1)
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""

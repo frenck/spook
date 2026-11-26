@@ -43,6 +43,7 @@ REPAIR_DOCUMENTATION: Final = {
     "homekit_unknown_entity_references": "homekit#unknown-entities",
     "lovelace_duplicate_resources": "lovelace#duplicate-dashboard-resources",
     "lovelace_missing_resources": "lovelace#missing-dashboard-resources",
+    "lovelace_public_www_files": "lovelace#public-files-in-the-www-folder",
     "lovelace_unknown_area_references": "lovelace#unknown-referenced-areas",
     "lovelace_unknown_attribute_references": "lovelace#unknown-referenced-attributes",
     "lovelace_unknown_entity_references": "lovelace#unknown-referenced-entities",

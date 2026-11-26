@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/repairs.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 1
+title: Spook trova quello che si è rotto in silenzio
+description: Spook controlla il tuo Home Assistant in cerca di cose che hanno smesso di funzionare senza dirtelo, e le segnala nella tua pagina delle riparazioni. Molte arrivano con una soluzione.
+
+hero:
+  headline: Trova i fantasmi 👻
+  title: Trova quello che si è rotto in silenzio.
+  description: Rinomini una lampada, sostituisci un sensore, rimuovi un'integrazione, e da qualche parte un'automazione smette di funzionare senza dire niente. Spook se ne accorge, e te lo dice nella tua pagina delle riparazioni. {repairs} tipi di problemi, e continua a cercare.
+  screenshot: repairs-list
+  alt: La pagina delle riparazioni di Home Assistant con sette riparazioni di Spook, come un'area vuota, un'etichetta inutilizzata e un'automazione che usa entità che non esistono più.
+
+sections:
+  - headline: Esattamente cosa, e dove
+    title: Niente caccia nello YAML.
+    description: Ogni riparazione nomina il posto con il problema, e cosa non va. Seleziona il nome, e sei nell'editor, proprio dove va sistemato.
+    screenshot: repair-unknown-entities
+    alt: Una riparazione di Spook che nomina l'automazione Serata cinema e le tre entità che usa e che non esistono più, con un suggerimento su cosa si intendeva.
+    features:
+      - title: Indica il punto
+        description: L'automazione, lo script o la plancia, con un link diretto.
+        icon: i-mdi-target
+      - title: Indovina cosa intendevi
+        description: Hai rinominato una lampada? Quando Spook è quasi sicuro, suggerisce il nuovo nome.
+        icon: i-mdi-lightbulb-question-outline
+      - title: Se ne va da sola
+        description: Sistemala e salva. Spook ricontrolla e toglie la riparazione. Niente da spuntare.
+        icon: i-mdi-check-circle-outline
+
+  - headline: Sistemato per te
+    title: Di' di sì, ed è sparito.
+    description: Molte riparazioni arrivano con una soluzione. Un'area vuota, un'etichetta inutilizzata, una persona che segue ancora un vecchio telefono. Spook si offre di fare pulizia, e chiede prima.
+    screenshot: repair-fix-empty-area
+    alt: Una riparazione di Spook per l'area vuota Soffitta, che offre di rimuoverla, di lasciartela sistemare da solo, o di tenerla e non chiedere più.
+    features:
+      - title: Decidi tu
+        description: Rimuovila, sistemala da solo, o tienila. Spook non fa mai pulizia senza chiedere.
+        icon: i-mdi-hand-back-right-outline
+      - title: Tienila, e sta zitto
+        description: È voluto così? Dillo una volta, e Spook smette di fartelo notare.
+        icon: i-mdi-bell-off-outline
+      - title: Ricontrollato prima di agire
+        description: Se qualcosa è cambiato da quando Spook ha guardato, non lo tocca.
+        icon: i-mdi-shield-check-outline
+
+more:
+  title: Dove guarda Spook
+  links:
+    - title: Automazioni e script
+      description: Entità, dispositivi, aree, azioni e attivazioni che non ci sono più, e modelli che non possono mai essere veri.
+      icon: i-mdi-robot-outline
+      to: /automation#repairs
+    - title: Plance
+      description: Schede che puntano a entità, azioni o viste che non esistono più.
+      icon: i-mdi-view-dashboard-outline
+      to: /lovelace#repairs
+    - title: Aree, piani ed etichette
+      description: Quelle vuote, quelle inutilizzate, e i sensori spariti.
+      icon: i-mdi-floor-plan
+      to: /homeassistant#repairs
+    - title: La tua prima riparazione
+      description: Passo per passo, dalla pagina delle riparazioni a un'automazione che funziona.
+      icon: i-mdi-wrench-outline
+      to: /fix-your-first-repair

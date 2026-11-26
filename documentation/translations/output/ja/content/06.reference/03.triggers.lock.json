@@ -1,0 +1,280 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/06.reference/03.triggers.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/06.reference/03.triggers.md",
+  "language": "ja",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "931e8e48ae9fea74",
+      "source": "b24eb5cb51062cdc",
+      "glossary": {
+        "trigger": "トリガー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "98495d951b64e895",
+      "source": "14dc95e2dc43450e",
+      "glossary": {
+        "Add trigger": "トリガーを追加",
+        "automation": "オートメーション",
+        "automation editor": "オートメーションエディタ",
+        "trigger": "トリガー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "all-of-these-happened",
+      "hash": "0daab128554711d5",
+      "source": "439776e1f5c2fcab",
+      "glossary": {
+        "trigger": "トリガー",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-turned-off",
+      "hash": "3aebf281dc6c0fe8",
+      "source": "a22fc253aa0febba",
+      "glossary": {
+        "automation": "オートメーション"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "condition-turned-true",
+      "hash": "72f01a323220692f",
+      "source": "eef93075d4c254bf",
+      "glossary": {
+        "condition": "条件",
+        "template": "テンプレート"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cron-schedule",
+      "hash": "6f8f14492ee8ccf8",
+      "source": "adcfba7bfdef0a43",
+      "glossary": {
+        "trigger": "トリガー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-added",
+      "hash": "6cc53528b5b3420d",
+      "source": "26628c9d9a36d667",
+      "glossary": {
+        "device": "デバイス"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-discovered",
+      "hash": "72a19e8407a85a93",
+      "source": "981a0585f771c56c",
+      "glossary": {
+        "device": "デバイス"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-came-back",
+      "hash": "f02b9e0cbb78c60c",
+      "source": "6a37f3ad7542c818",
+      "glossary": {
+        "entity": "エンティティ"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-fell-silent",
+      "hash": "5099539a2c6c8d18",
+      "source": "e3542b0a1390e8e8",
+      "glossary": {
+        "device": "デバイス",
+        "entity": "エンティティ"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-will-not-settle",
+      "hash": "1584d43ed26f3370",
+      "source": "70130344a18d734d",
+      "glossary": {
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "state": "状態"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-added",
+      "hash": "e88a3d1bcbfb21a9",
+      "source": "ef35fb1188801535",
+      "glossary": {
+        "integration": "統合"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-failed-to-set-up",
+      "hash": "93cf2b15023a6959",
+      "source": "8781a7757001b3af",
+      "glossary": {
+        "integration": "統合"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "once-it-settles",
+      "hash": "1ccbf8249734560b",
+      "source": "db53f14af0e65d82",
+      "glossary": {
+        "trigger": "トリガー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "position-reached",
+      "hash": "f562e7fac1b2b7be",
+      "source": "ce7c035c61b6e89b",
+      "glossary": {
+        "cover": "カバー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repair-issue-created",
+      "hash": "9e81034d89c01244",
+      "source": "a0376b4702a42a1c",
+      "glossary": {
+        "integration": "統合",
+        "issue": "問題",
+        "repair": "修復"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repair-issue-resolved",
+      "hash": "94c7b15fd2541d92",
+      "source": "7a2c4927e0d1fb50",
+      "glossary": {
+        "issue": "問題",
+        "repair": "修復"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "script-started",
+      "hash": "d5856722ecd36250",
+      "source": "d6aa81b1e98fea79",
+      "glossary": {
+        "script": "スクリプト",
+        "trigger": "トリガー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "spooks-state-trigger",
+      "hash": "fb4bbb2e99d1c346",
+      "source": "9b2b92fbc9452a14",
+      "glossary": {
+        "area": "エリア",
+        "attribute": "属性",
+        "cover": "カバー",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "floor": "フロア",
+        "integration": "統合",
+        "label": "ラベル",
+        "state": "状態",
+        "trigger": "トリガー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "target-temperature-reached",
+      "hash": "43141dfd4ec6a97d",
+      "source": "3f85d7dc772019a5",
+      "glossary": {},
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "triggers-in-order",
+      "hash": "3d96d331c7298bcd",
+      "source": "6d399ed9f394be96",
+      "glossary": {
+        "trigger": "トリガー",
+        "optional": "任意"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "update-installed",
+      "hash": "fd095cccb14bd789",
+      "source": "0a0feb469f1f4310",
+      "glossary": {
+        "device": "デバイス",
+        "entity": "エンティティ"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-added",
+      "hash": "cff40b279f480469",
+      "source": "c149b7a279d4dccf",
+      "glossary": {
+        "user": "ユーザー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "watchdog",
+      "hash": "ba7d5189845486f8",
+      "source": "1d1f8e39cc2a2d18",
+      "glossary": {
+        "entity": "エンティティ",
+        "helper": "ヘルパー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "while-a-condition-holds",
+      "hash": "bf4747b71eaec2cb",
+      "source": "72f25492f5e5aefc",
+      "glossary": {
+        "condition": "条件",
+        "script": "スクリプト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

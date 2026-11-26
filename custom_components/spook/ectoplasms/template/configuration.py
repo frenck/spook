@@ -64,6 +64,9 @@ class YamlTemplateEntity:
     # The validated configurations it was read from. A reload hands every
     # entity new ones, so these tell whether it is still the same.
     sources: tuple[object, ...]
+    # Whether it comes from a blueprint. Whoever uses one cannot edit what
+    # it holds, which decides what is worth reporting about it.
+    made_from_blueprint: bool = False
 
     def is_read_from(self, other: YamlTemplateEntity) -> bool:
         """Return whether both were read from the very same configuration."""
@@ -188,6 +191,7 @@ def async_get_yaml_template_entities(
                     name=state.name if state is not None else entity_id,
                     config=config,
                     sources=_sources(entity),
+                    made_from_blueprint=entity.referenced_blueprint is not None,
                 )
             )
 

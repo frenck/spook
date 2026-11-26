@@ -10,10 +10,20 @@ from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+)
 
+from homeassistant.config_entries import (
+    SIGNAL_CONFIG_ENTRY_CHANGED,
+    ConfigEntryChange,
+    ConfigEntryDisabler,
+    ConfigEntryState,
+)
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from custom_components.spook import repairs
@@ -27,12 +37,18 @@ import pytest
 
 EXPECTED_UNSUBSCRIBE_COUNT = 4
 EXPECTED_INTERVAL_INSPECTIONS = 2
+EXPECTED_UNCHANGED_INSPECTIONS = 2
+EXPECTED_CHANGED_INSPECTIONS = 3
+EXPECTED_SUBENTRY_INSPECTIONS = 4
+EXPECTED_RENAMED_INSPECTIONS = 5
+EXPECTED_DISABLED_INSPECTIONS = 6
+EXPECTED_LOOKED_AGAIN_INSPECTIONS = 2
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from freezegun.api import FrozenDateTimeFactory
-    from homeassistant.config_entries import ConfigEntry, ConfigEntryChange
+    from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
 
@@ -187,6 +203,412 @@ async def test_inspect_interval_reinspects_over_time(
     await hass.async_block_till_done()
     await _flush_debouncer(hass, freezer)
     assert repair.inspections == EXPECTED_INTERVAL_INSPECTIONS
+
+
+async def test_config_entry_update_without_changes_skips_inspection(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A config entry that only changed state is no reason to look again.
+
+    UPDATED fires on bare state transitions too, like every attempt of a
+    setup that keeps failing, and each one used to run a full inspection.
+    #2034.
+    """
+    entry = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    repair = MockRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    # The first UPDATED gets a look: what it holds may really have changed.
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # The same data again, like a setup retry firing, gets none.
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # New data gets none either: no repair reads it, and it is where an
+    # integration keeps its tokens, so every token refresh fires UPDATED.
+    refreshed = MockConfigEntry(
+        domain="mock",
+        data={"key": "value", "token": "refreshed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, refreshed
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # New options on the same entry are a real change, and do get one.
+    changed = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        options={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, changed
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_CHANGED_INSPECTIONS
+
+    # A changed subentry leaves data and options alone but rides along on
+    # UPDATED, and does get a look too.
+    with_subentry = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        options={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+        subentries_data=[
+            {
+                "subentry_id": "fedcba9876543210fedcba9876543210",
+                "subentry_type": "test",
+                "title": "Sub",
+                "data": {"sub": "data"},
+            },
+        ],
+    )
+    async_dispatcher_send(
+        hass,
+        SIGNAL_CONFIG_ENTRY_CHANGED,
+        ConfigEntryChange.UPDATED,
+        with_subentry,
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    # A rename leaves everything the fingerprint held alone but rides along
+    # on UPDATED too, and does get a look.
+    renamed = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        options={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+        subentries_data=[
+            {
+                "subentry_id": "fedcba9876543210fedcba9876543210",
+                "subentry_type": "test",
+                "title": "Sub",
+                "data": {"sub": "data"},
+            },
+        ],
+        title="Renamed",
+    )
+    async_dispatcher_send(
+        hass,
+        SIGNAL_CONFIG_ENTRY_CHANGED,
+        ConfigEntryChange.UPDATED,
+        renamed,
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_RENAMED_INSPECTIONS
+
+    # Disabling the entry does the same.
+    disabled = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        options={"key": "changed"},
+        entry_id="0123456789abcdef0123456789abcdef",
+        subentries_data=[
+            {
+                "subentry_id": "fedcba9876543210fedcba9876543210",
+                "subentry_type": "test",
+                "title": "Sub",
+                "data": {"sub": "data"},
+            },
+        ],
+        title="Renamed",
+        disabled_by=ConfigEntryDisabler.USER,
+    )
+    async_dispatcher_send(
+        hass,
+        SIGNAL_CONFIG_ENTRY_CHANGED,
+        ConfigEntryChange.UPDATED,
+        disabled,
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_DISABLED_INSPECTIONS
+
+    await repair.async_deactivate()
+
+
+async def test_config_entry_loading_or_unloading_gets_a_look(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An entry that loaded or unloaded is a reason to look, a retry is not.
+
+    A repair reading what a loaded entry holds finds nothing while the entry
+    is still setting up. Skipping the update that says it loaded would leave
+    that as the last word.
+    """
+    entry = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    repair = MockRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    async def _state_changes_to(state: ConfigEntryState) -> None:
+        entry.mock_state(hass, state)
+        async_dispatcher_send(
+            hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+        )
+        await _flush_debouncer(hass, freezer)
+
+    # The first UPDATED gets a look, whatever it says.
+    await _state_changes_to(ConfigEntryState.SETUP_IN_PROGRESS)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # A setup that keeps failing goes from one state to the next without
+    # ever being loaded, and gets no look.
+    await _state_changes_to(ConfigEntryState.SETUP_RETRY)
+    await _state_changes_to(ConfigEntryState.SETUP_IN_PROGRESS)
+    await _state_changes_to(ConfigEntryState.SETUP_RETRY)
+    await _state_changes_to(ConfigEntryState.SETUP_IN_PROGRESS)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # Once it loads, it does.
+    await _state_changes_to(ConfigEntryState.LOADED)
+    assert repair.inspections == EXPECTED_CHANGED_INSPECTIONS
+
+    # And when it starts unloading, and again when that is done: the look
+    # at the start may come before everything it brought is gone.
+    await _state_changes_to(ConfigEntryState.UNLOAD_IN_PROGRESS)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    await _state_changes_to(ConfigEntryState.NOT_LOADED)
+    assert repair.inspections == EXPECTED_RENAMED_INSPECTIONS
+
+    await repair.async_deactivate()
+
+
+class MockFailingRepair(AbstractSpookRepair):
+    """Mock repair whose inspection can be made to fail."""
+
+    domain = "mock"
+    repair = "mock_repair"
+    inspect_config_entry_changed = True
+
+    inspections = 0
+    raise_on_inspect = False
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair."""
+        self.inspections += 1
+        if self.raise_on_inspect:
+            msg = "Inspection went bump in the night"
+            raise HomeAssistantError(msg)
+
+
+class MockSlowRepair(AbstractSpookRepair):
+    """Mock repair whose first inspection takes as long as the test wants."""
+
+    domain = "mock"
+    repair = "mock_repair"
+    inspect_events = {"mock_event"}
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self.inspections = 0
+        self.started = asyncio.Event()
+        self.release = asyncio.Event()
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair, waiting to be released."""
+        self.inspections += 1
+        self.started.set()
+        await self.release.wait()
+
+
+async def _let_tasks_run() -> None:
+    """Give tasks started along the way their turns, without waiting for all."""
+    for _ in range(5):
+        await asyncio.sleep(0)
+
+
+async def test_a_look_asked_for_mid_round_is_not_lost(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a look asked for while a round runs gets a round of its own.
+
+    Home Assistant's debouncer drops a call when its cooldown runs out while
+    the function still runs. Whatever changed after the round read it, like
+    the new configuration behind an `automation_reloaded`, went unseen.
+    """
+    repair = MockSlowRepair(hass)
+    await repair.async_activate()
+
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await repair.started.wait()
+
+    # Asked for a look while the first round runs, and the cooldown runs
+    # out before that round is done.
+    hass.bus.async_fire("mock_event")
+    await _let_tasks_run()
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await _let_tasks_run()
+
+    repair.release.set()
+    await hass.async_block_till_done()
+    await _flush_debouncer(hass, freezer)
+
+    assert repair.inspections == EXPECTED_LOOKED_AGAIN_INSPECTIONS
+
+    # Nothing asked for meanwhile, so nothing more.
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_LOOKED_AGAIN_INSPECTIONS
+
+    await repair.async_deactivate()
+
+
+async def test_a_look_asked_for_mid_round_is_one_round_when_the_round_ends_first(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a round that ends before the cooldown does gets one round after.
+
+    The look the debouncer has planned anyway and the one asked for again
+    are the same look, so they make one round, not two.
+    """
+    repair = MockSlowRepair(hass)
+    await repair.async_activate()
+
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await repair.started.wait()
+
+    hass.bus.async_fire("mock_event")
+    await _let_tasks_run()
+    repair.release.set()
+    await hass.async_block_till_done()
+
+    await _flush_debouncer(hass, freezer)
+    await _flush_debouncer(hass, freezer)
+
+    assert repair.inspections == EXPECTED_LOOKED_AGAIN_INSPECTIONS
+
+    await repair.async_deactivate()
+
+
+class MockWaitingRepair(MockSlowRepair):
+    """Mock repair listening to an event of its own."""
+
+    inspect_events = {"waiting_event"}
+
+
+async def test_a_look_asked_for_while_waiting_for_the_turn_adds_nothing(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a look asked for before the round read anything adds no round.
+
+    The round waiting for its turn reads after the change it was asked
+    about, so it sees it, even with the cooldown running out meanwhile.
+    """
+    holder = MockSlowRepair(hass)
+    waiting = MockWaitingRepair(hass)
+    waiting.release.set()
+    await holder.async_activate()
+    await waiting.async_activate()
+
+    # Both rounds start, the first one takes the turn and holds on to it.
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await holder.started.wait()
+    await _let_tasks_run()
+    assert waiting.inspections == 0
+
+    # Asked for a look while waiting, and the cooldown runs out meanwhile.
+    hass.bus.async_fire("waiting_event")
+    await _let_tasks_run()
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await _let_tasks_run()
+
+    holder.release.set()
+    await hass.async_block_till_done()
+    await _flush_debouncer(hass, freezer)
+    await _flush_debouncer(hass, freezer)
+
+    assert holder.inspections == 1
+    assert waiting.inspections == 1
+
+    await holder.async_deactivate()
+    await waiting.async_deactivate()
+
+
+async def test_config_entry_update_retries_after_failed_inspection(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A look that failed keeps the next identical UPDATED a reason to look.
+
+    The fingerprint for a failed run is dropped, so the same entry data
+    still sends the repair back in instead of being skipped for good.
+    """
+    entry = MockConfigEntry(
+        domain="mock",
+        data={"key": "value"},
+        entry_id="0123456789abcdef0123456789abcdef",
+    )
+    repair = MockFailingRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    # The UPDATED gets a look, the look fails.
+    repair.raise_on_inspect = True
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_UNCHANGED_INSPECTIONS
+
+    # The same data again is not skipped: the failed look left no
+    # fingerprint behind, so it is a reason to look once more.
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_CHANGED_INSPECTIONS
+
+    # Once a look lands, the fingerprint holds again and the same data
+    # is skipped like before.
+    repair.raise_on_inspect = False
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    async_dispatcher_send(
+        hass, SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntryChange.UPDATED, entry
+    )
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_SUBENTRY_INSPECTIONS
+
+    await repair.async_deactivate()
 
 
 async def test_unloading_leaves_the_issue_registry_alone(

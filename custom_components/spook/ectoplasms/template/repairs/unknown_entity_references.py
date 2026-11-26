@@ -13,6 +13,7 @@ from ....action_extraction import (
     async_extract_entities_from_helper_actions,
     extract_not_entity_ids_from_config,
 )
+from ....configuration_cache import read_once
 from ....const import LOGGER
 from ....entity_filtering import (
     async_filter_known_entity_ids,
@@ -42,6 +43,9 @@ from ..configuration import (
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+
 
 class SpookRepair(AbstractSpookRepair):
     """Spook repair finds unknown entities referenced in template entities.
@@ -64,6 +68,27 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = "template"
     inspect_on_reload = "template"
     automatically_clean_up_issues = True
+
+    _options: dict[str, tuple[Mapping[str, Any], dict[str, Any]]]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._options = {}
+
+    def _options_of(self, entry: ConfigEntry) -> dict[str, Any]:
+        """Return the options of a helper as a mapping to read.
+
+        The same copy every round, a new one only when the helper gets new
+        options. A copy made every round would be a configuration no one asks
+        about again, kept by every reader that remembers what it read.
+        """
+        options = entry.options
+        copied = self._options.get(entry.entry_id)
+        if copied is None or copied[0] is not options:
+            copied = (options, dict(options))
+            self._options[entry.entry_id] = copied
+        return copied[1]
 
     async def async_activate(self) -> None:
         """Activate the repair."""
@@ -97,10 +122,17 @@ class SpookRepair(AbstractSpookRepair):
         known_entity_ids = async_get_all_entity_ids(self.hass, include_all_none=True)
         known_services = async_get_all_services(self.hass)
 
-        for entry in self.hass.config_entries.async_entries(self.domain):
+        entries = self.hass.config_entries.async_entries(self.domain)
+        # Whatever is gone is forgotten.
+        self._options = {
+            entry.entry_id: self._options[entry.entry_id]
+            for entry in entries
+            if entry.entry_id in self._options
+        }
+        for entry in entries:
             self.possible_issue_ids.add(entry.entry_id)
 
-            options = dict(entry.options)
+            options = self._options_of(entry)
             shadowed = names_given_to_templates(options)
             referenced = await async_extract_entities_from_config(
                 self.hass, options, known_services, shadowed
@@ -143,6 +175,17 @@ class SpookRepair(AbstractSpookRepair):
                 },
             )
 
+        # A template entity's configuration is put together anew every round,
+        # so it is read without remembering. Remembered, every round would
+        # keep another set of readings that no one asks for again, pushing
+        # out what the other repairs remembered.
+        with read_once():
+            await self._async_inspect_yaml(known_entity_ids, known_services)
+
+    async def _async_inspect_yaml(
+        self, known_entity_ids: set[str], known_services: set[str]
+    ) -> None:
+        """Inspect the template entities from the `template:` section."""
         for template_entity in async_get_yaml_template_entities(self.hass):
             # Reading a configuration is CPU-bound, and there can be many
             # template entities: the event loop gets a turn after each.

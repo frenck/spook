@@ -1,0 +1,1515 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/06.reference/01.actions.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/06.reference/01.actions.md",
+  "language": "pt-BR",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "9aac5be075096c20",
+      "source": "7e78315b3a6fc094",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "cd1468394c569b27",
+      "source": "14debb4969877b50",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "action": "ação",
+        "automation": "automação",
+        "script": "script",
+        "search for": "pesquise por"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-create-an-area",
+      "hash": "0315c2e5b71f2711",
+      "source": "45363e20afdcda24",
+      "glossary": {
+        "action": "ação",
+        "area": "área"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-update-an-area",
+      "hash": "9386824e4f987572",
+      "source": "147235e48b01a768",
+      "glossary": {
+        "action": "ação",
+        "area": "área"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-delete-an-area",
+      "hash": "51d1a210c188d5bd",
+      "source": "a29512aa4300b464",
+      "glossary": {
+        "action": "ação",
+        "area": "área"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-alias-to-an-area",
+      "hash": "459bedd2a0fb84b6",
+      "source": "e4d1747d2a017522",
+      "glossary": {
+        "action": "ação",
+        "area": "área"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-alias-from-an-area",
+      "hash": "f64041b6da566fe4",
+      "source": "6ca2ac5592c963f3",
+      "glossary": {
+        "action": "ação",
+        "area": "área"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-set-aliases-for-an-area",
+      "hash": "a6c7cb13ea882a05",
+      "source": "7e9d888288400c68",
+      "glossary": {
+        "action": "ação",
+        "area": "área"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-a-device-to-an-area",
+      "hash": "0ae9355c5c9812d2",
+      "source": "4c202c096c7d2410",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "device": "dispositivo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-a-device-from-an-area",
+      "hash": "b0d48955ae11cca1",
+      "source": "736ac6fbdf98c25e",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "device": "dispositivo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-entity-to-an-area",
+      "hash": "955e4bc9515299b6",
+      "source": "7fee1b296bed1e7b",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-entity-from-an-area",
+      "hash": "ed9614af7431b6e9",
+      "source": "43187a122242003f",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-snooze",
+      "hash": "089c3165a0521e7e",
+      "source": "38f32d05691898ef",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "restart": "reiniciar",
+        "snooze": "adiar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-turn-on-for",
+      "hash": "e71b4ae9d27da970",
+      "source": "319c5f79a85e0ea9",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "restart": "reiniciar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "blueprint-import-blueprint",
+      "hash": "399063c54049c72a",
+      "source": "10965e29fe0627be",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "blueprint": "blueprint",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-delete-event",
+      "hash": "0143a41e94be449f",
+      "source": "c41a3ca47547624e",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-update-event",
+      "hash": "cbc6104772dfc4e1",
+      "source": "059e83d8b27feec9",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-create-a-category",
+      "hash": "810c66d2dd7ec9c4",
+      "source": "58639afb175f4b59",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "helper": "helper",
+        "scene": "cena",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-update-a-category",
+      "hash": "b8f5b24513b7200e",
+      "source": "c7ea912d3dd1fbcc",
+      "glossary": {
+        "action": "ação",
+        "icon": "ícone"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-delete-a-category",
+      "hash": "0f5d167216a850a6",
+      "source": "fc34b1c6fbfbf1fb",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-add-a-category-to-an-entity",
+      "hash": "e86d6f2f3b22c587",
+      "source": "528a705c50a89d40",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "entity": "entidade",
+        "helper": "helper",
+        "scene": "cena",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-remove-a-category-from-an-entity",
+      "hash": "1d865c3d270f677e",
+      "source": "1f324254a8141e73",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "entity": "entidade",
+        "helper": "helper",
+        "scene": "cena",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-increase-temperature",
+      "hash": "6ecf2541ad9ab38e",
+      "source": "3f2c0f5b770cc4f7",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-decrease-temperature",
+      "hash": "8753ac5c1090fc2f",
+      "source": "206847c25376a58a",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-create",
+      "hash": "d105b3f3b07c367e",
+      "source": "f0df5c3077f1c9cc",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-delete",
+      "hash": "9594a038db2f2874",
+      "source": "11b3334e6161eed4",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-increase-position",
+      "hash": "b2db1a0f5c5e0a7b",
+      "source": "54587b992c95b8ad",
+      "glossary": {
+        "action": "ação",
+        "cover": "cobertura"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-decrease-position",
+      "hash": "ab09be81b741c91e",
+      "source": "346b63c59f6b3f1a",
+      "glossary": {
+        "action": "ação",
+        "cover": "cobertura"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-disable",
+      "hash": "79ca4af8d084816e",
+      "source": "2d65b54df3adf0cc",
+      "glossary": {
+        "action": "ação",
+        "device": "dispositivo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-enable",
+      "hash": "c352608355f4cd30",
+      "source": "08a9a3c6d00c5e94",
+      "glossary": {
+        "action": "ação",
+        "device": "dispositivo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-update",
+      "hash": "825329f790adebba",
+      "source": "5a82aae7771e5b72",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "device": "dispositivo",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "delete-all-orphaned-entities",
+      "hash": "5394302eed982552",
+      "source": "96a90ba8b0440c68",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade",
+        "integration": "integração",
+        "restart": "reiniciar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-disable",
+      "hash": "5bed26a5ab4a25e3",
+      "source": "7bf83fbd3c54489f",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-enable",
+      "hash": "a48836c215c88b8d",
+      "source": "e1587c9cf927d93f",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-hide",
+      "hash": "71bb3d8f5c450721",
+      "source": "2515fc8b87300941",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-unhide",
+      "hash": "f1813b2f6d0b534f",
+      "source": "1ba4109a1161e3b0",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-rename",
+      "hash": "1a1c6aaca3794333",
+      "source": "eb36dfbc05e48074",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-icon",
+      "hash": "86270bb8b8a65ccf",
+      "source": "bf4e306920ce0d7d",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade",
+        "icon": "ícone"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-add-an-alias",
+      "hash": "2804d62d22e04e71",
+      "source": "ae66375ea7e68988",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-remove-an-alias",
+      "hash": "fab0a9caa79b90df",
+      "source": "0e1a71b930edf934",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-aliases",
+      "hash": "92ee05bcce659726",
+      "source": "4377d0257d0eedeb",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-expose-to-assistants",
+      "hash": "a3449427013b3710",
+      "source": "58cd034d696a80cc",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-stop-exposing-to-assistants",
+      "hash": "54a414357719b5ec",
+      "source": "c1aa37b13a740217",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-update-id",
+      "hash": "5665a07d359c9a0b",
+      "source": "87b75dd839af5a4f",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "list-all-orphaned-database-entities",
+      "hash": "ccbfd16e66c7c7fb",
+      "source": "e8071212452fedd4",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-create-a-floor",
+      "hash": "7e4dff79ee09e415",
+      "source": "f013fde69736ec00",
+      "glossary": {
+        "action": "ação",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-update-a-floor",
+      "hash": "c34e4cc31567b123",
+      "source": "27fc103b228da07d",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-delete-a-floor",
+      "hash": "c385c7b39a0f4636",
+      "source": "187892c90bdedf01",
+      "glossary": {
+        "action": "ação",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-alias-to-a-floor",
+      "hash": "6b2eb366b96d9f13",
+      "source": "286fdd62f1fc246c",
+      "glossary": {
+        "action": "ação",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-alias-from-a-floor",
+      "hash": "f26203a0655b6f98",
+      "source": "38bbc968049f2de8",
+      "glossary": {
+        "action": "ação",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-set-aliases-for-a-floor",
+      "hash": "0b1ae6e5f40ed9a3",
+      "source": "a817438fb5d18a0c",
+      "glossary": {
+        "action": "ação",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-area-to-a-floor",
+      "hash": "cfd3ba6f0a797337",
+      "source": "fab6e98bd700aa4a",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-area-from-a-floor",
+      "hash": "ff86d1ade46229c1",
+      "source": "b2a6dab5b0feab3f",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "floor": "andar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-add-members",
+      "hash": "9ead3a8b11108440",
+      "source": "f71df2953fa7d168",
+      "glossary": {
+        "action": "ação",
+        "by hand": "à mão"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-remove-members",
+      "hash": "29c65adc172fb5b4",
+      "source": "4575af4189040dad",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-set-members",
+      "hash": "11faef4d61f86956",
+      "source": "03023f3aab11b3d6",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "restart",
+      "hash": "d0894064c0d4460e",
+      "source": "d3d56d244deb0ce0",
+      "glossary": {
+        "action": "ação",
+        "restart": "reiniciar"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-increase-humidity",
+      "hash": "f58bc6755db5c4f3",
+      "source": "ee8e1c579fbfe7c1",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-decrease-humidity",
+      "hash": "596427c2328e5fee",
+      "source": "cacd68ec074639ff",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-create",
+      "hash": "5dde5465029d8673",
+      "source": "f7812cf040570ee8",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-delete",
+      "hash": "4416e65baa73db4c",
+      "source": "b6d6d5f9b92faaf6",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-create",
+      "hash": "599fc8ddb347c349",
+      "source": "f9932c2286f44825",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-delete",
+      "hash": "991c1b6c399852ac",
+      "source": "0bd2ed2cdad955f7",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-create",
+      "hash": "649377bc12322f63",
+      "source": "f64bad322606e1ac",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-delete",
+      "hash": "686f9e79fa9b103e",
+      "source": "0adaf4e950b99697",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-create",
+      "hash": "25b207a8989ee228",
+      "source": "50d14866a6f13b85",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-delete",
+      "hash": "26241918c0d8e5ae",
+      "source": "566263b8c8a90a6e",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-decrease-value",
+      "hash": "9141298fda168dda",
+      "source": "134e7331ee4c4454",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-increase-value",
+      "hash": "089fe8da06ae88cd",
+      "source": "cdc3bef29610730e",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-maximum-value",
+      "hash": "d16336eac56d2046",
+      "source": "14738757955cd2a1",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-minimum-value",
+      "hash": "097bf136a10094db",
+      "source": "881051a428403506",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-range",
+      "hash": "f81e4e0653c7c5cc",
+      "source": "c690b509aa3834b4",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-create",
+      "hash": "824322dcd6e60410",
+      "source": "70df3e925b7f666d",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-delete",
+      "hash": "ef65ff80abd47f76",
+      "source": "721ff7c60fccfa3f",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-select-random-option",
+      "hash": "d6dbde0510549ef4",
+      "source": "589bebfabf24bbaa",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-reverse-options",
+      "hash": "876812376f48b79a",
+      "source": "9b946636eb745c08",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-shuffle-options",
+      "hash": "d4ebe84507a70832",
+      "source": "eb9c7dcdee515ca6",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-sort-options",
+      "hash": "134c07352e9653e4",
+      "source": "e3d8bbe3f7fd690b",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-create",
+      "hash": "39af13f17b5a6424",
+      "source": "f65dd272abc769ca",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-delete",
+      "hash": "6c671967d198ff68",
+      "source": "d336d44982db6ad3",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "ignore-all-discovered-devices-services",
+      "hash": "4fd906814c021732",
+      "source": "1e0686ce57c0ff90",
+      "glossary": {
+        "action": "ação",
+        "dashboard": "dashboard",
+        "device": "dispositivo",
+        "integration": "integração"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable",
+      "hash": "671aab3bfef2bad1",
+      "source": "8c477108ebd6470a",
+      "glossary": {
+        "action": "ação",
+        "dashboard": "dashboard",
+        "integration": "integração",
+        "integration entry": "entrada da integração"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable",
+      "hash": "2f72bbecf9775068",
+      "source": "00df5770bca6d9a9",
+      "glossary": {
+        "action": "ação",
+        "integration": "integração"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable-polling-for-updates",
+      "hash": "08d2cd0c90ecc0d0",
+      "source": "8fe544cee98d435e",
+      "glossary": {
+        "action": "ação",
+        "dashboard": "dashboard",
+        "integration": "integração",
+        "integration entry": "entrada da integração"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable-polling-for-updates",
+      "hash": "6715e54c9f108edb",
+      "source": "89af14a7d955067a",
+      "glossary": {
+        "action": "ação",
+        "dashboard": "dashboard",
+        "integration": "integração",
+        "integration entry": "entrada da integração"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-create-a-label",
+      "hash": "1e64989bf488f9f6",
+      "source": "aae2e31ec3ebd56a",
+      "glossary": {
+        "action": "ação",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-update-a-label",
+      "hash": "f403ab30baead153",
+      "source": "9aba8fe880ef45a2",
+      "glossary": {
+        "action": "ação",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-delete-a-label",
+      "hash": "73b1c26f14917f33",
+      "source": "b5244dbfa714aa43",
+      "glossary": {
+        "action": "ação",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-area",
+      "hash": "ba37f5d1fd11ed7d",
+      "source": "aa6400d84df2e5e0",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-area",
+      "hash": "ea9cb351cae03c5e",
+      "source": "0c105083bf7450a9",
+      "glossary": {
+        "action": "ação",
+        "area": "área",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-a-device",
+      "hash": "ab67e3912ef050dc",
+      "source": "e0668f0d78cb6cf9",
+      "glossary": {
+        "action": "ação",
+        "device": "dispositivo",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-a-device",
+      "hash": "0765d599b79c5c13",
+      "source": "6e056912c9a3f9b6",
+      "glossary": {
+        "action": "ação",
+        "device": "dispositivo",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-entity",
+      "hash": "0e7ba2459a7733cb",
+      "source": "8595f13ce982d316",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-entity",
+      "hash": "56e768360d1981e0",
+      "source": "257c2b2b46c88802",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade",
+        "label": "etiqueta"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-brightness",
+      "hash": "94d94307ab58afb7",
+      "source": "68a205bacaf6b2fc",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-increase-brightness",
+      "hash": "ef528e113b6b419e",
+      "source": "e3f48b829279af10",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-decrease-brightness",
+      "hash": "a2a685d1082deae1",
+      "source": "8cd4775f20b68333",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color",
+      "hash": "98c6f91646cda01d",
+      "source": "13830bd6bdd89cb9",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color-temperature",
+      "hash": "486743c71bebfeb8",
+      "source": "e7df1233759a686b",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-effect",
+      "hash": "7838c9e0645eec84",
+      "source": "a389ea5f3ddbcd1d",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-increase-volume",
+      "hash": "acf2e78f4a58fe5e",
+      "source": "e3877319b2187f0a",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-decrease-volume",
+      "hash": "99556699b9d1dfa7",
+      "source": "fd5fbe306c81d56c",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-decrease-value",
+      "hash": "ed19f58274ccde62",
+      "source": "35485b249f9d26f2",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-increase-value",
+      "hash": "eb2aeb847c3728a8",
+      "source": "5403c49c15a0239a",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-maximum-value",
+      "hash": "84eaf0b580690b2e",
+      "source": "4ef6d2bfca521e08",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-minimum-value",
+      "hash": "478033959c35eb4c",
+      "source": "5455cf7bebca98c3",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-add-a-device-tracker",
+      "hash": "139d1277108c4ca3",
+      "source": "49e6c182192889dc",
+      "glossary": {
+        "action": "ação",
+        "device": "dispositivo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-remove-a-device-tracker",
+      "hash": "fdfb58961004450c",
+      "source": "c6f9b77d9f63b3b9",
+      "glossary": {
+        "action": "ação",
+        "device": "dispositivo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "recorder-import-statistics",
+      "hash": "d58031f72c32f845",
+      "source": "24ea765fabc46c1d",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-create-issue",
+      "hash": "857305400f32fa85",
+      "source": "744c786a00750dc1",
+      "glossary": {
+        "action": "ação",
+        "issue": "problema",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-ignore-all-issues",
+      "hash": "f6b2751144be7a75",
+      "source": "c5e262e8084c1510",
+      "glossary": {
+        "action": "ação",
+        "issue": "problema",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-list-issues",
+      "hash": "ddff873a0042e391",
+      "source": "4827f6642473f134",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "dashboard": "dashboard",
+        "issue": "problema",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-remove-issue",
+      "hash": "f306111ca97078ff",
+      "source": "15ddeedd3336231e",
+      "glossary": {
+        "action": "ação",
+        "issue": "problema",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-unignore-all-issues",
+      "hash": "a20ab574b59c14e4",
+      "source": "4afe7012cfcdf14e",
+      "glossary": {
+        "action": "ação",
+        "issue": "problema",
+        "repair": "reparo"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-create",
+      "hash": "033cb19519240abf",
+      "source": "93397dde51f95061",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-delete",
+      "hash": "3d630aa066b035fb",
+      "source": "cea37985b6a22849",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-set-the-time-blocks-of-a-day",
+      "hash": "eb1a3eb1887f9f0f",
+      "source": "6a8316128da4acd2",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "select-select-random-option",
+      "hash": "33bf408caf4a2a33",
+      "source": "b6d353c408aa135a",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "sensor-set-display-precision",
+      "hash": "fa8301d40da54ed4",
+      "source": "d628b43e7535cb1a",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "wait-for-a-condition",
+      "hash": "f803112413c37737",
+      "source": "e708f91ce886296e",
+      "glossary": {
+        "action": "ação",
+        "condition": "condição",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "boo",
+      "hash": "d35be3cdfaa7b922",
+      "source": "f92ff152411b1478",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "random-fail",
+      "hash": "2525f3378cd2b7d4",
+      "source": "14fbea313c1bb34a",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-create",
+      "hash": "cc9bb999ab71b125",
+      "source": "00844ea89714d0d8",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-delete",
+      "hash": "0de665365c480489",
+      "source": "4ceb5f9060116c94",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-set-duration",
+      "hash": "5e1396e3fc1173ca",
+      "source": "955c1da4b85959ff",
+      "glossary": {
+        "action": "ação",
+        "entity": "entidade"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "to-do-list-move-item",
+      "hash": "98606bdade79e8d8",
+      "source": "bbb15cc31bde37a2",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-disable",
+      "hash": "83058536c0fd55df",
+      "source": "314b1eedb14f3eea",
+      "glossary": {
+        "action": "ação",
+        "user": "usuário"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-enable",
+      "hash": "961c797a39e0c5ed",
+      "source": "2fb8ac151a26c5f9",
+      "glossary": {
+        "action": "ação",
+        "user": "usuário"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-increase-position",
+      "hash": "5d52da1eb3cdd9ee",
+      "source": "f2f4e45d5feab91b",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-decrease-position",
+      "hash": "80e781c8357793cf",
+      "source": "c92856e472c3bf2b",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-increase-temperature",
+      "hash": "759adcca3f684b13",
+      "source": "7adafb60f6679ce9",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-decrease-temperature",
+      "hash": "902216c2e5bdcfab",
+      "source": "bcb3ef24d232159e",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-create",
+      "hash": "cca6182162325572",
+      "source": "5f4a74834751d2b2",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-update",
+      "hash": "241c45ee8e8dd2a0",
+      "source": "8e0629178742af2a",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-delete",
+      "hash": "29efa0e28c31dd49",
+      "source": "4af7f899353def9e",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

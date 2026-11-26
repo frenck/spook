@@ -12,7 +12,7 @@ from homeassistant.components.proximity.const import (
 )
 from homeassistant.const import CONF_ZONE
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry

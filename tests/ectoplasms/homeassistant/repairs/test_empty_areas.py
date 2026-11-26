@@ -4,14 +4,15 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+from unittest.mock import patch
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook import registry_usage
+from custom_components.spook import reference_extraction, registry_usage
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs.empty_areas import (
     SpookRepair,
@@ -492,3 +493,73 @@ async def test_an_area_that_filled_up_since_is_left_alone(
     assert result["reason"] == "changed"
     assert area_registry.async_get_area(area.id) is not None
     assert entity_registry.async_get(entity.entity_id).area_id == area.id
+
+
+_SCRIPT_NAMING_THE_STUDY = {
+    "script": {
+        "clean": {
+            "sequence": [
+                {
+                    "repeat": {
+                        "for_each": ["study"],
+                        "sequence": [{"action": "vacuum.start", "target": {}}],
+                    }
+                }
+            ]
+        }
+    }
+}
+
+
+def _watching_the_walk() -> Any:
+    """Return a patch counting the walks through every configuration."""
+    # pylint: disable-next=protected-access
+    walk = reference_extraction._every_string_in_automations_and_scripts  # noqa: SLF001
+    return patch.object(
+        reference_extraction, "_every_string_in_automations_and_scripts", wraps=walk
+    )
+
+
+async def test_no_walk_through_the_configuration_when_every_area_is_in_use(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test every automation and script is only read for an area in question.
+
+    An area holding an entity is in use, whatever any configuration says.
+    Reading every automation and script anyway takes time on a large one.
+    """
+    area = area_registry.async_create("Living Room")
+    entry = entity_registry.async_get_or_create("light", "hue", "ceiling")
+    entity_registry.async_update_entity(entry.entity_id, area_id=area.id)
+    freezer.tick(_AGED)
+    assert await async_setup_component(hass, "script", _SCRIPT_NAMING_THE_STUDY)
+    await hass.async_block_till_done()
+
+    with _watching_the_walk() as walk:
+        await SpookRepair(hass).async_inspect()
+
+    walk.assert_not_called()
+
+
+async def test_one_walk_through_the_configuration_for_every_area_in_question(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the configuration is read once a round, however many areas ask."""
+    study = area_registry.async_create("Study")
+    forgotten = area_registry.async_create("Forgotten")
+    freezer.tick(_AGED)
+    assert await async_setup_component(hass, "script", _SCRIPT_NAMING_THE_STUDY)
+    await hass.async_block_till_done()
+
+    with _watching_the_walk() as walk:
+        await SpookRepair(hass).async_inspect()
+
+    walk.assert_called_once()
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(study.id)) is None
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.id))

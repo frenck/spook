@@ -1,0 +1,44 @@
+# The source of blueprints/automation/spook/door_light.yaml, one version on:
+# the light now goes off again after a while.
+blueprint:
+  name: "${blueprints.door_light.name}"
+  description: "${blueprints.door_light.new_description}"
+  domain: automation
+  source_url: http://127.0.0.1:8123/local/.blueprints/door_light.yaml
+  input:
+    door_entity:
+      name: "${blueprints.door_light.door}"
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+              device_class: door
+    light_target:
+      name: "${blueprints.door_light.light}"
+      selector:
+        target:
+          entity:
+            - domain: light
+    wait_time:
+      name: "${blueprints.door_light.wait_time}"
+      default: 120
+      selector:
+        number:
+          min: 0
+          max: 3600
+          unit_of_measurement: s
+
+mode: restart
+
+triggers:
+  - trigger: state
+    entity_id: !input door_entity
+    to: "on"
+
+actions:
+  - action: light.turn_on
+    target: !input light_target
+  - delay:
+      seconds: !input wait_time
+  - action: light.turn_off
+    target: !input light_target

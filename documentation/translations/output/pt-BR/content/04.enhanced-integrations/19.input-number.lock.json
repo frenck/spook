@@ -1,0 +1,237 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/19.input-number.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/19.input-number.md",
+  "language": "pt-BR",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "f9850cf67af538a9",
+      "source": "6226c457b8732d1e",
+      "glossary": {
+        "action": "ação",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "ec266a5fe48e1b1d",
+      "source": "b79eda09f8b2b434",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "condition": "condição",
+        "dashboard": "dashboard",
+        "helper": "helper",
+        "integration": "integração",
+        "trigger": "gatilho"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "0d49d6fb7105016c",
+      "source": "f2c38ceb1f056de9",
+      "glossary": {
+        "action": "ação"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "create-an-input-number",
+      "hash": "04e7478cbe7bd09f",
+      "source": "78d17081e58bb613",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "Input number: Create an input number 👻": "Entrada numérica: Criar uma entrada numérica 👻",
+        "Name": "Nome",
+        "Input number entity ID": "ID da entidade da entrada numérica",
+        "Minimum": "Mínimo",
+        "Maximum": "Máximo",
+        "Initial value": "Valor inicial",
+        "Step size": "Tamanho do passo",
+        "Display mode": "Modo de exibição",
+        "Icon": "Ícone",
+        "Unit of measurement": "Unidade de medida",
+        "Save": "Salvar",
+        "Attribute": "Atributo",
+        "Type": "Tipo",
+        "Required": "Obrigatório",
+        "action": "ação",
+        "attribute": "atributo",
+        "automation": "automação",
+        "blueprint": "blueprint",
+        "entity": "entidade",
+        "entity ID": "ID da entidade",
+        "helper": "helper",
+        "icon": "ícone",
+        "label": "etiqueta",
+        "script": "script",
+        "by hand": "à mão",
+        "search for": "pesquise por",
+        "string": "texto"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "delete-an-input-number",
+      "hash": "521019cc5a428f3e",
+      "source": "b31132fd5e376e2c",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "Input number: Delete an input number 👻": "Entrada numérica: Excluir uma entrada numérica 👻",
+        "Entity ID": "ID da entidade",
+        "Save": "Salvar",
+        "Attribute": "Atributo",
+        "Type": "Tipo",
+        "Required": "Obrigatório",
+        "action": "ação",
+        "attribute": "atributo",
+        "automation": "automação",
+        "entity": "entidade",
+        "entity ID": "ID da entidade",
+        "helper": "helper",
+        "label": "etiqueta",
+        "script": "script",
+        "list of strings": "lista de textos",
+        "search for": "pesquise por",
+        "string": "texto"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "decrease-value",
+      "hash": "7ee3431bf47b8a23",
+      "source": "8e9966aa70094a1f",
+      "glossary": {
+        "Amount": "Quantidade",
+        "Cycle": "Cíclico",
+        "Add action": "Adicionar ação",
+        "Input number: Decrease value 👻": "Entrada numérica: Reduzir o valor 👻",
+        "Targets": "Alvos",
+        "Save": "Salvar",
+        "Attribute": "Atributo",
+        "Type": "Tipo",
+        "Required": "Obrigatório",
+        "action": "ação",
+        "attribute": "atributo",
+        "automation": "automação",
+        "label": "etiqueta",
+        "script": "script",
+        "template": "template",
+        "search for": "pesquise por"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "increase-value",
+      "hash": "491d4a67b35bc6ae",
+      "source": "64952f1770b3a5c3",
+      "glossary": {
+        "Cycle": "Cíclico",
+        "Add action": "Adicionar ação",
+        "Input number: Increase value 👻": "Entrada numérica: Aumentar o valor 👻",
+        "Targets": "Alvos",
+        "Amount": "Quantidade",
+        "Save": "Salvar",
+        "Attribute": "Atributo",
+        "Type": "Tipo",
+        "Required": "Obrigatório",
+        "action": "ação",
+        "attribute": "atributo",
+        "automation": "automação",
+        "label": "etiqueta",
+        "script": "script",
+        "search for": "pesquise por"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "set-value-to-maximum",
+      "hash": "851263686a81d580",
+      "source": "72a0388075d8021f",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "Input number: Set maximum value 👻": "Entrada numérica: Definir o valor máximo 👻",
+        "Targets": "Alvos",
+        "Save": "Salvar",
+        "action": "ação",
+        "automation": "automação",
+        "helper": "helper",
+        "label": "etiqueta",
+        "script": "script",
+        "search for": "pesquise por"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "set-value-to-minimum",
+      "hash": "d67ac32133b3006e",
+      "source": "98115b72908bc14b",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "Input number: Set minimum value 👻": "Entrada numérica: Definir o valor mínimo 👻",
+        "Targets": "Alvos",
+        "Save": "Salvar",
+        "action": "ação",
+        "automation": "automação",
+        "label": "etiqueta",
+        "script": "script",
+        "search for": "pesquise por"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "set-range",
+      "hash": "8f5ffc06e73bb498",
+      "source": "fee19e84b42417b7",
+      "glossary": {
+        "Add action": "Adicionar ação",
+        "Input number: Set range 👻": "Entrada numérica: Definir a faixa 👻",
+        "Targets": "Alvos",
+        "Minimum": "Mínimo",
+        "Maximum": "Máximo",
+        "Step": "Passo",
+        "Save": "Salvar",
+        "Attribute": "Atributo",
+        "Type": "Tipo",
+        "Required": "Obrigatório",
+        "action": "ação",
+        "attribute": "atributo",
+        "automation": "automação",
+        "helper": "helper",
+        "label": "etiqueta",
+        "restart": "reiniciar",
+        "script": "script",
+        "user": "usuário",
+        "by hand": "à mão",
+        "search for": "pesquise por"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "a8d51264c6038bdd",
+      "source": "5ea8298990cc24c0",
+      "glossary": {
+        "action": "ação",
+        "automation": "automação",
+        "blueprint": "blueprint",
+        "helper": "helper",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

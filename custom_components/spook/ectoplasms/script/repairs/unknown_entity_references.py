@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code  # Mirrors the automation one; one shared base is its own change.
 """Spook - Your homie."""
 
 from __future__ import annotations
@@ -5,10 +6,15 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import script
-from homeassistant.const import EVENT_COMPONENT_LOADED
+from homeassistant.const import (
+    EVENT_COMPONENT_LOADED,
+    EVENT_SERVICE_REGISTERED,
+    EVENT_SERVICE_REMOVED,
+)
 from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
+    RememberedNames,
     async_extract_entities_from_action_config,
     async_unknown_entities_named,
 )
@@ -64,12 +70,19 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
 
     domain = script.DOMAIN
     repair = "script_unknown_entity_references"
+    # A name that is an action is no unknown entity, so an action coming or
+    # going changes the answer.
+    #
+    # They also say when a script reload is done: every script that changed
+    # takes its own action along when it goes, and brings it back.
     inspect_events = {
         EVENT_COMPONENT_LOADED,
+        EVENT_SERVICE_REGISTERED,
+        EVENT_SERVICE_REMOVED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = True
 
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"
@@ -79,6 +92,17 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
 
     _known_entity_ids: set[str]
     _known_services: set[str]
+    _remembered: RememberedNames
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair, remembering nothing yet."""
+        super().__init__(hass)
+        self._remembered = RememberedNames()
+
+    async def async_activate(self) -> None:
+        """Handle the activating a repair."""
+        self._event_subs.add(self._remembered.async_follow_actions(self.hass))
+        await super().async_activate()
 
     async def _async_setup_inspection(self) -> None:
         """Cache what every script in this cycle needs looked up.
@@ -91,8 +115,17 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             self.hass, include_all_none=True
         )
         self._known_services = async_get_all_services(self.hass)
+        self._remembered.start_round(self._known_services)
 
     async def _async_named_in(
+        self, config: dict[str, Any], shadowed: frozenset[str]
+    ) -> set[str]:
+        """Return the entities a configuration names, read once until it changes."""
+        return await self._remembered.async_named_in(
+            config, shadowed, self._async_read_named_in
+        )
+
+    async def _async_read_named_in(
         self, config: dict[str, Any], shadowed: frozenset[str]
     ) -> set[str]:
         """Return the entities a configuration names, the way this repair reads it.
@@ -127,22 +160,14 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         # data, like `entity: light.kitchen` in a call to another script. The
         # automation repair reads those from the configuration as written, and
         # so does this one.
+        # Its templates too, read the same way, so it is read once: the very
+        # reading the report settles with below.
         if isinstance(raw_config := getattr(entity, "raw_config", None), dict):
             all_entities.update(
-                await async_extract_entities_from_action_config(
-                    self.hass,
-                    raw_config.get("sequence") or [],
-                    known_services=self._known_services,
-                    shadowed=names_given_to_templates(raw_config),
+                await self._async_named_in(
+                    raw_config, names_given_to_templates(raw_config)
                 )
             )
-
-        # Extract entities from Template objects within the script entity
-        all_entities.update(
-            await extract_template_entities_from_script_entity(
-                self.hass, entity, self._known_services
-            )
-        )
 
         return await async_unknown_entities_named(
             self.hass,

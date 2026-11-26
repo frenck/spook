@@ -13,7 +13,7 @@ from homeassistant.config_entries import (
     ConfigEntryState,
 )
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     mock_integration,
@@ -36,8 +36,8 @@ def _integration(hass: HomeAssistant) -> None:
         hass,
         MockModule(
             _DOMAIN,
-            async_setup_entry=AsyncMock(return_value=True),
-            async_unload_entry=AsyncMock(return_value=True),
+            async_setup_entry=AsyncMock(return_value=None),
+            async_unload_entry=AsyncMock(return_value=None),
         ),
     )
     mock_platform(hass, f"{_DOMAIN}.config_flow", None)

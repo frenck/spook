@@ -4,21 +4,26 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
+from pytest_homeassistant.common import async_fire_time_changed
 from homeassistant.core import State
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import issue_registry as ir
 
+from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.alert.repairs.unknown_entity_references import (
     SpookRepair,
 )
 from tests.repair_helpers import async_issue_about, async_count_scheduled_inspections
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import entity_registry as er, issue_registry as ir
+    from homeassistant.helpers import entity_registry as er
 
 _YAML_CONFIG = "custom_components.spook.ectoplasms.alert.configuration.async_integration_yaml_config"
 _ISSUE_ID = "alert_unknown_entity_references_alert.garage"
@@ -142,19 +147,102 @@ async def test_unreadable_configuration_keeps_existing_issues(
     loaded running, so the broken ones are still broken. The inspection has
     to abort rather than report all clear.
     """
+    # Found before the restart, and still in the registry.
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        f"{_ISSUE_ID}_0123abcd",
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="alert_unknown_entity_references",
+    )
     config = _alert_yaml(
         garage={"name": "Garage door", "entity_id": "binary_sensor.gone"},
     )
     repair = SpookRepair(hass)
 
-    with patch(_YAML_CONFIG, return_value=config):
-        await repair._async_inspect_with_cleanup()
-    assert async_issue_about(issue_registry, _ISSUE_ID)
-
     with (
         patch(_YAML_CONFIG, side_effect=HomeAssistantError("broken")),
         pytest.raises(HomeAssistantError),
     ):
+        await repair._async_inspect_with_cleanup()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    # A read that failed is not remembered: the next look reads again.
+    with patch(_YAML_CONFIG, return_value=config) as yaml_config:
+        await repair._async_inspect_with_cleanup()
+
+    yaml_config.assert_called_once()
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+
+async def _let_time_pass(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory, passed: timedelta
+) -> None:
+    """Move the clock on, and let whatever comes due run."""
+    freezer.tick(passed)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+@pytest.mark.usefixtures("alert_set_up")
+async def test_a_configuration_that_could_not_be_read_gets_another_go(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a first read that failed is tried again, without anything happening.
+
+    Nothing about a broken file says when it is fixed, so the daily look is
+    what gets the alerts read after all.
+    """
+    config = _alert_yaml(
+        garage={"name": "Garage door", "entity_id": "binary_sensor.gone"},
+    )
+    repair = SpookRepair(hass)
+
+    with patch(_YAML_CONFIG, side_effect=HomeAssistantError("broken")):
+        await repair.async_activate()
+        await _let_time_pass(hass, freezer, timedelta(seconds=5))
+
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+
+    with patch(_YAML_CONFIG, return_value=config):
+        await _let_time_pass(hass, freezer, timedelta(days=1))
+        await _let_time_pass(hass, freezer, timedelta(seconds=5))
+
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    await repair.async_deactivate()
+
+
+@pytest.mark.usefixtures("alert_set_up")
+async def test_configuration_is_read_once_per_run(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the configuration is read once, and kept for every look after.
+
+    Home Assistant cannot reload alerts, so what it read at the start is
+    what runs until it restarts. Reading the file again on every look took
+    seconds on a large configuration, and could only find the same alerts,
+    or edits that are not running yet. A file broken since changes nothing
+    either: the alerts that run are the ones read.
+    """
+    config = _alert_yaml(
+        garage={"name": "Garage door", "entity_id": "binary_sensor.gone"},
+    )
+    repair = SpookRepair(hass)
+
+    with patch(_YAML_CONFIG, return_value=config) as yaml_config:
+        await repair._async_inspect_with_cleanup()
+        await repair._async_inspect_with_cleanup()
+
+    yaml_config.assert_called_once()
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    with patch(_YAML_CONFIG, side_effect=HomeAssistantError("broken")):
         await repair._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID)

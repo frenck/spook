@@ -32,7 +32,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         automation.EVENT_AUTOMATION_RELOADED,
         EVENT_COMPONENT_LOADED,
     }
-    inspect_on_reload = True
 
     entity_label = "automation"
     reference_label = "conditions"

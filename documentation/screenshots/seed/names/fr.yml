@@ -1,0 +1,323 @@
+# Everything people read in the home of the screenshots, in French. The keys
+# and how it works: see en.yml. A name missing here is the English one.
+
+home: La maison de Spook
+
+area:
+  # The names Home Assistant gives these when it is onboarded in French.
+  living_room: Salon
+  kitchen: Cuisine
+  bedroom: Chambre
+  hallway: Couloir
+  attic: Grenier
+
+floor:
+  ground_floor: Rez-de-chaussée
+  first_floor: Premier étage
+  basement: Sous-sol
+
+label:
+  night_light:
+    name: Veilleuse
+    description: Reste allumée la nuit.
+  christmas:
+    name: Noël
+    description: Les lumières qu'on sort en décembre.
+
+dashboard:
+  title: Maison
+  upstairs: À l'étage
+  # Home Assistant's own name for the default dashboard in French, with its
+  # curly apostrophe.
+  overview: Vue d’ensemble
+
+light:
+  living_room_lamp: Lampe du salon
+  kitchen_lights: Lumières de la cuisine
+  hallway_light: Lumière du couloir
+  bedroom_lamp: Lampe de la chambre
+
+input_boolean:
+  living_room_lamp: Lampe du salon
+  kitchen_lights: Lumières de la cuisine
+  hallway_light: Lumière du couloir
+  bedroom_lamp: Lampe de la chambre
+  dehumidifier_power: Alimentation déshumidificateur
+  guest_mode: Mode invités
+
+input_number:
+  bedroom_temperature: Température de la chambre
+  kitchen_fan_speed: Mémoire de la hotte
+
+input_select:
+  movie_night: Soirée cinéma
+
+sensor:
+  energy_meter: Compteur d'énergie
+  living_room_thermometer: Température du salon
+  basement_humidity: Humidité de la cave
+
+select:
+  ghost_mood:
+    name: Humeur du fantôme
+    options:
+      friendly: Gentil
+      spooky: Effrayant
+      sleepy: Endormi
+
+number:
+  kitchen_fan_speed: Vitesse de la hotte
+
+zone:
+  gym: Salle de sport
+
+group:
+  downstairs_lights: Lumières du bas
+
+device_tracker:
+  new_phone: Nouveau téléphone
+
+automation:
+  hallway_light_at_sunset:
+    name: Lumière du couloir au coucher du soleil
+    description: Allume la lumière du couloir quand le soleil se couche.
+  movie_night:
+    name: Soirée cinéma
+    description: Tamise le salon quand la télé se met à lire.
+  weekday_morning_lights:
+    name: Lumières du matin en semaine
+    description: Les lumières de la cuisine à six heures et demie en semaine, une fois.
+  garage_lights_off_at_night:
+    name: Garage éteint la nuit
+    description: Éteint tout dans le garage à minuit.
+  doorbell_flash:
+    name: Flash de la sonnette
+    description: Fait clignoter le couloir quand quelqu'un sonne.
+  automation_off_reminder:
+    name: Automatisation désactivée à la main
+    description: Me prévient quand quelqu'un désactive une automatisation.
+    message: Une automatisation a été désactivée. Pense à la réactiver.
+  new_device_found:
+    name: Nouvel appareil trouvé
+    description: Me prévient quand Home Assistant découvre quelque chose de nouveau.
+    message: Home Assistant a trouvé un nouvel appareil.
+  front_door_sensor_back:
+    name: Le capteur de la porte est de retour
+    description: Me prévient quand le capteur de la porte d'entrée remarche après une absence.
+    message: Le capteur de la porte d'entrée est de retour.
+  new_device_added:
+    name: Nouvel appareil ajouté
+    description: Me prévient quand un appareil arrive dans la maison.
+    message: Un nouvel appareil a été ajouté.
+  living_room_sensor_quiet:
+    name: Capteur du salon silencieux
+    description: Me prévient quand la température du salon ne bouge plus depuis une heure.
+    message: Le capteur de température du salon ne dit plus rien. La pile ?
+  new_integration:
+    name: Nouvelle intégration
+    description: Me prévient quand une intégration est ajoutée.
+    message: Une nouvelle intégration a été ajoutée.
+  integration_failed:
+    name: Intégration en échec
+    description: Me prévient quand une intégration ne démarre toujours pas après un quart d'heure.
+    message: Une intégration ne démarre pas.
+  blinds_down_lamp_on:
+    name: Lampe allumée quand les stores descendent
+    description: Allume la lampe du salon dès que les stores sont à 30 %.
+  repairs_news:
+    name: Nouvelles des réparations
+    description: Me prévient quand une réparation sérieuse apparaît, et quand une est résolue.
+    message: Quelque chose a changé dans Réparations.
+  bedroom_warm:
+    name: La chambre est chaude
+    description: Me prévient quand le thermostat de la chambre atteint sa température.
+    message: La chambre est chaude.
+  hot_water_ready:
+    name: Eau chaude pour la douche du matin
+    description: À sept heures, me dit si le chauffe-eau est chaud.
+    message: L'eau chaude est prête.
+  update_installed:
+    name: Mise à jour installée
+    description: Me prévient quand une mise à jour est installée.
+    message: Une mise à jour a été installée.
+  ghost_goes_to_sleep:
+    name: Le fantôme va se coucher
+    description: Envoie le fantôme au lit quand le script Bonne nuit démarre.
+  door_opens_hallway_light:
+    name: Lumière du couloir quand une porte s'ouvre
+    description: Allume la lumière du couloir quand une porte s'ouvre.
+  new_user:
+    name: Nouvel utilisateur
+    description: Me prévient quand un utilisateur est ajouté à Home Assistant.
+    message: Un nouvel utilisateur a été ajouté.
+  welcome_home:
+    name: Bienvenue à la maison
+    description: Lampe du salon allumée quand le téléphone rentre et que la porte s'ouvre, en moins de cinq minutes.
+  door_settled:
+    name: Couloir éteint quand la porte se calme
+    description: Éteint la lumière du couloir dès que la porte d'entrée reste tranquille 30 secondes.
+  coming_in:
+    name: On rentre
+    description: Lampe du salon allumée quand la porte d'entrée s'ouvre et se referme en moins de deux minutes.
+  front_door_still_open:
+    name: Porte d'entrée encore ouverte
+    description: Me le rappelle toutes les dix minutes tant que la porte d'entrée est ouverte.
+    message: La porte d'entrée est encore ouverte.
+  nobody_up_yet:
+    name: Personne n'est levé
+    description: Me prévient quand la cuisine reste éteinte une heure après sept heures.
+    message: Personne n'est encore levé.
+  front_door_sensor_acting_up:
+    name: Le capteur de la porte fait des siennes
+    description: Me prévient quand le capteur de la porte d'entrée change cinq fois en cinq minutes.
+    message: Le capteur de la porte d'entrée ne se calme pas.
+  blinds_down_when_warm:
+    name: Stores baissés quand il fait chaud
+    description: Ferme les stores du salon quand il y fait plus de 25 °C.
+  lamp_off_by_itself:
+    name: Lampe éteinte toute seule
+    description: Me prévient quand la lampe du salon s'éteint sans que personne n'y touche.
+    message: La lampe du salon s'est éteinte toute seule.
+  spooky_surprise:
+    name: Surprise effrayante
+    description: Certains soirs, un sur cinq, le fantôme devient effrayant.
+  follow_the_hallway:
+    name: Suivre le couloir
+    description: Lampe du salon allumée quand l'automatisation du coucher de soleil allume le couloir.
+  morning_repairs_check:
+    name: Point du matin sur les réparations
+    description: À neuf heures, me dit si quelque chose de sérieux attend dans Réparations.
+    message: Des réparations attendent.
+  doorbell_light:
+    name: Lumière de la sonnette
+    description: Allume la lumière du couloir quand on sonne, trois fois par heure au plus.
+  morning_radio_volume:
+    name: Volume de la radio du matin
+    description: Baisse l'enceinte de la cuisine à sept heures et demie, si elle est là.
+  front_door_light:
+    name: Lumière du couloir quand la porte d'entrée s'ouvre
+    description: Faite avec le blueprint de lumière à la porte.
+
+script:
+  goodnight: Bonne nuit
+
+scene:
+  cozy_evening: Soirée cosy
+
+category:
+  lighting: Éclairage
+
+user:
+  babysitter: Baby-sitter
+
+binary_sensor:
+  front_door: Porte d'entrée
+
+climate:
+  bedroom_thermostat: Thermostat de la chambre
+
+water_heater:
+  boiler: Chauffe-eau
+
+media_player:
+  kitchen_speaker: Enceinte de la cuisine
+
+cover:
+  living_room_blinds: Stores du salon
+
+valve:
+  garden_tap: Robinet du jardin
+
+humidifier:
+  basement_dehumidifier: Déshumidificateur de la cave
+
+counter:
+  coffee_cups: Tasses de café
+
+input_button:
+  doorbell: Sonnette
+
+input_datetime:
+  alarm_clock: Réveil
+
+input_text:
+  welcome_message: Message de bienvenue
+
+schedule:
+  heating: Programme de chauffage
+
+timer:
+  laundry: Lessive
+
+calendar:
+  family: Famille
+
+todo:
+  shopping_list: Liste de courses
+
+blueprints:
+  door_light:
+    name: Lumière allumée quand une porte s'ouvre
+    description: Allume une lumière quand une porte s'ouvre.
+    new_description: Allume une lumière quand une porte s'ouvre, et l'éteint au bout d'un moment.
+    door: Porte
+    light: Lumière
+    wait_time: Temps avant que la lumière s'éteigne
+  doorbell_flash:
+    name: Faire clignoter une lumière quand on sonne
+    description: Fait clignoter une lumière une fois quand quelqu'un sonne.
+    doorbell: Sonnette
+    light: Lumière
+
+examples:
+  new_area: Pièce secrète
+  new_area_alias: Planque
+  area_alias: Séjour
+  other_area_alias: Pièce à vivre
+  new_floor: Deuxième étage
+  new_floor_alias: En haut
+  floor_alias: En bas
+  other_floor_alias: Côté rue
+  new_label: Hanté
+  new_label_description: Les choses qui s'allument toutes seules.
+  new_entity_name: Lumière de l'entrée
+  new_input_number: Température de la piscine
+  new_zone: Bureau
+  new_repair: Le fantôme a faim
+  new_repair_description: Donnez-lui un cookie, et cette correction disparaît.
+  renamed_label: Veilleuses
+  new_category: Sécurité
+  renamed_category: Lampes
+  device_name: Guetteur de ciel
+  entity_alias: Lampe de lecture
+  other_entity_alias: Lampe d'angle
+  calendar_event: Dentiste
+  new_counter: Biscuits mangés
+  new_input_boolean: Mode vacances
+  new_input_button: Nourrir le fantôme
+  new_input_datetime: Heure du réveil
+  house_mode:
+    name: Mode de la maison
+    options:
+      home: À la maison
+      away: Absent
+      night: Nuit
+  new_input_text: Mot sur le frigo
+  new_schedule: Arrosage du jardin
+  new_timer: Pizza
+  todo_item: Lait
+  calibration: Température du salon, corrigée
+  time_in_state: Porte d'entrée fermée depuis
+
+search:
+  area: pièce
+  floor: étage
+  label: étiquette
+  input_number: entrée numérique
+  number: valeur
+  input_select: options
+  person: dispositif de suivi
+  zone: zone
+  # French Home Assistant shows these as "Repairs: ...", and "problème" finds
+  # only three of them.
+  repairs: repairs

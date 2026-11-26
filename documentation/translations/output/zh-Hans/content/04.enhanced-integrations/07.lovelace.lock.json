@@ -1,0 +1,289 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/07.lovelace.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/07.lovelace.md",
+  "language": "zh-Hans",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "28b5ccd1abc4b566",
+      "source": "d6e1802148a1734d",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "dashboard": "仪表盘",
+        "icon": "图标"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "dffe8314a62614af",
+      "source": "f22479c7da53d224",
+      "glossary": {
+        "dashboard": "仪表盘",
+        "state": "状态"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "1013f02436ff640e",
+      "source": "1f52858c49c462d9",
+      "glossary": {
+        "Save": "保存",
+        "dashboard": "仪表盘",
+        "repair": "修复",
+        "repairs dashboard": "修复页面"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "a969e6d9ed8df2be",
+      "source": "7c2725b0d5b65e0e",
+      "glossary": {
+        "Save": "保存",
+        "automation": "自动化",
+        "dashboard": "仪表盘",
+        "entity": "实体",
+        "entity ID": "实体标识符",
+        "issue": "问题",
+        "label": "标签",
+        "repair": "修复",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "416521286ae4430d",
+      "source": "63c37ee9830cb4a0",
+      "glossary": {
+        "Save": "保存",
+        "action": "动作",
+        "area": "区域",
+        "dashboard": "仪表盘",
+        "label": "标签",
+        "repair": "修复",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "09bddef93fcc116b",
+      "source": "b7052112b1797649",
+      "glossary": {
+        "Save": "保存",
+        "attribute": "属性",
+        "automation": "自动化",
+        "condition": "条件",
+        "dashboard": "仪表盘",
+        "entity": "实体",
+        "label": "标签",
+        "repair": "修复",
+        "state": "状态",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "e5490ac000600676",
+      "source": "a3af8c70eb585406",
+      "glossary": {
+        "Save": "保存",
+        "attribute": "属性",
+        "automation": "自动化",
+        "condition": "条件",
+        "dashboard": "仪表盘",
+        "entity": "实体",
+        "entity ID": "实体标识符",
+        "integration": "集成",
+        "label": "标签",
+        "repair": "修复",
+        "state": "状态",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-actions",
+      "hash": "ef5c2d06276c07de",
+      "source": "c88b3f0332201693",
+      "glossary": {
+        "Save": "保存",
+        "action": "动作",
+        "cover": "卷帘",
+        "dashboard": "仪表盘",
+        "integration": "集成",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-views",
+      "hash": "5c495f59b2a66586",
+      "source": "06a75c1b22e0273e",
+      "glossary": {
+        "Save": "保存",
+        "action": "动作",
+        "area": "区域",
+        "dashboard": "仪表盘",
+        "label": "标签",
+        "repair": "修复",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "2836321cc671ff59",
+      "source": "8ab97f2621bdb7ba",
+      "glossary": {
+        "Save": "保存",
+        "Settings": "设置",
+        "Dashboards": "仪表盘",
+        "action": "动作",
+        "dashboard": "仪表盘",
+        "icon": "图标",
+        "label": "标签",
+        "logs": "日志",
+        "repair": "修复",
+        "sidebar": "侧边栏",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "50641187d0d9e2b4",
+      "source": "d80406184140503a",
+      "glossary": {
+        "Save": "保存",
+        "action": "动作",
+        "area": "区域",
+        "condition": "条件",
+        "dashboard": "仪表盘",
+        "label": "标签",
+        "repair": "修复",
+        "user": "用户",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-themes",
+      "hash": "17c886c31e69085e",
+      "source": "02d95cca1ade497d",
+      "glossary": {
+        "Save": "保存",
+        "condition": "条件",
+        "dashboard": "仪表盘",
+        "label": "标签",
+        "repair": "修复",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "missing-dashboard-resources",
+      "hash": "b3cf8a134aa2689d",
+      "source": "e2596533f7728ad8",
+      "glossary": {
+        "Settings": "设置",
+        "Dashboards": "仪表盘",
+        "Resources": "资源",
+        "dashboard": "仪表盘",
+        "integration": "集成",
+        "label": "标签",
+        "repair": "修复",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "duplicate-dashboard-resources",
+      "hash": "af7c6da089b4e0a1",
+      "source": "0288a5728c8a5ac5",
+      "glossary": {
+        "Clear the extra copies, keep the most recent": "清除多余副本，保留最新的",
+        "Let me fix it myself": "让我自己处理",
+        "Settings": "设置",
+        "Dashboards": "仪表盘",
+        "Resources": "资源",
+        "Leave them, stop telling me": "保留，不要再提示我",
+        "dashboard": "仪表盘",
+        "label": "标签",
+        "repair": "修复",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "string": "字符串",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "public-files-in-the-www-folder",
+      "hash": "e9fc7e666afbb947",
+      "source": "72fffd7d4a29767a",
+      "glossary": {
+        "dashboard": "仪表盘",
+        "integration": "集成",
+        "label": "标签",
+        "logs": "日志",
+        "repair": "修复",
+        "template": "模板",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

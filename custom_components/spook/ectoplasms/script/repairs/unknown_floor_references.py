@@ -31,7 +31,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         ar.EVENT_AREA_REGISTRY_UPDATED,
         fr.EVENT_FLOOR_REGISTRY_UPDATED,
     }
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
 
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"

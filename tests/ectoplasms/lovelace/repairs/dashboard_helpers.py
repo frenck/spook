@@ -6,7 +6,7 @@ from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 
 from homeassistant.util import dt as dt_util
 

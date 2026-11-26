@@ -4,15 +4,25 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from functools import partial
 from typing import TYPE_CHECKING
 
 import pytest
-from pytest_homeassistant_custom_component.components.recorder.common import (
+from pytest_homeassistant.components.recorder.common import (
     async_wait_recording_done,
 )
 from sqlalchemy.exc import OperationalError
 
-from homeassistant.core import State
+from homeassistant.components.recorder.purge import purge_old_data
+from homeassistant.const import (
+    ATTR_ENTITY_ID,
+    EVENT_STATE_CHANGED,
+    STATE_OFF,
+    STATE_ON,
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
+from homeassistant.core import State, callback
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util import dt as dt_util
 
@@ -23,13 +33,14 @@ from custom_components.spook.attribute_checking import (
     UnknownAttribute,
     async_domain_attributes,
     async_unknown_attributes,
+    did_you_mean,
     names_the_state,
     suggest_name,
 )
 
 if TYPE_CHECKING:
     from homeassistant.components.recorder import Recorder
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import Event, HomeAssistant
 
 
 @pytest.fixture(autouse=True)
@@ -86,7 +97,7 @@ async def test_domain_enum_is_read_from_core(hass: HomeAssistant) -> None:
     assert "supported_color_modes" in light
 
     assert "operation_mode" in await async_domain_attributes(hass, "water_heater")
-    assert await async_domain_attributes(hass, "sun") == frozenset()
+    assert "elevation" in await async_domain_attributes(hass, "sun")
     assert await async_domain_attributes(hass, "not_a_domain") == frozenset()
 
 
@@ -134,7 +145,7 @@ async def test_known_from_memory_is_not_reported(
     """
 
     def _remembers_nothing(_hass: HomeAssistant, entity_ids: list[str]) -> dict:
-        return {entity_id: (set(), True) for entity_id in entity_ids}
+        return {entity_id: (set(), True, False) for entity_id in entity_ids}
 
     monkeypatch.setattr(
         attribute_checking, "_read_recorded_attribute_keys", _remembers_nothing
@@ -220,6 +231,246 @@ async def test_attribute_never_had_is_reported(
         UnknownAttribute("sensor.weather_alert", "alerts", "alert"),
         UnknownAttribute("sensor.weather_alert", "nothing", None),
     }
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_unavailable_entity_history_cannot_prove_attribute_is_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Test unavailable state attributes absent from history are not judged.
+
+    Core omits integration-specific attributes while an entity is unavailable,
+    so a complete retained history is not complete knowledge of what it supports.
+    A case-only mistake next to an attribute it still shows remains certain.
+    """
+    await _record(
+        hass,
+        "media_player.projector",
+        {"friendly_name": "Projector"},
+    )
+    hass.states.async_set(
+        "media_player.projector",
+        STATE_UNAVAILABLE,
+        {"friendly_name": "Projector"},
+    )
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(
+        hass,
+        {
+            ("media_player.projector", "adb_response"),
+            ("media_player.projector", "Friendly_Name"),
+        },
+    ) == {
+        UnknownAttribute("media_player.projector", "Friendly_Name", "friendly_name"),
+    }
+
+
+_METEOALARM = "binary_sensor.meteoalarm"
+_METEOALARM_QUIET = {"friendly_name": "MeteoAlarm", "device_class": "safety"}
+_METEOALARM_ALERT = {
+    **_METEOALARM_QUIET,
+    "headline": "Storm",
+    "description": "Wind",
+    "effective": "now",
+}
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_inactive_only_history_cannot_prove_an_attribute_is_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Test off-only history is not proof a dynamic attribute was never there.
+
+    MeteoAlarm carries `headline`, `description` and `effective` only while
+    it is on, and drops them while off. Unavailable and unknown, a network
+    blip while nothing is alerted, drop them too. Once the recorder has
+    purged every on state, what is left cannot say they do not exist. A
+    case-only mistake next to an attribute it still shows remains certain.
+    Issue #2020.
+    """
+    for state in (STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN, STATE_OFF):
+        hass.states.async_set(_METEOALARM, state, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(
+        hass,
+        {
+            (_METEOALARM, "headline"),
+            (_METEOALARM, "description"),
+            (_METEOALARM, "effective"),
+            (_METEOALARM, "Friendly_Name"),
+        },
+    ) == {
+        UnknownAttribute(_METEOALARM, "Friendly_Name", "friendly_name"),
+    }
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert not answer.complete
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_attributes_seen_while_on_stay_known_once_off(
+    hass: HomeAssistant,
+) -> None:
+    """Test attributes from an earlier on state are known once it is off.
+
+    The history did include an active state, so it is whole. One the entity
+    never had is still reported, with the name it was one letter from.
+    """
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_ALERT)
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(
+        hass,
+        {
+            (_METEOALARM, "headline"),
+            (_METEOALARM, "description"),
+            (_METEOALARM, "effective"),
+            (_METEOALARM, "hedline"),
+        },
+    ) == {
+        UnknownAttribute(_METEOALARM, "hedline", "headline"),
+    }
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert answer.complete
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_becoming_active_clears_an_inactive_only_answer(
+    hass: HomeAssistant,
+    count_recorder_reads: list[dict[str, float | None]],
+) -> None:
+    """Test turning on, with no new attribute key, is read from scratch.
+
+    The first look cannot say `missing` was never an attribute. Once the
+    entity is on, that incomplete answer is stale, and the next look reads
+    the whole history again. Then it can.
+    """
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    assert not await async_unknown_attributes(hass, {(_METEOALARM, "missing")})
+
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(hass, {(_METEOALARM, "missing")}) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+    assert count_recorder_reads == [
+        {_METEOALARM: None},
+        {_METEOALARM: None},
+    ]
+
+
+async def test_active_history_is_retried_after_recorder_lag(
+    hass: HomeAssistant,
+    recorder_mock: Recorder,
+    count_recorder_reads: list[dict[str, float | None]],
+) -> None:
+    """Test an active state can reach the recorder after the first read."""
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    events: list[Event] = []
+
+    @callback
+    def _remember(event: Event) -> None:
+        if event.data[ATTR_ENTITY_ID] == _METEOALARM:
+            events.append(event)
+
+    # Hold back the active event until after the first look.
+    unsubscribe = hass.bus.async_listen(EVENT_STATE_CHANGED, _remember)
+    recorder_mock.set_enable(False)
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    unsubscribe()
+    recorder_mock.set_enable(True)
+
+    missing = {(_METEOALARM, "missing")}
+    assert not await async_unknown_attributes(hass, missing)
+    assert count_recorder_reads == [{_METEOALARM: None}]
+
+    assert len(events) == 1
+    event = events[0]
+    recorder_mock.queue_task(event)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(hass, missing) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+    assert count_recorder_reads == [{_METEOALARM: None}, {_METEOALARM: None}]
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert answer.complete
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_second_activation_retries_inactive_only_history_after_purge(
+    hass: HomeAssistant,
+    count_recorder_reads: list[dict[str, float | None]],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a new on state calls for a full read after older ones were purged."""
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    missing = {(_METEOALARM, "missing")}
+    expected = {UnknownAttribute(_METEOALARM, "missing", None)}
+    assert await async_unknown_attributes(hass, missing) == expected
+
+    cutoff = dt_util.utcnow()
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    recorder = get_instance(hass)
+    await recorder.async_add_executor_job(
+        partial(purge_old_data, recorder, cutoff, repack=False)
+    )
+
+    tomorrow = dt_util.utcnow() + timedelta(days=1, minutes=1)
+    with monkeypatch.context() as patch:
+        patch.setattr(attribute_checking.dt_util, "utcnow", lambda: tomorrow)
+        assert not await async_unknown_attributes(hass, missing)
+        answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+        assert answer is not None
+        assert answer.inactive_only
+        assert not answer.complete
+
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+    assert await async_unknown_attributes(hass, missing) == expected
+    assert count_recorder_reads == [{_METEOALARM: None}] * 3
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_later_off_states_do_not_undo_a_complete_history(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test rows since the last read being off do not hide an unknown attribute.
+
+    The full read already saw an on state. No overlap, so the next read's
+    rows are only the off state that came after it, and that must not make
+    the history incomplete.
+    """
+    monkeypatch.setattr(attribute_checking, "NEWS_OVERLAP", timedelta(0))
+    hass.states.async_set(_METEOALARM, STATE_ON, _METEOALARM_ALERT)
+    await async_wait_recording_done(hass)
+    missing = {(_METEOALARM, "missing")}
+    assert await async_unknown_attributes(hass, missing) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+
+    hass.states.async_set(_METEOALARM, STATE_OFF, _METEOALARM_QUIET)
+    await async_wait_recording_done(hass)
+
+    assert await async_unknown_attributes(hass, missing) == {
+        UnknownAttribute(_METEOALARM, "missing", None),
+    }
+    answer = hass.data[DATA_ATTRIBUTE_KNOWLEDGE][_METEOALARM].answer
+    assert answer is not None
+    assert answer.complete
 
 
 @pytest.mark.usefixtures("recorder_mock")
@@ -444,7 +695,7 @@ async def test_what_was_seen_is_kept_after_a_purge(
     assert not await async_unknown_attributes(hass, {("sensor.one", "old")})
 
     def _purged(_hass: HomeAssistant, entity_ids: list[str]) -> dict:
-        return {entity_id: ({"a"}, True) for entity_id in entity_ids}
+        return {entity_id: ({"a"}, True, False) for entity_id in entity_ids}
 
     monkeypatch.setattr(attribute_checking, "_read_recorded_attribute_keys", _purged)
     tomorrow = dt_util.utcnow() + timedelta(days=2)
@@ -472,7 +723,7 @@ async def test_history_is_bounded_in_the_database(
         {"sensor.long": None, "sensor.never_recorded": None},
     )
 
-    assert recorded == {"sensor.long": ({"a"}, False)}
+    assert recorded == {"sensor.long": ({"a"}, False, False)}
 
 
 @pytest.fixture(name="recorder_remembers_only_a")
@@ -484,7 +735,7 @@ def fixture_recorder_remembers_only_a(
 
     def _only_a(_hass: HomeAssistant, entity_ids: list[str]) -> dict:
         asked.append(list(entity_ids))
-        return {entity_id: ({"a"}, True) for entity_id in entity_ids}
+        return {entity_id: ({"a"}, True, False) for entity_id in entity_ids}
 
     monkeypatch.setattr(attribute_checking, "_read_recorded_attribute_keys", _only_a)
     return asked
@@ -611,6 +862,70 @@ def test_suggestion(name: str, known: set[str], expected: str) -> None:
 def test_no_suggestion(name: str, known: set[str]) -> None:
     """Test no suggestion is made when it would be a guess."""
     assert suggest_name(name, known) is None
+
+
+@pytest.mark.parametrize(
+    ("written", "differs"),
+    [
+        ("preset_modes ", "has a space at the end"),
+        (" preset_modes", "has a space at the start"),
+        (" preset_modes ", "has a space at the start and the end"),
+        # A tab or a space that does not break reads as a space just the same.
+        ("preset_modes\t", "has a space at the end"),
+        ("preset_modes\u00a0", "has a space at the end"),
+        # A zero-width space, pasted along from somewhere.
+        ("preset_modes\u200b", "has a character in it that does not show"),
+        ("preset\u200b_modes", "has a character in it that does not show"),
+        # A soft hyphen, and marks that have no shape of their own: the
+        # grapheme joiner and a variation selector.
+        ("preset_modes\u00ad", "has a character in it that does not show"),
+        ("preset_modes\u034f", "has a character in it that does not show"),
+        ("preset_modes\ufe0f", "has a character in it that does not show"),
+    ],
+)
+def test_a_suggestion_that_looks_the_same_says_what_differs(
+    written: str, differs: str
+) -> None:
+    """Test a name that only differs out of sight is not shown twice as is.
+
+    Home Assistant looks a name up exactly as written, so the finding is
+    true, and "`preset_modes` (did you mean `preset_modes`?)" helps nobody.
+    The suggestion comes from the same guess a repair makes. #2047.
+    """
+    suggestion = suggest_name(written, {"preset_modes", "hvac_modes"})
+
+    assert suggestion == "preset_modes"
+    assert did_you_mean(written, suggestion) == (
+        f" ({differs}, did you mean `preset_modes`?)"
+    )
+    assert did_you_mean(written, suggestion, as_code=False) == (
+        f" ({differs}, did you mean preset_modes?)"
+    )
+
+
+@pytest.mark.parametrize(
+    ("written", "suggestion"),
+    [
+        # Differences the eye does see are left to it.
+        ("Preset_modes", "preset_modes"),
+        ("preset modes", "preset_modes"),
+        ("preset_mode", "preset_modes"),
+        # A space inside a name leaves a gap, also one that does not break.
+        ("preset\u00a0_modes", "preset_modes"),
+        # An accent changes what is seen.
+        ("preset_modes\u0301", "preset_modes"),
+        # Not a name at all: the value of an attribute that is a number.
+        (2, "3"),
+    ],
+)
+def test_a_suggestion_that_looks_different_is_given_as_is(
+    written: object, suggestion: str
+) -> None:
+    """Test nothing is added when the difference shows on screen."""
+    assert did_you_mean(written, suggestion) == f" (did you mean `{suggestion}`?)"
+    assert did_you_mean(written, suggestion, as_code=False) == (
+        f" (did you mean {suggestion}?)"
+    )
 
 
 @pytest.mark.parametrize(

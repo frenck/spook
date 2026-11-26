@@ -1,0 +1,8 @@
+# Written by the translation pipeline, never by hand. GitHub folds these in
+# diffs and leaves them out of the language statistics.
+documentation/translations/output/** linguist-generated=true
+documentation/translations/corpus/**/glossary.generated.yml linguist-generated=true
+
+# Written by `gh actions-lock`. Shown as YAML, and never merged by git: on a
+# conflict, take the one from main and run `gh actions-lock --no-narrow` again.
+.github/workflows/actions.lock linguist-language=YAML -merge

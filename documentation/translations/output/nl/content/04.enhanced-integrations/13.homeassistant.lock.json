@@ -1,0 +1,249 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/13.homeassistant.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/13.homeassistant.md",
+  "language": "nl",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "c29788ef9bce993c",
+      "source": "369a2a06e6dcb106",
+      "glossary": {
+        "area": "ruimte",
+        "blueprint": "blueprint",
+        "floor": "verdieping",
+        "helper": "helper",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "b1bfb0e3901e2aef",
+      "source": "64b218002cafc0b3",
+      "glossary": {
+        "area": "ruimte",
+        "device": "apparaat",
+        "floor": "verdieping",
+        "helper": "helper",
+        "integration": "integratie",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "devices-entities",
+      "hash": "da5a845f462e2ad0",
+      "source": "1b0bf38ba0d58ad8",
+      "glossary": {
+        "area": "ruimte",
+        "device": "apparaat",
+        "entity": "entiteit",
+        "integration": "integratie",
+        "restart": "herstarten"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "08fb8bd2a2c69e13",
+      "source": "3eba30a132630fc9",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "device": "apparaat",
+        "entity": "entiteit",
+        "floor": "verdieping",
+        "label": "label",
+        "user": "gebruiker"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "c64a372f4bceb49c",
+      "source": "344a0f6d513c0ad1",
+      "glossary": {
+        "area": "ruimte",
+        "blueprint": "blueprint",
+        "dashboard": "dashboard",
+        "floor": "verdieping",
+        "label": "label",
+        "repair": "reparatie",
+        "repairs dashboard": "reparatiedashboard"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-area-sensors",
+      "hash": "f3596c82ada49b0c",
+      "source": "19ba3f07eebf293c",
+      "glossary": {
+        "Clear the setting": "Instelling wissen",
+        "Let me fix it myself": "Ik los het zelf op",
+        "Keep it, stop telling me": "Houden, zeg er niets meer over",
+        "area": "ruimte",
+        "entity": "entiteit",
+        "entity ID": "entiteit-ID",
+        "label": "label",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-customized-entities",
+      "hash": "80cc458b65e704c4",
+      "source": "08b2e5e9ffb14032",
+      "glossary": {
+        "attribute": "attribuut",
+        "entity": "entiteit",
+        "icon": "icoon",
+        "integration": "integratie",
+        "label": "label",
+        "repair": "reparatie",
+        "restart": "herstarten"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-helper-sources",
+      "hash": "25f3abfe31d81cb2",
+      "source": "11dc74235e07f9be",
+      "glossary": {
+        "Remove this helper": "Verwijder deze helper",
+        "Let me fix it myself": "Ik los het zelf op",
+        "Keep it, stop telling me": "Houden, zeg er niets meer over",
+        "entity": "entiteit",
+        "helper": "helper",
+        "label": "label",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-min-max-helper-members",
+      "hash": "2bb3364ebdfacc5f",
+      "source": "11c49e8fdadc6998",
+      "glossary": {
+        "Remove these members": "Verwijder deze leden",
+        "Let me fix it myself": "Ik los het zelf op",
+        "Keep them, stop telling me": "Houden, zeg er niets meer over",
+        "helper": "helper",
+        "label": "label",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "1cc1f2bed27e902a",
+      "source": "4526c7a38e9a9912",
+      "glossary": {
+        "area": "ruimte",
+        "entity": "entiteit",
+        "floor": "verdieping",
+        "helper": "helper",
+        "icon": "icoon",
+        "integration": "integratie",
+        "label": "label",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-areas",
+      "hash": "a9ccc6860062771a",
+      "source": "6447e37649959ea8",
+      "glossary": {
+        "Remove this empty area": "Verwijder deze lege ruimte",
+        "Let me fix it myself": "Ik los het zelf op",
+        "Keep it, stop telling me": "Houden, zeg er niets meer over",
+        "action": "actie",
+        "area": "ruimte",
+        "automation": "automatisering",
+        "device": "apparaat",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-floors",
+      "hash": "023e0b7b060703af",
+      "source": "1dc8dffbc38858a2",
+      "glossary": {
+        "Remove this empty floor": "Verwijder deze lege verdieping",
+        "Let me fix it myself": "Ik los het zelf op",
+        "Keep it, stop telling me": "Houden, zeg er niets meer over",
+        "area": "ruimte",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-labels",
+      "hash": "e21cf52fe74cf811",
+      "source": "b56369896b90e4ff",
+      "glossary": {
+        "Remove this unused label": "Verwijder dit ongebruikte label",
+        "Let me fix it myself": "Ik los het zelf op",
+        "Keep it, stop telling me": "Houden, zeg er niets meer over",
+        "area": "ruimte",
+        "automation": "automatisering",
+        "device": "apparaat",
+        "entity": "entiteit",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-blueprints",
+      "hash": "530875026a6f94b6",
+      "source": "0c9d0302630f7b97",
+      "glossary": {
+        "Remove this unused blueprint": "Verwijder deze ongebruikte blueprint",
+        "Let me fix it myself": "Ik los het zelf op",
+        "Keep it, stop telling me": "Houden, zeg er niets meer over",
+        "automation": "automatisering",
+        "blueprint": "blueprint",
+        "label": "label",
+        "repair": "reparatie",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "80ace0e6ef4e77f0",
+      "source": "1b7d2e38b0428375",
+      "glossary": {
+        "area": "ruimte",
+        "floor": "verdieping",
+        "helper": "helper",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

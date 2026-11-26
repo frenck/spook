@@ -1,0 +1,1513 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/06.reference/01.actions.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/06.reference/01.actions.md",
+  "language": "nl",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "f923226bc2e760a7",
+      "source": "7e78315b3a6fc094",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "6684e2851524ad29",
+      "source": "14debb4969877b50",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "action": "actie",
+        "automation": "automatisering",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-create-an-area",
+      "hash": "cc0a8639cb3e718b",
+      "source": "45363e20afdcda24",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-update-an-area",
+      "hash": "ccb0b1abed949a9d",
+      "source": "147235e48b01a768",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-delete-an-area",
+      "hash": "dbcd29dcb75e9a1c",
+      "source": "a29512aa4300b464",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-alias-to-an-area",
+      "hash": "48ff2d261a148581",
+      "source": "e4d1747d2a017522",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-alias-from-an-area",
+      "hash": "8aaa6579f67f1123",
+      "source": "6ca2ac5592c963f3",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-set-aliases-for-an-area",
+      "hash": "dd0fbd26c719c753",
+      "source": "7e9d888288400c68",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-a-device-to-an-area",
+      "hash": "1ca3a4b0fa09249b",
+      "source": "4c202c096c7d2410",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "device": "apparaat"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-a-device-from-an-area",
+      "hash": "97647aeefe1e60aa",
+      "source": "736ac6fbdf98c25e",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "device": "apparaat"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-entity-to-an-area",
+      "hash": "67a636b1af7eb7b8",
+      "source": "7fee1b296bed1e7b",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-entity-from-an-area",
+      "hash": "c7ee494e65d1674b",
+      "source": "43187a122242003f",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-snooze",
+      "hash": "7cdce13869820b9a",
+      "source": "38f32d05691898ef",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "restart": "herstarten",
+        "snooze": "snoozen"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-turn-on-for",
+      "hash": "9d33515ac946c4e6",
+      "source": "319c5f79a85e0ea9",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "restart": "herstarten"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "blueprint-import-blueprint",
+      "hash": "3f6537c3634060ae",
+      "source": "10965e29fe0627be",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "blueprint": "blueprint",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-delete-event",
+      "hash": "0ca5b6a433e2ecc2",
+      "source": "c41a3ca47547624e",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-update-event",
+      "hash": "fd153d1f5807086a",
+      "source": "059e83d8b27feec9",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-create-a-category",
+      "hash": "12a10fac2e12a41d",
+      "source": "58639afb175f4b59",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "helper": "helper",
+        "scene": "scène",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-update-a-category",
+      "hash": "3911fa180a808093",
+      "source": "c7ea912d3dd1fbcc",
+      "glossary": {
+        "action": "actie",
+        "icon": "icoon"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-delete-a-category",
+      "hash": "419d1b2c85b04121",
+      "source": "fc34b1c6fbfbf1fb",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-add-a-category-to-an-entity",
+      "hash": "9a37ee014b685564",
+      "source": "528a705c50a89d40",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "entity": "entiteit",
+        "helper": "helper",
+        "scene": "scène",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-remove-a-category-from-an-entity",
+      "hash": "60bff59f4c559ae8",
+      "source": "1f324254a8141e73",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "entity": "entiteit",
+        "helper": "helper",
+        "scene": "scène",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-increase-temperature",
+      "hash": "06c74ddf6fee53da",
+      "source": "3f2c0f5b770cc4f7",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-decrease-temperature",
+      "hash": "3e68f98f5bcea71e",
+      "source": "206847c25376a58a",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-create",
+      "hash": "1eb6dde30fa56e34",
+      "source": "f0df5c3077f1c9cc",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-delete",
+      "hash": "f44f2bc3d175296e",
+      "source": "11b3334e6161eed4",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-increase-position",
+      "hash": "d3c3fbe792dc6503",
+      "source": "54587b992c95b8ad",
+      "glossary": {
+        "action": "actie",
+        "cover": "bedekking"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-decrease-position",
+      "hash": "aa4abdd3b940ad92",
+      "source": "346b63c59f6b3f1a",
+      "glossary": {
+        "action": "actie",
+        "cover": "bedekking"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-disable",
+      "hash": "ef51d72d37b28699",
+      "source": "2d65b54df3adf0cc",
+      "glossary": {
+        "action": "actie",
+        "device": "apparaat"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-enable",
+      "hash": "091e549e82b3709d",
+      "source": "08a9a3c6d00c5e94",
+      "glossary": {
+        "action": "actie",
+        "device": "apparaat"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-update",
+      "hash": "eec24124411b481c",
+      "source": "5a82aae7771e5b72",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "device": "apparaat",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "delete-all-orphaned-entities",
+      "hash": "6f66566c86e8a0dc",
+      "source": "96a90ba8b0440c68",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit",
+        "integration": "integratie",
+        "restart": "herstarten"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-disable",
+      "hash": "594608c4a30b4618",
+      "source": "7bf83fbd3c54489f",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-enable",
+      "hash": "fac2a0a71e60f2f2",
+      "source": "e1587c9cf927d93f",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-hide",
+      "hash": "a73942ead1169a14",
+      "source": "2515fc8b87300941",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-unhide",
+      "hash": "934694a0f0e3633b",
+      "source": "1ba4109a1161e3b0",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-rename",
+      "hash": "72752811f7e59bc4",
+      "source": "eb36dfbc05e48074",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-icon",
+      "hash": "c5e4ef51ddf1073b",
+      "source": "bf4e306920ce0d7d",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit",
+        "icon": "icoon"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-add-an-alias",
+      "hash": "3981a91b85b214e7",
+      "source": "ae66375ea7e68988",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-remove-an-alias",
+      "hash": "292233f077427d55",
+      "source": "0e1a71b930edf934",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-aliases",
+      "hash": "171f5cf5f829d764",
+      "source": "4377d0257d0eedeb",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-expose-to-assistants",
+      "hash": "e3c4d3d4d3b73dc3",
+      "source": "58cd034d696a80cc",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-stop-exposing-to-assistants",
+      "hash": "1ef492405bd05505",
+      "source": "c1aa37b13a740217",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-update-id",
+      "hash": "b907c9848ac26723",
+      "source": "87b75dd839af5a4f",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "list-all-orphaned-database-entities",
+      "hash": "603b3e30f4d3e6cf",
+      "source": "e8071212452fedd4",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-create-a-floor",
+      "hash": "3b706e658ab393c2",
+      "source": "f013fde69736ec00",
+      "glossary": {
+        "action": "actie",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-update-a-floor",
+      "hash": "3a77f3bb3044b52b",
+      "source": "27fc103b228da07d",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-delete-a-floor",
+      "hash": "4f98f46cdb1b35b4",
+      "source": "187892c90bdedf01",
+      "glossary": {
+        "action": "actie",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-alias-to-a-floor",
+      "hash": "ae57d433b3cd2ba4",
+      "source": "286fdd62f1fc246c",
+      "glossary": {
+        "action": "actie",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-alias-from-a-floor",
+      "hash": "c87357f1d930403d",
+      "source": "38bbc968049f2de8",
+      "glossary": {
+        "action": "actie",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-set-aliases-for-a-floor",
+      "hash": "b2bed873ce6fee86",
+      "source": "a817438fb5d18a0c",
+      "glossary": {
+        "action": "actie",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-area-to-a-floor",
+      "hash": "3bfba2a8a8c277e4",
+      "source": "fab6e98bd700aa4a",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-area-from-a-floor",
+      "hash": "fae8d187dc5a331e",
+      "source": "b2a6dab5b0feab3f",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "floor": "verdieping"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-add-members",
+      "hash": "98705259459ab89f",
+      "source": "f71df2953fa7d168",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-remove-members",
+      "hash": "da0570b4404721cb",
+      "source": "4575af4189040dad",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-set-members",
+      "hash": "ddb7924d914e0ba5",
+      "source": "03023f3aab11b3d6",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "restart",
+      "hash": "db4eb676b7e8c782",
+      "source": "d3d56d244deb0ce0",
+      "glossary": {
+        "action": "actie",
+        "restart": "herstarten"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-increase-humidity",
+      "hash": "91c5f46f75d0813d",
+      "source": "ee8e1c579fbfe7c1",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-decrease-humidity",
+      "hash": "6f581f80728ad519",
+      "source": "cacd68ec074639ff",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-create",
+      "hash": "389692012d38ca22",
+      "source": "f7812cf040570ee8",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-delete",
+      "hash": "76bd2d36af859db2",
+      "source": "b6d6d5f9b92faaf6",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-create",
+      "hash": "683d353b5c1528fe",
+      "source": "f9932c2286f44825",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-delete",
+      "hash": "bdf9e5cde3bcf49b",
+      "source": "0bd2ed2cdad955f7",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-create",
+      "hash": "c23f1d4a1053ecb7",
+      "source": "f64bad322606e1ac",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-delete",
+      "hash": "116a333b3f4248da",
+      "source": "0adaf4e950b99697",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-create",
+      "hash": "592aa5683e2a17a2",
+      "source": "50d14866a6f13b85",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-delete",
+      "hash": "a6b14499e22ea932",
+      "source": "566263b8c8a90a6e",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-decrease-value",
+      "hash": "2d23e7918c415f94",
+      "source": "134e7331ee4c4454",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-increase-value",
+      "hash": "98bc7948b80ccade",
+      "source": "cdc3bef29610730e",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-maximum-value",
+      "hash": "d127e396fbb5efef",
+      "source": "14738757955cd2a1",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-minimum-value",
+      "hash": "8deac696ba7cf65a",
+      "source": "881051a428403506",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-range",
+      "hash": "ce1a4e72cc74b0f2",
+      "source": "c690b509aa3834b4",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-create",
+      "hash": "048460d2578f58ba",
+      "source": "70df3e925b7f666d",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-delete",
+      "hash": "0e3e46b0bf8dd41e",
+      "source": "721ff7c60fccfa3f",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-select-random-option",
+      "hash": "b536c8e380579d5b",
+      "source": "589bebfabf24bbaa",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-reverse-options",
+      "hash": "a9c31308f53b1565",
+      "source": "9b946636eb745c08",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-shuffle-options",
+      "hash": "c09120275d78e912",
+      "source": "eb9c7dcdee515ca6",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-sort-options",
+      "hash": "7c90070936047ad6",
+      "source": "e3d8bbe3f7fd690b",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-create",
+      "hash": "1f8a132d05b015b0",
+      "source": "f65dd272abc769ca",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-delete",
+      "hash": "eb267ad329c92d28",
+      "source": "d336d44982db6ad3",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "ignore-all-discovered-devices-services",
+      "hash": "59ef7aaf5446d8d6",
+      "source": "1e0686ce57c0ff90",
+      "glossary": {
+        "action": "actie",
+        "dashboard": "dashboard",
+        "device": "apparaat",
+        "integration": "integratie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable",
+      "hash": "10cdcc5c7a21ce7c",
+      "source": "8c477108ebd6470a",
+      "glossary": {
+        "action": "actie",
+        "dashboard": "dashboard",
+        "integration": "integratie",
+        "integration entry": "integratie-instantie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable",
+      "hash": "87ebe11c1dc01b92",
+      "source": "00df5770bca6d9a9",
+      "glossary": {
+        "action": "actie",
+        "integration": "integratie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable-polling-for-updates",
+      "hash": "af6f4bcbf4976085",
+      "source": "8fe544cee98d435e",
+      "glossary": {
+        "action": "actie",
+        "dashboard": "dashboard",
+        "integration": "integratie",
+        "integration entry": "integratie-instantie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable-polling-for-updates",
+      "hash": "ce5f49251dfabfcd",
+      "source": "89af14a7d955067a",
+      "glossary": {
+        "action": "actie",
+        "dashboard": "dashboard",
+        "integration": "integratie",
+        "integration entry": "integratie-instantie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-create-a-label",
+      "hash": "3dd34caa34e8d831",
+      "source": "aae2e31ec3ebd56a",
+      "glossary": {
+        "action": "actie",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-update-a-label",
+      "hash": "2a200c6792a7de36",
+      "source": "9aba8fe880ef45a2",
+      "glossary": {
+        "action": "actie",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-delete-a-label",
+      "hash": "ad95a46d50f7729d",
+      "source": "b5244dbfa714aa43",
+      "glossary": {
+        "action": "actie",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-area",
+      "hash": "ba75096d34881c19",
+      "source": "aa6400d84df2e5e0",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-area",
+      "hash": "b720cb29faf5ed53",
+      "source": "0c105083bf7450a9",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-a-device",
+      "hash": "0fc138abbbc69b89",
+      "source": "e0668f0d78cb6cf9",
+      "glossary": {
+        "action": "actie",
+        "device": "apparaat",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-a-device",
+      "hash": "1f3dba2eac8d8a51",
+      "source": "6e056912c9a3f9b6",
+      "glossary": {
+        "action": "actie",
+        "device": "apparaat",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-entity",
+      "hash": "6c050dd42c5e1e85",
+      "source": "8595f13ce982d316",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-entity",
+      "hash": "28ef903487198ce2",
+      "source": "257c2b2b46c88802",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit",
+        "label": "label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-brightness",
+      "hash": "b0d50462d5c9129a",
+      "source": "68a205bacaf6b2fc",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-increase-brightness",
+      "hash": "ae80fde3231ca52d",
+      "source": "e3f48b829279af10",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-decrease-brightness",
+      "hash": "ce997fc8ab575a01",
+      "source": "8cd4775f20b68333",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color",
+      "hash": "f240500f4da3df26",
+      "source": "13830bd6bdd89cb9",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color-temperature",
+      "hash": "f485544222945259",
+      "source": "e7df1233759a686b",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-effect",
+      "hash": "e6491c7aecc495cb",
+      "source": "a389ea5f3ddbcd1d",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-increase-volume",
+      "hash": "9cf5da0b41c8b786",
+      "source": "e3877319b2187f0a",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-decrease-volume",
+      "hash": "2556db80e097d4c4",
+      "source": "fd5fbe306c81d56c",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-decrease-value",
+      "hash": "5d6e9eed9789077e",
+      "source": "35485b249f9d26f2",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-increase-value",
+      "hash": "cc166d9cb6e64548",
+      "source": "5403c49c15a0239a",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-maximum-value",
+      "hash": "fd2adaa44f39a432",
+      "source": "4ef6d2bfca521e08",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-minimum-value",
+      "hash": "d2c4d5886589dabf",
+      "source": "5455cf7bebca98c3",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-add-a-device-tracker",
+      "hash": "d6d5a176de7b721d",
+      "source": "49e6c182192889dc",
+      "glossary": {
+        "action": "actie",
+        "device": "apparaat"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-remove-a-device-tracker",
+      "hash": "ae2dd025c5fb8dd1",
+      "source": "c6f9b77d9f63b3b9",
+      "glossary": {
+        "action": "actie",
+        "device": "apparaat"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "recorder-import-statistics",
+      "hash": "76628640a9e211ed",
+      "source": "24ea765fabc46c1d",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-create-issue",
+      "hash": "faec5e8a5c76a0a2",
+      "source": "744c786a00750dc1",
+      "glossary": {
+        "action": "actie",
+        "issue": "probleem",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-ignore-all-issues",
+      "hash": "37757a2d553f3f7a",
+      "source": "c5e262e8084c1510",
+      "glossary": {
+        "action": "actie",
+        "issue": "probleem",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-list-issues",
+      "hash": "1429cb7bf1ccecd9",
+      "source": "4827f6642473f134",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "dashboard": "dashboard",
+        "issue": "probleem",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-remove-issue",
+      "hash": "f51cca980d8b7d03",
+      "source": "15ddeedd3336231e",
+      "glossary": {
+        "action": "actie",
+        "issue": "probleem",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-unignore-all-issues",
+      "hash": "ded0c063640fd406",
+      "source": "4afe7012cfcdf14e",
+      "glossary": {
+        "action": "actie",
+        "issue": "probleem",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-create",
+      "hash": "ba48d22f0573b819",
+      "source": "93397dde51f95061",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-delete",
+      "hash": "2aa9a247b6ccb383",
+      "source": "cea37985b6a22849",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-set-the-time-blocks-of-a-day",
+      "hash": "016a093517060799",
+      "source": "6a8316128da4acd2",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "select-select-random-option",
+      "hash": "9ac4d96faad20499",
+      "source": "b6d353c408aa135a",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "sensor-set-display-precision",
+      "hash": "cdeff91004b56dd0",
+      "source": "d628b43e7535cb1a",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "wait-for-a-condition",
+      "hash": "f117b9b0b9f1d162",
+      "source": "e708f91ce886296e",
+      "glossary": {
+        "action": "actie",
+        "condition": "voorwaarde",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "boo",
+      "hash": "0e041b00e604eceb",
+      "source": "f92ff152411b1478",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "random-fail",
+      "hash": "c685de68da37b383",
+      "source": "14fbea313c1bb34a",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-create",
+      "hash": "b54177d94029f7d8",
+      "source": "00844ea89714d0d8",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-delete",
+      "hash": "41a3b31e65cda1d3",
+      "source": "4ceb5f9060116c94",
+      "glossary": {
+        "action": "actie",
+        "helper": "helper"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-set-duration",
+      "hash": "f302daf02987e2d9",
+      "source": "955c1da4b85959ff",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "to-do-list-move-item",
+      "hash": "6c966495f5c39874",
+      "source": "bbb15cc31bde37a2",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-disable",
+      "hash": "14b4cded2e92b2ea",
+      "source": "314b1eedb14f3eea",
+      "glossary": {
+        "action": "actie",
+        "user": "gebruiker"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-enable",
+      "hash": "b06e6f8d4f0be90e",
+      "source": "2fb8ac151a26c5f9",
+      "glossary": {
+        "action": "actie",
+        "user": "gebruiker"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-increase-position",
+      "hash": "32f2e0a04f4cfb00",
+      "source": "f2f4e45d5feab91b",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-decrease-position",
+      "hash": "3180d3ca32d7fc11",
+      "source": "c92856e472c3bf2b",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-increase-temperature",
+      "hash": "8f5308149a62ec39",
+      "source": "7adafb60f6679ce9",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-decrease-temperature",
+      "hash": "b9e07c2a5ada31e2",
+      "source": "bcb3ef24d232159e",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-create",
+      "hash": "69f826926d085cd3",
+      "source": "5f4a74834751d2b2",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-update",
+      "hash": "4744bd4f5c778ebe",
+      "source": "8e0629178742af2a",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-delete",
+      "hash": "dd1661da9c81b376",
+      "source": "4af7f899353def9e",
+      "glossary": {
+        "action": "actie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

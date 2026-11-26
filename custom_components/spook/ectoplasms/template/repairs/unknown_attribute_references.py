@@ -14,8 +14,10 @@ from ....attribute_checking import (
     NAMES_THE_STATE_HINT,
     UnknownAttribute,
     async_unknown_attributes,
+    did_you_mean,
     names_the_state,
 )
+from ....configuration_cache import read_once
 from ....const import LOGGER
 from ....entity_filtering import async_name_helper_in_the_registry
 from ....reference_extraction import (
@@ -50,7 +52,7 @@ def _finding_line(finding: UnknownAttribute) -> str:
     """Return how one unknown attribute reads in the issue."""
     line = f"- `{finding.attribute}` of `{finding.entity_id}`"
     if finding.suggestion is not None:
-        line += f" (did you mean `{finding.suggestion}`?)"
+        line += did_you_mean(finding.attribute, finding.suggestion)
     elif names_the_state(finding.entity_id, finding.attribute):
         line += f" ({NAMES_THE_STATE_HINT})"
     return line
@@ -67,7 +69,9 @@ def _references_in_template_entity(config: dict[str, Any]) -> NamedReferences:
     attributes = config.pop(CONF_ATTRIBUTES, None)
     if isinstance(attributes, dict):
         attributes = list(attributes.values())
-    return extract_attribute_references_from_config([config, attributes])
+    # Put together for this one reading, so nothing remembers it.
+    with read_once():
+        return extract_attribute_references_from_config([config, attributes])
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -119,7 +123,12 @@ class SpookRepair(AbstractSpookRepair):
         options = entry.options
         named = self._named.get(entry.entry_id)
         if named is None or named[0] is not options:
-            named = (options, extract_attribute_references_from_config(dict(options)))
+            # A copy made for this one reading, so nothing remembers it.
+            with read_once():
+                named = (
+                    options,
+                    extract_attribute_references_from_config(dict(options)),
+                )
         self._named[entry.entry_id] = named
         return named[1]
 

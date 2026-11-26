@@ -4,7 +4,9 @@ An attribute is only unknown when every source agrees it is: what the kind of
 entity offers in Home Assistant, what every entity offers, what this entity
 has right now, and what the recorder remembers it ever having. Absence from
 one of those means nothing. A media player that is off drops most of its
-attributes, an integration adds its own that only show up now and then.
+attributes, an integration adds its own that only show up now and then. The
+same when the recorder only kept it off, unavailable or unknown: those are
+the states where it drops them, so that history is not the whole story.
 
 The recorder is asked last, and only about what is left after the rest.
 """
@@ -19,6 +21,7 @@ import importlib
 import re
 import sys
 from typing import TYPE_CHECKING, Final
+import unicodedata
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
@@ -34,6 +37,9 @@ from homeassistant.const import (
     ATTR_ENTITY_ID,
     ATTR_ID,
     MATCH_ALL,
+    STATE_OFF,
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
     EntityCapabilityAttribute,
     EntityStateAttribute,
 )
@@ -75,6 +81,13 @@ GENERIC_ATTRIBUTES: Final = frozenset(
     }
 )
 
+# States in which an entity drops the attributes it only carries while it is
+# doing something. MeteoAlarm's `headline` exists while the binary sensor is
+# on, and is gone while it is off; unavailable and unknown drop them too. A
+# history that kept nothing else cannot prove an attribute was never there.
+# #2020.
+_INACTIVE_STATES: Final = frozenset({STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN})
+
 # How core names the enums of a domain's attributes. Not only
 # `<Domain>EntityStateAttribute`: a capability is an attribute too, and water
 # heaters and device trackers spell theirs a little differently.
@@ -104,6 +117,12 @@ MOST_ATTRIBUTE_SETS_PER_ENTITY: Final = 1000
 # A one-letter slip is only a slip in a name long enough to have letters to
 # spare. `mode` and `node` are both real words.
 _SHORTEST_NAME_TO_CORRECT = 5
+
+# Marks without a shape of their own that Unicode does not file under the
+# characters that only format: the joiner, and the selectors that pick a
+# variant of the character before them.
+_GRAPHEME_JOINER = "\u034f"
+_VARIATION_SELECTORS = (("\ufe00", "\ufe0f"), ("\U000e0100", "\U000e01ef"))
 
 _SEPARATORS = re.compile(r"[\s_-]+")
 
@@ -147,6 +166,8 @@ class HistoryAnswer:
     # When the whole history was read, and when anything was read last.
     asked_at: datetime
     read_until: datetime
+    # Whether a full attribute history read found only inactive states.
+    inactive_only: bool = False
 
     def holds(self, now: datetime) -> bool:
         """Return whether this is recent enough to go by."""
@@ -163,14 +184,17 @@ class _Knowledge:
     seen: set[str] = field(default_factory=set)
     answer: HistoryAnswer | None = None
 
-    def see(self, keys: Iterable[str]) -> None:
+    def see(self, keys: Iterable[str], *, active: bool = False) -> None:
         """Note keys the entity shows right now.
 
         A key not seen before means the entity changed since the recorder was
-        asked, so its answer no longer tells the whole story.
+        asked, so its answer no longer tells the whole story. An active
+        state also makes an answer based only on inactive states stale.
         """
         if new := set(keys) - self.seen:
             self.seen |= new
+            self.answer = None
+        if active and self.answer is not None and self.answer.inactive_only:
             self.answer = None
 
 
@@ -265,6 +289,58 @@ def names_the_state(entity_id: str, attribute: str) -> bool:
     )
 
 
+def did_you_mean(written: object, suggestion: str, *, as_code: bool = True) -> str:
+    """Return the best guess the way it is added to a finding.
+
+    A name can differ from the one that was meant without it showing: a
+    space at the end of `preset_modes ` is not seen on screen, and neither
+    is a character that has no shape at all. Home Assistant looks a name up
+    exactly as written, so it finds nothing, and the finding would show the
+    same name twice. What differs is said in words then. #2047.
+    """
+    meant = f"`{suggestion}`" if as_code else suggestion
+    if (differs := _differs_out_of_sight(written, suggestion)) is None:
+        return f" (did you mean {meant}?)"
+    return f" ({differs}, did you mean {meant}?)"
+
+
+def _differs_out_of_sight(written: object, suggestion: str) -> str | None:
+    """Return what tells a name from its best guess, when the eye cannot."""
+    if not isinstance(written, str) or written == suggestion:
+        return None
+
+    if written.strip() == suggestion:
+        at_the_start = written != written.lstrip()
+        at_the_end = written != written.rstrip()
+        if at_the_start and at_the_end:
+            return "has a space at the start and the end"
+        return f"has a space at the {'start' if at_the_start else 'end'}"
+
+    seen = "".join(character for character in written if not _has_no_shape(character))
+    if seen != written and seen.strip() == suggestion:
+        return "has a character in it that does not show"
+
+    return None
+
+
+def _has_no_shape(character: str) -> bool:
+    """Return whether a character takes up no room on screen at all.
+
+    Like a zero-width space or a soft hyphen pasted along, and the marks
+    that only say how the character before them is to be drawn. Not a space
+    inside a name: that leaves a gap anybody can see. And not an accent,
+    which changes what is seen.
+    """
+    if character.isspace():
+        return False
+
+    return (
+        unicodedata.category(character) in {"Cc", "Cf"}
+        or character == _GRAPHEME_JOINER
+        or any(first <= character <= last for first, last in _VARIATION_SELECTORS)
+    )
+
+
 def suggest_name(name: str, known: Iterable[str]) -> str | None:
     """Return what somebody most likely meant, but only when it is near certain.
 
@@ -351,33 +427,78 @@ def newest_attribute_sets(
     return attribute_ids, complete
 
 
+def _retained_an_active_state(session: Session, metadata_id: int) -> bool:
+    """Return whether the recorder kept a state other than an inactive one.
+
+    One active row is enough. Only the newest states are looked at, through
+    the index the recorder keeps on entity and time, and that bound is on
+    the rows read: a history of nothing but inactive states has no match,
+    and limiting the matches would still walk every row the entity kept.
+    Neither the work nor the answer grows with history. Off, unavailable
+    and unknown are not it: an entity can drop attributes in all three, and
+    a history of only those has not shown what it carries the rest of the
+    time.
+    """
+    # Limit first, then filter. The other way round lets a miss scan the
+    # whole history before `limit` ever applies.
+    newest = (
+        select(States.state)
+        .where(States.metadata_id == metadata_id)
+        .order_by(States.last_updated_ts.desc())
+        .limit(MOST_STATES_PER_ENTITY)
+        .subquery()
+    )
+    return (
+        session.execute(
+            select(newest.c.state)
+            .where(
+                newest.c.state.is_not(None),
+                newest.c.state.notin_(_INACTIVE_STATES),
+            )
+            .limit(1)
+        ).first()
+        is not None
+    )
+
+
 def _read_recorded_attribute_keys(
     hass: HomeAssistant, since_by_entity: Mapping[str, float | None]
-) -> dict[str, tuple[set[str], bool]]:
-    """Return the attribute keys the recorder has seen per entity.
+) -> dict[str, tuple[set[str], bool, bool]]:
+    """Return keys, completeness and whether only inactive states were found.
 
     Runs on the recorder's executor, as one job in one session: which
     entities it knows, the newest attribute sets of each, bounded, and then
-    the keys of those sets. Never the state rows themselves. Per entity
-    either all of it, or only what was written since a moment.
+    the keys of those sets. Per entity either all of it, or only what was
+    written since a moment. A full read also looks for one state that is not
+    off, unavailable or unknown, and without one the history is not whole.
+    What came in since the last read does not get that look: those rows being
+    off must not undo a full read that already saw an active state.
 
     An entity missing from the answer was never recorded.
     """
     instance = get_instance(hass)
     keys_by_entity: dict[str, set[str]] = {}
     complete_entities: set[str] = set()
+    inactive_only_entities: set[str] = set()
     # One set can be shared by several entities: the recorder stores each
     # distinct set once.
     entities_by_set: dict[int, list[str]] = defaultdict(list)
 
     with session_scope(hass=hass, read_only=True) as session:
-        metadata_ids = recorder_metadata_ids(
+        for metadata_id, entity_id in recorder_metadata_ids(
             session, list(since_by_entity), instance.max_bind_vars
-        )
-        for metadata_id, entity_id in metadata_ids.items():
-            attribute_ids, complete = newest_attribute_sets(
-                session, metadata_id, since_by_entity[entity_id]
-            )
+        ).items():
+            since = since_by_entity[entity_id]
+            attribute_ids, complete = newest_attribute_sets(session, metadata_id, since)
+            # Only a full read can call a history nothing but inactive states.
+            # An incremental one continues the answer it already has.
+            if (
+                complete
+                and since is None
+                and not _retained_an_active_state(session, metadata_id)
+            ):
+                complete = False
+                inactive_only_entities.add(entity_id)
             keys_by_entity[entity_id] = set()
             if complete:
                 complete_entities.add(entity_id)
@@ -395,7 +516,11 @@ def _read_recorded_attribute_keys(
                     complete_entities.discard(entity_id)
 
     return {
-        entity_id: (keys, entity_id in complete_entities)
+        entity_id: (
+            keys,
+            entity_id in complete_entities,
+            entity_id in inactive_only_entities,
+        )
         for entity_id, keys in keys_by_entity.items()
     }
 
@@ -467,14 +592,17 @@ async def _async_ask_the_recorder(
         return
 
     for entity_id, previous in previous_answers.items():
-        keys, complete = recorded.get(entity_id, (set(), False))
+        keys, complete, inactive_only = recorded.get(entity_id, (set(), False, False))
         knowledge = _knowledge(hass, entity_id)
         # Taken in before the answer is written down: these are what the
         # answer is about, not news that makes it stale.
         knowledge.seen |= keys
         if previous is None:
             knowledge.answer = HistoryAnswer(
-                complete=complete, asked_at=started, read_until=started
+                complete=complete,
+                asked_at=started,
+                read_until=started,
+                inactive_only=inactive_only,
             )
         # Only added to the answer it continues. One dropped meanwhile,
         # because the entity showed something new, is read in full next time.
@@ -530,7 +658,7 @@ async def _async_look(
         return None
 
     knowledge = _knowledge(hass, entity_id)
-    knowledge.see(state.attributes)
+    knowledge.see(state.attributes, active=state.state not in _INACTIVE_STATES)
     known = {
         *GENERIC_ATTRIBUTES,
         *await async_domain_attributes(hass, split_entity_id(entity_id)[0]),
@@ -620,6 +748,9 @@ async def _async_findings(
             and answer is not None
             and answer.holds(now)
             and answer.complete
+            # Core omits an unavailable entity's integration-specific state
+            # attributes. Recorder absence cannot prove one of them is unknown.
+            and look.state.state != STATE_UNAVAILABLE
             and look.state.last_updated == before.state.last_updated
         )
         folded = {candidate.casefold() for candidate in look.known}

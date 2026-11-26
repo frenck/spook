@@ -8,7 +8,7 @@
         },
         "step": {
             "user": {
-                "description": "Spook flota por tu Home Assistant buscando fantasmas: referencias a cosas que ya no existen y restos que nadie ha limpiado. Todo lo que encuentra lo informa en Reparaciones.\n\nTambién amplía lo que pueden hacer tus automatizaciones y scripts, con acciones, activadores, condiciones y ayudantes extra, para automatizaciones aún más potentes.\n\nAviso justo: Spook no forma parte de Home Assistant. Es una integración personalizada que se mete en sitios a los que nunca la invitaron. Si pasa algo raro, sospecha primero de Spook y [avísanos]({issue_tracker_url}).\n\n¿Listo para que te asusten?",
+                "description": "Spook flota por tu Home Assistant buscando fantasmas: referencias a cosas que ya no existen y restos que nadie ha limpiado. Todo lo que encuentra lo informa en Reparaciones.\n\nTambién amplía lo que pueden hacer tus automatizaciones y scripts, con acciones, disparadores, condiciones y ayudantes extra, para automatizaciones aún más potentes.\n\nAviso justo: Spook no forma parte de Home Assistant. Es una integración personalizada que se mete en sitios a los que nunca la invitaron. Si pasa algo raro, sospecha primero de Spook y [avísanos]({issue_tracker_url}).\n\n¿Listo para que te asusten?",
                 "title": "¡Bu! Te presento a Spook, tu colega 👻"
             },
             "already_configured": {
@@ -21,7 +21,7 @@
             }
         },
         "create_entry": {
-            "spooked": "Spook anda flotando por ahí 👻\n\nDale un momento para echar un vistazo. Todo lo que encuentre aparecerá en [Reparaciones](/config/repairs).\n\nLas acciones, activadores y condiciones extra te esperan en los editores de automatizaciones y scripts. ¿Te pica la curiosidad por saber qué más puede hacer Spook? La [documentación]({documentation_url}) lo cuenta todo.\n\n¿Te gusta Spook? 👻 Una ⭐ en [GitHub]({repository_url}) hace saber a los demás que Spook es, en realidad, bastante genial. [Patrocinar a Frenck]({sponsor_url}) mantiene a este fantasma bien alimentado. Y su [boletín]({newsletter_url}) gratuito y quincenal mantiene bien alimentado a tu fantasma interior."
+            "spooked": "Spook anda flotando por ahí 👻\n\nDale un momento para echar un vistazo. Todo lo que encuentre aparecerá en [Reparaciones](/config/repairs).\n\nLas acciones, disparadores y condiciones extra te esperan en los editores de automatizaciones y scripts. ¿Te pica la curiosidad por saber qué más puede hacer Spook? La [documentación]({documentation_url}) lo cuenta todo.\n\n¿Te gusta Spook? 👻 Una ⭐ en [GitHub]({repository_url}) hace saber a los demás que Spook es, en realidad, bastante genial. [Patrocinar a Frenck]({sponsor_url}) mantiene a este fantasma bien alimentado. Y su [boletín]({newsletter_url}) gratuito y quincenal mantiene bien alimentado a tu fantasma interior."
         }
     },
     "entity": {
@@ -242,7 +242,7 @@
     },
     "exceptions": {
         "all_of_attach_failed": {
-            "message": "No se han podido enganchar todos los activadores de un activador «Todo esto sucedió»."
+            "message": "No se han podido enganchar todos los disparadores de un disparador «Todo esto sucedió»."
         },
         "area_not_found": {
             "message": "No se ha encontrado el área {area_id}."
@@ -305,7 +305,7 @@
             "message": "No se ha encontrado la entrada de integración {config_entry_id}."
         },
         "debounce_attach_failed": {
-            "message": "No se han podido enganchar todos los activadores de un activador con antirrebote."
+            "message": "No se han podido enganchar todos los disparadores de un disparador con antirrebote."
         },
         "device_not_found": {
             "message": "No se ha encontrado el dispositivo {device_id}."
@@ -386,7 +386,7 @@
             "message": "Spook ha encontrado un error al reiniciar Home Assistant."
         },
         "sequence_attach_failed": {
-            "message": "No se ha podido enganchar el primer paso de un activador de secuencia."
+            "message": "No se ha podido enganchar el primer paso de un disparador de secuencia."
         },
         "set_range_nothing_to_change": {
             "message": "Indica un mínimo, un máximo o un paso que cambiar."
@@ -416,10 +416,10 @@
             "message": "El valor {value} de {entity_id} no es un número."
         },
         "watchdog_arming_attach_failed": {
-            "message": "No se han podido enganchar los activadores de armado de un activador de perro guardián."
+            "message": "No se han podido enganchar los disparadores de armado de un disparador de perro guardián."
         },
         "watchdog_expected_attach_failed": {
-            "message": "No se han podido enganchar los activadores esperados de un activador de perro guardián."
+            "message": "No se han podido enganchar los disparadores esperados de un disparador de perro guardián."
         },
         "yaml_group_not_editable": {
             "message": "{entity_id} es un grupo de tu configuración YAML, que Spook no puede cambiar. Edítalo en tu configuración, o usa group.set, que sigue funcionando con ese tipo de grupo."
@@ -456,6 +456,9 @@
         },
         "yaml_schedule_not_editable": {
             "message": "{entity_id} es una programación de tu configuración YAML, que Spook no puede cambiar. Edítala en tu configuración."
+        },
+        "device_disabled_by_integration_entry": {
+            "message": "El dispositivo {device_id} no se puede activar mientras la entrada de integración {entry} esté desactivada. Activa esa entrada de integración en su lugar."
         }
     },
     "issues": {
@@ -480,7 +483,7 @@
             "title": "Etiquetas desconocidas usadas en: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización hace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nPara solucionar este error, [edita la automatización]({edit}) y elimina el uso de estas acciones que no existen.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización hace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nPara solucionar este error, [edita la automatización]({edit}) y elimina el uso de estas acciones que no existen.\n\nSpook 👻 Tu colega.",
             "title": "Acciones desconocidas utilizadas en: {automation}"
         },
         "group_unknown_members": {
@@ -496,7 +499,7 @@
                     "init": {
                         "description": "Spook ha encontrado un fantasma en tus grupos 👻\n\nEl grupo {group} (`{entity_id}`) tiene miembros que son desconocidos para Home Assistant:\n\n{entities}\n\nQuítalos del grupo, o quédatelos y Spook no volverá a mencionarlos.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarlos, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar estos miembros"
                         },
@@ -510,19 +513,19 @@
             "title": "Entidades desconocidas usadas en: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración está ignorando zonas desconocidas para Home Assistant:\n\n{zones}\n\nPara solucionar este error, edita la configuración y elimina esta/estas zonas.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración está ignorando zonas desconocidas para Home Assistant:\n\n{zones}\n\nPara solucionar este error, edita la configuración y elimina esta/estas zonas.\n\nSpook 👻 Tu colega.",
             "title": "Zonas ignoradas desconocidas: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración está rastreando personas o dispositivos que son desconocidos para Home Assistant:\n\n{entities}\n\nPara solucionar este error, edita la configuración y elimina esta/estas entidades.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración está rastreando personas o dispositivos que son desconocidos para Home Assistant:\n\n{entities}\n\nPara solucionar este error, edita la configuración y elimina esta/estas entidades.\n\nSpook 👻 Tu colega.",
             "title": "Entidades rastreadas desconocidas: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración se basa en una zona desconocida para Home Assistant:\n\n`{zone}`\n\nPara solucionar este error, como no puedes cambiar la zona de una configuración de proximidad, la única opción es eliminar esta instancia específica de integración de proximidad.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración se basa en una zona desconocida para Home Assistant:\n\n`{zone}`\n\nPara solucionar este error, como no puedes cambiar la zona de una configuración de proximidad, la única opción es eliminar esta instancia específica de integración de proximidad.\n\nSpook 👻 Tu colega.",
             "title": "Zona desconocida: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook ha encontrado un fantasma en tus escenas 👻\n\nMientras estaba flotando, Spook se cruzó con la siguiente escena:\n\n[{scene}]({edit})\n\nEsta escena referencia las siguientes entidades, las cuales son desconocidas para Home Assistant:\n\n{entities}\n\n\nPara arreglar este error, [edita la escena]({edit}) y borra el uso de las entidades que no existen.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus escenas 👻\n\nMientras flotaba, Spook se cruzó con la siguiente escena:\n\n[{scene}]({edit})\n\nEsta escena hace referencia a las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\n\nPara solucionar este error, [edita la escena]({edit}) y elimina el uso de estas entidades que no existen.\n\nSpook 👻 Tu colega.",
             "title": "Entidades desconocidas usadas en: {scene}"
         },
         "script_unknown_area_references": {
@@ -598,7 +601,7 @@
                     "init": {
                         "description": "El área {area} no tiene dispositivos, ni entidades, ni ninguna automatización o script que la tenga como destino.\n\nQuítala, o quédatela y Spook no volverá a mencionarla.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarla, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar esta área vacía"
                         },
@@ -619,7 +622,7 @@
                     "init": {
                         "description": "La planta {floor} no tiene áreas, ni ninguna automatización o script que la tenga como destino.\n\nQuítala, o quédatela y Spook no volverá a mencionarla.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarla, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar esta planta vacía"
                         },
@@ -651,11 +654,11 @@
             }
         },
         "lovelace_missing_resources": {
-            "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nLos siguientes recursos de panel apuntan a archivos que no existen:\n\n{resources}\n\nEsto suele pasar cuando se ha quitado una tarjeta personalizada o sus archivos, pero el recurso se ha quedado. Para solucionar este error, abre la [página de Recursos](/config/lovelace/resources) y quita o corrige estos recursos. No tiene su propia pestaña: en la página de paneles, se encuentra detrás de los tres puntos situados en la esquina superior derecha.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus paneles de control 👻\n\nLos siguientes recursos de panel apuntan a archivos que no existen:\n\n{resources}\n\nEsto suele pasar cuando se ha quitado una tarjeta personalizada o sus archivos, pero el recurso se ha quedado. Para solucionar este error, abre la [página de Recursos](/config/lovelace/resources) y quita o corrige estos recursos. No tiene su propia pestaña: en la página de paneles, se encuentra detrás de los tres puntos situados en la esquina superior derecha.\n\nSpook 👻 Tu colega.",
             "title": "Recursos del panel que apuntan a archivos que faltan"
         },
         "lovelace_unknown_area_references": {
-            "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nMientras flotaba, Spook se cruzó con el siguiente panel:\n\n{dashboard}\n\nEste panel hace referencia a las siguientes áreas, que son desconocidas para Home Assistant:\n\n{areas}\n\nEsto suele pasar cuando se ha renombrado o quitado un área. Para solucionar este error, [edita el panel]({edit}) y elimina el uso de estas áreas que no existen.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus paneles de control 👻\n\nMientras flotaba, Spook se cruzó con el siguiente panel de control:\n\n{dashboard}\n\nEste panel de control hace referencia a las siguientes áreas, que son desconocidas para Home Assistant:\n\n{areas}\n\nEsto suele pasar cuando se ha renombrado o quitado un área. Para solucionar este error, [edita el panel de control]({edit}) y elimina el uso de estas áreas que no existen.\n\nSpook 👻 Tu colega.",
             "title": "Áreas desconocidas usadas en el panel: {dashboard}"
         },
         "min_max_unknown_sources": {
@@ -686,7 +689,7 @@
                 "step": {
                     "init": {
                         "title": "Se han encontrado estadísticas a largo plazo huérfanas",
-                        "description": "Hay un fantasma en tu recorder 👻\n\nHome Assistant está guardando estadísticas a largo plazo de lo siguiente, pero ya no existe ninguna entidad que coincida:\n\n{statistics}\n\nEsto suele pasar cuando se eliminó un sensor pero se conservaron sus estadísticas. Borrarlas tira ese historial a la basura para siempre, así que Spook vuelve a comprobarlo antes de hacerlo y deja en paz todo lo que haya vuelto mientras tanto.\n\nSpook 👻 Tu colega.",
+                        "description": "Spook ha encontrado un fantasma en tu recorder 👻\n\nHome Assistant está guardando estadísticas a largo plazo de lo siguiente, pero ya no existe ninguna entidad que coincida:\n\n{statistics}\n\nEsto suele pasar cuando se eliminó un sensor pero se conservaron sus estadísticas. Borrarlas tira ese historial a la basura para siempre, así que Spook vuelve a comprobarlo antes de hacerlo y deja en paz todo lo que haya vuelto mientras tanto.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
                             "remove": "Borrar estas estadísticas",
                             "manage": "Lo hago yo mismo",
@@ -713,7 +716,7 @@
                     "init": {
                         "description": "Spook ha encontrado un fantasma en tus personas 👻\n\n{person} sigue los siguientes rastreadores de dispositivo, que son desconocidos para Home Assistant:\n\n{device_trackers}\n\nEsto suele pasar cuando se ha renombrado un rastreador de dispositivo o se ha quitado su integración.\n\nQuítalos de {person}, o quédatelos y Spook no volverá a mencionarlos.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Conservarlas, no me avises más",
+                            "ignore": "Conservarlos, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar estos rastreadores de dispositivo"
                         },
@@ -758,7 +761,7 @@
                     "init": {
                         "description": "Spook ha encontrado un fantasma en tus ayudantes 👻\n\nEl ayudante {helper} (`{domain}`, `{entity_id}`) hace referencia a las siguientes entidades de origen, que son desconocidas para Home Assistant:\n\n{sources}\n\nSin sus orígenes, este ayudante no puede funcionar. {usage}\n\nQuita el ayudante, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarlo, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar este ayudante"
                         },
@@ -778,7 +781,7 @@
                     "init": {
                         "description": "El blueprint {blueprint} no lo usa ningún {domain}.\n\nQuítalo, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarlo, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar este blueprint sin usar"
                         },
@@ -799,7 +802,7 @@
                     "init": {
                         "description": "La etiqueta {label} no está puesta en ninguna entidad, dispositivo ni área, y ninguna automatización o script la tiene como destino.\n\nQuítala, o quédatela y Spook no volverá a mencionarla.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarla, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar esta etiqueta sin usar"
                         },
@@ -819,10 +822,10 @@
                 "step": {
                     "init": {
                         "title": "Recurso del panel repetido más de una vez: {resource}",
-                        "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nEste recurso del panel aparece {count} veces:\n\n{resources}\n\nEsto suele ocurrir cuando se actualizó una tarjeta personalizada añadiendo un recurso para la nueva versión en lugar de editar el que ya estaba. El navegador carga los dos, la tarjeta intenta registrarse dos veces y el segundo intento falla, lo que parece una tarjeta rota en lugar de un recurso duplicado.\n\nSpook puede limpiar las copias sobrantes y quedarse con la añadida más recientemente.\n\nSpook 👻 Tu colega.",
+                        "description": "Spook ha encontrado un fantasma en tus paneles de control 👻\n\nEste recurso del panel aparece {count} veces:\n\n{resources}\n\nEsto suele ocurrir cuando se actualizó una tarjeta personalizada añadiendo un recurso para la nueva versión en lugar de editar el que ya estaba. El navegador carga los dos, la tarjeta intenta registrarse dos veces y el segundo intento falla, lo que parece una tarjeta rota en lugar de un recurso duplicado.\n\nSpook puede limpiar las copias sobrantes y quedarse con la añadida más recientemente.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
                             "remove": "Limpiar las copias sobrantes y quedarse con la más reciente",
-                            "ignore": "Dejarlas, y que no me lo digas más",
+                            "ignore": "Dejarlos, no me avises más",
                             "manage": "Lo arreglo yo mismo"
                         }
                     }
@@ -835,7 +838,7 @@
             }
         },
         "lovelace_missing_resources_yaml": {
-            "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nLos siguientes recursos de panel hacen referencia a archivos que no existen:\n\n{resources}\n\n\n\nEsto suele ocurrir cuando se elimina una tarjeta personalizada o sus archivos, pero el recurso permanece.\n\nEstos recursos figuran en tu configuración YAML, por lo que no es posible modificarlos desde la página de Recursos. Edita la sección `resources:` de tu configuración de Lovelace y elimina o corrige estas entradas.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus paneles de control 👻\n\nLos siguientes recursos de panel hacen referencia a archivos que no existen:\n\n{resources}\n\n\n\nEsto suele ocurrir cuando se elimina una tarjeta personalizada o sus archivos, pero el recurso permanece.\n\nEstos recursos figuran en tu configuración YAML, por lo que no es posible modificarlos desde la página de Recursos. Edita la sección `resources:` de tu configuración de Lovelace y elimina o corrige estas entradas.\n\nSpook 👻 Tu colega.",
             "title": "Los recursos del panel apuntan a archivos inexistentes"
         },
         "lovelace_unknown_service_references": {
@@ -860,7 +863,7 @@
                         "menu_options": {
                             "remove": "Borrar el ajuste",
                             "manage": "Lo arreglo yo mismo",
-                            "ignore": "Quedárselo y no volver a avisarme"
+                            "ignore": "Conservarlo, no me avises más"
                         }
                     }
                 },
@@ -881,7 +884,7 @@
                         "menu_options": {
                             "remove": "Borrar el ajuste",
                             "manage": "Lo arreglo yo mismo",
-                            "ignore": "Quedárselo y no volver a avisarme"
+                            "ignore": "Conservarlo, no me avises más"
                         }
                     }
                 },
@@ -902,7 +905,7 @@
                         "menu_options": {
                             "remove": "Borrar los ajustes",
                             "manage": "Lo arreglo yo mismo",
-                            "ignore": "Quedárselos y no volver a avisarme"
+                            "ignore": "Conservarlos, no me avises más"
                         }
                     }
                 },
@@ -913,17 +916,13 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist no puede distinguir estas: {name}",
-            "description": "Spook ha encontrado un fantasma en tus asistentes de voz 👻\n\nLas siguientes entidades están expuestas a Assist, y todas responden al nombre {name}:\n\n{entities}\n\nCuando los nombres son iguales, Assist solo las distingue por área: la que nombras, o aquella en la que está tu satélite de voz. Algunas de estas comparten área, o no tienen ninguna, así que Assist no puede elegirlas por este nombre desde ningún sitio. Pedir {name} falla entonces, y nada dice qué entidades se interponen.\n\nPara solucionarlo, dale a cada una un nombre o alias propio, o muévelas a áreas distintas. Puedes cambiar los alias de una entidad, y si Assist la ve o no, en [Entidades expuestas](/config/voice-assistants/expose). Las áreas se configuran en la [página de Áreas](/config/areas/dashboard).\n\nSpook 👻 Tu colega."
-        },
         "automation_unknown_attribute_references": {
             "title": "Atributos desconocidos usados en: {automation}",
-            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización usa los siguientes atributos, que sus entidades no tienen. Ni ahora mismo, ni como algo que ese tipo de entidad ofrezca, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{attributes}\n\n\n\nUn activador o una condición que espera un atributo que nunca aparece nunca se activa, y no te lo dice. Una plantilla que lee uno no obtiene nada. Para solucionarlo, [edita la automatización]({edit}) y usa un atributo que tenga la entidad.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización usa los siguientes atributos, que sus entidades no tienen. Ni ahora mismo, ni como algo que ese tipo de entidad ofrezca, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{attributes}\n\n\n\nUn disparador o una condición que espera un atributo que nunca aparece nunca se activa, y no te lo dice. Una plantilla que lee uno no obtiene nada. Para solucionarlo, [edita la automatización]({edit}) y usa un atributo que tenga la entidad.\n\nSpook 👻 Tu colega."
         },
         "script_unknown_attribute_references": {
             "title": "Atributos desconocidos usados en: {script}",
-            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa los siguientes atributos, que sus entidades no tienen. Ni ahora mismo, ni como algo que ese tipo de entidad ofrezca, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{attributes}\n\n\n\nUn activador o una condición que espera un atributo que nunca aparece nunca se activa, y no te lo dice. Una plantilla que lee uno no obtiene nada. Para solucionarlo, [edita el script]({edit}) y usa un atributo que tenga la entidad.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa los siguientes atributos, que sus entidades no tienen. Ni ahora mismo, ni como algo que ese tipo de entidad ofrezca, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{attributes}\n\n\n\nUn disparador o una condición que espera un atributo que nunca aparece nunca se activa, y no te lo dice. Una plantilla que lee uno no obtiene nada. Para solucionarlo, [edita el script]({edit}) y usa un atributo que tenga la entidad.\n\nSpook 👻 Tu colega."
         },
         "lovelace_unknown_attribute_references": {
             "title": "Atributos desconocidos usados en el panel: {dashboard}",
@@ -935,35 +934,35 @@
         },
         "template_unknown_attribute_references_yaml": {
             "title": "Atributos desconocidos usados en la entidad de plantilla: {name}",
-            "description": "Spook ha encontrado un fantasma en tus entidades de plantilla 👻\n\nMientras flotaba, Spook se cruzó con la siguiente entidad de plantilla:\n\n{name} (`{entity_id}`)\n\nEsta entidad de plantilla usa los siguientes atributos, que sus entidades no tienen. Ni ahora mismo, ni como algo que ese tipo de entidad ofrezca, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{attributes}\n\n\n\nUna plantilla que lee un atributo que nunca aparece no obtiene nada, y un activador o una condición que espera uno nunca se activa ni se cumple. Ninguno te lo dice.\n\nEsta entidad de plantilla está definida en tu configuración YAML. Para solucionarlo, edítala en la sección `template:` de tu configuración, usa un atributo que tenga la entidad y recarga tus entidades de plantilla.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus entidades de plantilla 👻\n\nMientras flotaba, Spook se cruzó con la siguiente entidad de plantilla:\n\n{name} (`{entity_id}`)\n\nEsta entidad de plantilla usa los siguientes atributos, que sus entidades no tienen. Ni ahora mismo, ni como algo que ese tipo de entidad ofrezca, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{attributes}\n\n\n\nUna plantilla que lee un atributo que nunca aparece no obtiene nada, y un disparador o una condición que espera uno nunca se activa ni se cumple. Ninguno te lo dice.\n\nEsta entidad de plantilla está definida en tu configuración YAML. Para solucionarlo, edítala en la sección `template:` de tu configuración, usa un atributo que tenga la entidad y recarga tus entidades de plantilla.\n\nSpook 👻 Tu colega."
         },
         "automation_unknown_state_references": {
             "title": "Estados desconocidos usados en: {automation}",
-            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización espera o comprueba los siguientes estados, en los que sus entidades nunca están. Ni como algo que ese tipo de entidad pueda estar, ni entre las opciones que ofrece la entidad, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{states}\n\n\n\nUn activador que espera un estado que nunca llega nunca se activa, una condición que comprueba uno nunca se cumple, y ninguno de los dos te lo dice. Los estados distinguen mayúsculas y minúsculas: `On` no es `on`. Para solucionarlo, [edita la automatización]({edit}) y usa un estado en el que pueda estar la entidad.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización espera o comprueba los siguientes estados, en los que sus entidades nunca están. Ni como algo que ese tipo de entidad pueda estar, ni entre las opciones que ofrece la entidad, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{states}\n\n\n\nUn disparador que espera un estado que nunca llega nunca se activa, una condición que comprueba uno nunca se cumple, y ninguno de los dos te lo dice. Los estados distinguen mayúsculas y minúsculas: `On` no es `on`. Para solucionarlo, [edita la automatización]({edit}) y usa un estado en el que pueda estar la entidad.\n\nSpook 👻 Tu colega."
         },
         "script_unknown_state_references": {
             "title": "Estados desconocidos usados en: {script}",
-            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script espera o comprueba los siguientes estados, en los que sus entidades nunca están. Ni como algo que ese tipo de entidad pueda estar, ni entre las opciones que ofrece la entidad, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{states}\n\n\n\nUn activador que espera un estado que nunca llega nunca se activa, una condición que comprueba uno nunca se cumple, y ninguno de los dos te lo dice. Los estados distinguen mayúsculas y minúsculas: `On` no es `on`. Para solucionarlo, [edita el script]({edit}) y usa un estado en el que pueda estar la entidad.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script espera o comprueba los siguientes estados, en los que sus entidades nunca están. Ni como algo que ese tipo de entidad pueda estar, ni entre las opciones que ofrece la entidad, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{states}\n\n\n\nUn disparador que espera un estado que nunca llega nunca se activa, una condición que comprueba uno nunca se cumple, y ninguno de los dos te lo dice. Los estados distinguen mayúsculas y minúsculas: `On` no es `on`. Para solucionarlo, [edita el script]({edit}) y usa un estado en el que pueda estar la entidad.\n\nSpook 👻 Tu colega."
         },
         "lovelace_unknown_state_references": {
             "title": "Estados desconocidos usados en el panel: {dashboard}",
             "description": "Spook ha encontrado un fantasma en tus paneles de control 👻\n\nMientras flotaba, Spook se cruzó con el siguiente panel de control:\n\n[{dashboard}]({edit})\n\nEste panel de control comprueba los siguientes estados, en los que sus entidades nunca están. Ni como algo que ese tipo de entidad pueda estar, ni entre las opciones que ofrece la entidad, ni en ninguna parte de lo que el recorder recuerda de ellas:\n\n{states}\n\n\n\nUna condición de visibilidad o un filtro que comprueba un estado que nunca llega nunca se cumple, y una imagen configurada para uno nunca se muestra. Ninguno te lo dice. Los estados distinguen mayúsculas y minúsculas: `On` no es `on`. Para solucionarlo, [edita el panel de control]({edit}) y usa un estado en el que pueda estar la entidad.\n\nSpook 👻 Tu colega."
         },
         "automation_unknown_trigger_id_references": {
-            "title": "ID de activador desconocidos usados en: {automation}",
-            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización comprueba los siguientes ID de activador, que no tiene ninguno de sus propios activadores:\n\n{trigger_ids}\n\n\n\nUna comprobación de un ID que ningún activador entrega siempre sale igual: una condición de activador que lo pide nunca se cumple, así que la parte que protege nunca se ejecuta, y nada te lo dice. Los ID de activador distinguen mayúsculas y minúsculas, y un activador sin ID propio se identifica por su posición en la lista, contando desde `0`. Para solucionarlo, [edita la automatización]({edit}) y usa el ID de uno de sus activadores, o dale al activador el ID que pide la automatización.\n\nSpook 👻 Tu colega."
+            "title": "ID de disparador desconocidos usados en: {automation}",
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización comprueba los siguientes ID de disparador, que no tiene ninguno de sus propios disparadores:\n\n{trigger_ids}\n\n\n\nUna comprobación de un ID que ningún disparador entrega siempre sale igual: una condición de disparador que lo pide nunca se cumple, así que la parte que protege nunca se ejecuta, y nada te lo dice. Los ID de disparador distinguen mayúsculas y minúsculas, y un disparador sin ID propio se identifica por su posición en la lista, contando desde `0`. Para solucionarlo, [edita la automatización]({edit}) y usa el ID de uno de sus disparadores, o dale al disparador el ID que pide la automatización.\n\nSpook 👻 Tu colega."
         },
         "lovelace_unknown_view_references": {
             "title": "Vistas desconocidas a las que navega el panel: {dashboard}",
             "description": "Spook ha encontrado un fantasma en tus paneles de control 👻\n\nMientras flotaba, Spook se cruzó con el siguiente panel de control:\n\n[{dashboard}]({edit})\n\nEste panel de control navega a las siguientes vistas, que no existen:\n\n{paths}\n\n\n\nUn botón o una tarjeta que navega a una de ellas abre en su lugar la primera vista de ese panel, sin decirlo. Esto suele pasar cuando se ha renombrado, movido o eliminado una vista. Para solucionar este error, [edita el panel de control]({edit}) y haz que apunten a una vista que exista.\n\nSpook 👻 Tu colega."
         },
         "automation_never_true_templates": {
-            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización tiene las siguientes plantillas, que nunca pueden cumplirse, pase lo que pase en tu casa:\n\n{templates}\n\n\n\nUna condición de plantilla solo se cumple cuando da `true`, y un `wait_template` también, salvo que más tarde cambie a algo que se lea como verdadero. Un activador de plantilla se activa cuando su plantilla pasa a algo que se lee como verdadero, como `true`, `on`, `yes` o `1`. Estas plantillas siempre dan otra cosa, por cómo están escritas. Las causas habituales:\n\n- Comillas alrededor de la plantilla. Un bloque `>-` las toma como texto, así que acaban en el resultado.\n- Ningún delimitador de plantilla, así que el texto se toma tal cual.\n- YAML pegado en el campo de la plantilla.\n- Un comentario YAML `#` dentro del Jinja, que Jinja imprime como texto.\n- Una condición que da `on` en lugar de `true`.\n\nNada te lo dice: la condición nunca se cumple, la espera solo termina por su tiempo límite y el activador nunca se activa. Para solucionarlo, [edita la automatización]({edit}) y haz que la plantilla dé `true` cuando deba cumplirse.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización tiene las siguientes plantillas, que nunca pueden cumplirse, pase lo que pase en tu casa:\n\n{templates}\n\n\n\nUna condición de plantilla solo se cumple cuando da `true`, y un `wait_template` también, salvo que más tarde cambie a algo que se lea como verdadero. Un disparador de plantilla se activa cuando su plantilla pasa a algo que se lee como verdadero, como `true`, `on`, `yes` o `1`. Estas plantillas siempre dan otra cosa, por cómo están escritas. Las causas habituales:\n\n- Comillas alrededor de la plantilla. Un bloque `>-` las toma como texto, así que acaban en el resultado.\n- Ningún delimitador de plantilla, así que el texto se toma tal cual.\n- YAML pegado en el campo de la plantilla.\n- Un comentario YAML `#` dentro del Jinja, que Jinja imprime como texto.\n- Una condición que da `on` en lugar de `true`.\n\nNada te lo dice: la condición nunca se cumple, la espera solo termina por su tiempo límite y el disparador nunca se activa. Para solucionarlo, [edita la automatización]({edit}) y haz que la plantilla dé `true` cuando deba cumplirse.\n\nSpook 👻 Tu colega.",
             "title": "Plantillas que nunca pueden cumplirse en: {automation}"
         },
         "script_never_true_templates": {
             "title": "Plantillas que nunca pueden cumplirse en: {script}",
-            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script tiene las siguientes plantillas, que nunca pueden cumplirse, pase lo que pase en tu casa:\n\n{templates}\n\n\n\nUna condición de plantilla solo se cumple cuando da `true`, y un `wait_template` también, salvo que más tarde cambie a algo que se lea como verdadero. Un activador de plantilla en un `wait_for_trigger` se activa cuando su plantilla pasa a algo que se lee como verdadero, como `true`, `on`, `yes` o `1`. Estas plantillas siempre dan otra cosa, por cómo están escritas. Las causas habituales:\n\n- Comillas alrededor de la plantilla. Un bloque `>-` las toma como texto, así que acaban en el resultado.\n- Ningún delimitador de plantilla, así que el texto se toma tal cual.\n- YAML pegado en el campo de la plantilla.\n- Un comentario YAML `#` dentro del Jinja, que Jinja imprime como texto.\n- Una condición que da `on` en lugar de `true`.\n\nNada te lo dice: la condición nunca se cumple y la espera solo termina por su tiempo límite. Para solucionarlo, [edita el script]({edit}) y haz que la plantilla dé `true` cuando deba cumplirse.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script tiene las siguientes plantillas, que nunca pueden cumplirse, pase lo que pase en tu casa:\n\n{templates}\n\n\n\nUna condición de plantilla solo se cumple cuando da `true`, y un `wait_template` también, salvo que más tarde cambie a algo que se lea como verdadero. Un disparador de plantilla en un `wait_for_trigger` se activa cuando su plantilla pasa a algo que se lee como verdadero, como `true`, `on`, `yes` o `1`. Estas plantillas siempre dan otra cosa, por cómo están escritas. Las causas habituales:\n\n- Comillas alrededor de la plantilla. Un bloque `>-` las toma como texto, así que acaban en el resultado.\n- Ningún delimitador de plantilla, así que el texto se toma tal cual.\n- YAML pegado en el campo de la plantilla.\n- Un comentario YAML `#` dentro del Jinja, que Jinja imprime como texto.\n- Una condición que da `on` en lugar de `true`.\n\nNada te lo dice: la condición nunca se cumple y la espera solo termina por su tiempo límite. Para solucionarlo, [edita el script]({edit}) y haz que la plantilla dé `true` cuando deba cumplirse.\n\nSpook 👻 Tu colega."
         },
         "automation_unknown_config_entry_references": {
             "title": "Entradas de integración desconocidas usadas en: {automation}",
@@ -991,11 +990,11 @@
         },
         "automation_unknown_user_references": {
             "title": "Usuarios eliminados mencionados en: {automation}",
-            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización menciona los siguientes usuarios, que ya no existen:\n\n{users}\n\n\n\nHome Assistant nunca da dos veces el mismo ID de usuario, así que estos usuarios se eliminaron. Un activador que espera a uno de ellos nunca se activa por ellos, y una plantilla que compara con uno de ellos nunca coincide, sin decirlo. Para solucionarlo, [edita la automatización]({edit}) y usa el ID de un usuario que exista, o quita la comprobación.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización menciona los siguientes usuarios, que ya no existen:\n\n{users}\n\n\n\nHome Assistant nunca da dos veces el mismo ID de usuario, así que estos usuarios se eliminaron. Un disparador que espera a uno de ellos nunca se activa por ellos, y una plantilla que compara con uno de ellos nunca coincide, sin decirlo. Para solucionarlo, [edita la automatización]({edit}) y usa el ID de un usuario que exista, o quita la comprobación.\n\nSpook 👻 Tu colega."
         },
         "script_unknown_user_references": {
             "title": "Usuarios eliminados mencionados en: {script}",
-            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script menciona los siguientes usuarios, que ya no existen:\n\n{users}\n\n\n\nHome Assistant nunca da dos veces el mismo ID de usuario, así que estos usuarios se eliminaron. Una plantilla que compara con uno de ellos nunca coincide, y un activador que espera a uno de ellos nunca se activa por ellos, sin decirlo. Para solucionarlo, [edita el script]({edit}) y usa el ID de un usuario que exista, o quita la comprobación.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script menciona los siguientes usuarios, que ya no existen:\n\n{users}\n\n\n\nHome Assistant nunca da dos veces el mismo ID de usuario, así que estos usuarios se eliminaron. Una plantilla que compara con uno de ellos nunca coincide, y un disparador que espera a uno de ellos nunca se activa por ellos, sin decirlo. Para solucionarlo, [edita el script]({edit}) y usa el ID de un usuario que exista, o quita la comprobación.\n\nSpook 👻 Tu colega."
         },
         "lovelace_unknown_user_references": {
             "title": "Usuarios eliminados mencionados en el panel: {dashboard}",
@@ -1007,11 +1006,15 @@
         },
         "template_unknown_entity_references_yaml": {
             "title": "Entidades desconocidas usadas en la entidad de plantilla: {name}",
-            "description": "Spook ha encontrado un fantasma en tus entidades de plantilla 👻\n\nMientras flotaba, Spook se cruzó con la siguiente entidad de plantilla:\n\n{name} (`{entity_id}`)\n\nSu configuración hace referencia a las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\n\n\nEsto suele pasar cuando se ha renombrado o eliminado una entidad. Una plantilla que lee una no obtiene nada, y un activador que espera una nunca se activa.\n\nEsta entidad de plantilla está definida en tu configuración YAML. Para solucionar este error, edítala en la sección `template:` de tu configuración, haz referencia a entidades que existan y recarga tus entidades de plantilla.\n\nSpook 👻 Tu colega."
+            "description": "Spook ha encontrado un fantasma en tus entidades de plantilla 👻\n\nMientras flotaba, Spook se cruzó con la siguiente entidad de plantilla:\n\n{name} (`{entity_id}`)\n\nSu configuración hace referencia a las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\n\n\nEsto suele pasar cuando se ha renombrado o eliminado una entidad. Una plantilla que lee una no obtiene nada, y un disparador que espera una nunca se activa.\n\nEsta entidad de plantilla está definida en tu configuración YAML. Para solucionar este error, edítala en la sección `template:` de tu configuración, haz referencia a entidades que existan y recarga tus entidades de plantilla.\n\nSpook 👻 Tu colega."
         },
         "template_unknown_service_references_yaml": {
             "description": "Spook ha encontrado un fantasma en tus entidades de plantilla 👻\n\nMientras flotaba, Spook se cruzó con la siguiente entidad de plantilla:\n\n{name} (`{entity_id}`)\n\nHace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\n\n\nEsto suele pasar cuando se ha eliminado lo que proporcionaba una acción, o cuando se ha renombrado o borrado un script.\n\nEsta entidad de plantilla está definida en tu configuración YAML. Para solucionar este error, edítala en la sección `template:` de tu configuración, usa acciones que existan y recarga tus entidades de plantilla.\n\nSpook 👻 Tu colega.",
             "title": "Acciones desconocidas usadas en la entidad de plantilla: {name}"
+        },
+        "lovelace_public_www_files": {
+            "title": "Archivos que cualquiera puede descargar: {folder}",
+            "description": "Spook ha encontrado un fantasma en tu carpeta `www` 👻\n\nHome Assistant sirve todo lo que hay en la carpeta `www` en `/local/`, sin pedir a nadie que inicie sesión. La carpeta `{folder}` contiene {count} archivo(s) que no son código de paneles de control y que ningún panel de control ni tema usa:\n\n{files}\n\n\n\nEsto suele pasar porque una integración guarda aquí archivos para mostrarlos en un panel de control, como instantáneas de cámaras o vistas previas de impresiones 3D. Cualquiera que pueda llegar a tu Home Assistant y sepa o adivine el nombre de un archivo puede descargarlo.\n\nPara solucionarlo, averigua qué integración escribe en esta carpeta y si puede guardar sus archivos en otro sitio. Si no pasa nada porque sean públicos, ignora esta reparación y Spook dejará esta carpeta en paz.\n\nSpook 👻 Tu colega."
         }
     },
     "conditions": {
@@ -1040,14 +1043,14 @@
             "name": "Probabilidad"
         },
         "cooldown": {
-            "description": "Solo se cumple si esta automatización o este script no se ha ejecutado dentro del tiempo indicado (o nunca se ha ejecutado). Un tiempo de espera integrado, para que no se vuelva a disparar demasiado a menudo.",
+            "description": "Solo se cumple si esta automatización o este script no se ha ejecutado dentro del tiempo indicado (o nunca se ha ejecutado). Un enfriamiento integrado, para que no se vuelva a disparar demasiado a menudo.",
             "fields": {
                 "duration": {
                     "description": "Cuánto hay que esperar desde la última ejecución antes de que esta condición vuelva a cumplirse.",
                     "name": "Duración"
                 }
             },
-            "name": "Tiempo de espera"
+            "name": "Enfriamiento"
         },
         "repair_issue_present": {
             "name": "Problema de reparación pendiente",
@@ -1089,7 +1092,7 @@
         },
         "triggered_by_user": {
             "name": "Activado por un usuario",
-            "description": "Se cumple cuando hay una persona detrás de lo que puso esto en marcha: un cambio de estado o un evento que ella provocó, incluido uno que hizo verdadero un activador de plantilla. Una programación, el sol o una integración actuando por su cuenta no llevan a nadie detrás, y forzar una ejecución con el botón Ejecutar tampoco.",
+            "description": "Se cumple cuando hay una persona detrás de lo que puso esto en marcha: un cambio de estado o un evento que ella provocó, incluido uno que hizo verdadero un disparador de plantilla. Una programación, el sol o una integración actuando por su cuenta no llevan a nadie detrás, y forzar una ejecución con el botón Ejecutar tampoco.",
             "fields": {
                 "person": {
                     "name": "Personas",
@@ -2852,7 +2855,7 @@
             }
         },
         "group_add_members": {
-            "name": "Agrega miembros a un grupo",
+            "name": "Añadir miembros a un grupo",
             "description": "Agrega entidades a un grupo creado a través de la interfaz mientras Home Assistant está en ejecución. Las entidades que ya forman parte del grupo permanecen donde están.",
             "fields": {
                 "group": {
@@ -3064,20 +3067,20 @@
             "description": "Se activa cuando alguien, o algo, desactiva una automatización. Deja el destino vacío para vigilar todas las automatizaciones."
         },
         "sequence": {
-            "name": "Activadores en orden",
-            "description": "Se activa cuando varios activadores ocurren uno tras otro, en el orden indicado.",
+            "name": "Disparadores en orden",
+            "description": "Se activa cuando varios disparadores ocurren uno tras otro, en el orden indicado.",
             "fields": {
                 "steps": {
                     "name": "Pasos",
-                    "description": "Los activadores que deben ocurrir, en orden. Solo escucha aquel que se está esperando, así que un paso posterior que ocurra antes de tiempo no cuenta."
+                    "description": "Los disparadores que deben ocurrir, en orden. Solo escucha aquel que se está esperando, así que un paso posterior que ocurra antes de tiempo no cuenta."
                 },
                 "timeout": {
                     "name": "Tiempo de espera",
                     "description": "Cuánto puede durar toda la secuencia, contando desde el primer paso. Si lo dejas vacío, espera indefinidamente."
                 },
                 "reset": {
-                    "name": "Reiniciar",
-                    "description": "Activadores que abandonan una secuencia ya en marcha y la devuelven a la espera del primer paso."
+                    "name": "Restablecer",
+                    "description": "Disparadores que abandonan una secuencia ya en marcha y la devuelven a la espera del primer paso."
                 }
             }
         },
@@ -3139,7 +3142,7 @@
         },
         "cron": {
             "name": "Programación cron",
-            "description": "Se activa según una programación crontab, para los horarios que los activadores de tiempo propios de Home Assistant no pueden expresar, como cada día laborable a las siete o el último viernes del mes.",
+            "description": "Se activa según una programación crontab, para los horarios que los disparadores de tiempo propios de Home Assistant no pueden expresar, como cada día laborable a las siete o el último viernes del mes.",
             "fields": {
                 "schedule": {
                     "name": "Programación",
@@ -3278,7 +3281,7 @@
             "description": "Se activa cuando Home Assistant descubre algo nuevo que podría configurar, como un dispositivo que acaba de aparecer en tu red."
         },
         "state_changed": {
-            "name": "Activador de estado de Spook",
+            "name": "Disparador de estado de Spook",
             "description": "Se activa cuando una entidad cambia de estado, para todo lo que abarca un destino: entidades, dispositivos, áreas, plantas y etiquetas. Acótalo por dominio, integración o clase de dispositivo, o deja el destino vacío y deja que esos elijan las entidades de entre todas. Vuelve a excluir cosas y decide cuánto tiempo tiene que mantenerse un cambio antes de que cuente.",
             "fields": {
                 "domain": {

@@ -1,0 +1,1662 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/06.reference/01.actions.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/06.reference/01.actions.md",
+  "language": "zh-Hans",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "133ff1b376315357",
+      "source": "7e78315b3a6fc094",
+      "glossary": {
+        "action": "动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "e82b486f0a7ecdf7",
+      "source": "14debb4969877b50",
+      "glossary": {
+        "Add action": "添加动作",
+        "action": "动作",
+        "automation": "自动化",
+        "script": "脚本",
+        "how to use it": "使用方法",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-create-an-area",
+      "hash": "e4607f9e3fb2055f",
+      "source": "45363e20afdcda24",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-update-an-area",
+      "hash": "b0494792f4d994d4",
+      "source": "147235e48b01a768",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-delete-an-area",
+      "hash": "49633ab508d81075",
+      "source": "a29512aa4300b464",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-alias-to-an-area",
+      "hash": "7441ba8897df1bf7",
+      "source": "e4d1747d2a017522",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-alias-from-an-area",
+      "hash": "96fc81817d8ab34e",
+      "source": "6ca2ac5592c963f3",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-set-aliases-for-an-area",
+      "hash": "3bc0504e6c624725",
+      "source": "7e9d888288400c68",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-a-device-to-an-area",
+      "hash": "c42bbd2c5a9a42c6",
+      "source": "4c202c096c7d2410",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "device": "设备",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-a-device-from-an-area",
+      "hash": "8f8cb77c5eeb49f1",
+      "source": "736ac6fbdf98c25e",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "device": "设备",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-entity-to-an-area",
+      "hash": "ebbe109f10590646",
+      "source": "7fee1b296bed1e7b",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-entity-from-an-area",
+      "hash": "2c6795aa1f4c73ae",
+      "source": "43187a122242003f",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-snooze",
+      "hash": "c1f2a47828f5db81",
+      "source": "38f32d05691898ef",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "restart": "重启",
+        "snooze": "打盹",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-turn-on-for",
+      "hash": "7760de6de8986d6b",
+      "source": "319c5f79a85e0ea9",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "restart": "重启",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "blueprint-import-blueprint",
+      "hash": "976cd5ec73f470c3",
+      "source": "10965e29fe0627be",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "blueprint": "蓝图",
+        "script": "脚本",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-delete-event",
+      "hash": "e142ccc1341fefd0",
+      "source": "c41a3ca47547624e",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-update-event",
+      "hash": "bc956bdea2761c2c",
+      "source": "059e83d8b27feec9",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-create-a-category",
+      "hash": "11ec64e691c399e9",
+      "source": "58639afb175f4b59",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "helper": "辅助元素",
+        "scene": "场景",
+        "script": "脚本",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-update-a-category",
+      "hash": "4ed7b4ac457e525f",
+      "source": "c7ea912d3dd1fbcc",
+      "glossary": {
+        "action": "动作",
+        "icon": "图标",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-delete-a-category",
+      "hash": "d4283868d143b686",
+      "source": "fc34b1c6fbfbf1fb",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-add-a-category-to-an-entity",
+      "hash": "fd13137dc170e81d",
+      "source": "528a705c50a89d40",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "entity": "实体",
+        "helper": "辅助元素",
+        "scene": "场景",
+        "script": "脚本",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-remove-a-category-from-an-entity",
+      "hash": "6d11a745decc0b7a",
+      "source": "1f324254a8141e73",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "entity": "实体",
+        "helper": "辅助元素",
+        "scene": "场景",
+        "script": "脚本",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-increase-temperature",
+      "hash": "5a130530a6d54e2c",
+      "source": "3f2c0f5b770cc4f7",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-decrease-temperature",
+      "hash": "9128889c1a5f7a57",
+      "source": "206847c25376a58a",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-create",
+      "hash": "86f3e9c99bc78d3b",
+      "source": "f0df5c3077f1c9cc",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-delete",
+      "hash": "d3f17ead645c4a21",
+      "source": "11b3334e6161eed4",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-increase-position",
+      "hash": "38972ecda3df3873",
+      "source": "54587b992c95b8ad",
+      "glossary": {
+        "action": "动作",
+        "cover": "卷帘",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-decrease-position",
+      "hash": "49e7d39986e79636",
+      "source": "346b63c59f6b3f1a",
+      "glossary": {
+        "action": "动作",
+        "cover": "卷帘",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-disable",
+      "hash": "ad87e5f7dc342ea2",
+      "source": "2d65b54df3adf0cc",
+      "glossary": {
+        "action": "动作",
+        "device": "设备",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-enable",
+      "hash": "5010bfbf44db1bbd",
+      "source": "08a9a3c6d00c5e94",
+      "glossary": {
+        "action": "动作",
+        "device": "设备",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-update",
+      "hash": "bc531ac505fbf754",
+      "source": "5a82aae7771e5b72",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "device": "设备",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "delete-all-orphaned-entities",
+      "hash": "b2f8ad6401363be6",
+      "source": "96a90ba8b0440c68",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "integration": "集成",
+        "restart": "重启",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-disable",
+      "hash": "1b9177bd5e43aeb5",
+      "source": "7bf83fbd3c54489f",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-enable",
+      "hash": "1f25ecd3bce11360",
+      "source": "e1587c9cf927d93f",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-hide",
+      "hash": "7834c5021d990cee",
+      "source": "2515fc8b87300941",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-unhide",
+      "hash": "6b9ed1a2ee14b2d5",
+      "source": "1ba4109a1161e3b0",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-rename",
+      "hash": "d26c6f2b3712ac14",
+      "source": "eb36dfbc05e48074",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-icon",
+      "hash": "23ed181548f4b918",
+      "source": "bf4e306920ce0d7d",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "icon": "图标",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-add-an-alias",
+      "hash": "89aace0da8bec02f",
+      "source": "ae66375ea7e68988",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-remove-an-alias",
+      "hash": "9f6aa9bf41c49579",
+      "source": "0e1a71b930edf934",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-aliases",
+      "hash": "3d193bd79f911659",
+      "source": "4377d0257d0eedeb",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-expose-to-assistants",
+      "hash": "e82f1259bf39f408",
+      "source": "58cd034d696a80cc",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-stop-exposing-to-assistants",
+      "hash": "7a48e7f1f3945803",
+      "source": "c1aa37b13a740217",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-update-id",
+      "hash": "2561020349dca0f4",
+      "source": "87b75dd839af5a4f",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "list-all-orphaned-database-entities",
+      "hash": "e587549c8f459b7f",
+      "source": "e8071212452fedd4",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-create-a-floor",
+      "hash": "a388842aab3ca7ed",
+      "source": "f013fde69736ec00",
+      "glossary": {
+        "action": "动作",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-update-a-floor",
+      "hash": "56cee8a75aa9d8e9",
+      "source": "27fc103b228da07d",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-delete-a-floor",
+      "hash": "cf73ff241811af2c",
+      "source": "187892c90bdedf01",
+      "glossary": {
+        "action": "动作",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-alias-to-a-floor",
+      "hash": "7f70c38320af2f36",
+      "source": "286fdd62f1fc246c",
+      "glossary": {
+        "action": "动作",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-alias-from-a-floor",
+      "hash": "dd786fedbfa89992",
+      "source": "38bbc968049f2de8",
+      "glossary": {
+        "action": "动作",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-set-aliases-for-a-floor",
+      "hash": "f6c0b906e491cca3",
+      "source": "a817438fb5d18a0c",
+      "glossary": {
+        "action": "动作",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-area-to-a-floor",
+      "hash": "021314fdab104b98",
+      "source": "fab6e98bd700aa4a",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-area-from-a-floor",
+      "hash": "6cf8b3022cb7af1e",
+      "source": "b2a6dab5b0feab3f",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "floor": "楼层",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-add-members",
+      "hash": "5e048c7ae69f4cb0",
+      "source": "f71df2953fa7d168",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-remove-members",
+      "hash": "74b032db76a08187",
+      "source": "4575af4189040dad",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-set-members",
+      "hash": "151dedd6dcf42226",
+      "source": "03023f3aab11b3d6",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "restart",
+      "hash": "9c424c96fac2eaff",
+      "source": "d3d56d244deb0ce0",
+      "glossary": {
+        "action": "动作",
+        "restart": "重启",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-increase-humidity",
+      "hash": "7dbb2e6ecaccdef6",
+      "source": "ee8e1c579fbfe7c1",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-decrease-humidity",
+      "hash": "582c8633ee29b490",
+      "source": "cacd68ec074639ff",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-create",
+      "hash": "fb7b22ba419f8723",
+      "source": "f7812cf040570ee8",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "boolean": "布尔值",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-delete",
+      "hash": "96468ea92dfc0709",
+      "source": "b6d6d5f9b92faaf6",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "boolean": "布尔值",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-create",
+      "hash": "4383480dc510af92",
+      "source": "f9932c2286f44825",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-delete",
+      "hash": "d15f822c4a27fca1",
+      "source": "0bd2ed2cdad955f7",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-create",
+      "hash": "b64d1ef31b29bb29",
+      "source": "f64bad322606e1ac",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "datetime": "日期时间",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-delete",
+      "hash": "3f6cedb620a621c5",
+      "source": "0adaf4e950b99697",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "datetime": "日期时间",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-create",
+      "hash": "2f58a5ebdb680e5a",
+      "source": "50d14866a6f13b85",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-delete",
+      "hash": "f1f5b1f78d335ff9",
+      "source": "566263b8c8a90a6e",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-decrease-value",
+      "hash": "2f1cda0fec5a8fa1",
+      "source": "134e7331ee4c4454",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-increase-value",
+      "hash": "014ef05abaafeff9",
+      "source": "cdc3bef29610730e",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-maximum-value",
+      "hash": "1b59fa5d227d1ebc",
+      "source": "14738757955cd2a1",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-minimum-value",
+      "hash": "e067d43e5fff3449",
+      "source": "881051a428403506",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-range",
+      "hash": "bb9c2745ebf12158",
+      "source": "c690b509aa3834b4",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-create",
+      "hash": "7618cd2af81781ac",
+      "source": "70df3e925b7f666d",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-delete",
+      "hash": "3193c9651eef40e2",
+      "source": "721ff7c60fccfa3f",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-select-random-option",
+      "hash": "1c414a902ad02a26",
+      "source": "589bebfabf24bbaa",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "optional": "可选",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-reverse-options",
+      "hash": "a1805bcd2bfe812d",
+      "source": "9b946636eb745c08",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-shuffle-options",
+      "hash": "fd9433c34bd7d8d4",
+      "source": "eb9c7dcdee515ca6",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-sort-options",
+      "hash": "b91c7964af1cd641",
+      "source": "e3d8bbe3f7fd690b",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-create",
+      "hash": "d36567a574ff132e",
+      "source": "f65dd272abc769ca",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-delete",
+      "hash": "77e075a751199dc9",
+      "source": "d336d44982db6ad3",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "ignore-all-discovered-devices-services",
+      "hash": "71d8ce7be87dead0",
+      "source": "1e0686ce57c0ff90",
+      "glossary": {
+        "action": "动作",
+        "dashboard": "仪表盘",
+        "device": "设备",
+        "integration": "集成",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable",
+      "hash": "e8006c7174a8b08a",
+      "source": "8c477108ebd6470a",
+      "glossary": {
+        "action": "动作",
+        "dashboard": "仪表盘",
+        "integration": "集成",
+        "integration entry": "集成条目",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable",
+      "hash": "f4c079ae40720220",
+      "source": "00df5770bca6d9a9",
+      "glossary": {
+        "action": "动作",
+        "integration": "集成",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable-polling-for-updates",
+      "hash": "c12322377c1b2c01",
+      "source": "8fe544cee98d435e",
+      "glossary": {
+        "action": "动作",
+        "dashboard": "仪表盘",
+        "integration": "集成",
+        "integration entry": "集成条目",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable-polling-for-updates",
+      "hash": "1977e1ec53e38e2d",
+      "source": "89af14a7d955067a",
+      "glossary": {
+        "action": "动作",
+        "dashboard": "仪表盘",
+        "integration": "集成",
+        "integration entry": "集成条目",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-create-a-label",
+      "hash": "0c784451d30b91f8",
+      "source": "aae2e31ec3ebd56a",
+      "glossary": {
+        "action": "动作",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-update-a-label",
+      "hash": "6d9f29bb18657787",
+      "source": "9aba8fe880ef45a2",
+      "glossary": {
+        "action": "动作",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-delete-a-label",
+      "hash": "3919d0e38e3022c4",
+      "source": "b5244dbfa714aa43",
+      "glossary": {
+        "action": "动作",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-area",
+      "hash": "b04afcd7b68a35b1",
+      "source": "aa6400d84df2e5e0",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-area",
+      "hash": "46e598cc1adc328d",
+      "source": "0c105083bf7450a9",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-a-device",
+      "hash": "79bfa81ea4aa7750",
+      "source": "e0668f0d78cb6cf9",
+      "glossary": {
+        "action": "动作",
+        "device": "设备",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-a-device",
+      "hash": "2e49176567b53059",
+      "source": "6e056912c9a3f9b6",
+      "glossary": {
+        "action": "动作",
+        "device": "设备",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-entity",
+      "hash": "63640ff377aa71db",
+      "source": "8595f13ce982d316",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-entity",
+      "hash": "373e6ba55ec701cb",
+      "source": "257c2b2b46c88802",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "label": "标签",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-brightness",
+      "hash": "3a828f2270df7eac",
+      "source": "68a205bacaf6b2fc",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-increase-brightness",
+      "hash": "378ee05810be1bea",
+      "source": "e3f48b829279af10",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-decrease-brightness",
+      "hash": "76f412a8812a664d",
+      "source": "8cd4775f20b68333",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color",
+      "hash": "2236c65a1415f1a1",
+      "source": "13830bd6bdd89cb9",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color-temperature",
+      "hash": "d1a4e2a6d5268d8c",
+      "source": "e7df1233759a686b",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-effect",
+      "hash": "b91b4e4695b71804",
+      "source": "a389ea5f3ddbcd1d",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-increase-volume",
+      "hash": "c1997f0fb5566908",
+      "source": "e3877319b2187f0a",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-decrease-volume",
+      "hash": "bf1c75a98bcbd3b4",
+      "source": "fd5fbe306c81d56c",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-decrease-value",
+      "hash": "23f6c52873ae5117",
+      "source": "35485b249f9d26f2",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-increase-value",
+      "hash": "6ffdf59dc17ed7fb",
+      "source": "5403c49c15a0239a",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-maximum-value",
+      "hash": "9b7812fa958182d6",
+      "source": "4ef6d2bfca521e08",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-minimum-value",
+      "hash": "0fe5c1fdfa1d15ed",
+      "source": "5455cf7bebca98c3",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-add-a-device-tracker",
+      "hash": "6364562bfbcf796f",
+      "source": "49e6c182192889dc",
+      "glossary": {
+        "action": "动作",
+        "device": "设备",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-remove-a-device-tracker",
+      "hash": "79b0cfd6ad1f4f69",
+      "source": "c6f9b77d9f63b3b9",
+      "glossary": {
+        "action": "动作",
+        "device": "设备",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "recorder-import-statistics",
+      "hash": "275875ff22589033",
+      "source": "24ea765fabc46c1d",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-create-issue",
+      "hash": "3c91dd94b89ce87d",
+      "source": "744c786a00750dc1",
+      "glossary": {
+        "action": "动作",
+        "issue": "问题",
+        "repair": "修复",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-ignore-all-issues",
+      "hash": "87968a7159d34b5e",
+      "source": "c5e262e8084c1510",
+      "glossary": {
+        "action": "动作",
+        "issue": "问题",
+        "repair": "修复",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-list-issues",
+      "hash": "2495b91afd28afad",
+      "source": "4827f6642473f134",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "dashboard": "仪表盘",
+        "issue": "问题",
+        "repair": "修复",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-remove-issue",
+      "hash": "15394559766c5305",
+      "source": "15ddeedd3336231e",
+      "glossary": {
+        "action": "动作",
+        "issue": "问题",
+        "repair": "修复",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-unignore-all-issues",
+      "hash": "29864609ae6fc9b9",
+      "source": "4afe7012cfcdf14e",
+      "glossary": {
+        "action": "动作",
+        "issue": "问题",
+        "repair": "修复",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-create",
+      "hash": "b7af2a9aedcf8f87",
+      "source": "93397dde51f95061",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-delete",
+      "hash": "6bb84a486eb0a554",
+      "source": "cea37985b6a22849",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-set-the-time-blocks-of-a-day",
+      "hash": "5cff09005fa5793b",
+      "source": "6a8316128da4acd2",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "select-select-random-option",
+      "hash": "ebf3bde736988c63",
+      "source": "b6d353c408aa135a",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "optional": "可选",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "sensor-set-display-precision",
+      "hash": "602199cceac544b9",
+      "source": "d628b43e7535cb1a",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "wait-for-a-condition",
+      "hash": "9b92b7504126c8da",
+      "source": "e708f91ce886296e",
+      "glossary": {
+        "action": "动作",
+        "condition": "条件",
+        "template": "模板",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "boo",
+      "hash": "10f59e5bef2c6d94",
+      "source": "f92ff152411b1478",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "script": "脚本",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "random-fail",
+      "hash": "c5e60d8c85dd884f",
+      "source": "14fbea313c1bb34a",
+      "glossary": {
+        "action": "动作",
+        "automation": "自动化",
+        "script": "脚本",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-create",
+      "hash": "5b42ab4c896786b4",
+      "source": "00844ea89714d0d8",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-delete",
+      "hash": "d84ec20bbe4aea56",
+      "source": "4ceb5f9060116c94",
+      "glossary": {
+        "action": "动作",
+        "helper": "辅助元素",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-set-duration",
+      "hash": "f89d8390acf2e483",
+      "source": "955c1da4b85959ff",
+      "glossary": {
+        "action": "动作",
+        "entity": "实体",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "to-do-list-move-item",
+      "hash": "a2b12945a457739a",
+      "source": "bbb15cc31bde37a2",
+      "glossary": {
+        "action": "动作",
+        "list": "列表",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-disable",
+      "hash": "ac1019a252036a17",
+      "source": "314b1eedb14f3eea",
+      "glossary": {
+        "action": "动作",
+        "user": "用户",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-enable",
+      "hash": "66253d480848565d",
+      "source": "2fb8ac151a26c5f9",
+      "glossary": {
+        "action": "动作",
+        "user": "用户",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-increase-position",
+      "hash": "e99c55dd9d432282",
+      "source": "f2f4e45d5feab91b",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-decrease-position",
+      "hash": "d2974edd4f913307",
+      "source": "c92856e472c3bf2b",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-increase-temperature",
+      "hash": "58b2017335797b8c",
+      "source": "7adafb60f6679ce9",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-decrease-temperature",
+      "hash": "167f40aa14e230b9",
+      "source": "bcb3ef24d232159e",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-create",
+      "hash": "ed8f6224bf385ac1",
+      "source": "5f4a74834751d2b2",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-update",
+      "hash": "37425bafd173b67f",
+      "source": "8e0629178742af2a",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-delete",
+      "hash": "4aedd81673774104",
+      "source": "4af7f899353def9e",
+      "glossary": {
+        "action": "动作",
+        "try this action": "试试这个动作"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

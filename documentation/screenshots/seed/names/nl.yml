@@ -1,0 +1,318 @@
+# Everything people read in the home of the screenshots, in Dutch. The keys
+# and how it works: see en.yml. A name missing here is the English one.
+
+home: Huize Spook
+
+area:
+  # The names Home Assistant gives these when it is onboarded in Dutch.
+  living_room: Woonkamer
+  kitchen: Keuken
+  bedroom: Slaapkamer
+  hallway: Gang
+  attic: Zolder
+
+floor:
+  ground_floor: Begane grond
+  first_floor: Eerste verdieping
+  basement: Kelder
+
+label:
+  night_light:
+    name: Nachtlicht
+    description: Blijft 's nachts aan.
+  christmas:
+    name: Kerst
+    description: De lampjes die in december tevoorschijn komen.
+
+dashboard:
+  title: Thuis
+  upstairs: Boven
+
+light:
+  living_room_lamp: Woonkamerlamp
+  kitchen_lights: Keukenverlichting
+  hallway_light: Ganglamp
+  bedroom_lamp: Slaapkamerlamp
+
+input_boolean:
+  living_room_lamp: Woonkamerlamp
+  kitchen_lights: Keukenverlichting
+  hallway_light: Ganglamp
+  bedroom_lamp: Slaapkamerlamp
+  dehumidifier_power: Stroom ontvochtiger
+  guest_mode: Logeerstand
+
+input_number:
+  bedroom_temperature: Slaapkamertemperatuur
+  kitchen_fan_speed: Geheugen afzuigkap
+
+input_select:
+  movie_night: Filmavond
+
+sensor:
+  energy_meter: Energiemeter
+  living_room_thermometer: Temperatuur woonkamer
+  basement_humidity: Luchtvochtigheid kelder
+
+select:
+  ghost_mood:
+    name: Spookhumeur
+    options:
+      friendly: Vriendelijk
+      spooky: Griezelig
+      sleepy: Slaperig
+
+number:
+  kitchen_fan_speed: Stand afzuigkap
+
+zone:
+  gym: Sportschool
+
+group:
+  downstairs_lights: Verlichting beneden
+
+device_tracker:
+  new_phone: Nieuwe telefoon
+
+automation:
+  hallway_light_at_sunset:
+    name: Ganglamp bij zonsondergang
+    description: Zet de ganglamp aan als de zon ondergaat.
+  movie_night:
+    name: Filmavond
+    description: Dimt de woonkamer zodra de tv begint te spelen.
+  weekday_morning_lights:
+    name: Ochtendlicht op werkdagen
+    description: Doordeweeks om half zeven de keukenverlichting aan, één keer.
+  garage_lights_off_at_night:
+    name: Garagelampen 's nachts uit
+    description: Zet om middernacht alles in de garage uit.
+  doorbell_flash:
+    name: Knipperen bij de deurbel
+    description: Laat de gang knipperen als er iemand aanbelt.
+  automation_off_reminder:
+    name: Automatisering met de hand uitgezet
+    description: Laat het me weten als iemand een automatisering uitzet.
+    message: Er is een automatisering uitgezet. Vergeet hem niet weer aan te zetten.
+  new_device_found:
+    name: Nieuw apparaat gevonden
+    description: Laat het me weten als Home Assistant iets nieuws ontdekt.
+    message: Home Assistant heeft een nieuw apparaat gevonden.
+  front_door_sensor_back:
+    name: Voordeursensor is terug
+    description: Laat het me weten als de voordeursensor na een tijdje weg weer werkt.
+    message: De voordeursensor is terug.
+  new_device_added:
+    name: Nieuw apparaat toegevoegd
+    description: Laat het me weten als er een apparaat bij komt in huis.
+    message: Er is een nieuw apparaat toegevoegd.
+  living_room_sensor_quiet:
+    name: Woonkamersensor stil
+    description: Laat het me weten als de temperatuur in de woonkamer een uur niet verandert.
+    message: De temperatuursensor in de woonkamer zegt niks meer. Batterij?
+  new_integration:
+    name: Nieuwe integratie
+    description: Laat het me weten als er een integratie bij komt.
+    message: Er is een nieuwe integratie toegevoegd.
+  integration_failed:
+    name: Integratie mislukt
+    description: Laat het me weten als een integratie na een kwartier nog steeds niet opstart.
+    message: Een integratie start niet op.
+  blinds_down_lamp_on:
+    name: Lamp aan als de rolgordijnen zakken
+    description: Zet de woonkamerlamp aan zodra de rolgordijnen op 30% staan.
+  repairs_news:
+    name: Nieuws uit Reparaties
+    description: Laat het me weten als er een ernstige reparatie bij komt, en als er een is opgelost.
+    message: Er is iets veranderd onder Reparaties.
+  bedroom_warm:
+    name: Slaapkamer is warm
+    description: Laat het me weten als de thermostaat in de slaapkamer zijn temperatuur haalt.
+    message: De slaapkamer is warm.
+  hot_water_ready:
+    name: Warm water voor de ochtenddouche
+    description: Laat me om zeven uur weten of de boiler heet is.
+    message: Het warme water is klaar.
+  update_installed:
+    name: Update geïnstalleerd
+    description: Laat het me weten als er een update is geïnstalleerd.
+    message: Er is een update geïnstalleerd.
+  ghost_goes_to_sleep:
+    name: Spook gaat slapen
+    description: Stuurt het spook naar bed als het script Welterusten begint.
+  door_opens_hallway_light:
+    name: Ganglamp als er een deur opengaat
+    description: Zet de ganglamp aan als er een deur opengaat.
+  new_user:
+    name: Nieuwe gebruiker
+    description: Laat het me weten als er een gebruiker bij komt in Home Assistant.
+    message: Er is een nieuwe gebruiker toegevoegd.
+  welcome_home:
+    name: Welkom thuis
+    description: Woonkamerlamp aan als de telefoon thuiskomt en de voordeur opengaat, binnen vijf minuten.
+  door_settled:
+    name: Ganglamp uit als de deur tot rust komt
+    description: Zet de ganglamp uit zodra de voordeur 30 seconden met rust is gelaten.
+  coming_in:
+    name: Binnenkomen
+    description: Woonkamerlamp aan als de voordeur opengaat en binnen twee minuten weer dicht.
+  front_door_still_open:
+    name: Voordeur staat nog open
+    description: Herinnert me elke tien minuten zolang de voordeur openstaat.
+    message: De voordeur staat nog open.
+  nobody_up_yet:
+    name: Nog niemand wakker
+    description: Laat het me weten als de keukenverlichting een uur na zevenen nog uit is.
+    message: Er is nog niemand op.
+  front_door_sensor_acting_up:
+    name: Voordeursensor doet raar
+    description: Laat het me weten als de voordeursensor vijf keer in vijf minuten verandert.
+    message: De voordeursensor komt niet tot rust.
+  blinds_down_when_warm:
+    name: Rolgordijnen dicht als het warm wordt
+    description: Doet de rolgordijnen in de woonkamer dicht als het daar warmer wordt dan 25 °C.
+  lamp_off_by_itself:
+    name: Lamp vanzelf uitgegaan
+    description: Laat het me weten als de woonkamerlamp uitgaat zonder dat iemand dat deed.
+    message: De woonkamerlamp ging vanzelf uit.
+  spooky_surprise:
+    name: Griezelige verrassing
+    description: Op sommige avonden, één op de vijf, wordt het spook griezelig.
+  follow_the_hallway:
+    name: Volg de gang
+    description: Woonkamerlamp aan als de zonsondergangautomatisering de ganglamp aanzet.
+  morning_repairs_check:
+    name: Ochtendcontrole reparaties
+    description: Laat me om negen uur weten of er iets ernstigs wacht onder Reparaties.
+    message: Er wachten reparaties.
+  doorbell_light:
+    name: Licht bij de deurbel
+    description: Zet de ganglamp aan als er wordt aangebeld, hooguit drie keer per uur.
+  morning_radio_volume:
+    name: Volume ochtendradio
+    description: Zet de keukenspeaker om half acht zachter, als hij er is.
+  front_door_light:
+    name: Ganglamp als de voordeur opengaat
+    description: Gemaakt van de blauwdruk voor licht bij een deur.
+
+script:
+  goodnight: Welterusten
+
+scene:
+  cozy_evening: Gezellige avond
+
+category:
+  lighting: Verlichting
+
+user:
+  babysitter: Oppas
+
+binary_sensor:
+  front_door: Voordeur
+
+climate:
+  bedroom_thermostat: Thermostaat slaapkamer
+
+water_heater:
+  boiler: Boiler
+
+media_player:
+  kitchen_speaker: Keukenspeaker
+
+cover:
+  living_room_blinds: Rolgordijnen woonkamer
+
+valve:
+  garden_tap: Buitenkraan
+
+humidifier:
+  basement_dehumidifier: Ontvochtiger kelder
+
+counter:
+  coffee_cups: Koppen koffie
+
+input_button:
+  doorbell: Deurbel
+
+input_datetime:
+  alarm_clock: Wekker
+
+input_text:
+  welcome_message: Welkomstbericht
+
+schedule:
+  heating: Verwarmingsschema
+
+timer:
+  laundry: Was
+
+calendar:
+  family: Gezin
+
+todo:
+  shopping_list: Boodschappenlijst
+
+blueprints:
+  door_light:
+    name: Licht aan als een deur opengaat
+    description: Zet een lamp aan als een deur opengaat.
+    new_description: Zet een lamp aan als een deur opengaat, en na een tijdje weer uit.
+    door: Deur
+    light: Lamp
+    wait_time: Tijd tot de lamp weer uitgaat
+  doorbell_flash:
+    name: Lamp laten knipperen bij de deurbel
+    description: Laat een lamp één keer knipperen als iemand aanbelt.
+    doorbell: Deurbel
+    light: Lamp
+
+examples:
+  new_area: Geheime kamer
+  new_area_alias: Schuilplaats
+  area_alias: Huiskamer
+  other_area_alias: Voorkamer
+  new_floor: Tweede verdieping
+  new_floor_alias: Boven
+  floor_alias: Beneden
+  other_floor_alias: Gelijkvloers
+  new_label: Behekst
+  new_label_description: Dingen die vanzelf aangaan.
+  new_entity_name: Hallamp
+  new_input_number: Zwembadtemperatuur
+  new_zone: Kantoor
+  new_repair: Het spook heeft honger
+  new_repair_description: Geef het een koekje, en deze reparatie verdwijnt.
+  renamed_label: Nachtlampjes
+  new_category: Beveiliging
+  renamed_category: Lampen
+  device_name: Hemelkijker
+  entity_alias: Leeslamp
+  other_entity_alias: Hoeklamp
+  calendar_event: Tandarts
+  new_counter: Koekjes op
+  new_input_boolean: Vakantiestand
+  new_input_button: Spook voeren
+  new_input_datetime: Wektijd
+  house_mode:
+    name: Huisstand
+    options:
+      home: Thuis
+      away: Weg
+      night: Nacht
+  new_input_text: Briefje op de koelkast
+  new_schedule: Tuin sproeien
+  new_timer: Pizza
+  todo_item: Melk
+  calibration: Temperatuur woonkamer, gecorrigeerd
+  time_in_state: Voordeur dicht sinds
+
+search:
+  area: ruimte
+  floor: verdieping
+  label: label
+  input_number: numerieke invoer
+  number: waarde
+  input_select: opties
+  person: apparaattracker
+  zone: zone
+  repairs: probleem

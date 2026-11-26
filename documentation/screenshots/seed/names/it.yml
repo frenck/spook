@@ -1,0 +1,321 @@
+# Everything people read in the home of the screenshots, in Italian. The keys
+# and how it works: see en.yml. A name missing here is the English one.
+
+home: La casa di Spook
+
+area:
+  # The names Home Assistant gives these when it is onboarded in Italian.
+  living_room: Soggiorno
+  kitchen: Cucina
+  bedroom: Camera da letto
+  hallway: Corridoio
+  attic: Soffitta
+
+floor:
+  ground_floor: Piano terra
+  first_floor: Primo piano
+  basement: Seminterrato
+
+label:
+  night_light:
+    name: Luce notturna
+    description: Resta accesa di notte.
+  christmas:
+    name: Natale
+    description: Le luci che escono a dicembre.
+
+# No `overview`: Home Assistant's Italian onboarding has no name for the
+# default dashboard, so it stays "Overview".
+dashboard:
+  title: Casa
+  upstairs: Di sopra
+
+light:
+  living_room_lamp: Lampada del soggiorno
+  kitchen_lights: Luci della cucina
+  hallway_light: Luce del corridoio
+  bedroom_lamp: Lampada della camera
+
+input_boolean:
+  living_room_lamp: Lampada del soggiorno
+  kitchen_lights: Luci della cucina
+  hallway_light: Luce del corridoio
+  bedroom_lamp: Lampada della camera
+  dehumidifier_power: Alimentazione deumidificatore
+  guest_mode: Modalità ospiti
+
+input_number:
+  bedroom_temperature: Temperatura della camera
+  kitchen_fan_speed: Memoria della cappa
+
+input_select:
+  movie_night: Serata cinema
+
+sensor:
+  energy_meter: Contatore di energia
+  living_room_thermometer: Temperatura del soggiorno
+  basement_humidity: Umidità della cantina
+
+select:
+  ghost_mood:
+    name: Umore del fantasma
+    options:
+      friendly: Amichevole
+      spooky: Spettrale
+      sleepy: Assonnato
+
+number:
+  kitchen_fan_speed: Velocità della cappa
+
+zone:
+  gym: Palestra
+
+group:
+  downstairs_lights: Luci di sotto
+
+device_tracker:
+  new_phone: Telefono nuovo
+
+automation:
+  hallway_light_at_sunset:
+    name: Luce del corridoio al tramonto
+    description: Accende la luce del corridoio quando tramonta il sole.
+  movie_night:
+    name: Serata cinema
+    description: Abbassa le luci del soggiorno quando la TV inizia a riprodurre.
+  weekday_morning_lights:
+    name: Luci del mattino nei giorni feriali
+    description: Le luci della cucina alle sei e mezza nei giorni feriali, una volta.
+  garage_lights_off_at_night:
+    name: Garage spento di notte
+    description: Spegne tutto in garage a mezzanotte.
+  doorbell_flash:
+    name: Lampeggio del campanello
+    description: Fa lampeggiare il corridoio quando qualcuno suona.
+  automation_off_reminder:
+    name: Automazione disattivata a mano
+    description: Mi avvisa quando qualcuno disattiva un'automazione.
+    message: Un'automazione è stata disattivata. Ricordati di riattivarla.
+  new_device_found:
+    name: Nuovo dispositivo trovato
+    description: Mi avvisa quando Home Assistant scopre qualcosa di nuovo.
+    message: Home Assistant ha trovato un nuovo dispositivo.
+  front_door_sensor_back:
+    name: Il sensore della porta è tornato
+    description: Mi avvisa quando il sensore della porta d'ingresso torna a funzionare dopo un po' di assenza.
+    message: Il sensore della porta d'ingresso è tornato.
+  new_device_added:
+    name: Nuovo dispositivo aggiunto
+    description: Mi avvisa quando in casa viene aggiunto un dispositivo.
+    message: È stato aggiunto un nuovo dispositivo.
+  living_room_sensor_quiet:
+    name: Sensore del soggiorno muto
+    description: Mi avvisa quando la temperatura del soggiorno non cambia da un'ora.
+    message: Il sensore di temperatura del soggiorno tace. La batteria?
+  new_integration:
+    name: Nuova integrazione
+    description: Mi avvisa quando viene aggiunta un'integrazione.
+    message: È stata aggiunta una nuova integrazione.
+  integration_failed:
+    name: Integrazione non riuscita
+    description: Mi avvisa quando un'integrazione dopo un quarto d'ora non si avvia ancora.
+    message: Un'integrazione non si avvia.
+  blinds_down_lamp_on:
+    name: Lampada accesa quando scendono le tapparelle
+    description: Accende la lampada del soggiorno appena le tapparelle arrivano al 30%.
+  repairs_news:
+    name: Novità nelle riparazioni
+    description: Mi avvisa quando compare una riparazione seria, e quando una viene risolta.
+    message: Qualcosa è cambiato in Riparazioni.
+  bedroom_warm:
+    name: La camera è calda
+    description: Mi avvisa quando il termostato della camera raggiunge la sua temperatura.
+    message: La camera è calda.
+  hot_water_ready:
+    name: Acqua calda per la doccia del mattino
+    description: Alle sette, mi dice se lo scaldabagno è caldo.
+    message: L'acqua calda è pronta.
+  update_installed:
+    name: Aggiornamento installato
+    description: Mi avvisa quando viene installato un aggiornamento.
+    message: È stato installato un aggiornamento.
+  ghost_goes_to_sleep:
+    name: Il fantasma va a dormire
+    description: Manda a letto il fantasma quando parte lo script Buonanotte.
+  door_opens_hallway_light:
+    name: Luce del corridoio quando si apre una porta
+    description: Accende la luce del corridoio quando si apre una porta qualsiasi.
+  new_user:
+    name: Nuovo utente
+    description: Mi avvisa quando un utente viene aggiunto a Home Assistant.
+    message: È stato aggiunto un nuovo utente.
+  welcome_home:
+    name: Bentornato a casa
+    description: Lampada del soggiorno accesa quando il telefono torna a casa e si apre la porta, entro cinque minuti.
+  door_settled:
+    name: Corridoio spento quando la porta si calma
+    description: Spegne la luce del corridoio appena la porta d'ingresso resta tranquilla per 30 secondi.
+  coming_in:
+    name: Si entra
+    description: Lampada del soggiorno accesa quando la porta d'ingresso si apre e si richiude entro due minuti.
+  front_door_still_open:
+    name: Porta d'ingresso ancora aperta
+    description: Me lo ricorda ogni dieci minuti finché la porta d'ingresso è aperta.
+    message: La porta d'ingresso è ancora aperta.
+  nobody_up_yet:
+    name: Nessuno è ancora sveglio
+    description: Mi avvisa quando la luce della cucina resta spenta un'ora dopo le sette.
+    message: Non si è ancora alzato nessuno.
+  front_door_sensor_acting_up:
+    name: Il sensore della porta fa i capricci
+    description: Mi avvisa quando il sensore della porta d'ingresso cambia cinque volte in cinque minuti.
+    message: Il sensore della porta d'ingresso non si stabilizza.
+  blinds_down_when_warm:
+    name: Tapparelle giù quando fa caldo
+    description: Abbassa le tapparelle del soggiorno quando lì si superano i 25 °C.
+  lamp_off_by_itself:
+    name: Lampada spenta da sola
+    description: Mi avvisa quando la lampada del soggiorno si spegne senza che nessuno l'abbia toccata.
+    message: La lampada del soggiorno si è spenta da sola.
+  spooky_surprise:
+    name: Sorpresa spettrale
+    description: Certe sere, una su cinque, il fantasma diventa spettrale.
+  follow_the_hallway:
+    name: Segui il corridoio
+    description: Lampada del soggiorno accesa quando l'automazione del tramonto accende il corridoio.
+  morning_repairs_check:
+    name: Controllo mattutino delle riparazioni
+    description: Alle nove, mi dice se in Riparazioni aspetta qualcosa di serio.
+    message: Ci sono riparazioni in attesa.
+  doorbell_light:
+    name: Luce del campanello
+    description: Accende la luce del corridoio quando suonano, al massimo tre volte all'ora.
+  morning_radio_volume:
+    name: Volume della radio del mattino
+    description: Abbassa l'altoparlante della cucina alle sette e mezza, se c'è.
+  front_door_light:
+    name: Luce del corridoio quando si apre la porta d'ingresso
+    description: Fatta con il blueprint della luce alla porta.
+
+script:
+  goodnight: Buonanotte
+
+scene:
+  cozy_evening: Serata accogliente
+
+category:
+  lighting: Illuminazione
+
+user:
+  babysitter: Babysitter
+
+binary_sensor:
+  front_door: Porta d'ingresso
+
+climate:
+  bedroom_thermostat: Termostato della camera
+
+water_heater:
+  boiler: Scaldabagno
+
+media_player:
+  kitchen_speaker: Altoparlante della cucina
+
+cover:
+  living_room_blinds: Tapparelle del soggiorno
+
+valve:
+  garden_tap: Rubinetto del giardino
+
+humidifier:
+  basement_dehumidifier: Deumidificatore della cantina
+
+counter:
+  coffee_cups: Tazzine di caffè
+
+input_button:
+  doorbell: Campanello
+
+input_datetime:
+  alarm_clock: Sveglia
+
+input_text:
+  welcome_message: Messaggio di benvenuto
+
+schedule:
+  heating: Programma riscaldamento
+
+timer:
+  laundry: Bucato
+
+calendar:
+  family: Famiglia
+
+todo:
+  shopping_list: Lista della spesa
+
+blueprints:
+  door_light:
+    name: Luce accesa quando si apre una porta
+    description: Accende una luce quando si apre una porta.
+    new_description: Accende una luce quando si apre una porta, e la spegne dopo un po'.
+    door: Porta
+    light: Luce
+    wait_time: Tempo prima che la luce si spenga
+  doorbell_flash:
+    name: Far lampeggiare una luce quando suonano
+    description: Fa lampeggiare una luce una volta quando qualcuno suona il campanello.
+    doorbell: Campanello
+    light: Luce
+
+examples:
+  new_area: Stanza segreta
+  new_area_alias: Nascondiglio
+  area_alias: Salotto
+  other_area_alias: Sala
+  new_floor: Secondo piano
+  new_floor_alias: Di sopra
+  floor_alias: Di sotto
+  other_floor_alias: Piano strada
+  new_label: Infestato
+  new_label_description: Cose che si accendono da sole.
+  new_entity_name: Luce dell'ingresso
+  new_input_number: Temperatura della piscina
+  new_zone: Ufficio
+  new_repair: Il fantasma ha fame
+  new_repair_description: Dagli un biscotto e questa riparazione sparisce.
+  renamed_label: Luci notturne
+  new_category: Sicurezza
+  renamed_category: Lampade
+  device_name: Osservatore del cielo
+  entity_alias: Lampada da lettura
+  other_entity_alias: Lampada d'angolo
+  calendar_event: Dentista
+  new_counter: Biscotti mangiati
+  new_input_boolean: Modalità vacanza
+  new_input_button: Dai da mangiare al fantasma
+  new_input_datetime: Ora della sveglia
+  house_mode:
+    name: Modalità casa
+    options:
+      home: A casa
+      away: Fuori
+      night: Notte
+  new_input_text: Biglietto sul frigo
+  new_schedule: Irrigazione del giardino
+  new_timer: Pizza
+  todo_item: Latte
+  calibration: Temperatura del soggiorno, corretta
+  time_in_state: Porta d'ingresso chiusa da
+
+search:
+  area: area
+  floor: piano
+  label: etichetta
+  input_number: input numerico
+  number: valore
+  input_select: opzioni
+  person: tracker dispositivo
+  zone: zona
+  # Italian Home Assistant shows these as "Repairs: ...", like French does.
+  repairs: repairs

@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
@@ -13,6 +13,9 @@ from ...core_compat import (
     async_is_child_device,
     async_update_any_device,
 )
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
 
 
 @callback
@@ -109,4 +112,55 @@ def async_enable_device_and_parent(
     # Home Assistant Core refuses to enable a child device while its parent is
     # disabled, so the order is not just cosmetic.
     for chain_device_id in reversed(chain):
+        # Home Assistant ignores enabling a device its integration entry
+        # keeps off, and is to refuse it outright, so it is left alone.
+        if async_get_entry_keeping_device_disabled(device_registry, chain_device_id):
+            continue
+
         async_update_any_device(device_registry, chain_device_id, disabled_by=None)
+
+
+@callback
+def async_get_entry_keeping_device_disabled(
+    device_registry: dr.DeviceRegistry,
+    device_id: str,
+) -> ConfigEntry | None:
+    """Return the disabled integration entry that keeps a device disabled.
+
+    A device cannot be enabled while its integration entry is disabled,
+    whatever disabled the device itself: one disabled by hand before its
+    entry was, keeps saying so. A child device lives on the integration
+    entry of its parent device, so this covers the parent being off too.
+    """
+    for device in _async_get_devices_behind_id(device_registry, device_id):
+        if (entry_id := getattr(device, "config_entry_id", None)) is None:
+            continue
+
+        entry = device_registry.hass.config_entries.async_get_entry(entry_id)
+        if entry is not None and entry.disabled_by:
+            return entry
+
+    return None
+
+
+@callback
+def _async_get_devices_behind_id(
+    device_registry: dr.DeviceRegistry,
+    device_id: str,
+) -> list[Any]:
+    """Return the devices a device ID stands for.
+
+    Home Assistant Core split a device that belonged to several integration
+    entries into one device per entry. The ID it had still works: automations
+    written before that keep using it, and an update through it reaches every
+    one of those devices. Each lives on its own entry, so each has to be
+    looked at. Can be removed when Core drops those IDs in 2027.8.
+    """
+    devices_for_old_id = getattr(
+        device_registry, "async_get_devices_for_composite_device_id", None
+    )
+    if devices_for_old_id is not None and (devices := devices_for_old_id(device_id)):
+        return list(devices)
+
+    device = device_registry.async_get(device_id)
+    return [] if device is None else [device]

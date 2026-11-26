@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/repairs.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 1
+title: Spook vindt wat stilletjes stukging
+description: Spook controleert je Home Assistant op dingen die niet meer werken zonder het je te vertellen, en meldt ze op je reparatiedashboard. Bij veel zit een oplossing.
+
+hero:
+  headline: Vindt de spoken 👻
+  title: Hij vindt wat stilletjes stukging.
+  description: Hernoem een lamp, vervang een sensor, verwijder een integratie, en ergens stopt een automatisering zonder iets te zeggen. Spook merkt het, en vertelt het je op je reparatiedashboard. {repairs} soorten problemen, en hij blijft zoeken.
+  screenshot: repairs-list
+  alt: Het reparatiedashboard van Home Assistant met zeven reparaties van Spook, zoals een lege ruimte, een ongebruikt label en een automatisering die entiteiten gebruikt die niet meer bestaan.
+
+sections:
+  - headline: Precies wat, en waar
+    title: Geen gezoek in YAML.
+    description: Elke reparatie noemt de plek met het probleem, en wat er mis mee is. Selecteer de naam, en je staat in de editor, precies waar het gerepareerd moet worden.
+    screenshot: repair-unknown-entities
+    alt: Een reparatie van Spook die de automatisering Movie night noemt en de drie entiteiten die ze gebruikt die niet meer bestaan, met een suggestie voor wat er bedoeld was.
+    features:
+      - title: Wijst de plek aan
+        description: De automatisering, het script of het dashboard, met een link er direct naartoe.
+        icon: i-mdi-target
+      - title: Raadt wat je bedoelde
+        description: Een lamp hernoemd? Is Spook bijna zeker, dan stelt hij de nieuwe naam voor.
+        icon: i-mdi-lightbulb-question-outline
+      - title: Verdwijnt vanzelf
+        description: Repareer het en sla op. Spook kijkt opnieuw en ruimt de reparatie op. Niets af te vinken.
+        icon: i-mdi-check-circle-outline
+
+  - headline: Voor je opgelost
+    title: Zeg ja, en het is weg.
+    description: Bij genoeg reparaties zit een oplossing. Een lege ruimte, een ongebruikt label, een persoon die nog een oude telefoon volgt. Spook biedt aan het op te ruimen, en vraagt het eerst.
+    screenshot: repair-fix-empty-area
+    alt: Een reparatie van Spook voor de lege ruimte Attic, die aanbiedt hem te verwijderen, hem jou zelf te laten repareren, of hem te houden en er niet meer over te beginnen.
+    features:
+      - title: Jij beslist
+        description: Verwijder het, repareer het zelf, of hou het. Spook ruimt nooit op zonder te vragen.
+        icon: i-mdi-hand-back-right-outline
+      - title: Hou het, en het blijft stil
+        description: Hoort het zo? Zeg het één keer, en Spook wijst er niet meer op.
+        icon: i-mdi-bell-off-outline
+      - title: Nog een keer gecontroleerd voor hij iets doet
+        description: Is er iets veranderd sinds Spook keek, dan laat hij het met rust.
+        icon: i-mdi-shield-check-outline
+
+more:
+  title: Waar Spook kijkt
+  links:
+    - title: Automatiseringen en scripts
+      description: Entiteiten, apparaten, ruimtes, acties en triggers die weg zijn, en templates die nooit kunnen slagen.
+      icon: i-mdi-robot-outline
+      to: /automation#repairs
+    - title: Dashboards
+      description: Kaarten die wijzen naar entiteiten, acties of weergaven die niet meer bestaan.
+      icon: i-mdi-view-dashboard-outline
+      to: /lovelace#repairs
+    - title: Ruimtes, verdiepingen en labels
+      description: De lege, de ongebruikte, en sensoren die verdwenen zijn.
+      icon: i-mdi-floor-plan
+      to: /homeassistant#repairs
+    - title: Je eerste reparatie
+      description: Stap voor stap, van het reparatiedashboard naar een werkende automatisering.
+      icon: i-mdi-wrench-outline
+      to: /fix-your-first-repair

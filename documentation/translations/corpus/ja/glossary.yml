@@ -1,0 +1,160 @@
+# The Japanese glossary, by hand.
+#
+# Decided by Frenck: nothing yet. Decisions he makes go in this block, with
+# the date, and win over everything below.
+#
+# `terms` are words in running text: what Home Assistant calls its own things
+# in Japanese, so the docs use the words the reader sees in the product.
+# English to Japanese. Short pairs only, no sentences: this file ends up in a
+# prompt.
+#
+# `labels` overrides what glossary.generated.yml found for a bold label. Give
+# a `reason`, and either the `key` of the string that is on that screen, or a
+# `translation` when no string has it.
+#
+# Looked up in the strings of Home Assistant 2026.11.3 and Spook, 2026-11-25.
+# Not yet read by a native speaker.
+#
+# Where the frontend and Spook's own strings disagree, this follows the
+# frontend, because that is the screen the reader has open:
+# - entity ID is "エンティティ ID", with the space, the way the frontend and
+#   Spook write it. "エンティティID" shows up once.
+# - integration is "統合", the frontend's word everywhere.
+# No Home Assistant word:
+# - notifier: Home Assistant has none. "通知先" is Spook's own word.
+# - snooze: Spook's own action name, "スヌーズ".
+terms:
+  action: アクション
+  alert: アラート
+  area: エリア
+  attribute: 属性
+  automation: オートメーション
+  automation editor: オートメーションエディタ
+  blueprint: ブループリント
+  condition: 条件
+  cover: カバー
+  custom integration: カスタム統合
+  dashboard: ダッシュボード
+  debug logging: デバッグログ
+  device: デバイス
+  diagnostics: 診断
+  entity: エンティティ
+  entity ID: エンティティ ID
+  floor: フロア
+  helper: ヘルパー
+  icon: アイコン
+  integration: 統合
+  integration entry: 統合エントリ
+  issue: 問題
+  label: ラベル
+  logs: ログ
+  notifier: 通知先
+  person: 人
+  repair: 修復
+  repairs dashboard: 修復ページ
+  restart: 再起動
+  scene: シーン
+  script: スクリプト
+  sidebar: サイドバー
+  snooze: スヌーズ
+  state: 状態
+  template: テンプレート
+  trigger: トリガー
+  trigger ID: トリガー ID
+  user: ユーザー
+  zone: ゾーン
+
+  # Chosen for consistency on 2026-11-25 by an agent, not by a native
+  # speaker. Three translators wrote the first pages in parallel and already
+  # agreed on every one of these; they are written down so the next run
+  # keeps them. Headings, labels and table cells first, then type names.
+  how to fix it: 直し方
+  how to use it: 使い方
+  how Spook checks this: Spookのチェック方法
+  technical details: 技術的な詳細
+  known limitations: 既知の制限
+  use cases: 使用例
+  example actions in YAML: YAMLでのアクションの例
+  example triggers in YAML: YAMLでのトリガーの例
+  example conditions in YAML: YAMLでの条件の例
+  blueprints & tutorials: ブループリントとチュートリアル
+  feature requests, ideas, and support: 機能のリクエスト、アイデア、サポート
+  unknown referenced entities: 参照先が不明なエンティティ
+  action properties: アクションのプロパティ
+  action data parameters: アクションのデータパラメーター
+  action name: アクション名
+  action targets: アクションの対象
+  action response: アクションのレスポンス
+  trigger properties: トリガーのプロパティ
+  trigger options: トリガーのオプション
+  trigger name: トリガー名
+  condition properties: 条件のプロパティ
+  condition options: 条件のオプション
+  condition name: 条件名
+  default / example: デフォルト / 例
+  Spook's influence: Spookの影響
+  tools: ツール
+  newly added action: 新しく追加されたアクション
+  newly added trigger: 新しく追加されたトリガー
+  newly added condition: 新しく追加された条件
+  no response: レスポンスなし
+  no targets: 対象なし
+  optional: 任意
+  string: 文字列
+  list of strings: 文字列のリスト
+  integer: 整数
+  float: 浮動小数点数
+  boolean: ブール値
+  list: リスト
+  mapping: マッピング
+  try this action: このアクションを試す
+
+labels:
+  Unknown entity:
+    key: ui.panel.config.automation.editor.actions.type.service.description.target_unknown_entity
+    reason: What the automation editor shows for an entity that no longer exists. The automatic match missed it.
+  Import:
+    translation: "インポート"
+    reason: The button on this website's own blueprint cards, so it says what the site says. The automatic match was "受電", an energy sensor state.
+  Read more:
+    translation: "続きを読む"
+    reason: The other button on this website's own blueprint cards.
+  If-then:
+    translation: "条件分岐"
+    reason: Home Assistant's string is "条件分岐 `If-then`", with backticks in it, and a label with code in it cannot be checked. The Japanese word is what the reader looks for.
+  Update:
+    key: ui.dialogs.more_info_control.update.update
+    reason: The button in the update dialog. The automatic match was the name of Spook's update sensor.
+  Major:
+    translation: Major
+    reason: The parts of a version number. Kept as they are; they are names, not words.
+  Minor:
+    translation: Minor
+    reason: The parts of a version number.
+  Patch:
+    translation: Patch
+    reason: The parts of a version number.
+  Home Assistant Link:
+    translation: Home Assistant Link
+    reason: A product name, the same in every language. It used to be called Home Assistant Cloud.
+  Submit:
+    key: ui.panel.config.integrations.config_flow.submit
+    reason: The button in the dialog that sets up an integration.
+  Finish:
+    key: ui.panel.config.integrations.config_flow.finish
+    reason: The button in the dialog that sets up an integration. The automatic match was the timer card's "終了".
+  Ignore:
+    key: ui.panel.config.repairs.dialog.ignore
+    reason: The button in a repair, not the one for a discovered integration.
+  Repairs:
+    key: ui.panel.config.repairs.caption
+    reason: The entry under Settings.
+  Logs:
+    key: ui.panel.config.logs.caption
+    reason: The entry under Settings > System.
+  About:
+    key: ui.panel.config.info.caption
+    reason: The entry under Settings.
+  System:
+    key: ui.panel.config.dashboard.system.main
+    reason: The entry under Settings.

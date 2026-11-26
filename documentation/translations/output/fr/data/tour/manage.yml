@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/manage.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 3
+title: Tout ce que Spook ajoute à votre Home Assistant
+description: Spook ajoute des actions, des entrées et des capteurs aux endroits de Home Assistant que vous utilisez déjà. Cherchez le fantôme, et vous voyez tout.
+
+hero:
+  headline: Le reste de la boîte à outils 🧰
+  title: Tapez 👻. Voyez tout.
+  description: Spook ajoute {actions} actions, trois entrées et un capteur pour tout ce qu'il y a chez vous. Pas de liste à retenir. Cherchez le fantôme quand vous ajoutez une action ou une entrée, et vous obtenez exactement ce que Spook apporte. Ça marche aussi dans toutes les langues.
+  screenshot: actions-ghost-search
+  alt: La boîte de dialogue Ajouter une action de Home Assistant, avec une recherche sur l'emoji fantôme, qui liste les actions de Spook comme Mettre en veille, Augmenter la température et Augmenter la position.
+
+sections:
+  - headline: Votre maison, en chiffres
+    title: Combien d'automatisations, déjà ?
+    description: Spook donne un appareil à Home Assistant lui-même, avec un capteur pour tout ce qu'il y a chez vous. Pièces, automatisations, appareils, entités, intégrations, 53 en tout. Mettez-les sur un tableau de bord, utilisez-les dans une automatisation, ou regardez simplement les chiffres grimper.
+    screenshot: home-assistant-numbers
+    alt: Les capteurs de diagnostic de l'appareil Home Assistant de Spook, qui comptent les pièces, les automatisations, les boutons et le reste.
+    features:
+      - title: Un chiffre pour tout
+        description: Des pièces et automatisations aux intégrations personnalisées et aux zones.
+        icon: i-mdi-counter
+      - title: Avec un historique
+        description: Des statistiques à long terme, comme n'importe quel capteur. Regardez votre maison grandir, ou rétrécir après un bon ménage.
+        icon: i-mdi-chart-line
+      - title: Prêts pour votre tableau de bord
+        description: Des capteurs ordinaires, que chaque carte et chaque automatisation peut utiliser.
+        icon: i-mdi-view-dashboard-outline
+
+  - headline: Des entrées que Home Assistant n'a pas
+    title: Inversé, corrigé et chronométré.
+    description: Un interrupteur qui marche à l'envers, un capteur qui affiche un degré de trop, une porte dont vous voulez savoir qu'elle est restée fermée toute la semaine. Les entrées de Spook règlent ça, créées dans l'interface comme n'importe quelle autre entrée.
+    screenshot: helpers-ghost-search
+    alt: La boîte de dialogue Créer une entrée de Home Assistant, avec une recherche sur l'emoji fantôme, qui montre les entrées Étalonnage, Inverser et Temps dans l'état de Spook.
+    features:
+      - title: Inverser
+        description: Allumé devient éteint, ouvert devient fermé, et les actions sont inversées aussi. Pour les volets dont le moteur est de l'autre côté.
+        icon: i-mdi-swap-horizontal
+      - title: Étalonnage
+        description: Corrige un capteur qui affiche une valeur fausse, avec un facteur et un décalage.
+        icon: i-mdi-tune-variant
+      - title: Temps dans l'état
+        description: Depuis quand la porte est fermée. Contrairement à « dernière modification », un redémarrage ne le remet pas à zéro.
+        icon: i-mdi-timer-sand
+
+more:
+  title: Fouillez la boîte à outils
+  links:
+    - title: Toutes les actions
+      description: La liste complète, avec un bouton pour essayer chacune dans votre propre Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Votre maison, gérée
+      description: Pièces, étages, étiquettes, appareils et entités, depuis une automatisation.
+      icon: i-mdi-home-edit-outline
+      to: /core-extensions
+    - title: Entrées
+      description: Inverser, étalonnage et temps dans l'état, expliqués.
+      icon: i-mdi-tools
+      to: /helpers
+    - title: Les intégrations
+      description: Ce que Spook ajoute à chacune des intégrations que vous utilisez.
+      icon: i-mdi-puzzle-outline
+      to: /enhanced-integrations

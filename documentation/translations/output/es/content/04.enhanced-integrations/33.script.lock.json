@@ -1,0 +1,330 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/33.script.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/33.script.md",
+  "language": "es",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "9ac88344345768c0",
+      "source": "a186f5fc9d567f52",
+      "glossary": {
+        "action": "acción",
+        "device": "dispositivo",
+        "entity": "entidad",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "17f456fda68d8bb0",
+      "source": "c95dc7873579e146",
+      "glossary": {
+        "action": "acción",
+        "automation": "automatización",
+        "dashboard": "panel de control",
+        "issue": "problema",
+        "repair": "reparación",
+        "script": "script",
+        "trigger": "disparador"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "9a3278384e3de8c9",
+      "source": "238d7a5b8cb4f6d9",
+      "glossary": {
+        "area": "área",
+        "dashboard": "panel de control",
+        "device": "dispositivo",
+        "entity": "entidad",
+        "floor": "planta",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "repairs dashboard": "página de reparaciones",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "73d9650d2732aec3",
+      "source": "f31cfdc884dc9291",
+      "glossary": {
+        "action": "acción",
+        "area": "área",
+        "automation": "automatización",
+        "device": "dispositivo",
+        "entity": "entidad",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "template": "plantilla",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "a3bc4f5c5557b61d",
+      "source": "45d90bf7d5abd035",
+      "glossary": {
+        "attribute": "atributo",
+        "condition": "condición",
+        "entity": "entidad",
+        "integration": "integración",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "state": "estado",
+        "template": "plantilla",
+        "trigger": "disparador",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "recorder": "registrador"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "7fcb96514adad55f",
+      "source": "1dbdb11142d34aec",
+      "glossary": {
+        "action": "acción",
+        "attribute": "atributo",
+        "condition": "condición",
+        "cover": "persiana",
+        "device": "dispositivo",
+        "entity": "entidad",
+        "helper": "ayudante",
+        "integration": "integración",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "state": "estado",
+        "template": "plantilla",
+        "trigger": "disparador",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "boolean": "booleano",
+        "list": "lista",
+        "number": "número",
+        "recorder": "registrador"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "aff77e9846a4105f",
+      "source": "5c310fb0f64631b3",
+      "glossary": {
+        "action": "acción",
+        "automation": "automatización",
+        "condition": "condición",
+        "device": "dispositivo",
+        "integration": "integración",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "d3b4623b366daeba",
+      "source": "06fc19893331578f",
+      "glossary": {
+        "action": "acción",
+        "integration": "integración",
+        "integration entry": "entrada de integración",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "state": "estado",
+        "template": "plantilla",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "1d4509b7cc9d6680",
+      "source": "1525b70bd94cbec5",
+      "glossary": {
+        "automation": "automatización",
+        "entity": "entidad",
+        "entity ID": "ID de entidad",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "template": "plantilla",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "77f99001d0dded31",
+      "source": "8efb129ad2e0df26",
+      "glossary": {
+        "action": "acción",
+        "integration": "integración",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "d608f56d37a18cef",
+      "source": "00fb50b7f41b8752",
+      "glossary": {
+        "action": "acción",
+        "area": "área",
+        "helper": "ayudante",
+        "icon": "icono",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "template": "plantilla",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "known limitations": "limitaciones conocidas",
+        "list": "lista",
+        "frontend": "frontend"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "e44a38dfdd00a34e",
+      "source": "582e3c6d947cddca",
+      "glossary": {
+        "action": "acción",
+        "area": "área",
+        "automation": "automatización",
+        "floor": "planta",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "template": "plantilla",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "e5e87b02ce6735ab",
+      "source": "63d82355d9e7d4cc",
+      "glossary": {
+        "automation": "automatización",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "template": "plantilla",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "dfeb425c5087ee29",
+      "source": "097d0ffcb508b484",
+      "glossary": {
+        "condition": "condición",
+        "integration": "integración",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "f795fdedf0272d6a",
+      "source": "1e594acecf97bbe5",
+      "glossary": {
+        "Wait for a trigger": "Esperar un disparador",
+        "integration": "integración",
+        "issue": "problema",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "trigger": "disparador",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "3ab10a4b55c43c52",
+      "source": "3de48595e096da8e",
+      "glossary": {
+        "automation": "automatización",
+        "condition": "condición",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "state": "estado",
+        "template": "plantilla",
+        "trigger": "disparador",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook",
+        "templates that can never pass": "plantillas que nunca pueden cumplirse"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "6f6617953b347562",
+      "source": "67b31552830f566c",
+      "glossary": {
+        "automation": "automatización",
+        "label": "etiqueta",
+        "repair": "reparación",
+        "script": "script",
+        "template": "plantilla",
+        "trigger": "disparador",
+        "user": "usuario",
+        "how to fix it": "cómo arreglarlo",
+        "how spook checks this": "cómo lo comprueba Spook"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

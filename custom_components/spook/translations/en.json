@@ -764,6 +764,9 @@
     "debounce_attach_failed": {
       "message": "Could not attach every trigger of a debounce trigger."
     },
+    "device_disabled_by_integration_entry": {
+      "message": "Device {device_id} cannot be enabled while the integration entry {entry} is disabled. Enable that integration entry instead."
+    },
     "device_not_found": {
       "message": "Device {device_id} not found."
     },
@@ -978,7 +981,7 @@
         "step": {
           "init": {
             "title": "Empty area: {area}",
-            "description": "The area {area} has no devices, no entities, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "description": "The area {area} has no devices, no entities, and nothing mentions it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this empty area",
               "ignore": "Keep it, stop telling me",
@@ -999,7 +1002,7 @@
         "step": {
           "init": {
             "title": "Empty floor: {floor}",
-            "description": "The floor {floor} has no areas, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "description": "The floor {floor} has no areas, and nothing mentions it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this empty floor",
               "ignore": "Keep it, stop telling me",
@@ -1072,6 +1075,10 @@
     "lovelace_missing_resources_yaml": {
       "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind.\n\nThese resources are listed in your YAML configuration, so the Resources page cannot change them. Edit the `resources:` section of your Lovelace configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
       "title": "Dashboard resources point at missing files"
+    },
+    "lovelace_public_www_files": {
+      "title": "Files anyone can download: {folder}",
+      "description": "Spook has found a ghost in your `www` folder 👻\n\nHome Assistant serves everything in the `www` folder at `/local/`, without asking anyone to log in. The folder `{folder}` holds {count} file(s) that are not dashboard code, and that no dashboard or theme uses:\n\n{files}\n\n\n\nThis usually happens because an integration stores files here to show them on a dashboard, like camera snapshots or previews of 3D prints. Anybody who can reach your Home Assistant, and knows or guesses the name of a file, can download it.\n\nTo fix this, find out which integration writes to this folder, and whether it can store its files elsewhere. If they are fine to be public, ignore this repair and Spook will leave this folder alone.\n\nSpook 👻 Your homie."
     },
     "lovelace_duplicate_resources": {
       "title": "Dashboard resource listed more than once: {resource}",
@@ -1428,7 +1435,7 @@
         "step": {
           "init": {
             "title": "Unused label: {label}",
-            "description": "The label {label} is not applied to any entity, device, or area, and no automation or script targets it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "description": "The label {label} is not applied to any entity, device, or area, and nothing mentions it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this unused label",
               "ignore": "Keep it, stop telling me",

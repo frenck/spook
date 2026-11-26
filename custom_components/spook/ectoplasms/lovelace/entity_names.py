@@ -15,11 +15,13 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.lovelace import DOMAIN
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ...attribute_checking import (
     NAMES_THE_STATE_HINT,
     async_unknown_attributes,
+    did_you_mean,
     names_the_state,
 )
 from ...const import LOGGER
@@ -31,7 +33,7 @@ from ...dashboard_names import (
     reported,
 )
 from ...repairs import AbstractSpookRepair
-from ...state_checking import async_unknown_states
+from ...state_checking import async_listen_for_awaited_states, async_unknown_states
 from .dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
@@ -127,7 +129,7 @@ class AbstractSpookDashboardEntityNamesRepair(AbstractSpookRepair, ABC):
         for entity_id, name in findings:
             line = self.finding_line.format(name=name, entity_id=entity_id)
             if (suggestion := unknown[entity_id, name]) is not None:
-                line += f" (did you mean `{suggestion}`?)"
+                line += did_you_mean(name, suggestion)
             elif self.names_attributes and names_the_state(entity_id, name):
                 line += f" ({NAMES_THE_STATE_HINT})"
             lines.append(line)
@@ -246,13 +248,43 @@ class AbstractSpookDashboardStatesRepair(AbstractSpookDashboardEntityNamesRepair
     reference_label = "states"
     finding_line = "- `{name}` for `{entity_id}`"
 
+    _states_awaited: dict[str, frozenset[str]]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair, waiting on nothing yet."""
+        super().__init__(hass)
+        self._states_awaited = {}
+
+    async def async_activate(self) -> None:
+        """Look again once an entity can be in a state it was reported for."""
+        await super().async_activate()
+        self._event_subs.add(
+            async_listen_for_awaited_states(
+                self.hass, lambda: self._states_awaited, self._async_look_again
+            )
+        )
+
+    @callback
+    def _async_look_again(self) -> None:
+        """Ask for another look."""
+        self.inspect_debouncer.async_schedule_call()
+
     def _groups(self, names: DashboardNames) -> frozenset[Group]:
         """Return the state groups."""
         return names.states
 
     async def _async_unknown(self, pairs: set[Pair]) -> Suggestions:
         """Return the (entity ID, state) pairs the entity is never in."""
-        return await async_unknown_dashboard_states(self.hass, pairs)
+        unknown = await async_unknown_dashboard_states(self.hass, pairs)
+
+        # Replaced every round, so what is fixed or gone is no longer waited on.
+        awaited: dict[str, set[str]] = {}
+        for entity_id, state in unknown:
+            awaited.setdefault(entity_id, set()).add(state)
+        self._states_awaited = {
+            entity_id: frozenset(states) for entity_id, states in awaited.items()
+        }
+        return unknown
 
 
 async def async_check_dashboard_draft(
@@ -277,7 +309,7 @@ async def async_check_dashboard_draft(
         for pair in reported(groups, unknown):
             line = finding_reference(pair)
             if (suggestion := unknown[pair]) is not None:
-                line += f" (did you mean {suggestion}?)"
+                line += did_you_mean(pair[1], suggestion, as_code=False)
             lines.append(line)
         if lines:
             found[label] = sorted(lines)

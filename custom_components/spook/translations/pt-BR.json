@@ -8,7 +8,7 @@
         },
         "step": {
             "user": {
-                "description": "O Spook flutua pelo seu Home Assistant procurando fantasmas: referências a coisas que não existem mais e restos que ninguém limpou. Tudo o que ele encontra, ele relata em Reparos.\n\nEle também amplia o que suas automações e scripts podem fazer, com ações, acionadores, condições e auxiliares extras, para automações ainda mais poderosas.\n\nAviso justo: o Spook não faz parte do Home Assistant. É uma integração personalizada que se mete em lugares para onde nunca foi convidada. Se algo estranho acontecer, desconfie primeiro do Spook e [avise a gente]({issue_tracker_url}).\n\nPronto para ser assombrado?",
+                "description": "O Spook flutua pelo seu Home Assistant procurando fantasmas: referências a coisas que não existem mais e restos que ninguém limpou. Tudo o que ele encontra, ele relata em Reparos.\n\nEle também amplia o que suas automações e scripts podem fazer, com ações, gatilhos, condições e auxiliares extras, para automações ainda mais poderosas.\n\nAviso justo: o Spook não faz parte do Home Assistant. É uma integração personalizada que se mete em lugares para onde nunca foi convidada. Se algo estranho acontecer, desconfie primeiro do Spook e [avise a gente]({issue_tracker_url}).\n\nPronto para ser assombrado?",
                 "title": "Bu! Conheça o Spook, seu mano 👻"
             },
             "already_configured": {
@@ -21,7 +21,7 @@
             }
         },
         "create_entry": {
-            "spooked": "O Spook está flutuando por aí 👻\n\nDê a ele um momento para dar uma olhada. Tudo o que ele encontrar aparece em [Reparos](/config/repairs).\n\nAs ações, acionadores e condições extras estão esperando por você nos editores de automações e scripts. Curioso para saber o que mais o Spook sabe fazer? A [documentação]({documentation_url}) tem tudo.\n\nCurtindo o Spook? 👻 Uma ⭐ no [GitHub]({repository_url}) mostra para os outros que o Spook é, na verdade, bem incrível. [Patrocinar o Frenck]({sponsor_url}) mantém este fantasma bem alimentado. E a [newsletter]({newsletter_url}) gratuita e quinzenal dele mantém o seu fantasma interior bem alimentado."
+            "spooked": "O Spook está flutuando por aí 👻\n\nDê a ele um momento para dar uma olhada. Tudo o que ele encontrar aparece em [Reparos](/config/repairs).\n\nAs ações, gatilhos e condições extras estão esperando por você nos editores de automações e scripts. Curioso para saber o que mais o Spook sabe fazer? A [documentação]({documentation_url}) tem tudo.\n\nCurtindo o Spook? 👻 Uma ⭐ no [GitHub]({repository_url}) mostra para os outros que o Spook é, na verdade, bem incrível. [Patrocinar o Frenck]({sponsor_url}) mantém este fantasma bem alimentado. E a [newsletter]({newsletter_url}) gratuita e quinzenal dele mantém o seu fantasma interior bem alimentado."
         }
     },
     "entity": {
@@ -213,7 +213,7 @@
                 "name": "Ignorado"
             },
             "repairs_active_issues": {
-                "name": "Activo"
+                "name": "Ativo"
             },
             "homeassistant_counter": {
                 "name": "Contadores"
@@ -242,7 +242,7 @@
     },
     "exceptions": {
         "all_of_attach_failed": {
-            "message": "Não foi possível conectar todos os acionadores de um acionador \"tudo isto\"."
+            "message": "Não foi possível conectar todos os gatilhos de um gatilho \"tudo isto\"."
         },
         "area_not_found": {
             "message": "Área {area_id} não encontrada."
@@ -305,7 +305,7 @@
             "message": "Entrada de integração {config_entry_id} não encontrada."
         },
         "debounce_attach_failed": {
-            "message": "Não foi possível conectar todos os acionadores de um acionador \"quando acalmar\"."
+            "message": "Não foi possível conectar todos os gatilhos de um gatilho \"quando acalmar\"."
         },
         "device_not_found": {
             "message": "Dispositivo {device_id} não encontrado."
@@ -386,7 +386,7 @@
             "message": "O Spook encontrou um erro ao reiniciar o Home Assistant."
         },
         "sequence_attach_failed": {
-            "message": "Não foi possível conectar o primeiro passo de um acionador de sequência."
+            "message": "Não foi possível conectar o primeiro passo de um gatilho de sequência."
         },
         "set_range_nothing_to_change": {
             "message": "Informe um mínimo, um máximo ou um passo para mudar."
@@ -416,10 +416,10 @@
             "message": "O valor {value} de {entity_id} não é um número."
         },
         "watchdog_arming_attach_failed": {
-            "message": "Não foi possível conectar os acionadores de armamento de um acionador de vigia."
+            "message": "Não foi possível conectar os gatilhos de armamento de um gatilho de vigia."
         },
         "watchdog_expected_attach_failed": {
-            "message": "Não foi possível conectar os acionadores esperados de um acionador de vigia."
+            "message": "Não foi possível conectar os gatilhos esperados de um gatilho de vigia."
         },
         "yaml_group_not_editable": {
             "message": "{entity_id} é um grupo da sua configuração YAML, que o Spook não pode alterar. Edite-o na sua configuração, ou use group.set, que continua funcionando com esse tipo de grupo."
@@ -456,31 +456,34 @@
         },
         "yaml_schedule_not_editable": {
             "message": "{entity_id} é uma programação da sua configuração YAML, que o Spook não pode alterar. Edite-a na sua configuração."
+        },
+        "device_disabled_by_integration_entry": {
+            "message": "O dispositivo {device_id} não pode ser ativado enquanto a entrada de integração {entry} estiver desativada. Ative essa entrada de integração em vez disso."
         }
     },
     "issues": {
         "automation_unknown_area_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Áreas desconhecidas usadas em: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta a automação faz referência aos seguintes dispositivos, que são desconhecidos para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso desses dispositivos inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência aos seguintes dispositivos, que são desconhecidos para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso desses dispositivos inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Dispositivos desconhecidos usados em: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit})e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit})e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas usadas em: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência aos seguintes andares, que são desconhecidos do Home Assistant:\n\n{floors}\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso desses andares inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência aos seguintes andares, que são desconhecidos do Home Assistant:\n\n{floors}\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso desses andares inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Andares desconhecidos usados em: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes etiquetas, que são desconhecidas do Home Assistant:\n\n{labels}\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas etiquetas inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes etiquetas, que são desconhecidas do Home Assistant:\n\n{labels}\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas etiquetas inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Etiquetas desconhecidas usadas em: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas ações inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas ações inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Ações desconhecidas usadas em: {automation}"
         },
         "group_unknown_members": {
@@ -494,9 +497,9 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma em seus grupos 👻\n\nO grupo {group} (`{entity_id}`) tem membros que são desconhecidos do Home Assistant:\n\n{entities}\n\nRemova do grupo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma em seus grupos 👻\n\nO grupo {group} (`{entity_id}`) tem membros que são desconhecidos do Home Assistant:\n\n{entities}\n\nRemova do grupo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-los e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover estes membros"
                         },
@@ -506,47 +509,47 @@
             }
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nPara corrigir esse erro, [edite o painel]({edit}) e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nPara corrigir esse erro, [edite o painel]({edit}) e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas usadas em: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook encontrou um fantasma na sua configuração de proximidade 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração está ignorando zonas que são desconhecidas do Home Assistant:\n\n{zones}\n\nPara corrigir esse erro, edite a configuração e remova essa ou essas zonas.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma na sua configuração de proximidade 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração está ignorando zonas que são desconhecidas do Home Assistant:\n\n{zones}\n\nPara corrigir esse erro, edite a configuração e remova essa ou essas zonas.\n\nSpook 👻 Seu mano.",
             "title": "Zonas ignoradas desconhecidas: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook encontrou um fantasma na sua configuração de proximidade 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração está monitorando pessoas ou rastreadores de dispositivo que são desconhecidos do Home Assistant:\n\n{entities}\n\nPara corrigir esse erro, edite a configuração e remova essa ou essas entidades.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma na sua configuração de proximidade 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração está monitorando pessoas ou rastreadores de dispositivo que são desconhecidos do Home Assistant:\n\n{entities}\n\nPara corrigir esse erro, edite a configuração e remova essa ou essas entidades.\n\nSpook 👻 Seu mano.",
             "title": "Entidades monitoradas desconhecidas: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook encontrou um fantasma na sua configuração de proximidade 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração é baseada em uma zona que é desconhecida do Home Assistant:\n\n`{zone}`\n\nPara corrigir esse erro, e como você não pode mudar a zona de uma configuração de proximidade, a única opção é remover essa instância específica da integração de proximidade.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma na sua configuração de proximidade 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração é baseada em uma zona que é desconhecida do Home Assistant:\n\n`{zone}`\n\nPara corrigir esse erro, e como você não pode mudar a zona de uma configuração de proximidade, a única opção é remover essa instância específica da integração de proximidade.\n\nSpook 👻 Seu mano.",
             "title": "Zona desconhecida: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma em suas cenas 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte cena:\n\n[{scene}]({edit})\n\nEsta cena faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nPara corrigir esse erro, [edite a cena]({edit}) e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas cenas 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte cena:\n\n[{scene}]({edit})\n\nEsta cena faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nPara corrigir esse erro, [edite a cena]({edit}) e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas usadas em: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Áreas desconhecidas usadas em: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência aos seguintes dispositivos, que são desconhecidos para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso desses dispositivos inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência aos seguintes dispositivos, que são desconhecidos para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso desses dispositivos inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Dispositivos desconhecidos usados em: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas usadas em: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência aos seguintes andares, que são desconhecidos do Home Assistant:\n\n{floors}\n\nPara corrigir esse erro, [edite o script]({edit}) e remova o uso desses andares inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência aos seguintes andares, que são desconhecidos do Home Assistant:\n\n{floors}\n\nPara corrigir esse erro, [edite o script]({edit}) e remova o uso desses andares inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Andares desconhecidos usados em: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes etiquetas, que são desconhecidas do Home Assistant:\n\n{labels}\n\nPara corrigir esse erro, [edite o script]({edit}) e remova o uso dessas etiquetas inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes etiquetas, que são desconhecidas do Home Assistant:\n\n{labels}\n\nPara corrigir esse erro, [edite o script]({edit}) e remova o uso dessas etiquetas inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Etiquetas desconhecidas usadas em: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEssa automação referencia os seguintes serviços, que estão desconhecidos pelo Home Assistant:\n\n{services}\n\nPara corrigir esse erro, [edite o script]({edit}) e remova o uso desses serviços não existentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEssa automação referencia os seguintes serviços, que estão desconhecidos pelo Home Assistant:\n\n{services}\n\nPara corrigir esse erro, [edite o script]({edit}) e remova o uso desses serviços não existentes.\n\nSpook 👻 Seu mano.",
             "title": "Serviços desconhecidos usados em: {script}"
         },
         "user_issue": {
@@ -572,20 +575,20 @@
             }
         },
         "alert_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma em seus alertas 👻\n\nO alerta {alert} (`{entity_id}`) monitora uma entidade que é desconhecida do Home Assistant:\n\n{entities}\n\nUm alerta só pode disparar pela entidade que monitora, então este nunca mais vai disparar. De fora, ele parece igual a um alerta que não tem nada a relatar.\n\nPara corrigir esse erro, edite a seção `alert:` na sua configuração e faça este alerta apontar para uma entidade que exista.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus alertas 👻\n\nO alerta {alert} (`{entity_id}`) monitora uma entidade que é desconhecida do Home Assistant:\n\n{entities}\n\nUm alerta só pode disparar pela entidade que monitora, então este nunca mais vai disparar. De fora, ele parece igual a um alerta que não tem nada a relatar.\n\nPara corrigir esse erro, edite a seção `alert:` na sua configuração e faça este alerta apontar para uma entidade que exista.\n\nSpook 👻 Seu mano.",
             "title": "Entidade desconhecida monitorada pelo alerta: {alert}"
         },
         "alert_unknown_notifiers": {
-            "description": "Spook encontrou um fantasma em seus alertas 👻\n\nO alerta {alert} (`{entity_id}`) avisa por meio das seguintes ações, que são desconhecidas do Home Assistant:\n\n{notifiers}\n\nO alerta continua disparando e continua fazendo as rondas dele, mas esses avisos não chegam a lugar nenhum. O Home Assistant só registra isso no momento em que o alerta dispara, que é um momento ruim para descobrir que ninguém está ouvindo.\n\nPara corrigir esse erro, edite a lista `notifiers:` deste alerta na sua configuração e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus alertas 👻\n\nO alerta {alert} (`{entity_id}`) avisa por meio das seguintes ações, que são desconhecidas do Home Assistant:\n\n{notifiers}\n\nO alerta continua disparando e continua fazendo as rondas dele, mas esses avisos não chegam a lugar nenhum. O Home Assistant só registra isso no momento em que o alerta dispara, que é um momento ruim para descobrir que ninguém está ouvindo.\n\nPara corrigir esse erro, edite a lista `notifiers:` deste alerta na sua configuração e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
             "title": "Notificadores desconhecidos usados pelo alerta: {alert}"
         },
         "automation_unknown_condition_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa as seguintes condições, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{conditions}\n\nIsso costuma acontecer quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas condições indisponíveis, ou restaure a integração que as fornece.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa as seguintes condições, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{conditions}\n\nIsso costuma acontecer quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas condições indisponíveis, ou restaure a integração que as fornece.\n\nSpook 👻 Seu mano.",
             "title": "Condições desconhecidas usadas em: {automation}"
         },
         "automation_unknown_trigger_references": {
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa os seguintes acionadores, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{triggers}\n\nIsso costuma acontecer quando a integração que fornecia um acionador foi removida. Para corrigir esse erro, [edite a automação]({edit}) e remova o uso desses acionadores indisponíveis, ou restaure a integração que os fornece.\n\nSpook 👻 Seu mano.",
-            "title": "Acionadores desconhecidos usados em: {automation}"
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa os seguintes gatilhos, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{triggers}\n\nIsso costuma acontecer quando a integração que fornecia um gatilho foi removida. Para corrigir esse erro, [edite a automação]({edit}) e remova o uso desses gatilhos indisponíveis, ou restaure a integração que os fornece.\n\nSpook 👻 Seu mano.",
+            "title": "Gatilhos desconhecidos usados em: {automation}"
         },
         "empty_areas": {
             "fix_flow": {
@@ -598,7 +601,7 @@
                     "init": {
                         "description": "A área {area} não tem dispositivos, nem entidades, nem nenhuma automação ou script que a tenha como destino.\n\nRemova, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-la e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover esta área vazia"
                         },
@@ -619,7 +622,7 @@
                     "init": {
                         "description": "O andar {floor} não tem áreas, nem nenhuma automação ou script que o tenha como destino.\n\nRemova, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-lo e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover este andar vazio"
                         },
@@ -635,11 +638,11 @@
                 "step": {
                     "init": {
                         "title": "Entidades desconhecidas usadas no painel de energia",
-                        "description": "Spook encontrou um fantasma no seu painel de energia 👻\n\nO painel de energia faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade usada na configuração de energia foi renomeada ou removida. Renomeada? Então abra [Configurações > Painéis > Energia](/config/energy) e escolha a nova, para que o histórico dela continue no painel.\n\nRemovida de vez? O Spook pode tirá-las da configuração de energia para você. Um medidor que falta leva junto a fonte ou o aparelho dele, um preço ou custo que falta só é limpo. O painel então deixa de mostrar o histórico do que foi tirado; as estatísticas em si ficam.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma no seu painel de energia 👻\n\nO painel de energia faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade usada na configuração de energia foi renomeada ou removida. Renomeada? Então abra [Configurações > Painéis > Energia](/config/energy) e escolha a nova, para que o histórico dela continue no painel.\n\nRemovida de vez? O Spook pode tirá-las da configuração de energia para você. Um medidor que falta leva junto a fonte ou o aparelho dele, um preço ou custo que falta só é limpo. O painel então deixa de mostrar o histórico do que foi tirado; as estatísticas em si ficam.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "remove": "Tirar da configuração de energia",
                             "manage": "Eu mesmo faço",
-                            "ignore": "Manter e não me avisar mais"
+                            "ignore": "Mantê-las e não me avisar mais"
                         }
                     }
                 },
@@ -651,15 +654,15 @@
             }
         },
         "lovelace_missing_resources": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nOs seguintes recursos de painel apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsso costuma acontecer quando um cartão personalizado ou os arquivos dele foram removidos, mas o recurso ficou. Para corrigir esse erro, abra a [página de Recursos](/config/lovelace/resources) e remova ou corrija esses recursos. Ela não tem uma aba própria: na página de Painéis, fica atrás dos três pontinhos, no canto superior direito.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nOs seguintes recursos de painel apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsso costuma acontecer quando um cartão personalizado ou os arquivos dele foram removidos, mas o recurso ficou. Para corrigir esse erro, abra a [página de Recursos](/config/lovelace/resources) e remova ou corrija esses recursos. Ela não tem uma aba própria: na página de Painéis, fica atrás dos três pontinhos, no canto superior direito.\n\nSpook 👻 Seu mano.",
             "title": "Recursos do painel apontando para arquivos que faltam"
         },
         "lovelace_missing_resources_yaml": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nOs seguintes recursos de painel apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsso costuma acontecer quando um cartão personalizado ou os arquivos dele foram removidos, mas o recurso ficou.\n\nEsses recursos estão listados na sua configuração YAML, então a página de Recursos não pode alterá-los. Edite a seção `resources:` da sua configuração do Lovelace e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nOs seguintes recursos de painel apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsso costuma acontecer quando um cartão personalizado ou os arquivos dele foram removidos, mas o recurso ficou.\n\nEsses recursos estão listados na sua configuração YAML, então a página de Recursos não pode alterá-los. Edite a seção `resources:` da sua configuração do Lovelace e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
             "title": "Recursos do painel apontando para arquivos que faltam"
         },
         "lovelace_unknown_area_references": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n{dashboard}\n\nEste painel faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\nIsso costuma acontecer quando uma área foi renomeada ou removida. Para corrigir esse erro, [edite o painel]({edit}) e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n{dashboard}\n\nEste painel faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\nIsso costuma acontecer quando uma área foi renomeada ou removida. Para corrigir esse erro, [edite o painel]({edit}) e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Seu mano.",
             "title": "Áreas desconhecidas usadas no painel: {dashboard}"
         },
         "min_max_unknown_sources": {
@@ -672,9 +675,9 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar mín/máx {helper} (`{entity_id}`) combina os seguintes membros, que são desconhecidos do Home Assistant:\n\n{sources}\n\nRemova para o auxiliar seguir com os membros que sobram, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar mín/máx {helper} (`{entity_id}`) combina os seguintes membros, que são desconhecidos do Home Assistant:\n\n{sources}\n\nRemova para o auxiliar seguir com os membros que sobram, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-los e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover estes membros"
                         },
@@ -690,11 +693,11 @@
                 "step": {
                     "init": {
                         "title": "Foram encontradas estatísticas de longo prazo órfãs",
-                        "description": "Spook encontrou um fantasma no seu gravador 👻\n\nO Home Assistant está guardando estatísticas de longo prazo para o seguinte, mas não existe mais nenhuma entidade correspondente:\n\n{statistics}\n\nIsso costuma acontecer quando um sensor foi removido e as estatísticas dele foram mantidas. Limpá-las joga esse histórico fora de vez, então o Spook olha de novo antes de fazer isso e deixa em paz tudo o que tiver voltado nesse meio-tempo.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma no seu gravador 👻\n\nO Home Assistant está guardando estatísticas de longo prazo para o seguinte, mas não existe mais nenhuma entidade correspondente:\n\n{statistics}\n\nIsso costuma acontecer quando um sensor foi removido e as estatísticas dele foram mantidas. Limpá-las joga esse histórico fora de vez, então o Spook olha de novo antes de fazer isso e deixa em paz tudo o que tiver voltado nesse meio-tempo.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "remove": "Limpar estas estatísticas",
                             "manage": "Eu mesmo faço",
-                            "ignore": "Manter e não me avisar mais"
+                            "ignore": "Mantê-las e não me avisar mais"
                         }
                     }
                 },
@@ -715,9 +718,9 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma em suas pessoas 👻\n\n{person} segue os seguintes rastreadores de dispositivo, que são desconhecidos do Home Assistant:\n\n{device_trackers}\n\nIsso costuma acontecer quando um rastreador de dispositivo foi renomeado ou a integração dele foi removida.\n\nRemova de {person}, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma em suas pessoas 👻\n\n{person} segue os seguintes rastreadores de dispositivo, que são desconhecidos do Home Assistant:\n\n{device_trackers}\n\nIsso costuma acontecer quando um rastreador de dispositivo foi renomeado ou a integração dele foi removida.\n\nRemova de {person}, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-los e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover estes rastreadores de dispositivo"
                         },
@@ -728,28 +731,28 @@
             "title": "Rastreadores de dispositivo desconhecidos seguidos por: {person}"
         },
         "script_unknown_condition_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa as seguintes condições, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{conditions}\n\nIsso costuma acontecer quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edite o script]({edit}) e remova o uso dessas condições indisponíveis, ou restaure a integração que as fornece.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa as seguintes condições, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{conditions}\n\nIsso costuma acontecer quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edite o script]({edit}) e remova o uso dessas condições indisponíveis, ou restaure a integração que as fornece.\n\nSpook 👻 Seu mano.",
             "title": "Condições desconhecidas usadas em: {script}"
         },
         "script_unknown_trigger_references": {
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes acionadores, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{triggers}\n\nIsso costuma acontecer quando a integração que fornecia um acionador foi removida. Para corrigir esse erro, [edite o script]({edit}) e remova o uso desses acionadores indisponíveis, ou restaure a integração que os fornece.\n\nSpook 👻 Seu mano.",
-            "title": "Acionadores desconhecidos usados em: {script}"
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes gatilhos, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{triggers}\n\nIsso costuma acontecer quando a integração que fornecia um gatilho foi removida. Para corrigir esse erro, [edite o script]({edit}) e remova o uso desses gatilhos indisponíveis, ou restaure a integração que os fornece.\n\nSpook 👻 Seu mano.",
+            "title": "Gatilhos desconhecidos usados em: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nA configuração dele faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida. Para corrigir esse erro, reconfigure o auxiliar de template para apontar para entidades que existam.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nA configuração dele faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida. Para corrigir esse erro, reconfigure o auxiliar de template para apontar para entidades que existam.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas usadas no auxiliar de template: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEle faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nIsso costuma acontecer quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou excluído. Para corrigir esse erro, reconfigure o auxiliar de template para usar ações que existam.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEle faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nIsso costuma acontecer quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou excluído. Para corrigir esse erro, reconfigure o auxiliar de template para usar ações que existam.\n\nSpook 👻 Seu mano.",
             "title": "Ações desconhecidas usadas no auxiliar de template: {helper}"
         },
         "unknown_customized_entities": {
-            "description": "Spook encontrou um fantasma nas suas personalizações 👻\n\nA seção `customize:` fixa atributos nas seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida e a personalização dela ficou. Para corrigir esse erro, edite a seção `customize:` na sua configuração e remova essas entidades.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma nas suas personalizações 👻\n\nA seção `customize:` fixa atributos nas seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida e a personalização dela ficou. Para corrigir esse erro, edite a seção `customize:` na sua configuração e remova essas entidades.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas nas suas personalizações"
         },
         "unknown_engines": {
             "title": "Pipeline do Assist usa mecanismos que sumiram: {pipeline}",
-            "description": "Spook encontrou um fantasma nos seus assistentes de voz 👻\n\nO pipeline do Assist {pipeline} usa o seguinte, que é desconhecido do Home Assistant:\n\n{engines}\n\nIsso normalmente significa que a integração por trás dele foi removida. O pipeline não ficou sabendo, então na próxima vez que for usado ele falha com um erro sobre um provedor ou agente que falta, e nada antes disso aponta para cá.\n\nPara corrigir, abra as configurações deste assistente em [Assistentes de voz](/config/voice-assistants/assistants) e escolha, para cada um destes, um mecanismo que ainda exista.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma nos seus assistentes de voz 👻\n\nO pipeline do Assist {pipeline} usa o seguinte, que é desconhecido do Home Assistant:\n\n{engines}\n\nIsso normalmente significa que a integração por trás dele foi removida. O pipeline não ficou sabendo, então na próxima vez que for usado ele falha com um erro sobre um provedor ou agente que falta, e nada antes disso aponta para cá.\n\nPara corrigir, abra as configurações deste assistente em [Assistentes de voz](/config/voice-assistants/assistants) e escolha, para cada um destes, um mecanismo que ainda exista.\n\nSpook 👻 Seu mano."
         },
         "unknown_helper_source_references": {
             "fix_flow": {
@@ -760,9 +763,9 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar {helper} (`{domain}`, `{entity_id}`) faz referência às seguintes entidades de origem, que são desconhecidas do Home Assistant:\n\n{sources}\n\nSem as origens dele, este auxiliar não consegue funcionar. {usage}\n\nRemova o auxiliar, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar {helper} (`{domain}`, `{entity_id}`) faz referência às seguintes entidades de origem, que são desconhecidas do Home Assistant:\n\n{sources}\n\nSem as origens dele, este auxiliar não consegue funcionar. {usage}\n\nRemova o auxiliar, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-lo e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover este auxiliar"
                         },
@@ -782,7 +785,7 @@
                     "init": {
                         "description": "O blueprint {blueprint} não é usado por nenhum {domain}.\n\nRemova, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-lo e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover este blueprint sem uso"
                         },
@@ -803,7 +806,7 @@
                     "init": {
                         "description": "A etiqueta {label} não está aplicada a nenhuma entidade, dispositivo ou área, e nenhuma automação ou script a tem como destino.\n\nRemova, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
-                            "ignore": "Manter e não me avisar mais",
+                            "ignore": "Mantê-la e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
                             "remove": "Remover esta etiqueta sem uso"
                         },
@@ -814,7 +817,7 @@
             "title": "Etiqueta sem uso: {label}"
         },
         "notify_unknown_group_members": {
-            "description": "Spook encontrou um fantasma em seus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas do Home Assistant:\n\n{members}\n\nO grupo continua entregando para os demais membros e continua informando sucesso para quem o chamou, então nada acima percebe. A falha aparece apenas como um \"Task exception was never retrieved\" solto no registro, que não nomeia nenhum grupo e parece um bug. Quem estava por trás desse membro simplesmente para de ser notificado.\n\nPara corrigir esse erro, edite a lista `services:` desse grupo na sua configuração e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas do Home Assistant:\n\n{members}\n\nO grupo continua entregando para os demais membros e continua informando sucesso para quem o chamou, então nada acima percebe. A falha aparece apenas como um \"Task exception was never retrieved\" solto no registro, que não nomeia nenhum grupo e parece um bug. Quem estava por trás desse membro simplesmente para de ser notificado.\n\nPara corrigir esse erro, edite a lista `services:` desse grupo na sua configuração e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
             "title": "Membros desconhecidos no grupo de notificação: {group}"
         },
         "lovelace_duplicate_resources": {
@@ -823,7 +826,7 @@
                 "step": {
                     "init": {
                         "title": "Recurso do painel presente mais de uma vez: {resource}",
-                        "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEste recurso do painel aparece {count} vezes:\n\n{resources}\n\nIsso costuma acontecer quando um cartão personalizado foi atualizado acrescentando um recurso para a versão nova em vez de editar o que já estava lá. O navegador carrega os dois, o cartão tenta se registrar duas vezes e a segunda tentativa falha, o que parece um cartão quebrado em vez de um recurso duplicado.\n\nO Spook pode limpar as cópias sobrando e ficar com a que foi acrescentada mais recentemente.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEste recurso do painel aparece {count} vezes:\n\n{resources}\n\nIsso costuma acontecer quando um cartão personalizado foi atualizado acrescentando um recurso para a versão nova em vez de editar o que já estava lá. O navegador carrega os dois, o cartão tenta se registrar duas vezes e a segunda tentativa falha, o que parece um cartão quebrado em vez de um recurso duplicado.\n\nO Spook pode limpar as cópias sobrando e ficar com a que foi acrescentada mais recentemente.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "remove": "Limpar as cópias sobrando e ficar com a mais recente",
                             "ignore": "Deixar como está, e não me avisar mais",
@@ -840,15 +843,15 @@
         },
         "lovelace_unknown_service_references": {
             "title": "Ações desconhecidas usadas no painel: {dashboard}",
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel executa as seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nUm botão ou cartão que use uma delas não faz nada quando tocado. Isso costuma acontecer quando um script foi renomeado ou removido, ou quando uma integração foi removida. Para corrigir esse erro, [edite o painel]({edit}) e remova ou substitua essas ações inexistentes.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel executa as seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nUm botão ou cartão que use uma delas não faz nada quando tocado. Isso costuma acontecer quando um script foi renomeado ou removido, ou quando uma integração foi removida. Para corrigir esse erro, [edite o painel]({edit}) e remova ou substitua essas ações inexistentes.\n\nSpook 👻 Seu mano."
         },
         "homekit_unknown_entity_references": {
             "title": "Entidades desconhecidas usadas na ponte HomeKit: {bridge}",
-            "description": "Spook encontrou um fantasma em sua ponte HomeKit 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte ponte HomeKit:\n\n{bridge}\n\nEsta ponte cita as seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nO HomeKit não acompanha uma entidade que é renomeada. Uma entidade incluída que foi renomeada ou removida some do app Casa. Uma entidade excluída que foi renomeada volta a aparecer nele.\n\nPara corrigir esse erro, acesse [a integração HomeKit Bridge](/config/integrations/integration/homekit), selecione **Configurar** nesta ponte e escolha as entidades novamente.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em sua ponte HomeKit 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte ponte HomeKit:\n\n{bridge}\n\nEsta ponte cita as seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nO HomeKit não acompanha uma entidade que é renomeada. Uma entidade incluída que foi renomeada ou removida some do app Casa. Uma entidade excluída que foi renomeada volta a aparecer nele.\n\nPara corrigir esse erro, acesse [a integração HomeKit Bridge](/config/integrations/integration/homekit), selecione **Configurar** nesta ponte e escolha as entidades novamente.\n\nSpook 👻 Seu mano."
         },
         "homekit_unknown_entity_references_yaml": {
             "title": "Entidades desconhecidas usadas na ponte HomeKit: {bridge}",
-            "description": "Spook encontrou um fantasma em sua ponte HomeKit 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte ponte HomeKit:\n\n{bridge}\n\nEsta ponte cita as seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nO HomeKit não acompanha uma entidade que é renomeada. Uma entidade incluída que foi renomeada ou removida some do app Casa. Uma entidade excluída que foi renomeada volta a aparecer nele.\n\nEsta ponte está definida na sua configuração YAML. Para corrigir esse erro, edite o `filter` desta ponte em `homekit:` e remova ou corrija essas entidades.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em sua ponte HomeKit 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte ponte HomeKit:\n\n{bridge}\n\nEsta ponte cita as seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nO HomeKit não acompanha uma entidade que é renomeada. Uma entidade incluída que foi renomeada ou removida some do app Casa. Uma entidade excluída que foi renomeada volta a aparecer nele.\n\nEsta ponte está definida na sua configuração YAML. Para corrigir esse erro, edite o `filter` desta ponte em `homekit:` e remova ou corrija essas entidades.\n\nSpook 👻 Seu mano."
         },
         "unknown_area_sensors_temperature": {
             "title": "Sensor de temperatura desconhecido na área: {area}",
@@ -856,11 +859,11 @@
                 "step": {
                     "init": {
                         "title": "Sensor de temperatura desconhecido na área: {area}",
-                        "description": "Spook encontrou um fantasma nas suas áreas 👻\n\nA área {area} usa um sensor de temperatura que é desconhecido do Home Assistant:\n\n{entities}\n\nO Home Assistant só verifica esse sensor quando ele é escolhido, então quando ele foi removido ou renomeado, a área continuou apontando para o nada. O Assist e os cartões de área não recebem mais leitura de temperatura dele.\n\nLimpe a configuração para poder escolher um sensor de novo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma nas suas áreas 👻\n\nA área {area} usa um sensor de temperatura que é desconhecido do Home Assistant:\n\n{entities}\n\nO Home Assistant só verifica esse sensor quando ele é escolhido, então quando ele foi removido ou renomeado, a área continuou apontando para o nada. O Assist e os cartões de área não recebem mais leitura de temperatura dele.\n\nLimpe a configuração para poder escolher um sensor de novo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "remove": "Limpar a configuração",
                             "manage": "Eu mesmo resolvo",
-                            "ignore": "Manter e não me avisar mais"
+                            "ignore": "Mantê-la e não me avisar mais"
                         }
                     }
                 },
@@ -877,11 +880,11 @@
                 "step": {
                     "init": {
                         "title": "Sensor de umidade desconhecido na área: {area}",
-                        "description": "Spook encontrou um fantasma nas suas áreas 👻\n\nA área {area} usa um sensor de umidade que é desconhecido do Home Assistant:\n\n{entities}\n\nO Home Assistant só verifica esse sensor quando ele é escolhido, então quando ele foi removido ou renomeado, a área continuou apontando para o nada. O Assist e os cartões de área não recebem mais leitura de umidade dele.\n\nLimpe a configuração para poder escolher um sensor de novo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma nas suas áreas 👻\n\nA área {area} usa um sensor de umidade que é desconhecido do Home Assistant:\n\n{entities}\n\nO Home Assistant só verifica esse sensor quando ele é escolhido, então quando ele foi removido ou renomeado, a área continuou apontando para o nada. O Assist e os cartões de área não recebem mais leitura de umidade dele.\n\nLimpe a configuração para poder escolher um sensor de novo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "remove": "Limpar a configuração",
                             "manage": "Eu mesmo resolvo",
-                            "ignore": "Manter e não me avisar mais"
+                            "ignore": "Mantê-la e não me avisar mais"
                         }
                     }
                 },
@@ -898,11 +901,11 @@
                 "step": {
                     "init": {
                         "title": "Sensores de temperatura e de umidade desconhecidos na área: {area}",
-                        "description": "Spook encontrou um fantasma nas suas áreas 👻\n\nA área {area} usa um sensor de temperatura e um de umidade que são desconhecidos do Home Assistant:\n\n{entities}\n\nO Home Assistant só verifica esses sensores quando eles são escolhidos, então quando eles foram removidos ou renomeados, a área continuou apontando para o nada. O Assist e os cartões de área não recebem mais leitura deles.\n\nLimpe as configurações para poder escolher sensores de novo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "O Spook encontrou um fantasma nas suas áreas 👻\n\nA área {area} usa um sensor de temperatura e um de umidade que são desconhecidos do Home Assistant:\n\n{entities}\n\nO Home Assistant só verifica esses sensores quando eles são escolhidos, então quando eles foram removidos ou renomeados, a área continuou apontando para o nada. O Assist e os cartões de área não recebem mais leitura deles.\n\nLimpe as configurações para poder escolher sensores de novo, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "remove": "Limpar as configurações",
                             "manage": "Eu mesmo resolvo",
-                            "ignore": "Manter e não me avisar mais"
+                            "ignore": "Mantê-las e não me avisar mais"
                         }
                     }
                 },
@@ -913,105 +916,105 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "O Assist não consegue diferenciar estas: {name}",
-            "description": "Spook encontrou um fantasma nos seus assistentes de voz 👻\n\nAs seguintes entidades estão expostas ao Assist, e todas respondem pelo nome {name}:\n\n{entities}\n\nQuando os nomes são iguais, o Assist só as diferencia pela área: a que você diz, ou aquela em que está o seu satélite de voz. Algumas delas dividem uma área, ou não têm área nenhuma, então o Assist não consegue escolhê-las por esse nome de lugar nenhum. Pedir por {name} então falha, e nada diz quais entidades estão atrapalhando.\n\nPara corrigir isso, dê a cada uma um nome ou alias próprio, ou mova-as para áreas diferentes. Você pode mudar os aliases de uma entidade, e se o Assist a vê ou não, em [Entidades expostas](/config/voice-assistants/expose). As áreas são definidas na [página de Áreas](/config/areas/dashboard).\n\nSpook 👻 Seu mano."
-        },
         "automation_unknown_attribute_references": {
             "title": "Atributos desconhecidos usados em: {automation}",
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm acionador ou uma condição esperando um atributo que nunca aparece nunca é acionado, e não avisa você. Um template que lê um deles não recebe nada. Para corrigir isso, [edite a automação]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm gatilho ou uma condição esperando um atributo que nunca aparece nunca é acionado, e não avisa você. Um template que lê um deles não recebe nada. Para corrigir isso, [edite a automação]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
         },
         "script_unknown_attribute_references": {
             "title": "Atributos desconhecidos usados em: {script}",
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm acionador ou uma condição esperando um atributo que nunca aparece nunca é acionado, e não avisa você. Um template que lê um deles não recebe nada. Para corrigir isso, [edite o script]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm gatilho ou uma condição esperando um atributo que nunca aparece nunca é acionado, e não avisa você. Um template que lê um deles não recebe nada. Para corrigir isso, [edite o script]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
         },
         "lovelace_unknown_attribute_references": {
             "title": "Atributos desconhecidos usados no painel: {dashboard}",
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel mostra ou verifica os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm cartão que mostra um atributo que nunca aparece fica vazio, e uma condição de visibilidade ou um filtro que verifica um deles nunca é satisfeito. Nenhum dos dois avisa você. Para corrigir isso, [edite o painel]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel mostra ou verifica os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm cartão que mostra um atributo que nunca aparece fica vazio, e uma condição de visibilidade ou um filtro que verifica um deles nunca é satisfeito. Nenhum dos dois avisa você. Para corrigir isso, [edite o painel]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
         },
         "template_unknown_attribute_references": {
             "title": "Atributos desconhecidos usados no auxiliar de template: {helper}",
-            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEste auxiliar de template usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm template que lê um atributo que nunca aparece não recebe nada, e uma condição em uma das ações dele esperando um deles nunca é satisfeita. Nenhum dos dois avisa você. Para corrigir isso, [edite o auxiliar de template]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEste auxiliar de template usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm template que lê um atributo que nunca aparece não recebe nada, e uma condição em uma das ações dele esperando um deles nunca é satisfeita. Nenhum dos dois avisa você. Para corrigir isso, [edite o auxiliar de template]({edit}) e use um atributo que a entidade tem.\n\nSpook 👻 Seu mano."
         },
         "template_unknown_attribute_references_yaml": {
             "title": "Atributos desconhecidos usados na entidade de template: {name}",
-            "description": "Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nEsta entidade de template usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm template que lê um atributo que nunca aparece não recebe nada, e um acionador ou uma condição esperando um deles nunca é acionado nem satisfeito. Nenhum deles avisa você.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir isso, edite-a na seção `template:` da sua configuração, use um atributo que a entidade tem e recarregue suas entidades de template.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nEsta entidade de template usa os seguintes atributos, que as entidades deles não têm. Nem agora, nem como algo que esse tipo de entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{attributes}\n\n\n\nUm template que lê um atributo que nunca aparece não recebe nada, e um gatilho ou uma condição esperando um deles nunca é acionado nem satisfeito. Nenhum deles avisa você.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir isso, edite-a na seção `template:` da sua configuração, use um atributo que a entidade tem e recarregue suas entidades de template.\n\nSpook 👻 Seu mano."
         },
         "automation_unknown_state_references": {
             "title": "Estados desconhecidos usados em: {automation}",
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação espera ou verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUm acionador esperando um estado que nunca chega nunca é acionado, uma condição verificando um deles nunca é satisfeita, e nenhum dos dois avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite a automação]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação espera ou verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUm gatilho esperando um estado que nunca chega nunca é acionado, uma condição verificando um deles nunca é satisfeita, e nenhum dos dois avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite a automação]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano."
         },
         "script_unknown_state_references": {
             "title": "Estados desconhecidos usados em: {script}",
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script espera ou verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUm acionador esperando um estado que nunca chega nunca é acionado, uma condição verificando um deles nunca é satisfeita, e nenhum dos dois avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite o script]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script espera ou verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUm gatilho esperando um estado que nunca chega nunca é acionado, uma condição verificando um deles nunca é satisfeita, e nenhum dos dois avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite o script]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano."
         },
         "lovelace_unknown_state_references": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUma condição de visibilidade ou um filtro verificando um estado que nunca chega nunca é satisfeito, e uma imagem definida para um deles nunca é mostrada. Nenhum deles avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite o painel]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel verifica os seguintes estados, em que as entidades deles nunca estão. Nem como algo que esse tipo de entidade pode estar, nem entre as opções que a entidade oferece, nem em lugar nenhum do que o gravador lembra delas:\n\n{states}\n\n\n\nUma condição de visibilidade ou um filtro verificando um estado que nunca chega nunca é satisfeito, e uma imagem definida para um deles nunca é mostrada. Nenhum deles avisa você. Os estados diferenciam maiúsculas de minúsculas: `On` não é `on`. Para corrigir isso, [edite o painel]({edit}) e use um estado em que a entidade pode estar.\n\nSpook 👻 Seu mano.",
             "title": "Estados desconhecidos usados no painel: {dashboard}"
         },
         "automation_unknown_trigger_id_references": {
-            "title": "IDs de acionador desconhecidos usados em: {automation}",
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação verifica os seguintes IDs de acionador, que nenhum dos acionadores dela tem:\n\n{trigger_ids}\n\n\n\nUma verificação de um ID que nenhum acionador entrega sempre dá o mesmo resultado: uma condição de acionador pedindo esse ID nunca é satisfeita, então a parte que ela protege nunca roda, e nada avisa você. IDs de acionador diferenciam maiúsculas de minúsculas, e um acionador sem ID próprio é identificado pela posição dele na lista, contando a partir de `0`. Para corrigir isso, [edite a automação]({edit}) e use o ID de um dos acionadores dela, ou dê ao acionador o ID que a automação pede.\n\nSpook 👻 Seu mano."
+            "title": "IDs de gatilho desconhecidos usados em: {automation}",
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação verifica os seguintes IDs de gatilho, que nenhum dos gatilhos dela tem:\n\n{trigger_ids}\n\n\n\nUma verificação de um ID que nenhum gatilho entrega sempre dá o mesmo resultado: uma condição de gatilho pedindo esse ID nunca é satisfeita, então a parte que ela protege nunca roda, e nada avisa você. IDs de gatilho diferenciam maiúsculas de minúsculas, e um gatilho sem ID próprio é identificado pela posição dele na lista, contando a partir de `0`. Para corrigir isso, [edite a automação]({edit}) e use o ID de um dos gatilhos dela, ou dê ao gatilho o ID que a automação pede.\n\nSpook 👻 Seu mano."
         },
         "lovelace_unknown_view_references": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel navega para as seguintes visualizações, que não existem:\n\n{paths}\n\n\n\nUm botão ou cartão que navega para uma delas abre a primeira visualização desse painel no lugar, sem avisar. Isso costuma acontecer quando uma visualização foi renomeada, movida ou removida. Para corrigir esse erro, [edite o painel]({edit}) e aponte esses caminhos para uma visualização que exista.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel navega para as seguintes visualizações, que não existem:\n\n{paths}\n\n\n\nUm botão ou cartão que navega para uma delas abre a primeira visualização desse painel no lugar, sem avisar. Isso costuma acontecer quando uma visualização foi renomeada, movida ou removida. Para corrigir esse erro, [edite o painel]({edit}) e aponte esses caminhos para uma visualização que exista.\n\nSpook 👻 Seu mano.",
             "title": "Visualizações desconhecidas para onde o painel navega: {dashboard}"
         },
         "automation_never_true_templates": {
             "title": "Templates que nunca podem ser satisfeitos em: {automation}",
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação tem os seguintes templates, que nunca podem ser satisfeitos, aconteça o que acontecer na sua casa:\n\n{templates}\n\n\n\nUma condição de template só é satisfeita quando resulta em `true`, e um `wait_template` também, a menos que mude depois para algo que conte como verdadeiro. Um acionador de template é acionado quando o template dele passa a algo que conta como verdadeiro, como `true`, `on`, `yes` ou `1`. Esses templates sempre resultam em outra coisa, por causa de como foram escritos. As causas mais comuns:\n\n- Aspas em volta do template. Um bloco `>-` as trata como texto, então elas acabam no resultado.\n- Nenhum delimitador de template, então o texto é usado como está.\n- YAML colado no campo do template.\n- Um comentário YAML `#` dentro do Jinja, que o Jinja imprime como texto.\n- Uma condição que resulta em `on` em vez de `true`.\n\nNada avisa você: a condição nunca é satisfeita, a espera só termina pelo tempo limite e o acionador nunca é acionado. Para corrigir isso, [edite a automação]({edit}) e faça o template resultar em `true` quando deve ser satisfeito.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação tem os seguintes templates, que nunca podem ser satisfeitos, aconteça o que acontecer na sua casa:\n\n{templates}\n\n\n\nUma condição de template só é satisfeita quando resulta em `true`, e um `wait_template` também, a menos que mude depois para algo que conte como verdadeiro. Um gatilho de template é acionado quando o template dele passa a algo que conta como verdadeiro, como `true`, `on`, `yes` ou `1`. Esses templates sempre resultam em outra coisa, por causa de como foram escritos. As causas mais comuns:\n\n- Aspas em volta do template. Um bloco `>-` as trata como texto, então elas acabam no resultado.\n- Nenhum delimitador de template, então o texto é usado como está.\n- YAML colado no campo do template.\n- Um comentário YAML `#` dentro do Jinja, que o Jinja imprime como texto.\n- Uma condição que resulta em `on` em vez de `true`.\n\nNada avisa você: a condição nunca é satisfeita, a espera só termina pelo tempo limite e o gatilho nunca é acionado. Para corrigir isso, [edite a automação]({edit}) e faça o template resultar em `true` quando deve ser satisfeito.\n\nSpook 👻 Seu mano."
         },
         "script_never_true_templates": {
             "title": "Templates que nunca podem ser satisfeitos em: {script}",
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script tem os seguintes templates, que nunca podem ser satisfeitos, aconteça o que acontecer na sua casa:\n\n{templates}\n\n\n\nUma condição de template só é satisfeita quando resulta em `true`, e um `wait_template` também, a menos que mude depois para algo que conte como verdadeiro. Um acionador de template em um `wait_for_trigger` é acionado quando o template dele passa a algo que conta como verdadeiro, como `true`, `on`, `yes` ou `1`. Esses templates sempre resultam em outra coisa, por causa de como foram escritos. As causas mais comuns:\n\n- Aspas em volta do template. Um bloco `>-` as trata como texto, então elas acabam no resultado.\n- Nenhum delimitador de template, então o texto é usado como está.\n- YAML colado no campo do template.\n- Um comentário YAML `#` dentro do Jinja, que o Jinja imprime como texto.\n- Uma condição que resulta em `on` em vez de `true`.\n\nNada avisa você: a condição nunca é satisfeita e a espera só termina pelo tempo limite. Para corrigir isso, [edite o script]({edit}) e faça o template resultar em `true` quando deve ser satisfeito.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script tem os seguintes templates, que nunca podem ser satisfeitos, aconteça o que acontecer na sua casa:\n\n{templates}\n\n\n\nUma condição de template só é satisfeita quando resulta em `true`, e um `wait_template` também, a menos que mude depois para algo que conte como verdadeiro. Um gatilho de template em um `wait_for_trigger` é acionado quando o template dele passa a algo que conta como verdadeiro, como `true`, `on`, `yes` ou `1`. Esses templates sempre resultam em outra coisa, por causa de como foram escritos. As causas mais comuns:\n\n- Aspas em volta do template. Um bloco `>-` as trata como texto, então elas acabam no resultado.\n- Nenhum delimitador de template, então o texto é usado como está.\n- YAML colado no campo do template.\n- Um comentário YAML `#` dentro do Jinja, que o Jinja imprime como texto.\n- Uma condição que resulta em `on` em vez de `true`.\n\nNada avisa você: a condição nunca é satisfeita e a espera só termina pelo tempo limite. Para corrigir isso, [edite o script]({edit}) e faça o template resultar em `true` quando deve ser satisfeito.\n\nSpook 👻 Seu mano."
         },
         "automation_unknown_config_entry_references": {
             "title": "Entradas de integração desconhecidas usadas em: {automation}",
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação passa para as ações dela as seguintes entradas de integração, que são desconhecidas do Home Assistant ou pertencem a uma integração diferente da que a ação pede:\n\n{config_entries}\n\nO Home Assistant as recusa quando o passo roda. Isso costuma acontecer depois que uma integração foi removida e adicionada de novo: ela ganhou uma nova entrada de integração, com um novo ID.\n\nPara corrigir esse erro, [edite a automação]({edit}) e escolha de novo a entrada de integração nessas ações.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação passa para as ações dela as seguintes entradas de integração, que são desconhecidas do Home Assistant ou pertencem a uma integração diferente da que a ação pede:\n\n{config_entries}\n\nO Home Assistant as recusa quando o passo roda. Isso costuma acontecer depois que uma integração foi removida e adicionada de novo: ela ganhou uma nova entrada de integração, com um novo ID.\n\nPara corrigir esse erro, [edite a automação]({edit}) e escolha de novo a entrada de integração nessas ações.\n\nSpook 👻 Seu mano."
         },
         "script_unknown_config_entry_references": {
             "title": "Entradas de integração desconhecidas usadas em: {script}",
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script passa para as ações dele as seguintes entradas de integração, que são desconhecidas do Home Assistant ou pertencem a uma integração diferente da que a ação pede:\n\n{config_entries}\n\nO Home Assistant as recusa quando o passo roda. Isso costuma acontecer depois que uma integração foi removida e adicionada de novo: ela ganhou uma nova entrada de integração, com um novo ID.\n\nPara corrigir esse erro, [edite o script]({edit}) e escolha de novo a entrada de integração nessas ações.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script passa para as ações dele as seguintes entradas de integração, que são desconhecidas do Home Assistant ou pertencem a uma integração diferente da que a ação pede:\n\n{config_entries}\n\nO Home Assistant as recusa quando o passo roda. Isso costuma acontecer depois que uma integração foi removida e adicionada de novo: ela ganhou uma nova entrada de integração, com um novo ID.\n\nPara corrigir esse erro, [edite o script]({edit}) e escolha de novo a entrada de integração nessas ações.\n\nSpook 👻 Seu mano."
         },
         "automation_unknown_icons": {
             "title": "Ícones desconhecidos usados em: {automation}",
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação distribui os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant:\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite a automação]({edit}) e troque-os por ícones que existam.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação distribui os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant:\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite a automação]({edit}) e troque-os por ícones que existam.\n\nSpook 👻 Seu mano."
         },
         "script_unknown_icons": {
             "title": "Ícones desconhecidos usados em: {script}",
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa ou distribui os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant:\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite o script]({edit}) e troque-os por ícones que existam.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa ou distribui os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant:\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite o script]({edit}) e troque-os por ícones que existam.\n\nSpook 👻 Seu mano."
         },
         "lovelace_unknown_icons": {
             "title": "Ícones desconhecidos usados no painel: {dashboard}",
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel usa os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant (versão {version}):\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite o painel]({edit}) e troque-os por ícones que existam. O ícone do painel na barra lateral é alterado nas configurações dos seus painéis.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel usa os seguintes ícones, que não existem no Material Design Icons que vem com o Home Assistant (versão {version}):\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, [edite o painel]({edit}) e troque-os por ícones que existam. O ícone do painel na barra lateral é alterado nas configurações dos seus painéis.\n\nSpook 👻 Seu mano."
         },
         "unknown_icons": {
-            "description": "Spook encontrou um fantasma nas suas configurações 👻\n\nOs seguintes ícones não existem no Material Design Icons que vem com o Home Assistant (versão {version}):\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, dê a cada um deles um ícone que exista: uma entidade, um auxiliar ou uma zona nas configurações dele, uma área, um andar ou uma etiqueta nas configurações das suas áreas, etiquetas e zonas, uma categoria onde ela é usada, e `customize:` na sua configuração.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma nas suas configurações 👻\n\nOs seguintes ícones não existem no Material Design Icons que vem com o Home Assistant (versão {version}):\n\n{icons}\n\n\n\nCada um deles aparece como um espaço vazio, sem nenhum aviso. Isso costuma acontecer quando um ícone foi digitado errado, renomeado ou removido, ou escolhido de uma versão do Material Design Icons mais nova do que a que vem com o Home Assistant. Para corrigir esse erro, dê a cada um deles um ícone que exista: uma entidade, um auxiliar ou uma zona nas configurações dele, uma área, um andar ou uma etiqueta nas configurações das suas áreas, etiquetas e zonas, uma categoria onde ela é usada, e `customize:` na sua configuração.\n\nSpook 👻 Seu mano.",
             "title": "Ícones desconhecidos nas suas configurações"
         },
         "automation_unknown_user_references": {
             "title": "Usuários removidos citados em: {automation}",
-            "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um acionador esperando por um deles nunca é acionado por eles, e um template comparando com um deles nunca bate, sem avisar. Para corrigir isso, [edite a automação]({edit}) e use o ID de um usuário que exista, ou remova a verificação.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um gatilho esperando por um deles nunca é acionado por eles, e um template comparando com um deles nunca bate, sem avisar. Para corrigir isso, [edite a automação]({edit}) e use o ID de um usuário que exista, ou remova a verificação.\n\nSpook 👻 Seu mano."
         },
         "script_unknown_user_references": {
             "title": "Usuários removidos citados em: {script}",
-            "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um template comparando com um deles nunca bate, e um acionador esperando por um deles nunca é acionado por eles, sem avisar. Para corrigir isso, [edite o script]({edit}) e use o ID de um usuário que exista, ou remova a verificação.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um template comparando com um deles nunca bate, e um gatilho esperando por um deles nunca é acionado por eles, sem avisar. Para corrigir isso, [edite o script]({edit}) e use o ID de um usuário que exista, ou remova a verificação.\n\nSpook 👻 Seu mano."
         },
         "template_unknown_service_references_yaml": {
             "title": "Ações desconhecidas usadas na entidade de template: {name}",
-            "description": "Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nEla faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\n\n\nIsso costuma acontecer quando o que fornecia uma ação foi removido, ou quando um script foi renomeado ou excluído.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir esse erro, edite-a na seção `template:` da sua configuração, use ações que existam e recarregue suas entidades de template.\n\nSpook 👻 Seu mano."
+            "description": "O Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nEla faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\n\n\nIsso costuma acontecer quando o que fornecia uma ação foi removido, ou quando um script foi renomeado ou excluído.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir esse erro, edite-a na seção `template:` da sua configuração, use ações que existam e recarregue suas entidades de template.\n\nSpook 👻 Seu mano."
         },
         "lovelace_unknown_user_references": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um cartão, emblema, seção ou visualização mostrado só para eles agora não é mostrado para ninguém, sem avisar. Uma isenção de confirmação para eles não faz mais nada. Para corrigir isso, [edite o painel]({edit}) e escolha os usuários que devem vê-lo, ou remova a condição.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel cita os seguintes usuários, que não existem mais:\n\n{users}\n\n\n\nO Home Assistant nunca dá o mesmo ID de usuário duas vezes, então esses usuários foram removidos. Um cartão, emblema, seção ou visualização mostrado só para eles agora não é mostrado para ninguém, sem avisar. Uma isenção de confirmação para eles não faz mais nada. Para corrigir isso, [edite o painel]({edit}) e escolha os usuários que devem vê-lo, ou remova a condição.\n\nSpook 👻 Seu mano.",
             "title": "Usuários removidos citados no painel: {dashboard}"
         },
         "lovelace_unknown_theme_references": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel usa os seguintes temas, que não existem:\n\n{themes}\n\n\n\nUm cartão, seção ou visualização com um desses temas fica com a aparência padrão no lugar, sem avisar. Isso costuma acontecer quando um tema foi renomeado ou removido. Para corrigir esse erro, [edite o painel]({edit}) e escolha um tema que exista, ou adicione o tema de volta.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel usa os seguintes temas, que não existem:\n\n{themes}\n\n\n\nUm cartão, seção ou visualização com um desses temas fica com a aparência padrão no lugar, sem avisar. Isso costuma acontecer quando um tema foi renomeado ou removido. Para corrigir esse erro, [edite o painel]({edit}) e escolha um tema que exista, ou adicione o tema de volta.\n\nSpook 👻 Seu mano.",
             "title": "Temas desconhecidos usados no painel: {dashboard}"
         },
         "template_unknown_entity_references_yaml": {
-            "description": "Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nA configuração dela faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida. Um template que lê uma delas não recebe nada, e um acionador esperando uma delas nunca é acionado.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir esse erro, edite-a na seção `template:` da sua configuração, faça referência a entidades que existam e recarregue suas entidades de template.\n\nSpook 👻 Seu mano.",
+            "description": "O Spook encontrou um fantasma em suas entidades de template 👻\n\nEnquanto flutuava, o Spook cruzou o caminho com a seguinte entidade de template:\n\n{name} (`{entity_id}`)\n\nA configuração dela faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida. Um template que lê uma delas não recebe nada, e um gatilho esperando uma delas nunca é acionado.\n\nEsta entidade de template está definida na sua configuração YAML. Para corrigir esse erro, edite-a na seção `template:` da sua configuração, faça referência a entidades que existam e recarregue suas entidades de template.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas usadas na entidade de template: {name}"
+        },
+        "lovelace_public_www_files": {
+            "title": "Arquivos que qualquer um pode baixar: {folder}",
+            "description": "O Spook encontrou um fantasma na sua pasta `www` 👻\n\nO Home Assistant serve tudo o que está na pasta `www` em `/local/`, sem pedir login a ninguém. A pasta `{folder}` contém {count} arquivo(s) que não são código de painel e que nenhum painel ou tema usa:\n\n{files}\n\n\n\nIsso costuma acontecer porque uma integração guarda arquivos aqui para mostrá-los em um painel, como capturas de câmera ou prévias de impressões 3D. Qualquer pessoa que consiga acessar o seu Home Assistant e saiba ou adivinhe o nome de um arquivo pode baixá-lo.\n\nPara corrigir, descubra qual integração grava nesta pasta e se ela pode guardar os arquivos em outro lugar. Se não tiver problema que eles sejam públicos, ignore este reparo e o Spook vai deixar esta pasta em paz.\n\nSpook 👻 Seu mano."
         }
     },
     "conditions": {
@@ -1089,7 +1092,7 @@
         },
         "triggered_by_user": {
             "name": "Disparado por um usuário",
-            "description": "É satisfeita quando há uma pessoa por trás do que colocou isto em movimento: uma mudança de estado ou um evento que ela causou, incluindo um que tornou verdadeiro um acionador de modelo. Um agendamento, o sol ou uma integração agindo por conta própria não têm ninguém por trás, e forçar uma execução com o botão Executar também não.",
+            "description": "É satisfeita quando há uma pessoa por trás do que colocou isto em movimento: uma mudança de estado ou um evento que ela causou, incluindo um que tornou verdadeiro um gatilho de modelo. Um agendamento, o sol ou uma integração agindo por conta própria não têm ninguém por trás, e forçar uma execução com o botão Executar também não.",
             "fields": {
                 "person": {
                     "name": "Pessoas",
@@ -3065,11 +3068,11 @@
         },
         "debounce": {
             "name": "Quando acalmar",
-            "description": "É acionado quando um acionador para de disparar por um tempo, então uma rajada deles chega como um só. Um sensor de movimento não informa movimento uma vez, ele informa vinte.",
+            "description": "É acionado quando um gatilho para de disparar por um tempo, então uma rajada deles chega como um só. Um sensor de movimento não informa movimento uma vez, ele informa vinte.",
             "fields": {
                 "triggers": {
-                    "name": "Acionadores",
-                    "description": "Os acionadores pelos quais esperar. Qualquer um deles disparando começa uma rajada e qualquer um disparando de novo a mantém viva, então vários acionadores são agrupados juntos, e não um de cada vez."
+                    "name": "Gatilhos",
+                    "description": "Os gatilhos pelos quais esperar. Qualquer um deles disparando começa uma rajada e qualquer um disparando de novo a mantém viva, então vários gatilhos são agrupados juntos, e não um de cada vez."
                 },
                 "for": {
                     "name": "Por",
@@ -3079,15 +3082,15 @@
         },
         "all_of": {
             "name": "Tudo isto aconteceu",
-            "description": "É acionado quando cada um de vários acionadores disparou dentro da mesma janela de tempo, em qualquer ordem. Os acionadores do próprio Home Assistant são uma lista em que basta qualquer um deles; este é o outro caso.",
+            "description": "É acionado quando cada um de vários gatilhos disparou dentro da mesma janela de tempo, em qualquer ordem. Os gatilhos do próprio Home Assistant são uma lista em que basta qualquer um deles; este é o outro caso.",
             "fields": {
                 "triggers": {
-                    "name": "Acionadores",
-                    "description": "Os acionadores que todos precisam ter disparado. A ordem não importa, e um acionador que dispara de novo substitui a vez anterior dele em vez de contar duas vezes."
+                    "name": "Gatilhos",
+                    "description": "Os gatilhos que todos precisam ter disparado. A ordem não importa, e um gatilho que dispara de novo substitui a vez anterior dele em vez de contar duas vezes."
                 },
                 "within": {
                     "name": "Dentro de",
-                    "description": "Quão próximos eles precisam estar. A janela vai andando, então um acionador que disparou há mais tempo que isso é esquecido enquanto os outros continuam contando."
+                    "description": "Quão próximos eles precisam estar. A janela vai andando, então um gatilho que disparou há mais tempo que isso é esquecido enquanto os outros continuam contando."
                 }
             }
         },
@@ -3102,20 +3105,20 @@
             }
         },
         "sequence": {
-            "name": "Acionadores em ordem",
-            "description": "É acionado quando vários acionadores acontecem um após o outro, na ordem informada.",
+            "name": "Gatilhos em ordem",
+            "description": "É acionado quando vários gatilhos acontecem um após o outro, na ordem informada.",
             "fields": {
                 "steps": {
                     "name": "Passos",
-                    "description": "Os acionadores que precisam acontecer, em ordem. Só é escutado aquele que está sendo esperado, então um passo mais adiante que aconteça cedo demais não conta."
+                    "description": "Os gatilhos que precisam acontecer, em ordem. Só é escutado aquele que está sendo esperado, então um passo mais adiante que aconteça cedo demais não conta."
                 },
                 "timeout": {
                     "name": "Tempo limite",
                     "description": "Quanto tempo a sequência inteira pode levar, contando a partir do primeiro passo. Deixe vazio para esperar sem limite."
                 },
                 "reset": {
-                    "name": "Reiniciar",
-                    "description": "Acionadores que abandonam uma sequência já em andamento e a colocam de volta esperando o primeiro passo."
+                    "name": "Redefinir",
+                    "description": "Gatilhos que abandonam uma sequência já em andamento e a colocam de volta esperando o primeiro passo."
                 }
             }
         },
@@ -3177,7 +3180,7 @@
         },
         "cron": {
             "name": "Agendamento cron",
-            "description": "É acionado conforme um agendamento crontab, para os horários que os acionadores de tempo do próprio Home Assistant não conseguem expressar, como todo dia útil às sete ou a última sexta-feira do mês.",
+            "description": "É acionado conforme um agendamento crontab, para os horários que os gatilhos de tempo do próprio Home Assistant não conseguem expressar, como todo dia útil às sete ou a última sexta-feira do mês.",
             "fields": {
                 "schedule": {
                     "name": "Agendamento",
@@ -3361,7 +3364,7 @@
                     "description": "Ser acionado para cada entidade, para a primeira do alvo a chegar lá, ou quando todas estiverem lá. Primeiro e todos precisam de Para ou Não para. Enquanto indisponível e desconhecido são ignorados, entidades nesses estados não participam."
                 }
             },
-            "name": "Acionador de estado do Spook"
+            "name": "Gatilho de estado do Spook"
         }
     },
     "selector": {

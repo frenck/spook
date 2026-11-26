@@ -33,10 +33,10 @@
                 "name": "Herstarten"
             },
             "repairs_ignore_all": {
-                "name": "Negeer alles"
+                "name": "Alles negeren"
             },
             "repairs_unignore_all": {
-                "name": "Alles herstellen"
+                "name": "Negeren van alles ongedaan maken"
             }
         },
         "event": {
@@ -230,13 +230,13 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa-status rapportage"
+                "name": "Alexa-statusrapportage"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistent-status rapportage"
+                "name": "Google Assistent-statusrapportage"
             },
             "cloud_remote": {
-                "name": "Afstandsbediening"
+                "name": "Externe toegang"
             }
         }
     },
@@ -456,6 +456,9 @@
         },
         "yaml_schedule_not_editable": {
             "message": "{entity_id} is een schema uit je YAML-configuratie, en dat kan Spook niet wijzigen. Pas het in plaats daarvan aan in je configuratie."
+        },
+        "device_disabled_by_integration_entry": {
+            "message": "Apparaat {device_id} kan niet worden geactiveerd zolang de integratie-instantie {entry} gedeactiveerd is. Activeer in plaats daarvan die integratie-instantie."
         }
     },
     "issues": {
@@ -824,8 +827,8 @@
                     }
                 },
                 "abort": {
-                    "issue_ignored": "Spook zwijgt voortaan over deze bron.",
-                    "manage": "Je kunt je dashboardbronnen zelf beheren op de [Bronnenpagina](/config/lovelace/resources).",
+                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze bron.",
+                    "manage": "Je beheert je dashboardbronnen zelf op [de pagina Bronnen](/config/lovelace/resources).",
                     "yaml": "Deze bronnen staan in je YAML-configuratie, dus Spook kan ze niet voor je wijzigen. Bewerk de `resources:`-sectie van je Lovelace-configuratie en verwijder de kopieën van `{resource}` die je niet meer nodig hebt."
                 }
             }
@@ -913,10 +916,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist kan deze niet uit elkaar houden: {name}",
-            "description": "Spook heeft een geest gevonden in je spraakassistenten 👻\n\nDe volgende entiteiten zijn beschikbaar gemaakt voor Assist, en luisteren allemaal naar de naam {name}:\n\n{entities}\n\nAls namen hetzelfde zijn, houdt Assist ze alleen uit elkaar op ruimte: de ruimte die je noemt, of de ruimte waarin je spraaksatelliet staat. Sommige hiervan delen een ruimte, of hebben helemaal geen ruimte, dus Assist kan ze nergens vandaan op deze naam vinden. Vragen naar {name} mislukt dan, en niets zegt welke entiteiten in de weg zitten.\n\nOm dit te verhelpen, geef je elk een eigen naam of alias, of zet je ze in verschillende ruimtes. De aliassen van een entiteit, en of Assist haar überhaupt ziet, pas je aan onder [Beschikbaar gemaakte entiteiten](/config/voice-assistants/expose). Ruimtes stel je in op de [pagina Ruimtes](/config/areas/dashboard).\n\nSpook 👻 Je homie."
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering gebruikt de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen trigger of voorwaarde die wacht op een attribuut dat nooit verschijnt, gaat nooit af, en zegt je dat niet. Een template die er een leest, krijgt niets. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en gebruik je een attribuut dat de entiteit heeft.\n\nSpook 👻 Je homie.",
             "title": "Onbekende attributen gebruikt in: {automation}"
@@ -954,16 +953,16 @@
             "title": "Onbekende integratie-instanties gebruikt in: {automation}"
         },
         "automation_unknown_icons": {
-            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering deelt de volgende pictogrammen uit, die niet bestaan in de Material Design Icons die bij Home Assistant horen:\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je de automatisering]({edit}) en vervang je deze door pictogrammen die bestaan.\n\nSpook 👻 Je homie.",
-            "title": "Onbekende pictogrammen gebruikt in: {automation}"
+            "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering deelt de volgende iconen uit, die niet bestaan in de Material Design Icons die bij Home Assistant horen:\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een icoon verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je de automatisering]({edit}) en vervang je deze door iconen die bestaan.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende iconen gebruikt in: {automation}"
         },
         "automation_unknown_user_references": {
             "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering noemt de volgende gebruikers, die niet meer bestaan:\n\n{users}\n\n\n\nHome Assistant geeft een gebruikers-ID nooit twee keer uit, dus deze gebruikers zijn verwijderd. Een trigger die op een van hen wacht, gaat voor hen nooit af, en een template die met een van hen vergelijkt, komt nooit overeen, zonder dat te zeggen. Om dit te verhelpen, [bewerk je de automatisering]({edit}) en gebruik je het ID van een gebruiker die bestaat, of verwijder je de controle.\n\nSpook 👻 Je homie.",
             "title": "Verwijderde gebruikers genoemd in: {automation}"
         },
         "lovelace_unknown_icons": {
-            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard gebruikt de volgende pictogrammen, die niet bestaan in de Material Design Icons die bij Home Assistant horen (versie {version}):\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en vervang je deze door pictogrammen die bestaan. Het pictogram van het dashboard in de zijbalk wijzig je in de instellingen van je dashboards.\n\nSpook 👻 Je homie.",
-            "title": "Onbekende pictogrammen gebruikt in dashboard: {dashboard}"
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard gebruikt de volgende iconen, die niet bestaan in de Material Design Icons die bij Home Assistant horen (versie {version}):\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een icoon verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en vervang je deze door iconen die bestaan. Het icoon van het dashboard in de zijbalk wijzig je in de instellingen van je dashboards.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende iconen gebruikt in dashboard: {dashboard}"
         },
         "lovelace_unknown_user_references": {
             "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard noemt de volgende gebruikers, die niet meer bestaan:\n\n{users}\n\n\n\nHome Assistant geeft een gebruikers-ID nooit twee keer uit, dus deze gebruikers zijn verwijderd. Een kaart, badge, sectie of weergave die alleen aan hen wordt getoond, wordt nu aan niemand getoond, zonder dat te zeggen. Een uitzondering op een bevestiging voor hen doet niets meer. Om dit te verhelpen, [bewerk je het dashboard]({edit}) en kies je de gebruikers die het moeten zien, of verwijder je de voorwaarde.\n\nSpook 👻 Je homie.",
@@ -982,8 +981,8 @@
             "title": "Onbekende integratie-instanties gebruikt in: {script}"
         },
         "script_unknown_icons": {
-            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script gebruikt of deelt de volgende pictogrammen uit, die niet bestaan in de Material Design Icons die bij Home Assistant horen:\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je het script]({edit}) en vervang je deze door pictogrammen die bestaan.\n\nSpook 👻 Je homie.",
-            "title": "Onbekende pictogrammen gebruikt in: {script}"
+            "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script gebruikt of deelt de volgende iconen uit, die niet bestaan in de Material Design Icons die bij Home Assistant horen:\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een icoon verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, [bewerk je het script]({edit}) en vervang je deze door iconen die bestaan.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende iconen gebruikt in: {script}"
         },
         "script_unknown_user_references": {
             "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script noemt de volgende gebruikers, die niet meer bestaan:\n\n{users}\n\n\n\nHome Assistant geeft een gebruikers-ID nooit twee keer uit, dus deze gebruikers zijn verwijderd. Een template die met een van hen vergelijkt, komt nooit overeen, en een trigger die op een van hen wacht, gaat voor hen nooit af, zonder dat te zeggen. Om dit te verhelpen, [bewerk je het script]({edit}) en gebruik je het ID van een gebruiker die bestaat, of verwijder je de controle.\n\nSpook 👻 Je homie.",
@@ -1002,8 +1001,8 @@
             "title": "Onbekende acties gebruikt in template-entiteit: {name}"
         },
         "unknown_icons": {
-            "description": "Spook heeft een geest gevonden in je instellingen 👻\n\nDe volgende pictogrammen bestaan niet in de Material Design Icons die bij Home Assistant horen (versie {version}):\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een pictogram verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, geef je elk hiervan een pictogram dat bestaat: een entiteit, helper of zone in de eigen instellingen, een ruimte, verdieping of label in de instellingen van je ruimtes, labels en zones, een categorie waar die wordt gebruikt, en `customize:` in je configuratie.\n\nSpook 👻 Je homie.",
-            "title": "Onbekende pictogrammen in je instellingen"
+            "description": "Spook heeft een geest gevonden in je instellingen 👻\n\nDe volgende iconen bestaan niet in de Material Design Icons die bij Home Assistant horen (versie {version}):\n\n{icons}\n\n\n\nElk hiervan verschijnt als een lege plek, zonder enig bericht. Dit gebeurt vaak wanneer een icoon verkeerd is getypt, hernoemd of verwijderd, of gekozen uit een nieuwere versie van Material Design Icons dan die bij Home Assistant hoort. Om deze fout te verhelpen, geef je elk hiervan een icoon dat bestaat: een entiteit, helper of zone in de eigen instellingen, een ruimte, verdieping of label in de instellingen van je ruimtes, labels en zones, een categorie waar die wordt gebruikt, en `customize:` in je configuratie.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende iconen in je instellingen"
         },
         "lovelace_unknown_view_references": {
             "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard navigeert naar de volgende weergaven, die niet bestaan:\n\n{paths}\n\n\n\nEen knop of kaart die naar een daarvan navigeert, opent in plaats daarvan de eerste weergave van dat dashboard, zonder dat te zeggen. Dit gebeurt vaak wanneer een weergave is hernoemd, verplaatst of verwijderd. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en laat je deze naar een weergave wijzen die bestaat.\n\nSpook 👻 Je homie.",
@@ -1012,6 +1011,10 @@
         "script_unknown_attribute_references": {
             "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script gebruikt de volgende attributen, die hun entiteiten niet hebben. Niet op dit moment, niet als iets wat dat soort entiteit biedt, en nergens in wat de recorder zich van ze herinnert:\n\n{attributes}\n\n\n\nEen trigger of voorwaarde die wacht op een attribuut dat nooit verschijnt, gaat nooit af, en zegt je dat niet. Een template die er een leest, krijgt niets. Om dit te verhelpen, [bewerk je het script]({edit}) en gebruik je een attribuut dat de entiteit heeft.\n\nSpook 👻 Je homie.",
             "title": "Onbekende attributen gebruikt in: {script}"
+        },
+        "lovelace_public_www_files": {
+            "title": "Bestanden die iedereen kan downloaden: {folder}",
+            "description": "Spook heeft een geest gevonden in je `www`-map 👻\n\nHome Assistant biedt alles in de `www`-map aan op `/local/`, zonder dat iemand hoeft in te loggen. De map `{folder}` bevat {count} bestand(en) die geen dashboardcode zijn, en die geen enkel dashboard of thema gebruikt:\n\n{files}\n\n\n\nDit gebeurt meestal omdat een integratie hier bestanden opslaat om ze op een dashboard te tonen, zoals camerasnapshots of voorbeelden van 3D-prints. Iedereen die je Home Assistant kan bereiken en de naam van een bestand kent of raadt, kan het downloaden.\n\nOm dit te verhelpen, zoek je uit welke integratie naar deze map schrijft, en of die zijn bestanden ergens anders kan opslaan. Mogen ze openbaar zijn, negeer dan deze reparatie en Spook laat deze map verder met rust.\n\nSpook 👻 Je homie."
         }
     },
     "services": {
@@ -1034,7 +1037,7 @@
             }
         },
         "homeassistant_create_area": {
-            "name": "Maak een ruimte",
+            "name": "Een ruimte aanmaken",
             "description": "Maakt onmiddellijk een nieuwe ruimte.",
             "fields": {
                 "name": {
@@ -1052,7 +1055,7 @@
             }
         },
         "homeassistant_add_alias_to_area": {
-            "name": "Voeg een alias toe aan de ruimte",
+            "name": "Een alias aan een ruimte toevoegen",
             "description": "Voegt een alias toe aan een ruimte.",
             "fields": {
                 "area_id": {
@@ -1066,7 +1069,7 @@
             }
         },
         "homeassistant_remove_alias_from_area": {
-            "name": "Verwijder een alias van een ruimte",
+            "name": "Een alias van een ruimte verwijderen",
             "description": "Verwijdert een alias van een ruimte.",
             "fields": {
                 "area_id": {
@@ -1080,7 +1083,7 @@
             }
         },
         "homeassistant_set_area_aliases": {
-            "name": "Stel aliassen in voor een ruimte",
+            "name": "Aliassen voor een ruimte instellen",
             "description": "Stelt aliassen in voor een ruimte. Overschrijft en verwijdert alle bestaande aliassen en vervangt ze volledig met de nieuwe.",
             "fields": {
                 "area_id": {
@@ -1094,7 +1097,7 @@
             }
         },
         "homeassistant_add_device_to_area": {
-            "name": "Voeg een apparaat toe aan een ruimte",
+            "name": "Een apparaat aan een ruimte toevoegen",
             "description": "Voegt een apparaat toe aan een ruimte. Let op, als het apparaat al aan een ruimte is toegewezen, wordt het uit de vorige ruimte verwijderd.",
             "fields": {
                 "area_id": {
@@ -1108,7 +1111,7 @@
             }
         },
         "homeassistant_remove_device_from_area": {
-            "name": "Verwijder een apparaat uit een ruimte",
+            "name": "Een apparaat uit een ruimte verwijderen",
             "description": "Verwijdert een apparaat uit een ruimte. Omdat een apparaat maar in één ruimte kan zitten, hoef je hierbij geen ruimte op te geven.",
             "fields": {
                 "device_id": {
@@ -1118,7 +1121,7 @@
             }
         },
         "homeassistant_add_entity_to_area": {
-            "name": "Voeg een entiteit toe aan een ruimte",
+            "name": "Een entiteit aan een ruimte toevoegen",
             "description": "Voegt een entiteit toe aan een ruimte. Let op, als de entiteit al aan een ruimte is toegewezen, wordt zij uit de vorige ruimte verwijderd. Dit overschrijft de ruimte van het apparaat dat deze entiteit levert.",
             "fields": {
                 "area_id": {
@@ -1132,7 +1135,7 @@
             }
         },
         "homeassistant_remove_entity_from_area": {
-            "name": "Verwijder een entiteit uit een ruimte",
+            "name": "Een entiteit uit een ruimte verwijderen",
             "description": "Verwijdert een entiteit uit een ruimte. Omdat een entiteit maar in één ruimte kan zitten, hoef je hierbij geen ruimte op te geven. Let op, hierna zit de entiteit nog wel in de ruimte van het apparaat dat haar levert.",
             "fields": {
                 "entity_id": {
@@ -1142,7 +1145,7 @@
             }
         },
         "homeassistant_delete_area": {
-            "name": "Verwijder een ruimte",
+            "name": "Een ruimte verwijderen",
             "description": "Verwijdert onmiddellijk een ruimte.",
             "fields": {
                 "area_id": {
@@ -1170,7 +1173,7 @@
                     "name": "Icoon"
                 }
             },
-            "name": "Maak een label",
+            "name": "Een label aanmaken",
             "description": "Maakt een nieuw label in een handomdraai."
         },
         "homeassistant_disable_config_entry": {
@@ -1184,7 +1187,7 @@
                     "description": "Deactiveer elke instantie van deze integraties, ook die later worden toegevoegd."
                 }
             },
-            "name": "Deactiveer een integratie",
+            "name": "Een integratie deactiveren",
             "description": "Deactiveert integratie-instanties, een specifieke instantie of elke instantie van een integratie."
         },
         "homeassistant_enable_config_entry": {
@@ -1199,7 +1202,7 @@
                 }
             },
             "description": "Activeert integratie-instanties, een specifieke instantie of elke instantie van een integratie.",
-            "name": "Activeer een integratie"
+            "name": "Een integratie activeren"
         },
         "homeassistant_disable_polling": {
             "fields": {
@@ -1208,7 +1211,7 @@
                     "description": "De integratie-instantie waarvoor je het pollen wilt deactiveren."
                 }
             },
-            "name": "Deactiveer pollen voor updates",
+            "name": "Pollen voor updates deactiveren",
             "description": "Deactiveert het pollen voor updates van een integratie-instantie."
         },
         "homeassistant_enable_polling": {
@@ -1219,10 +1222,10 @@
                 }
             },
             "description": "Activeert het pollen voor updates van een integratie-instantie.",
-            "name": "Activeer pollen voor updates"
+            "name": "Pollen voor updates activeren"
         },
         "homeassistant_create_floor": {
-            "name": "Maak een verdieping",
+            "name": "Een verdieping aanmaken",
             "description": "Maakt een nieuwe verdieping in een handomdraai.",
             "fields": {
                 "aliases": {
@@ -1245,7 +1248,7 @@
         },
         "input_number_create": {
             "description": "Maakt in een handomdraai een nieuwe numerieke-invoerhelper aan. Geeft de entiteits-ID van de nieuwe numerieke invoer terug.",
-            "name": "Maak een numerieke invoer",
+            "name": "Een numerieke invoer aanmaken",
             "fields": {
                 "initial": {
                     "description": "De waarde van de numerieke invoer bij het opstarten van Home Assistant.",
@@ -1287,7 +1290,7 @@
         },
         "zone_create": {
             "description": "Maak een nieuwe zone in Home Assistant in een handomdraai.",
-            "name": "Maak een zone",
+            "name": "Een zone aanmaken",
             "fields": {
                 "icon": {
                     "description": "Icoon voor de zone",
@@ -1316,7 +1319,7 @@
             }
         },
         "repairs_create": {
-            "name": "Maak een probleem aan",
+            "name": "Een probleem aanmaken",
             "fields": {
                 "description": {
                     "name": "Omschrijving",
@@ -1347,7 +1350,7 @@
         },
         "input_number_decrement": {
             "description": "Verlaagt de waarde van een numerieke invoer met een bepaalde hoeveelheid.",
-            "name": "Verminder waarde",
+            "name": "Waarde verminderen",
             "fields": {
                 "amount": {
                     "description": "De hoeveelheid waarmee de numerieke invoer omlaag gaat. Als je dit niet opgeeft, wordt de stapgrootte van de entiteit gebruikt.",
@@ -1361,7 +1364,7 @@
         },
         "number_decrement": {
             "description": "Verlaagt de waarde van een getal-entiteit met een bepaalde hoeveelheid.",
-            "name": "Verminder waarde",
+            "name": "Waarde verminderen",
             "fields": {
                 "amount": {
                     "description": "De hoeveelheid waarmee het getal omlaag gaat. Als je dit niet opgeeft, wordt de stapgrootte van de getal-entiteit gebruikt.",
@@ -1370,7 +1373,7 @@
             }
         },
         "homeassistant_delete_floor": {
-            "name": "Verwijder een verdieping",
+            "name": "Een verdieping verwijderen",
             "description": "Verwijdert een verdieping in een handomdraai.",
             "fields": {
                 "floor_id": {
@@ -1380,7 +1383,7 @@
             }
         },
         "homeassistant_delete_label": {
-            "name": "Verwijder een label",
+            "name": "Een label verwijderen",
             "description": "Verwijdert een label in een handomdraai.",
             "fields": {
                 "label_id": {
@@ -1390,11 +1393,11 @@
             }
         },
         "homeassistant_delete_all_orphaned_entities": {
-            "name": "Verwijder alle verweesde entiteiten",
+            "name": "Alle verweesde entiteiten verwijderen",
             "description": "Verwijdert alle wees-entiteiten die niet langer geassocieerd zijn met een integratie die hen claimt/voorziet.  Hou er rekening mee dat als de integratie net verwijderd werd, een herstart misschien nodig is om Home Assistant te laten realiseren dat ze wees geworden zijn.\n**WAARSCHUWING** Entiteiten kunnen ook als wees gemarkeerd worden als een integratie offline is of niet werkt sinds Home Assistant gestart werd.  Deze actie oproepen zal ook deze entiteiten verwijderen."
         },
         "input_number_delete": {
-            "name": "Verwijder een numerieke invoer",
+            "name": "Een numerieke invoer verwijderen",
             "description": "Verwijdert numerieke-invoerhelpers die in de gebruikersinterface of met de actie 'Een numerieke invoer aanmaken' zijn gemaakt. Numerieke invoeren die in YAML zijn ingesteld, kan Spook niet verwijderen.",
             "fields": {
                 "entity_id": {
@@ -1404,7 +1407,7 @@
             }
         },
         "zone_delete": {
-            "name": "Verwijder een zone",
+            "name": "Een zone verwijderen",
             "description": "Verwijder een zone.  Dit werkt enkel met zones gecreëerd en beheerd via de gebruikersinterface.  Zones gecreëerd en beheerd in YAML kunnen niet beheerd worden door Spook.",
             "fields": {
                 "entity_id": {
@@ -1420,7 +1423,7 @@
                     "description": "Het apparaat (of de apparaten) die je wilt deactiveren."
                 }
             },
-            "name": "Deactiveer een apparaat",
+            "name": "Een apparaat deactiveren",
             "description": "Deactiveert een apparaat in een handomdraai."
         },
         "homeassistant_enable_device": {
@@ -1431,7 +1434,7 @@
                 }
             },
             "description": "Activeert een apparaat in een handomdraai.",
-            "name": "Activeer een apparaat"
+            "name": "Een apparaat activeren"
         },
         "homeassistant_add_label_to_device": {
             "fields": {
@@ -1445,7 +1448,7 @@
                 }
             },
             "description": "Voegt een label toe aan een apparaat. Geef je meerdere labels of meerdere apparaten op, dan worden alle combinaties toegevoegd.",
-            "name": "Voeg een label toe aan een apparaat"
+            "name": "Een label aan een apparaat toevoegen"
         },
         "homeassistant_remove_label_from_device": {
             "fields": {
@@ -1459,7 +1462,7 @@
                 }
             },
             "description": "Verwijdert een label van een apparaat. Geef je meerdere labels of meerdere apparaten op, dan worden alle combinaties verwijderd.",
-            "name": "Verwijder een label van een apparaat"
+            "name": "Een label van een apparaat verwijderen"
         },
         "person_add_device_tracker": {
             "fields": {
@@ -1473,7 +1476,7 @@
                 }
             },
             "description": "Voeg een apparaattracker toe aan een persoon.",
-            "name": "Voeg een apparaattracker toe"
+            "name": "Een apparaattracker toevoegen"
         },
         "person_remove_device_tracker": {
             "fields": {
@@ -1487,10 +1490,10 @@
                 }
             },
             "description": "Verwijder een apparaattracker bij een persoon.",
-            "name": "Verwijder een apparaattracker"
+            "name": "Een apparaattracker verwijderen"
         },
         "homeassistant_disable_entity": {
-            "name": "Deactiveer een entiteit",
+            "name": "Een entiteit deactiveren",
             "description": "Deactiveert een entiteit (of entiteiten) in een handomdraai.",
             "fields": {
                 "entity_id": {
@@ -1500,7 +1503,7 @@
             }
         },
         "homeassistant_disable_user": {
-            "name": "Deactiveer een gebruiker",
+            "name": "Een gebruiker deactiveren",
             "description": "Deactiveert een gebruikersaccount, zodat die niet meer kan inloggen.",
             "fields": {
                 "user_id": {
@@ -1521,7 +1524,7 @@
                     "name": "Verdieping-ID"
                 }
             },
-            "name": "Voeg een alias toe aan een verdieping"
+            "name": "Een alias aan een verdieping toevoegen"
         },
         "homeassistant_add_area_to_floor": {
             "description": "Voegt een ruimte toe aan een verdieping. Let op, als de ruimte al op een verdieping staat, wordt hij van de vorige verdieping verwijderd.",
@@ -1535,7 +1538,7 @@
                     "name": "Verdieping-ID"
                 }
             },
-            "name": "Voeg een ruimte toe aan een verdieping"
+            "name": "Een ruimte aan een verdieping toevoegen"
         },
         "homeassistant_add_label_to_area": {
             "description": "Voegt een label toe aan een ruimte. Geef je meerdere labels of meerdere ruimtes op, dan worden alle combinaties toegevoegd.",
@@ -1549,7 +1552,7 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Voeg een label toe aan een ruimte"
+            "name": "Een label aan een ruimte toevoegen"
         },
         "homeassistant_add_label_to_entity": {
             "description": "Voegt een label toe aan een entiteit. Geef je meerdere labels of meerdere entiteiten op, dan worden alle combinaties toegevoegd.",
@@ -1563,7 +1566,7 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Voeg een label toe aan een entiteit"
+            "name": "Een label aan een entiteit toevoegen"
         },
         "homeassistant_enable_entity": {
             "fields": {
@@ -1572,7 +1575,7 @@
                     "name": "Entiteit"
                 }
             },
-            "name": "Activeer een entiteit",
+            "name": "Een entiteit activeren",
             "description": "Activeert een entiteit (of entiteiten) in een handomdraai."
         },
         "homeassistant_enable_user": {
@@ -1583,7 +1586,7 @@
                     "description": "Het ID (of de ID's) van de gebruiker(s) die je wilt activeren."
                 }
             },
-            "name": "Activeer een gebruiker"
+            "name": "Een gebruiker activeren"
         },
         "homeassistant_expose_entity": {
             "fields": {
@@ -1597,7 +1600,7 @@
                 }
             },
             "description": "Maakt een entiteit (of entiteiten) beschikbaar voor spraakassistenten.",
-            "name": "Maak een entiteit beschikbaar voor assistenten"
+            "name": "Een entiteit beschikbaar maken voor assistenten"
         },
         "homeassistant_hide_entity": {
             "description": "Verbergt een entiteit (of entiteiten) in een handomdraai.",
@@ -1607,11 +1610,11 @@
                     "description": "De entiteit(en) die je wilt verbergen."
                 }
             },
-            "name": "Verberg een entiteit"
+            "name": "Een entiteit verbergen"
         },
         "homeassistant_ignore_all_discovered": {
             "description": "Negeer alle nu ontdekte apparaten die op het integratiedashboard staan. Apparaten die daarna worden ontdekt, worden niet genegeerd.",
-            "name": "Negeer alle nu ontdekte apparaten",
+            "name": "Alle nu ontdekte apparaten negeren",
             "fields": {
                 "domain": {
                     "description": "Het integratiedomein waarvoor je alle ontdekte apparaten negeert. Als je dit niet opgeeft, komen alle domeinen in aanmerking.",
@@ -1620,7 +1623,7 @@
             }
         },
         "homeassistant_list_orphaned_database_entities": {
-            "name": "Toon alle verweesde database-entiteiten",
+            "name": "Alle verweesde database-entiteiten tonen",
             "description": "Toont alle verweesde database-entiteiten die door geen enkele integratie worden geclaimd."
         },
         "homeassistant_remove_alias_from_floor": {
@@ -1635,7 +1638,7 @@
                     "name": "Alias"
                 }
             },
-            "name": "Verwijder een alias van een verdieping"
+            "name": "Een alias van een verdieping verwijderen"
         },
         "homeassistant_remove_area_from_floor": {
             "fields": {
@@ -1645,7 +1648,7 @@
                 }
             },
             "description": "Verwijdert een ruimte van een verdieping. Omdat een ruimte maar op één verdieping kan staan, hoef je hierbij geen verdieping op te geven.",
-            "name": "Verwijder een ruimte van een verdieping"
+            "name": "Een ruimte van een verdieping verwijderen"
         },
         "homeassistant_remove_label_from_area": {
             "description": "Verwijdert een label van een ruimte. Geef je meerdere labels of meerdere ruimtes op, dan worden alle combinaties verwijderd.",
@@ -1659,7 +1662,7 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Verwijder een label van een ruimte"
+            "name": "Een label van een ruimte verwijderen"
         },
         "homeassistant_remove_label_from_entity": {
             "description": "Verwijdert een label van een entiteit. Geef je meerdere labels of meerdere entiteiten op, dan worden alle combinaties verwijderd.",
@@ -1673,7 +1676,7 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Verwijder een label van een entiteit"
+            "name": "Een label van een entiteit verwijderen"
         },
         "homeassistant_rename_entity": {
             "fields": {
@@ -1687,7 +1690,7 @@
                 }
             },
             "description": "Hernoemt een entiteit (of entiteiten) in een handomdraai.",
-            "name": "Hernoem een entiteit"
+            "name": "Een entiteit hernoemen"
         },
         "homeassistant_restart": {
             "description": "Herstart Home Assistant.",
@@ -1701,7 +1704,7 @@
                     "description": "Of de herstart in veilige modus moet gebeuren. Dit deactiveert alle aangepaste integraties en frontendmodules."
                 }
             },
-            "name": "Herstart"
+            "name": "Herstarten"
         },
         "homeassistant_set_floor_aliases": {
             "description": "Stelt aliassen in voor een verdieping. Overschrijft en verwijdert alle bestaande aliassen en vervangt ze volledig met de nieuwe.",
@@ -1715,7 +1718,7 @@
                     "description": "Het ID van de verdieping waarvoor je de aliassen instelt."
                 }
             },
-            "name": "Stel aliassen in voor een verdieping"
+            "name": "Aliassen voor een verdieping instellen"
         },
         "homeassistant_unexpose_entity": {
             "fields": {
@@ -1729,7 +1732,7 @@
                 }
             },
             "description": "Maakt een entiteit (of entiteiten) niet meer beschikbaar voor spraakassistenten.",
-            "name": "Maak een entiteit niet meer beschikbaar voor assistenten"
+            "name": "Een entiteit niet meer beschikbaar maken voor assistenten"
         },
         "homeassistant_unhide_entity": {
             "description": "Maakt een entiteit (of entiteiten) weer zichtbaar in een handomdraai.",
@@ -1739,7 +1742,7 @@
                     "description": "De entiteit(en) die je weer zichtbaar wilt maken."
                 }
             },
-            "name": "Maak een entiteit weer zichtbaar"
+            "name": "Een entiteit weer zichtbaar maken"
         },
         "homeassistant_update_entity_id": {
             "fields": {
@@ -1752,7 +1755,7 @@
                     "name": "Nieuw entiteit-ID"
                 }
             },
-            "name": "Wijzig het ID van een entiteit",
+            "name": "Het ID van een entiteit wijzigen",
             "description": "Wijzigt het ID van een entiteit in een handomdraai."
         },
         "input_number_increment": {
@@ -1767,10 +1770,10 @@
                     "name": "Hoeveelheid"
                 }
             },
-            "name": "Verhoog waarde"
+            "name": "Waarde verhogen"
         },
         "input_number_max": {
-            "name": "Stel maximumwaarde in",
+            "name": "Maximumwaarde instellen",
             "description": "Zet een numerieke invoer op zijn maximumwaarde."
         },
         "input_select_random": {
@@ -1781,18 +1784,18 @@
                     "description": "Beperkt de opties waaruit gekozen wordt. Als je dit niet opgeeft, komen alle opties in aanmerking."
                 }
             },
-            "name": "Selecteer willekeurige optie"
+            "name": "Willekeurige optie selecteren"
         },
         "input_select_reverse": {
-            "name": "Keer opties om",
+            "name": "Opties omkeren",
             "description": "Keert de volgorde van de selecteerbare opties van een `input_select`-entiteit om, van achter naar voor. Dit is niet permanent en wordt teruggedraaid bij een herlaad of een herstart van Home Assistant."
         },
         "input_select_shuffle": {
-            "name": "Hussel opties",
+            "name": "Opties husselen",
             "description": "Hussel de lijst met selecteerbare opties van een `input_select`-entiteit. Dit is niet permanent en wordt teruggedraaid bij een herlaad of een herstart van Home Assistant."
         },
         "input_select_sort": {
-            "name": "Sorteer opties",
+            "name": "Opties sorteren",
             "description": "Sorteert de lijst met selecteerbare opties van een `input_select`-entiteit. Dit is niet permanent en wordt teruggedraaid bij een herlaad of een herstart van Home Assistant."
         },
         "number_increment": {
@@ -1802,12 +1805,12 @@
                     "name": "Hoeveelheid"
                 }
             },
-            "name": "Verhoog waarde",
+            "name": "Waarde verhogen",
             "description": "Verhoogt de waarde van een getal-entiteit met een bepaalde hoeveelheid."
         },
         "number_min": {
             "description": "Zet een getal-entiteit op zijn minimumwaarde.",
-            "name": "Stel minimumwaarde in"
+            "name": "Minimumwaarde instellen"
         },
         "recorder_import_statistics": {
             "description": "Importeer langetermijnstatistieken.",
@@ -1841,14 +1844,14 @@
                     "name": "Naam"
                 }
             },
-            "name": "Importeer statistieken"
+            "name": "Statistieken importeren"
         },
         "input_number_min": {
             "description": "Zet een numerieke invoer op zijn minimumwaarde.",
-            "name": "Stel minimumwaarde in"
+            "name": "Minimumwaarde instellen"
         },
         "input_number_set_range": {
-            "name": "Stel bereik in",
+            "name": "Bereik instellen",
             "description": "Wijzigt het minimum, maximum of de stap van een numerieke invoer die in de gebruikersinterface is gemaakt, net als bij bewerken. Een waarde buiten het nieuwe bereik wordt erbinnen gezet.",
             "fields": {
                 "min": {
@@ -1867,7 +1870,7 @@
         },
         "number_max": {
             "description": "Zet een getal-entiteit op zijn maximumwaarde.",
-            "name": "Stel maximumwaarde in"
+            "name": "Maximumwaarde instellen"
         },
         "repairs_ignore_all": {
             "description": "Negeer alle problemen die nu in Home Assistant Reparaties staan, of alleen die van bepaalde integraties.",
@@ -1877,7 +1880,7 @@
                     "description": "Negeer alleen de problemen van deze integraties."
                 }
             },
-            "name": "Negeer alle problemen"
+            "name": "Alle problemen negeren"
         },
         "repairs_remove": {
             "description": "Verwijdert een handmatig aangemaakt probleem uit Home Assistant Reparaties. Deze actie kan alleen problemen verwijderen die met de actie `repairs_create` zijn aangemaakt.",
@@ -1887,7 +1890,7 @@
                     "name": "Probleem-ID"
                 }
             },
-            "name": "Verwijder probleem"
+            "name": "Probleem verwijderen"
         },
         "repairs_unignore_all": {
             "description": "Stop met het negeren van alle problemen die nu in Home Assistant Reparaties staan, of alleen die van bepaalde integraties.",
@@ -1897,7 +1900,7 @@
                     "description": "Stop alleen met het negeren van de problemen van deze integraties."
                 }
             },
-            "name": "Stop met negeren van alle problemen"
+            "name": "Negeren van alle problemen ongedaan maken"
         },
         "select_random": {
             "description": "Selecteer een willekeurige optie voor een select-entiteit.",
@@ -1907,7 +1910,7 @@
                     "name": "Opties"
                 }
             },
-            "name": "Selecteer willekeurige optie"
+            "name": "Willekeurige optie selecteren"
         },
         "sensor_set_display_precision": {
             "description": "Stelt het aantal decimalen in dat voor een of meer sensoren wordt weergegeven.",
@@ -1921,7 +1924,7 @@
                     "name": "Entiteit"
                 }
             },
-            "name": "Stel weergaveprecisie in"
+            "name": "Weergaveprecisie instellen"
         },
         "timer_set_duration": {
             "description": "Stel de duur in van een bestaande timer.",
@@ -1931,7 +1934,7 @@
                     "name": "Duur"
                 }
             },
-            "name": "Stel duur in"
+            "name": "Duur instellen"
         },
         "zone_update": {
             "description": "Werk eigenschappen van een zone bij in een handomdraai.",
@@ -1965,7 +1968,7 @@
                     "description": "Een passieve zone is er alleen voor automatiseringen: hij wordt niet op de kaart getoond en verandert niets aan waar personen en apparaattrackers zijn."
                 }
             },
-            "name": "Werk een zone bij"
+            "name": "Een zone bijwerken"
         },
         "wait_for_condition": {
             "name": "Wachten op een voorwaarde",
@@ -2082,7 +2085,7 @@
             }
         },
         "homeassistant_update_label": {
-            "name": "Label bijwerken",
+            "name": "Een label bijwerken",
             "description": "Werkt een bestaand label direct bij. Alles wat je weglaat houdt de waarde die het al had. De beschrijving, het icoon en de kleur kun je leegmaken door ze op null te zetten.",
             "fields": {
                 "label_id": {
@@ -2150,16 +2153,16 @@
             }
         },
         "homeassistant_set_entity_icon": {
-            "name": "Het pictogram van een entiteit instellen",
-            "description": "Stelt in een handomdraai het pictogram van een entiteit (of entiteiten) in. Zet het op null om terug te gaan naar het pictogram dat de integratie eraan geeft.",
+            "name": "Het icoon van een entiteit instellen",
+            "description": "Stelt in een handomdraai het icoon van een entiteit (of entiteiten) in. Zet het op null om terug te gaan naar het icoon dat de integratie eraan geeft.",
             "fields": {
                 "entity_id": {
                     "name": "Entiteit",
-                    "description": "De entiteit(en) waarvan je het pictogram wilt instellen."
+                    "description": "De entiteit(en) waarvan je het icoon wilt instellen."
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het nieuwe pictogram, of null voor het eigen pictogram van de integratie."
+                    "description": "Het nieuwe icoon, of null voor het eigen icoon van de integratie."
                 }
             }
         },
@@ -2219,13 +2222,13 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Pictogram voor de categorie."
+                    "description": "Icoon voor de categorie."
                 }
             }
         },
         "homeassistant_update_category": {
             "name": "Een categorie bijwerken",
-            "description": "Werkt in een handomdraai een bestaande categorie bij. Alles wat je weglaat, houdt de waarde die het al heeft. Het pictogram kun je wissen door het op null te zetten.",
+            "description": "Werkt in een handomdraai een bestaande categorie bij. Alles wat je weglaat, houdt de waarde die het al heeft. Het icoon kun je wissen door het op null te zetten.",
             "fields": {
                 "scope": {
                     "name": "Bereik",
@@ -2241,7 +2244,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het nieuwe pictogram voor de categorie."
+                    "description": "Het nieuwe icoon voor de categorie."
                 }
             }
         },
@@ -2309,7 +2312,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor de nieuwe invoerselectie."
+                    "description": "Het icoon voor de nieuwe invoerselectie."
                 }
             }
         },
@@ -2357,7 +2360,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor de nieuwe teller."
+                    "description": "Het icoon voor de nieuwe teller."
                 }
             }
         },
@@ -2389,7 +2392,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor de nieuwe invoerboolean."
+                    "description": "Het icoon voor de nieuwe invoerboolean."
                 }
             }
         },
@@ -2437,7 +2440,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor de nieuwe invoertekst."
+                    "description": "Het icoon voor de nieuwe invoertekst."
                 },
                 "unit_of_measurement": {
                     "name": "Meeteenheid",
@@ -2469,7 +2472,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor de nieuwe invoerknop."
+                    "description": "Het icoon voor de nieuwe invoerknop."
                 }
             }
         },
@@ -2509,7 +2512,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor de nieuwe invoerdatum/-tijd."
+                    "description": "Het icoon voor de nieuwe invoerdatum/-tijd."
                 }
             }
         },
@@ -2563,7 +2566,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor de nieuwe timer."
+                    "description": "Het icoon voor de nieuwe timer."
                 }
             }
         },
@@ -2623,11 +2626,11 @@
                 }
             },
             "description": "Plaatst een item in een to-do lijst bovenaan, onderaan of achter een ander item.",
-            "name": "Verplaats een item"
+            "name": "Een item verplaatsen"
         },
         "cover_decrease_position": {
             "description": "Beweegt de verduistering een stap verder gesloten, stopt wanneer volledig dicht.",
-            "name": "Verlaag positie",
+            "name": "Positie verlagen",
             "fields": {
                 "step": {
                     "description": "Met hoeveel procent moet het worden aangepast? Tien procent wanneer niet ingevuld.",
@@ -2643,11 +2646,11 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog positie"
+            "name": "Positie verhogen"
         },
         "valve_decrease_position": {
             "description": "Draait een klep een stap verder dicht, stoppend wanneer volledig dicht.",
-            "name": "Verlaag positie",
+            "name": "Positie verlagen",
             "fields": {
                 "step": {
                     "description": "Met hoeveel procent moet het worden aangepast? Tien procent wanneer niet ingevuld.",
@@ -2663,7 +2666,7 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog positie"
+            "name": "Positie verhogen"
         },
         "calendar_update_event": {
             "name": "Afspraak bijwerken",
@@ -2716,7 +2719,7 @@
             "description": "Wijzigt gebeurtenissen in een kalender, die op basis van hun titel of uid binnen een bepaald tijdsbestek worden gevonden. Geeft de gewijzigde gegevens terug, inclusief de uid."
         },
         "humidifier_decrease_humidity": {
-            "name": "Verlaag vochtigheid",
+            "name": "Vochtigheid verlagen",
             "description": "Zet de doelvochtigheid van een luchtbevochtiger een stap lager, binnen zijn grenzen.",
             "fields": {
                 "step": {
@@ -2726,7 +2729,7 @@
             }
         },
         "climate_decrease_temperature": {
-            "name": "Verlaag temperatuur",
+            "name": "Temperatuur verlagen",
             "description": "Zet het instelpunt van een thermostaat een stap lager, of beide instelpunten bij een thermostaat die verwarmt en koelt. Een thermostaat die uit staat, blijft uit.",
             "fields": {
                 "step": {
@@ -2736,7 +2739,7 @@
             }
         },
         "water_heater_decrease_temperature": {
-            "name": "Verlaag temperatuur",
+            "name": "Temperatuur verlagen",
             "description": "Zet het instelpunt van een boiler een stap lager, binnen zijn grenzen.",
             "fields": {
                 "step": {
@@ -2746,7 +2749,7 @@
             }
         },
         "media_player_decrease_volume": {
-            "name": "Verlaag volume",
+            "name": "Volume verlagen",
             "description": "Zet het volume van een mediaspeler lager met de stap die je opgeeft, tot stil.",
             "fields": {
                 "step": {
@@ -2762,7 +2765,7 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog vochtigheid",
+            "name": "Vochtigheid verhogen",
             "description": "Zet de doelvochtigheid van een luchtbevochtiger een stap hoger, binnen zijn grenzen."
         },
         "media_player_increase_volume": {
@@ -2772,7 +2775,7 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog volume",
+            "name": "Volume verhogen",
             "description": "Zet het volume van een mediaspeler hoger met de stap die je opgeeft, tot maximaal volume."
         },
         "climate_increase_temperature": {
@@ -2782,7 +2785,7 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog temperatuur",
+            "name": "Temperatuur verhogen",
             "description": "Zet het instelpunt van een thermostaat een stap hoger, of beide instelpunten bij een thermostaat die verwarmt en koelt. Een thermostaat die uit staat, blijft uit."
         },
         "water_heater_increase_temperature": {
@@ -2792,12 +2795,12 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog temperatuur",
+            "name": "Temperatuur verhogen",
             "description": "Zet het instelpunt van een boiler een stap hoger, binnen zijn grenzen."
         },
         "homeassistant_update_area": {
             "name": "Een ruimte bijwerken",
-            "description": "Werkt in een handomdraai een bestaande ruimte bij. Alles wat je weglaat, houdt de waarde die het al heeft. Aliassen en labels vervangen die van de ruimte. De verdieping, het pictogram, de afbeelding en de sensoren kun je wissen door ze op null te zetten.",
+            "description": "Werkt in een handomdraai een bestaande ruimte bij. Alles wat je weglaat, houdt de waarde die het al heeft. Aliassen en labels vervangen die van de ruimte. De verdieping, het icoon, de afbeelding en de sensoren kun je wissen door ze op null te zetten.",
             "fields": {
                 "area_id": {
                     "name": "Ruimte-ID",
@@ -2817,7 +2820,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Nieuw pictogram voor de ruimte."
+                    "description": "Nieuw icoon voor de ruimte."
                 },
                 "picture": {
                     "name": "Afbeelding",
@@ -2865,7 +2868,7 @@
         },
         "homeassistant_update_floor": {
             "name": "Een verdieping bijwerken",
-            "description": "Werkt in een handomdraai een bestaande verdieping bij. Alles wat je weglaat, houdt de waarde die het al heeft. Aliassen vervangen die van de verdieping. Het pictogram en het niveau kun je wissen door ze op null te zetten.",
+            "description": "Werkt in een handomdraai een bestaande verdieping bij. Alles wat je weglaat, houdt de waarde die het al heeft. Aliassen vervangen die van de verdieping. Het icoon en het niveau kun je wissen door ze op null te zetten.",
             "fields": {
                 "floor_id": {
                     "name": "Verdieping-ID",
@@ -2881,7 +2884,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Nieuw pictogram voor de verdieping."
+                    "description": "Nieuw icoon voor de verdieping."
                 },
                 "level": {
                     "name": "Niveau",
@@ -2903,7 +2906,7 @@
                 },
                 "icon": {
                     "name": "Icoon",
-                    "description": "Het pictogram voor het nieuwe schema."
+                    "description": "Het icoon voor het nieuwe schema."
                 },
                 "monday": {
                     "name": "Maandag",

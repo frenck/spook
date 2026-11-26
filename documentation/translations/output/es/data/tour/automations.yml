@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/automations.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 2
+title: Automatizaciones sin apaños
+description: Spook añade disparadores, condiciones y acciones al editor de automatización de Home Assistant, para todo aquello para lo que no parabas de crear ayudantes.
+
+hero:
+  headline: Disparadores, condiciones y acciones 🧰
+  title: Automatizaciones, sin apaños.
+  description: Spook añade {triggers} disparadores, {conditions} condiciones y {actions} acciones para todo aquello para lo que no parabas de crear ayudantes. Viven en el editor de automatización, justo al lado de los que trae Home Assistant.
+  screenshot: automation-editor
+  alt: Una automatización en el editor de Home Assistant con el disparador de programación cron y la condición de tiempo de espera de Spook, y una acción de luz normal.
+
+sections:
+  - headline: Di cuándo, como lo piensas
+    title: Cada día laborable a las seis y media.
+    description: Los disparadores de tiempo de Home Assistant cubren una hora del día y un patrón. La programación cron de Spook dice "entre semana a las seis y media" o "el último viernes del mes" en una línea, con la explicación ahí mismo, en el editor.
+    screenshot: automation-cron
+    alt: El disparador de programación cron de Spook abierto en el editor de automatización, con su descripción y la programación 30 6 * * 1-5.
+    features:
+      - title: Para los momentos que Home Assistant no sabe nombrar
+        description: Un dispositivo que acaba de aparecer, una automatización desactivada, una entidad que se ha quedado callada.
+        icon: i-mdi-timer-cog-outline
+      - title: Condiciones con memoria
+        description: Un tiempo de espera desde la última ejecución, o solo cuando la inició una persona, no una automatización.
+        icon: i-mdi-account-check-outline
+      - title: Nada nuevo que aprender
+        description: Se eligen, se rellenan y se guardan como cualquier otro. En el editor, en scripts, en YAML.
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: Las acciones que siempre buscabas
+    title: Pospónla, no la apagues.
+    description: Desactiva una automatización durante una hora y vuelve sola, incluso después de un reinicio. Una de {actions} acciones, desde posponer automatizaciones hasta crear áreas, etiquetas y ayudantes desde una automatización.
+    screenshot: action-snooze
+    alt: El cuadro de diálogo Añadir acción del editor de automatización, con la búsqueda Posponer y la acción Posponer de Spook resaltada.
+    features:
+      - title: Busca, selecciona, listo
+        description: Las acciones de Spook aparecen cuando añades una acción, cada una marcada con un 👻.
+        icon: i-mdi-magnify
+      - title: Sobrevive a un reinicio
+        description: Pospuesto es pospuesto. Que Home Assistant se reinicie entre medias no la despierta antes de tiempo.
+        icon: i-mdi-restart
+      - title: Gestiona tu casa desde una automatización
+        description: Crea y elimina áreas, etiquetas, zonas y ayudantes, o desactiva un dispositivo.
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: Todo lo de la caja de herramientas
+  links:
+    - title: Todos los disparadores
+      description: Cada disparador que añade Spook, con para qué sirve y un ejemplo.
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: Todas las condiciones
+      description: Las condiciones, desde un tiempo de espera hasta un vigilante.
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: Todas las acciones
+      description: La lista completa, con un botón para probar cada una en tu propio Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Posponer, paso a paso
+      description: Cómo usarla en tus automatizaciones, con ejemplos.
+      icon: i-mdi-sleep
+      to: /automation#snooze

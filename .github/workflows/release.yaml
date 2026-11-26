@@ -15,7 +15,7 @@ jobs:
       id-token: write
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
@@ -47,7 +47,7 @@ jobs:
           zip spook.zip -r ./
 
       - name: 🔏 Sign release package
-        uses: sigstore/gh-action-sigstore-python@790bc6befb9d733738f18d8f895854b453640ec9 # v3.5.0
+        uses: sigstore/gh-action-sigstore-python@v3.5.0
         with:
           inputs: ${{ github.workspace }}/custom_components/spook/spook.zip
 

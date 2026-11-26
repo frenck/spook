@@ -10,7 +10,7 @@ from homeassistant.config_entries import (
     SOURCE_USER,
     ConfigEntryDisabler,
 )
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.spook.entity_filtering import (
     async_setup_all_entity_ids_cache_invalidation,

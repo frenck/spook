@@ -15,14 +15,10 @@
     "3000": {
       "label": "Documentation",
       "onAutoForward": "openBrowserOnce"
-    },
-    "3100": {
-      "label": "Documentation (live updates)",
-      "autoForward": "silent"
     }
   },
   "runArgs": ["-e", "GIT_EDITOR=code --wait"],
-  "onCreateCommand": "npm install -g mystmd",
+  "onCreateCommand": "npm ci --prefix documentation",
   "updateContentCommand": "uv sync --extra cli && uv run prek install",
   "containerEnv": {
     "DEVCONTAINER": "1"

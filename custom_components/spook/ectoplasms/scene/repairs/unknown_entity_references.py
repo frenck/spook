@@ -4,7 +4,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.const import EVENT_COMPONENT_LOADED
+from homeassistant.components.homeassistant.scene import EVENT_SCENE_RELOADED
+from homeassistant.const import (
+    EVENT_COMPONENT_LOADED,
+    EVENT_SERVICE_REGISTERED,
+    EVENT_SERVICE_REMOVED,
+)
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
@@ -21,11 +26,19 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = "scene"
     repair = "scene_unknown_entity_references"
+    # A name that is an action is no unknown entity, so an action coming or
+    # going changes the answer.
     inspect_events = {
         EVENT_COMPONENT_LOADED,
+        EVENT_SCENE_RELOADED,
+        EVENT_SERVICE_REGISTERED,
+        EVENT_SERVICE_REMOVED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
-    inspect_on_reload = True
+    # An entity in a scene can be state-only, coming and going without the
+    # entity registry hearing. A scene made with `scene.create` comes and
+    # goes the same way.
+    inspect_on_entity_added_or_removed = True
 
     automatically_clean_up_issues = True
 

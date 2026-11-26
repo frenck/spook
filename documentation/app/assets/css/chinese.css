@@ -1,0 +1,23 @@
+/*
+ * Chinese. None of the three faces has Chinese characters, and a Chinese web
+ * font is megabytes, so the system's own is used: every Chinese reader has
+ * one. Each face stays first, so Latin text and digits look the same in
+ * every language, and the browser takes the Chinese characters from the
+ * next font in line. Only for Chinese pages: the same characters are drawn
+ * differently in Japanese, and a Japanese page should get a Japanese font.
+ *
+ * Noto Sans SC comes last: the web font, for a reader without any of the
+ * others. `nuxt.config.ts` has why that one costs little.
+ */
+:root:lang(zh) {
+  --font-cjk:
+    "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC",
+    "Source Han Sans SC", "WenQuanYi Micro Hei", "Noto Sans SC";
+  --font-sans:
+    "Figtree", var(--font-cjk), ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+  --font-display:
+    "Space Grotesk", var(--font-cjk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, var(--font-cjk), monospace;
+}

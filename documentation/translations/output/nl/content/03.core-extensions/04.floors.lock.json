@@ -1,0 +1,281 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/03.core-extensions/04.floors.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/03.core-extensions/04.floors.md",
+  "language": "nl",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "01577b6bd0e5ab37",
+      "source": "11ef8685298db427",
+      "glossary": {
+        "action": "actie",
+        "area": "ruimte",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "3e52b7efde72ac58",
+      "source": "d7701cf002cc96ea",
+      "glossary": {
+        "Settings": "Instellingen",
+        "Areas, labels & zones": "Ruimtes, labels en zones",
+        "action": "actie",
+        "area": "ruimte",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "label": "label",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "43bf3ef718631a6c",
+      "source": "fe12ca575ed62a3a",
+      "glossary": {
+        "action": "actie",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "create-a-floor",
+      "hash": "dc2e683d6ff1b401",
+      "source": "35e7bf5076a9c9d2",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Create a floor 👻": "Home Assistant Core Integration: Een verdieping aanmaken 👻",
+        "Name": "Naam",
+        "Icon": "Icoon",
+        "Level": "Niveau",
+        "Aliases": "Aliassen",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "icon": "icoon",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "update-a-floor",
+      "hash": "f75e02bb5485a609",
+      "source": "71ec1988615b4fab",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Update a floor 👻": "Home Assistant Core Integration: Een verdieping bijwerken 👻",
+        "Floor ID": "Verdieping-ID",
+        "Name": "Naam",
+        "Aliases": "Aliassen",
+        "Icon": "Icoon",
+        "Level": "Niveau",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "area": "ruimte",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "icon": "icoon",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "delete-a-floor",
+      "hash": "eb46e631d6d1a289",
+      "source": "8930e46b32d8dc90",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Delete a floor 👻": "Home Assistant Core Integration: Een verdieping verwijderen 👻",
+        "Floor ID": "Verdieping-ID",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "area": "ruimte",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "add-an-alias-to-a-floor",
+      "hash": "630689b71e3b41ea",
+      "source": "7aebdc9968b31b09",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Add an alias to a floor 👻": "Home Assistant Core Integration: Een alias aan een verdieping toevoegen 👻",
+        "Floor ID": "Verdieping-ID",
+        "Alias": "Alias",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "remove-an-alias-from-a-floor",
+      "hash": "cc4d533bc5ed1faa",
+      "source": "7a7df9e86d9f2a3e",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Remove an alias from a floor 👻": "Home Assistant Core Integration: Een alias van een verdieping verwijderen 👻",
+        "Floor ID": "Verdieping-ID",
+        "Alias": "Alias",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "set-aliases-for-a-floor",
+      "hash": "fa6fb76c1504d91b",
+      "source": "e312d902165c252d",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Sets aliases for a floor 👻": "Home Assistant Core Integration: Aliassen voor een verdieping instellen 👻",
+        "Floor ID": "Verdieping-ID",
+        "Aliases": "Aliassen",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "add-an-area-to-a-floor",
+      "hash": "a220d0f474c71140",
+      "source": "1c6810262930339e",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Add an area to a floor 👻": "Home Assistant Core Integration: Een ruimte aan een verdieping toevoegen 👻",
+        "Floor ID": "Verdieping-ID",
+        "Area ID": "Ruimte-ID",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "area": "ruimte",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "remove-an-area-from-a-floor",
+      "hash": "43303d4bd22281cc",
+      "source": "80cc7ea522f2e963",
+      "glossary": {
+        "Add action": "Actie toevoegen",
+        "Home Assistant Core Integration: Remove an area from a floor 👻": "Home Assistant Core Integration: Een ruimte van een verdieping verwijderen 👻",
+        "Area ID": "Ruimte-ID",
+        "Save": "Opslaan",
+        "Attribute": "Attribuut",
+        "Type": "Type",
+        "Required": "Verplicht",
+        "action": "actie",
+        "area": "ruimte",
+        "attribute": "attribuut",
+        "automation": "automatisering",
+        "floor": "verdieping",
+        "integration": "integratie",
+        "label": "label",
+        "script": "script",
+        "template": "template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "blueprints-tutorials",
+      "hash": "6a46025a62f040b1",
+      "source": "90464cd8b17f20d4",
+      "glossary": {
+        "action": "actie",
+        "blueprint": "blueprint"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "feature-requests-ideas-and-support",
+      "hash": "ce9639df3750aea1",
+      "source": "d2918cdd037ad84b",
+      "glossary": {
+        "action": "actie",
+        "entity": "entiteit",
+        "repair": "reparatie"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

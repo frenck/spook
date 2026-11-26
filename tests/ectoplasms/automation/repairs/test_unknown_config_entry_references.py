@@ -10,7 +10,7 @@ from homeassistant.const import EVENT_SERVICE_REGISTERED
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.service import async_set_service_schema
 from homeassistant.setup import async_setup_component
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.spook.action_extraction import (
     ActionDescriptionsUnavailableError,
@@ -425,7 +425,6 @@ async def test_an_issue_stays_when_the_actions_cannot_be_read(
 def test_looks_again_when_entries_or_actions_change(repair_class: type) -> None:
     """An entry added or removed, or an action showing up, changes the answer."""
     assert repair_class.inspect_config_entry_changed is True
-    assert repair_class.inspect_on_reload is True
     assert EVENT_SERVICE_REGISTERED in repair_class.inspect_events
 
 

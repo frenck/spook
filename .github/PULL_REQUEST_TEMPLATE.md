@@ -36,3 +36,4 @@
 - [ ] My code follows the code style of this project.
 - [ ] My change requires a change to the documentation.
 - [ ] I have updated the documentation accordingly.
+- [ ] I did not edit machine-translated files in `documentation/translations/output/`.

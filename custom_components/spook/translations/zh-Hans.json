@@ -8,7 +8,7 @@
         },
         "step": {
             "user": {
-                "description": "Spook 在你的 Home Assistant 里四处飘荡，寻找幽灵：指向已不存在之物的引用，以及没人清理的残留。它发现的一切都会在“修复”中报告。\n\n它还扩展了你的自动化和脚本的能力，提供额外的动作、触发条件、条件和辅助程序，让自动化更加强大。\n\n先说清楚：Spook 不是 Home Assistant 的一部分。它是一个自定义集成，会钻进一些从未邀请过它的地方。如果出现奇怪的情况，请先怀疑 Spook，并[告诉我们]({issue_tracker_url})。\n\n准备好被 Spook 缠上了吗？",
+                "description": "Spook 在你的 Home Assistant 里四处飘荡，寻找幽灵：指向已不存在之物的引用，以及没人清理的残留。它发现的一切都会在“修复”中报告。\n\n它还扩展了你的自动化和脚本的能力，提供额外的动作、触发条件、条件和辅助元素，让自动化更加强大。\n\n先说清楚：Spook 不是 Home Assistant 的一部分。它是一个自定义集成，会钻进一些从未邀请过它的地方。如果出现奇怪的情况，请先怀疑 Spook，并[告诉我们]({issue_tracker_url})。\n\n准备好被 Spook 缠上了吗？",
                 "title": "哇！来认识一下 Spook，你的好哥们 👻"
             },
             "already_configured": {
@@ -30,7 +30,7 @@
                 "name": "重新加载"
             },
             "homeassistant_restart": {
-                "name": "重新启动"
+                "name": "重启"
             },
             "repairs_ignore_all": {
                 "name": "忽略全部"
@@ -207,7 +207,7 @@
                 "name": "天气"
             },
             "homeassistant_zone": {
-                "name": "区域"
+                "name": "地点"
             },
             "repairs_total_issues": {
                 "name": "总计"
@@ -341,19 +341,19 @@
             "message": "找不到 {entity_id} 背后的群组。"
         },
         "helpers_unreachable": {
-            "message": "无法访问 Home Assistant 保存的 {domain} 辅助程序。"
+            "message": "无法访问 Home Assistant 保存的 {domain} 辅助元素。"
         },
         "hold_until_nonexistent_time": {
             "message": "无法将 {entity_id} 保持到一个不存在的时间。"
         },
         "home_zone_radius": {
-            "message": "家庭区域的半径必须是以米为单位的整数，零或更大。"
+            "message": "家庭地点的半径必须是以米为单位的整数，零或更大。"
         },
         "home_zone_unsupported": {
-            "message": "家庭区域只接受纬度、经度和半径，不接受：{fields}。"
+            "message": "家庭地点只接受纬度、经度和半径，不接受：{fields}。"
         },
         "input_number_not_editable": {
-            "message": "此数值输入助手不可编辑：{entity_id}。"
+            "message": "此数值输入辅助元素不可编辑：{entity_id}。"
         },
         "integration_entries_required": {
             "message": "请指定要修改的集成条目，或它们所属的集成。"
@@ -383,7 +383,7 @@
             "message": "此人员不可编辑：{entity_id}。"
         },
         "restart_failed": {
-            "message": "Spook 在重新启动 Home Assistant 时遇到了错误。"
+            "message": "Spook 在重启 Home Assistant 时遇到了错误。"
         },
         "sequence_attach_failed": {
             "message": "无法挂接顺序触发条件的第一步。"
@@ -428,7 +428,7 @@
             "message": "{entity_id} 是在 YAML 中设置的，无法删除。"
         },
         "zone_not_editable": {
-            "message": "此区域不可编辑：{entity_id}。"
+            "message": "此地点不可编辑：{entity_id}。"
         },
         "amount_not_a_multiple_of_step": {
             "message": "数量 {amount} 不适合 {entity_id}，它以 {step} 为步长变化。请使用 {step} 的倍数，或者不填数量以移动一步。"
@@ -456,32 +456,35 @@
         },
         "yaml_schedule_not_editable": {
             "message": "{entity_id} 是来自你的 YAML 配置的计划表，Spook 无法修改它。请改为在你的配置中编辑它。"
+        },
+        "device_disabled_by_integration_entry": {
+            "message": "集成条目 {entry} 已被禁用，因此无法启用设备 {device_id}。请改为启用该集成条目。"
         }
     },
     "issues": {
         "automation_unknown_area_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的区域：\n\n{areas}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的区域。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知区域：{automation}"
+            "title": "在以下自动化中使用了未知区域：{automation}"
         },
         "automation_unknown_device_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的设备：\n\n{devices}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的设备。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知设备：{automation}"
+            "title": "在以下自动化中使用了未知设备：{automation}"
         },
         "automation_unknown_entity_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知实体：{automation}"
+            "title": "在以下自动化中使用了未知实体：{automation}"
         },
         "automation_unknown_floor_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的楼层：\n\n{floors}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的楼层。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知楼层：{automation}"
+            "title": "在以下自动化中使用了未知楼层：{automation}"
         },
         "automation_unknown_label_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的标签：\n\n{labels}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的标签。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知标签：{automation}"
+            "title": "在以下自动化中使用了未知标签：{automation}"
         },
         "automation_unknown_service_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的动作。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知动作：{automation}"
+            "title": "在以下自动化中使用了未知动作：{automation}"
         },
         "group_unknown_members": {
             "title": "以下组中存在未知成员：{group}",
@@ -500,7 +503,7 @@
                 "abort": {
                     "issue_ignored": "从现在起，Spook 将不再就此组发声。",
                     "not_editable": "此组是在 YAML 中设置的，因此 Spook 无法编辑它。请改为在你的配置中更新此组。",
-                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此组。",
+                    "manage": "你可以在 [辅助元素页面](/config/helpers) 自行管理此组。",
                     "changed": "自 Spook 上次查看以来，此修复列出的成员已经回来或发生了变化，因此没有从群组中移除任何成员。Spook 会自行再次检查并更新此修复。"
                 }
             }
@@ -510,16 +513,16 @@
             "title": "在以下仪表盘中使用了未知实体：{dashboard}"
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置忽略了以下 Home Assistant 无法识别的区域：\n\n{zones}\n\n\n\n要修复此错误，请编辑该配置并移除这些区域。\n\nSpook 👻 你的好哥们。",
-            "title": "未知的忽略区域：{name}"
+            "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置忽略了以下 Home Assistant 无法识别的地点：\n\n{zones}\n\n\n\n要修复此错误，请编辑该配置并移除这些地点。\n\nSpook 👻 你的好哥们。",
+            "title": "未知的忽略地点：{name}"
         },
         "proximity_unknown_tracked_entities": {
             "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置正在追踪以下 Home Assistant 无法识别的人员或设备追踪器：\n\n{entities}\n\n\n\n要修复此错误，请编辑该配置并移除这些实体。\n\nSpook 👻 你的好哥们。",
             "title": "未知的追踪实体：{name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置基于一个 Home Assistant 无法识别的区域：\n\n`{zone}`\n\n\n\n要修复此错误，由于你无法更改邻近感应配置的区域，唯一的选择是移除该特定的邻近感应集成实例。\n\nSpook 👻 你的好哥们。",
-            "title": "未知区域：{zone}"
+            "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置基于一个 Home Assistant 无法识别的地点：\n\n`{zone}`\n\n\n\n要修复此错误，由于你无法更改邻近感应配置的地点，唯一的选择是移除该特定的邻近感应集成实例。\n\nSpook 👻 你的好哥们。",
+            "title": "未知地点：{zone}"
         },
         "scene_unknown_entity_references": {
             "description": "Spook 在你的场景中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下场景：\n\n[{scene}]({edit})\n\n该场景引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑该场景]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
@@ -546,8 +549,8 @@
             "title": "在以下脚本中使用了未知标签：{script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处飘荡时，Spook 遇到了以下脚本：\n\n[{script}]({edit})（`{entity_id}`）\n\n该脚本引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n要修复此问题，请[编辑脚本]({edit})并移除这些不存在的动作。\n\nSpook 👻 你的好伙伴。",
-            "title": "使用了未知动作：{script}"
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n\n\n要修复此错误，请[编辑此脚本]({edit})并移除这些不存在的动作。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下脚本中使用了未知动作：{script}"
         },
         "user_issue": {
             "fix_flow": {
@@ -561,23 +564,23 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "需要重新启动",
+            "title": "需要重启",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "需要重新启动",
-                        "description": "为了让 Spook 👻 完成设置，需要重新启动 Home Assistant。\n\n选择提交以立即重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。"
+                        "title": "需要重启",
+                        "description": "为了让 Spook 👻 完成设置，需要重启 Home Assistant。\n\n选择提交以立即重启 Home Assistant。\n\nSpook 👻 你的好哥们。"
                     }
                 }
             }
         },
         "automation_unknown_condition_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下条件，但 Home Assistant 中没有任何可用的集成能提供这些条件：\n\n{conditions}\n\n\n\n这通常发生在提供条件的集成被移除时。要修复此错误，请[编辑此自动化]({edit})并移除这些不可用的条件，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知条件：{automation}"
+            "title": "在以下自动化中使用了未知条件：{automation}"
         },
         "automation_unknown_trigger_references": {
-            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下触发器，但 Home Assistant 中没有任何可用的集成能提供这些触发器：\n\n{triggers}\n\n\n\n这通常发生在提供触发器的集成被移除时。要修复此错误，请[编辑此自动化]({edit})并移除这些不可用的触发器，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知触发器：{automation}"
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下触发条件，但 Home Assistant 中没有任何可用的集成能提供这些触发条件：\n\n{triggers}\n\n\n\n这通常发生在提供触发条件的集成被移除时。要修复此错误，请[编辑此自动化]({edit})并移除这些不可用的触发条件，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下自动化中使用了未知触发条件：{automation}"
         },
         "empty_areas": {
             "title": "空区域：{area}",
@@ -631,7 +634,7 @@
                         "menu_options": {
                             "remove": "从能源配置中移除这些",
                             "manage": "让我自己来",
-                            "ignore": "保留它们，不要再提示我"
+                            "ignore": "保留，不要再提示我"
                         }
                     }
                 },
@@ -643,7 +646,7 @@
             }
         },
         "lovelace_missing_resources": {
-            "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n以下仪表盘资源指向了不存在的文件：\n\n{resources}\n\n\n\n这通常发生在自定义卡片或其文件被移除，但资源条目仍保留在系统中的情况。要修复此错误，请打开 设置 > 仪表盘 > 资源 并移除或修正这些资源。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n以下仪表盘资源指向了不存在的文件：\n\n{resources}\n\n\n\n这通常发生在自定义卡片或其文件被移除，但资源条目仍保留在系统中的情况。要修复此错误，请打开[资源页面](/config/lovelace/resources)并移除或修正这些资源。它没有单独的标签页：在仪表盘页面上，它藏在右上角的三个点后面。\n\nSpook 👻 你的好哥们。",
             "title": "仪表盘资源指向缺失的文件"
         },
         "lovelace_unknown_area_references": {
@@ -651,12 +654,12 @@
             "title": "仪表盘 {dashboard} 中使用了未知区域"
         },
         "min_max_unknown_sources": {
-            "title": "最大值/最小值辅助程序 {helper} 中使用了未知成员",
+            "title": "最大值/最小值辅助元素 {helper} 中使用了未知成员",
             "fix_flow": {
                 "step": {
                     "init": {
-                        "title": "最大值/最小值辅助程序 {helper} 中使用了未知成员",
-                        "description": "Spook 在你的辅助程序中发现了一个幽灵 👻\n\n最大值/最小值辅助程序 {helper} (`{entity_id}`) 组合了以下 Home Assistant 无法识别的成员：\n\n{sources}\n\n移除它们以便辅助程序继续使用剩余成员，或者保留它们（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "title": "最大值/最小值辅助元素 {helper} 中使用了未知成员",
+                        "description": "Spook 在你的辅助元素中发现了一个幽灵 👻\n\n最大值/最小值辅助元素 {helper} (`{entity_id}`) 组合了以下 Home Assistant 无法识别的成员：\n\n{sources}\n\n移除它们以便辅助元素继续使用剩余成员，或者保留它们（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
                         "menu_options": {
                             "remove": "移除这些成员",
                             "manage": "让我自己处理",
@@ -665,10 +668,10 @@
                     }
                 },
                 "abort": {
-                    "issue_ignored": "从现在起，Spook 将不再就此辅助程序发声。",
-                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此辅助程序。",
-                    "changed": "自 Spook 上次查看以来，此修复列出的成员已经回来或发生了变化，因此没有从辅助程序中移除任何成员。Spook 会自行再次检查并更新此修复。",
-                    "too_few_members": "最大值/最小值辅助程序需要至少两个成员，因此移除缺失的成员会导致成员过少。请自行在 [辅助程序页面](/config/helpers) 重新配置或移除该辅助程序。"
+                    "issue_ignored": "从现在起，Spook 将不再就此辅助元素发声。",
+                    "manage": "你可以在 [辅助元素页面](/config/helpers) 自行管理此辅助元素。",
+                    "changed": "自 Spook 上次查看以来，此修复列出的成员已经回来或发生了变化，因此没有从辅助元素中移除任何成员。Spook 会自行再次检查并更新此修复。",
+                    "too_few_members": "最大值/最小值辅助元素需要至少两个成员，因此移除缺失的成员会导致成员过少。请自行在 [辅助元素页面](/config/helpers) 重新配置或移除该辅助元素。"
                 }
             }
         },
@@ -682,7 +685,7 @@
                         "menu_options": {
                             "remove": "清除这些统计数据",
                             "manage": "让我自己来",
-                            "ignore": "保留它们，不要再提示我"
+                            "ignore": "保留，不要再提示我"
                         }
                     }
                 },
@@ -720,12 +723,12 @@
             "title": "在以下脚本中使用了未知条件：{script}"
         },
         "script_unknown_trigger_references": {
-            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本使用了以下触发器，但 Home Assistant 中没有任何可用的集成能提供这些触发器：\n\n{triggers}\n\n\n\n这通常发生在提供触发器的集成被移除时。要修复此错误，请[编辑该脚本]({edit})并移除这些不可用的触发器，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下脚本中使用了未知触发器：{script}"
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本使用了以下触发条件，但 Home Assistant 中没有任何可用的集成能提供这些触发条件：\n\n{triggers}\n\n\n\n这通常发生在提供触发条件的集成被移除时。要修复此错误，请[编辑该脚本]({edit})并移除这些不可用的触发条件，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下脚本中使用了未知触发条件：{script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook 在你的模板辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板辅助程序：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n其模板引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除时。要修复此错误，请重新配置该模板辅助程序以引用现有实体。\n\nSpook 👻 你的好哥们。",
-            "title": "模板辅助程序 {helper} 中使用了未知实体"
+            "description": "Spook 在你的模板辅助元素中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板辅助元素：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n其模板引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除时。要修复此错误，请重新配置该模板辅助元素以引用现有实体。\n\nSpook 👻 你的好哥们。",
+            "title": "模板辅助元素 {helper} 中使用了未知实体"
         },
         "unknown_customized_entities": {
             "description": "Spook 在你的自定义设置中发现了一个幽灵 👻\n\n`customize:` 部分在以下实体上固定了属性，但 Home Assistant 无法识别这些实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除，但其自定义设置仍保留在系统中的情况。要修复此错误，请编辑配置中的 `customize:` 部分并移除这些实体。\n\nSpook 👻 你的好哥们。",
@@ -736,23 +739,23 @@
             "description": "Spook 在你的语音助手中发现了一个幽灵 👻\n\nAssist 管道 {pipeline} 使用了以下 Home Assistant 无法识别的项目：\n\n{engines}\n\n这通常意味着其背后的集成已被移除。管道并未收到通知，所以下次使用时会报错，提示缺少提供者或代理，而在此之前没有任何迹象指向这里。\n\n要修复此问题，请在[语音助手](/config/voice-assistants/assistants)中打开此助手的设置，并为其中每一项选择一个仍然存在的引擎。\n\nSpook 👻 你的好哥们。"
         },
         "unknown_helper_source_references": {
-            "title": "辅助程序 {helper} 中使用了未知源实体",
+            "title": "辅助元素 {helper} 中使用了未知源实体",
             "fix_flow": {
                 "step": {
                     "init": {
-                        "title": "辅助程序 {helper} 中使用了未知源实体",
-                        "description": "Spook 在你的辅助程序中发现了一个幽灵 👻\n\n辅助程序 {helper} (`{domain}`, `{entity_id}`) 引用了以下 Home Assistant 无法识别的源实体：\n\n{sources}\n\n如果没有源实体，此辅助程序将无法工作。{usage}\n\n移除该辅助程序，或者保留它（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "title": "辅助元素 {helper} 中使用了未知源实体",
+                        "description": "Spook 在你的辅助元素中发现了一个幽灵 👻\n\n辅助元素 {helper} (`{domain}`, `{entity_id}`) 引用了以下 Home Assistant 无法识别的源实体：\n\n{sources}\n\n如果没有源实体，此辅助元素将无法工作。{usage}\n\n移除该辅助元素，或者保留它（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
                         "menu_options": {
-                            "remove": "移除此辅助程序",
+                            "remove": "移除此辅助元素",
                             "manage": "让我自己处理",
                             "ignore": "保留，不要再提示我"
                         }
                     }
                 },
                 "abort": {
-                    "issue_ignored": "从现在起，Spook 将不再就此辅助程序发声。",
-                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此辅助程序。",
-                    "changed": "自 Spook 上次查看以来，此辅助程序的源已经发生了变化，因此该辅助程序被保留了下来。Spook 会自行再次检查并更新此修复。"
+                    "issue_ignored": "从现在起，Spook 将不再就此辅助元素发声。",
+                    "manage": "你可以在 [辅助元素页面](/config/helpers) 自行管理此辅助元素。",
+                    "changed": "自 Spook 上次查看以来，此辅助元素的源已经发生了变化，因此该辅助元素被保留了下来。Spook 会自行再次检查并更新此修复。"
                 }
             }
         },
@@ -806,8 +809,8 @@
             "title": "警报使用了未知的通知器：{alert}"
         },
         "template_unknown_service_references": {
-            "description": "Spook 在你的模板助手中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板助手：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n它引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n这通常是因为提供某个动作的集成已被移除，或某个脚本被重命名或删除了。要修复此错误，请重新配置该模板助手，使其使用存在的动作。\n\nSpook 👻 你的好哥们。",
-            "title": "模板助手中使用了未知动作：{helper}"
+            "description": "Spook 在你的模板辅助元素中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板辅助元素：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n它引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n\n\n这通常是因为提供某个动作的集成已被移除，或某个脚本被重命名或删除了。要修复此错误，请重新配置该模板辅助元素，使其使用存在的动作。\n\nSpook 👻 你的好哥们。",
+            "title": "模板辅助元素中使用了未知动作：{helper}"
         },
         "notify_unknown_group_members": {
             "description": "Spook 在你的通知组中发现了一个幽灵 👻\n\n通知组 `{group}` 会转发到以下 Home Assistant 无法识别的动作：\n\n{members}\n\n该组仍会投递给其余成员，也仍会向调用方报告成功，因此上游察觉不到任何异常。这个故障只会在日志里留下一条孤零零的 \"Task exception was never retrieved\"，它不会指明是哪个组，读起来就像一个程序缺陷。原本在该成员背后的人，就这样再也收不到通知了。\n\n要修复此错误，请编辑配置中该组的 `services:` 列表，移除或更正这些条目。\n\nSpook 👻 你的好哥们。",
@@ -913,21 +916,17 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist 无法区分这些：{name}",
-            "description": "Spook 在你的语音助手中发现了一个幽灵 👻\n\n以下实体都已向 Assist 公开，并且都响应名称 {name}：\n\n{entities}\n\n名称相同时，Assist 只能通过区域来区分它们：你说出的区域，或者语音卫星所在的区域。其中一些共享同一个区域，或者根本没有区域，所以 Assist 无法在任何地方仅凭这个名称把它们挑出来。于是请求 {name} 会失败，而且不会说明是哪些实体在碍事。\n\n要修复此问题，请给每个实体一个独有的名称或别名，或者把它们移到不同的区域。你可以在[公开的实体](/config/voice-assistants/expose)中更改实体的别名，以及 Assist 是否能看到它。区域在[区域页面](/config/areas/dashboard)中设置。\n\nSpook 👻 你的好哥们。"
-        },
         "automation_unknown_attribute_references": {
-            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n等待一个从不出现的属性的触发器或条件永远不会触发，也不会告诉你。读取它的模板什么也得不到。要修复此问题，请[编辑此自动化]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知属性：{automation}"
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n等待一个从不出现的属性的触发条件或条件永远不会触发，也不会告诉你。读取它的模板什么也得不到。要修复此问题，请[编辑此自动化]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下自动化中使用了未知属性：{automation}"
         },
         "automation_unknown_state_references": {
-            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化等待或检查以下状态，但这些实体从不会处于这些状态。这类实体不可能有这种状态，实体提供的选项中也没有，记录器所记得的历史中也从未出现过：\n\n{states}\n\n\n\n等待一个永远不会到来的状态的触发器永远不会触发，检查它的条件永远不会通过，而且两者都不会告诉你。状态区分大小写：`On` 不是 `on`。要修复此问题，请[编辑此自动化]({edit})并使用实体可能处于的状态。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知状态：{automation}"
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化等待或检查以下状态，但这些实体从不会处于这些状态。这类实体不可能有这种状态，实体提供的选项中也没有，记录器所记得的历史中也从未出现过：\n\n{states}\n\n\n\n等待一个永远不会到来的状态的触发条件永远不会触发，检查它的条件永远不会通过，而且两者都不会告诉你。状态区分大小写：`On` 不是 `on`。要修复此问题，请[编辑此自动化]({edit})并使用实体可能处于的状态。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下自动化中使用了未知状态：{automation}"
         },
         "automation_unknown_trigger_id_references": {
-            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化检查以下触发器 ID，但它自己的触发器都没有这些 ID：\n\n{trigger_ids}\n\n\n\n检查一个没有任何触发器会传递的 ID，结果总是一样：要求它的触发条件永远不会通过，因此它所保护的部分永远不会运行，也没有任何提示。触发器 ID 区分大小写，没有自己 ID 的触发器以它在列表中的位置作为 ID，从 `0` 开始计数。要修复此问题，请[编辑此自动化]({edit})并使用其某个触发器的 ID，或者给触发器设置自动化所要求的 ID。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知触发器 ID：{automation}"
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化检查以下触发条件 ID，但它自己的触发条件都没有这些 ID：\n\n{trigger_ids}\n\n\n\n检查一个没有任何触发条件会传递的 ID，结果总是一样：要求它的触发条件永远不会通过，因此它所保护的部分永远不会运行，也没有任何提示。触发条件 ID 区分大小写，没有自己 ID 的触发条件以它在列表中的位置作为 ID，从 `0` 开始计数。要修复此问题，请[编辑此自动化]({edit})并使用其某个触发条件的 ID，或者给触发条件设置自动化所要求的 ID。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下自动化中使用了未知触发条件 ID：{automation}"
         },
         "lovelace_unknown_attribute_references": {
             "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下仪表盘：\n\n[{dashboard}]({edit})\n\n该仪表盘显示或检查以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n显示一个从不出现的属性的卡片会一直是空的，检查它的可见性条件或筛选器永远不会通过。两者都不会告诉你。要修复此问题，请[编辑该仪表盘]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
@@ -942,32 +941,32 @@
             "title": "在以下仪表盘中导航到未知视图：{dashboard}"
         },
         "script_unknown_attribute_references": {
-            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n等待一个从不出现的属性的触发器或条件永远不会触发，也不会告诉你。读取它的模板什么也得不到。要修复此问题，请[编辑脚本]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n等待一个从不出现的属性的触发条件或条件永远不会触发，也不会告诉你。读取它的模板什么也得不到。要修复此问题，请[编辑脚本]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
             "title": "在以下脚本中使用了未知属性：{script}"
         },
         "script_unknown_state_references": {
-            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本等待或检查以下状态，但这些实体从不会处于这些状态。这类实体不可能有这种状态，实体提供的选项中也没有，记录器所记得的历史中也从未出现过：\n\n{states}\n\n\n\n等待一个永远不会到来的状态的触发器永远不会触发，检查它的条件永远不会通过，而且两者都不会告诉你。状态区分大小写：`On` 不是 `on`。要修复此问题，请[编辑脚本]({edit})并使用实体可能处于的状态。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本等待或检查以下状态，但这些实体从不会处于这些状态。这类实体不可能有这种状态，实体提供的选项中也没有，记录器所记得的历史中也从未出现过：\n\n{states}\n\n\n\n等待一个永远不会到来的状态的触发条件永远不会触发，检查它的条件永远不会通过，而且两者都不会告诉你。状态区分大小写：`On` 不是 `on`。要修复此问题，请[编辑脚本]({edit})并使用实体可能处于的状态。\n\nSpook 👻 你的好哥们。",
             "title": "在以下脚本中使用了未知状态：{script}"
         },
         "template_unknown_attribute_references": {
-            "description": "Spook 在你的模板辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板辅助程序：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n该模板辅助程序使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n读取一个从不出现的属性的模板什么也得不到，它的动作中等待该属性的条件永远不会通过。两者都不会告诉你。要修复此问题，请[编辑该模板辅助程序]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
-            "title": "模板辅助程序 {helper} 中使用了未知属性"
+            "description": "Spook 在你的模板辅助元素中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板辅助元素：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n该模板辅助元素使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n读取一个从不出现的属性的模板什么也得不到，它的动作中等待该属性的条件永远不会通过。两者都不会告诉你。要修复此问题，请[编辑该模板辅助元素]({edit})并使用实体拥有的属性。\n\nSpook 👻 你的好哥们。",
+            "title": "模板辅助元素 {helper} 中使用了未知属性"
         },
         "automation_never_true_templates": {
-            "title": "以下项中有永远无法通过的模板：{automation}",
-            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化包含以下模板，无论家里发生什么，它们都永远无法通过：\n\n{templates}\n\n\n\n模板条件只有在渲染出 `true` 时才会通过，`wait_template` 也一样，除非它稍后变成可被视为真的值。模板触发器在模板变成可被视为真的值时触发，例如 `true`、`on`、`yes` 或 `1`。由于写法的原因，这些模板总是渲染出别的东西。常见原因：\n\n- 模板外面加了引号。`>-` 块会把引号当作文本，于是引号出现在结果中。\n- 完全没有模板分隔符，所以文本被原样使用。\n- 把 YAML 粘贴到了模板字段中。\n- Jinja 中的 YAML `#` 注释，Jinja 会把它当作文本输出。\n- 条件渲染出 `on` 而不是 `true`。\n\n没有任何提示：条件永远不会通过，等待只会在超时后结束，触发器永远不会触发。要修复此问题，请[编辑此自动化]({edit})并让模板在应该通过时渲染出 `true`。\n\nSpook 👻 你的好哥们。"
+            "title": "以下自动化中有永远无法通过的模板：{automation}",
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化包含以下模板，无论家里发生什么，它们都永远无法通过：\n\n{templates}\n\n\n\n模板条件只有在渲染出 `true` 时才会通过，`wait_template` 也一样，除非它稍后变成可被视为真的值。模板触发条件在模板变成可被视为真的值时触发，例如 `true`、`on`、`yes` 或 `1`。由于写法的原因，这些模板总是渲染出别的东西。常见原因：\n\n- 模板外面加了引号。`>-` 块会把引号当作文本，于是引号出现在结果中。\n- 完全没有模板分隔符，所以文本被原样使用。\n- 把 YAML 粘贴到了模板字段中。\n- Jinja 中的 YAML `#` 注释，Jinja 会把它当作文本输出。\n- 条件渲染出 `on` 而不是 `true`。\n\n没有任何提示：条件永远不会通过，等待只会在超时后结束，触发条件永远不会触发。要修复此问题，请[编辑此自动化]({edit})并让模板在应该通过时渲染出 `true`。\n\nSpook 👻 你的好哥们。"
         },
         "automation_unknown_config_entry_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化向其动作传递了以下集成条目，但 Home Assistant 无法识别它们，或者它们属于与动作要求不同的集成：\n\n{config_entries}\n\nHome Assistant 会在该步骤运行时拒绝它们。这通常发生在某个集成被移除后又重新添加时：它获得了一个新的集成条目，以及新的 ID。\n\n要修复此错误，请[编辑此自动化]({edit})并在这些动作中重新选择集成条目。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知集成条目：{automation}"
+            "title": "在以下自动化中使用了未知集成条目：{automation}"
         },
         "automation_unknown_icons": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化传出了以下图标，但它们不存在于 Home Assistant 自带的 Material Design Icons 中：\n\n{icons}\n\n\n\n这些图标都会悄无声息地显示为空白。这通常是因为图标名称拼写错误、图标被重命名或移除，或者选自比 Home Assistant 自带版本更新的 Material Design Icons。要修复此错误，请[编辑此自动化]({edit})并把它们替换为存在的图标。\n\nSpook 👻 你的好哥们。",
-            "title": "在以下项中使用了未知图标：{automation}"
+            "title": "在以下自动化中使用了未知图标：{automation}"
         },
         "automation_unknown_user_references": {
-            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化提到了以下已不存在的用户：\n\n{users}\n\n\n\nHome Assistant 不会重复分配同一个用户 ID，所以这些用户已被移除。等待其中某个用户的触发器永远不会为他们触发，与其中某个用户比较的模板永远不会匹配，而且都没有任何提示。要修复此问题，请[编辑此自动化]({edit})并使用存在的用户的 ID，或者移除该检查。\n\nSpook 👻 你的好哥们。",
-            "title": "以下项中提到了已移除的用户：{automation}"
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化提到了以下已不存在的用户：\n\n{users}\n\n\n\nHome Assistant 不会重复分配同一个用户 ID，所以这些用户已被移除。等待其中某个用户的触发条件永远不会为他们触发，与其中某个用户比较的模板永远不会匹配，而且都没有任何提示。要修复此问题，请[编辑此自动化]({edit})并使用存在的用户的 ID，或者移除该检查。\n\nSpook 👻 你的好哥们。",
+            "title": "以下自动化中提到了已移除的用户：{automation}"
         },
         "lovelace_unknown_icons": {
             "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下仪表盘：\n\n[{dashboard}]({edit})\n\n该仪表盘使用了以下图标，但它们不存在于 Home Assistant 自带的 Material Design Icons（版本 {version}）中：\n\n{icons}\n\n\n\n这些图标都会悄无声息地显示为空白。这通常是因为图标名称拼写错误、图标被重命名或移除，或者选自比 Home Assistant 自带版本更新的 Material Design Icons。要修复此错误，请[编辑该仪表盘]({edit})并把它们替换为存在的图标。侧边栏中仪表盘的图标需要在仪表盘设置中更改。\n\nSpook 👻 你的好哥们。",
@@ -982,7 +981,7 @@
             "title": "在以下仪表盘中使用了未知主题：{dashboard}"
         },
         "script_never_true_templates": {
-            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本包含以下模板，无论家里发生什么，它们都永远无法通过：\n\n{templates}\n\n\n\n模板条件只有在渲染出 `true` 时才会通过，`wait_template` 也一样，除非它稍后变成可被视为真的值。`wait_for_trigger` 中的模板触发器在模板变成可被视为真的值时触发，例如 `true`、`on`、`yes` 或 `1`。由于写法的原因，这些模板总是渲染出别的东西。常见原因：\n\n- 模板外面加了引号。`>-` 块会把引号当作文本，于是引号出现在结果中。\n- 完全没有模板分隔符，所以文本被原样使用。\n- 把 YAML 粘贴到了模板字段中。\n- Jinja 中的 YAML `#` 注释，Jinja 会把它当作文本输出。\n- 条件渲染出 `on` 而不是 `true`。\n\n没有任何提示：条件永远不会通过，等待只会在超时后结束。要修复此问题，请[编辑脚本]({edit})并让模板在应该通过时渲染出 `true`。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本包含以下模板，无论家里发生什么，它们都永远无法通过：\n\n{templates}\n\n\n\n模板条件只有在渲染出 `true` 时才会通过，`wait_template` 也一样，除非它稍后变成可被视为真的值。`wait_for_trigger` 中的模板触发条件在模板变成可被视为真的值时触发，例如 `true`、`on`、`yes` 或 `1`。由于写法的原因，这些模板总是渲染出别的东西。常见原因：\n\n- 模板外面加了引号。`>-` 块会把引号当作文本，于是引号出现在结果中。\n- 完全没有模板分隔符，所以文本被原样使用。\n- 把 YAML 粘贴到了模板字段中。\n- Jinja 中的 YAML `#` 注释，Jinja 会把它当作文本输出。\n- 条件渲染出 `on` 而不是 `true`。\n\n没有任何提示：条件永远不会通过，等待只会在超时后结束。要修复此问题，请[编辑脚本]({edit})并让模板在应该通过时渲染出 `true`。\n\nSpook 👻 你的好哥们。",
             "title": "以下脚本中有永远无法通过的模板：{script}"
         },
         "script_unknown_config_entry_references": {
@@ -994,15 +993,15 @@
             "title": "在以下脚本中使用了未知图标：{script}"
         },
         "script_unknown_user_references": {
-            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本提到了以下已不存在的用户：\n\n{users}\n\n\n\nHome Assistant 不会重复分配同一个用户 ID，所以这些用户已被移除。与其中某个用户比较的模板永远不会匹配，等待其中某个用户的触发器永远不会为他们触发，而且都没有任何提示。要修复此问题，请[编辑脚本]({edit})并使用存在的用户的 ID，或者移除该检查。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本提到了以下已不存在的用户：\n\n{users}\n\n\n\nHome Assistant 不会重复分配同一个用户 ID，所以这些用户已被移除。与其中某个用户比较的模板永远不会匹配，等待其中某个用户的触发条件永远不会为他们触发，而且都没有任何提示。要修复此问题，请[编辑脚本]({edit})并使用存在的用户的 ID，或者移除该检查。\n\nSpook 👻 你的好哥们。",
             "title": "以下脚本中提到了已移除的用户：{script}"
         },
         "template_unknown_attribute_references_yaml": {
-            "description": "Spook 在你的模板实体中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板实体：\n\n{name} (`{entity_id}`)\n\n该模板实体使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n读取一个从不出现的属性的模板什么也得不到，等待它的触发器或条件永远不会触发或通过。它们都不会告诉你。\n\n该模板实体是在你的 YAML 配置中设置的。要修复此问题，请在配置的 `template:` 部分编辑它，使用实体拥有的属性，然后重新加载模板实体。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的模板实体中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板实体：\n\n{name} (`{entity_id}`)\n\n该模板实体使用了以下属性，但这些实体并没有这些属性。现在没有，这类实体本身也不提供，记录器所记得的历史中也从未出现过：\n\n{attributes}\n\n\n\n读取一个从不出现的属性的模板什么也得不到，等待它的触发条件或条件永远不会触发或通过。它们都不会告诉你。\n\n该模板实体是在你的 YAML 配置中设置的。要修复此问题，请在配置的 `template:` 部分编辑它，使用实体拥有的属性，然后重新加载模板实体。\n\nSpook 👻 你的好哥们。",
             "title": "模板实体 {name} 中使用了未知属性"
         },
         "template_unknown_entity_references_yaml": {
-            "description": "Spook 在你的模板实体中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板实体：\n\n{name} (`{entity_id}`)\n\n其配置引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除时。读取它的模板什么也得不到，等待它的触发器永远不会触发。\n\n该模板实体是在你的 YAML 配置中设置的。要修复此错误，请在配置的 `template:` 部分编辑它，引用现有实体，然后重新加载模板实体。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的模板实体中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板实体：\n\n{name} (`{entity_id}`)\n\n其配置引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除时。读取它的模板什么也得不到，等待它的触发条件永远不会触发。\n\n该模板实体是在你的 YAML 配置中设置的。要修复此错误，请在配置的 `template:` 部分编辑它，引用现有实体，然后重新加载模板实体。\n\nSpook 👻 你的好哥们。",
             "title": "模板实体 {name} 中使用了未知实体"
         },
         "template_unknown_service_references_yaml": {
@@ -1010,8 +1009,12 @@
             "title": "模板实体 {name} 中使用了未知动作"
         },
         "unknown_icons": {
-            "description": "Spook 在你的设置中发现了一个幽灵 👻\n\n以下图标不存在于 Home Assistant 自带的 Material Design Icons（版本 {version}）中：\n\n{icons}\n\n\n\n这些图标都会悄无声息地显示为空白。这通常是因为图标名称拼写错误、图标被重命名或移除，或者选自比 Home Assistant 自带版本更新的 Material Design Icons。要修复此错误，请给每一项设置一个存在的图标：实体、辅助程序或地点在各自的设置中修改，区域、楼层或标签在区域、标签和地点的设置中修改，类别在使用它的地方修改，另外还有配置中的 `customize:`。\n\nSpook 👻 你的好哥们。",
+            "description": "Spook 在你的设置中发现了一个幽灵 👻\n\n以下图标不存在于 Home Assistant 自带的 Material Design Icons（版本 {version}）中：\n\n{icons}\n\n\n\n这些图标都会悄无声息地显示为空白。这通常是因为图标名称拼写错误、图标被重命名或移除，或者选自比 Home Assistant 自带版本更新的 Material Design Icons。要修复此错误，请给每一项设置一个存在的图标：实体、辅助元素或地点在各自的设置中修改，区域、楼层或标签在区域、标签和地点的设置中修改，类别在使用它的地方修改，另外还有配置中的 `customize:`。\n\nSpook 👻 你的好哥们。",
             "title": "你的设置中有未知图标"
+        },
+        "lovelace_public_www_files": {
+            "title": "任何人都能下载的文件：{folder}",
+            "description": "Spook 在你的 `www` 文件夹中发现了一个幽灵 👻\n\nHome Assistant 会在 `/local/` 下提供 `www` 文件夹中的所有内容，不要求任何人登录。文件夹 `{folder}` 中有 {count} 个文件不是仪表盘代码，也没有任何仪表盘或主题使用它们：\n\n{files}\n\n\n\n这通常是因为某个集成把文件存放在这里，以便在仪表盘上显示，例如摄像头快照或 3D 打印预览。任何能访问你的 Home Assistant、并且知道或猜到文件名的人，都可以下载这些文件。\n\n要修复此问题，请找出是哪个集成在写入此文件夹，以及它能否把文件存放到其他地方。如果这些文件公开也没关系，请忽略此修复，Spook 将不再管这个文件夹。\n\nSpook 👻 你的好哥们。"
         }
     },
     "services": {
@@ -1371,7 +1374,7 @@
                 },
                 "level": {
                     "name": "层数",
-                    "description": "楼层在您家中所处的层级。"
+                    "description": "楼层在你家中所处的层级。"
                 }
             },
             "name": "创建楼层 👻",
@@ -1526,74 +1529,74 @@
             "description": "禁用某个集成条目的更新轮询。"
         },
         "input_number_create": {
-            "description": "动态创建一个新的数值输入助手（input_number）。返回新数值输入助手的实体 ID。",
-            "name": "创建数值输入助手 👻",
+            "description": "动态创建一个新的数值输入辅助元素（input_number）。返回新数值输入辅助元素的实体 ID。",
+            "name": "创建数值输入辅助元素 👻",
             "fields": {
                 "name": {
                     "name": "名称",
-                    "description": "新数值输入助手的名称。"
+                    "description": "新数值输入辅助元素的名称。"
                 },
                 "input_number_id": {
-                    "name": "数值输入助手实体 ID",
-                    "description": "新数值输入助手的实体 ID。input_number. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                    "name": "数值输入辅助元素实体 ID",
+                    "description": "新数值输入辅助元素的实体 ID。input_number. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
                 },
                 "min": {
                     "name": "最小值",
-                    "description": "数值输入助手的最小值。"
+                    "description": "数值输入辅助元素的最小值。"
                 },
                 "max": {
                     "name": "最大值",
-                    "description": "数值输入助手门的最大值。"
+                    "description": "数值输入辅助元素的最大值。"
                 },
                 "initial": {
                     "name": "初始值",
-                    "description": "Home Assistant 启动时数值输入助手的初始值。"
+                    "description": "Home Assistant 启动时数值输入辅助元素的初始值。"
                 },
                 "step": {
                     "name": "步进大小",
-                    "description": "数值输入助手的步进大小。"
+                    "description": "数值输入辅助元素的步进大小。"
                 },
                 "mode": {
                     "name": "显示模式",
-                    "description": "数值输入助手的显示模式，可以是滑块或输入框。"
+                    "description": "数值输入辅助元素的显示模式，可以是滑块或输入框。"
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "用于数值输入助手的图标。"
+                    "description": "用于数值输入辅助元素的图标。"
                 },
                 "unit_of_measurement": {
                     "name": "测量单位",
-                    "description": "数值输入助手的测量单位。"
+                    "description": "数值输入辅助元素的测量单位。"
                 }
             }
         },
         "zone_create": {
-            "description": "动态在 Home Assistant 中创建一个新区域（地理围栏）。",
-            "name": "创建区域 👻",
+            "description": "动态在 Home Assistant 中创建一个新地点（地理围栏）。",
+            "name": "创建地点 👻",
             "fields": {
                 "name": {
                     "name": "名称",
-                    "description": "区域名称"
+                    "description": "地点名称"
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "用于该区域的图标"
+                    "description": "用于该地点的图标"
                 },
                 "latitude": {
                     "name": "纬度",
-                    "description": "区域的纬度。这可以是一个模板。"
+                    "description": "地点的纬度。这可以是一个模板。"
                 },
                 "longitude": {
                     "name": "经度",
-                    "description": "区域的经度。这可以是一个模板。"
+                    "description": "地点的经度。这可以是一个模板。"
                 },
                 "radius": {
                     "name": "半径",
-                    "description": "区域半径"
+                    "description": "地点半径"
                 },
                 "passive": {
                     "name": "被动",
-                    "description": "被动区域只供自动化使用：它不会显示在地图上，也不会改变人员和设备追踪器所在的位置。"
+                    "description": "被动地点只供自动化使用：它不会显示在地图上，也不会改变人员和设备追踪器所在的位置。"
                 }
             }
         },
@@ -1652,18 +1655,18 @@
             "description": "删除所有不再有集成声明或提供的孤立实体。请注意，如果集成刚刚被移除，可能需要重启 Home Assistant 才能识别出它们是孤立的。\n**警告**：实体可能因为集成在 Home Assistant 启动后离线或无法工作而被标记为孤立。调用此动作也会删除这些实体。"
         },
         "input_number_delete": {
-            "name": "删除数值输入助手 👻",
-            "description": "删除通过 UI 或“创建数值输入助手”动作创建的数值输入助手。在 YAML 中设置的数值输入助手无法由 Spook 删除。",
+            "name": "删除数值输入辅助元素 👻",
+            "description": "删除通过 UI 或“创建数值输入辅助元素”动作创建的数值输入辅助元素。在 YAML 中设置的数值输入辅助元素无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要删除的数值输入助手。"
+                    "description": "要删除的数值输入辅助元素。"
                 }
             }
         },
         "zone_delete": {
-            "name": "删除区域 👻",
-            "description": "删除区域。这仅适用于通过 UI 创建和管理的区域。通过 YAML 创建和管理的区域无法由 Spook 管理。",
+            "name": "删除地点 👻",
+            "description": "删除地点。这仅适用于通过 UI 创建和管理的地点。通过 YAML 创建和管理的地点无法由 Spook 管理。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
@@ -1713,7 +1716,7 @@
         },
         "cover_increase_position": {
             "name": "增加位置 👻",
-            "description": "将窗帘再打开一档，到完全打开为止。",
+            "description": "将卷帘再打开一档，到完全打开为止。",
             "fields": {
                 "step": {
                     "name": "步长",
@@ -1723,7 +1726,7 @@
         },
         "cover_decrease_position": {
             "name": "减少位置 👻",
-            "description": "将窗帘再关闭一档，到完全关闭为止。",
+            "description": "将卷帘再关闭一档，到完全关闭为止。",
             "fields": {
                 "step": {
                     "name": "步长",
@@ -1919,7 +1922,7 @@
         },
         "homeassistant_create_category": {
             "name": "创建类别 👻",
-            "description": "为自动化、脚本、场景或辅助程序动态创建一个新类别。返回新类别的 ID。",
+            "description": "为自动化、脚本、场景或辅助元素动态创建一个新类别。返回新类别的 ID。",
             "fields": {
                 "scope": {
                     "name": "范围",
@@ -1973,7 +1976,7 @@
         },
         "homeassistant_add_category_to_entity": {
             "name": "为实体添加类别 👻",
-            "description": "将一个自动化、脚本、场景或辅助程序放入某个类别。由于每项只能属于一个类别，它会替换之前所在的类别。",
+            "description": "将一个自动化、脚本、场景或辅助元素放入某个类别。由于每项只能属于一个类别，它会替换之前所在的类别。",
             "fields": {
                 "category_id": {
                     "name": "类别",
@@ -1981,13 +1984,13 @@
                 },
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要放入该类别的自动化、脚本、场景或辅助程序。"
+                    "description": "要放入该类别的自动化、脚本、场景或辅助元素。"
                 }
             }
         },
         "homeassistant_remove_category_from_entity": {
             "name": "从实体移除类别 👻",
-            "description": "将一个自动化、脚本、场景或辅助程序从某个类别中移出。属于其他类别的项目不受影响。",
+            "description": "将一个自动化、脚本、场景或辅助元素从某个类别中移出。属于其他类别的项目不受影响。",
             "fields": {
                 "category_id": {
                     "name": "类别",
@@ -1995,7 +1998,7 @@
                 },
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要从该类别中移出的自动化、脚本、场景或辅助程序。"
+                    "description": "要从该类别中移出的自动化、脚本、场景或辅助元素。"
                 }
             }
         },
@@ -2014,8 +2017,8 @@
             "description": "列出所有未被任何集成声明的数据库孤立实体。"
         },
         "homeassistant_restart": {
-            "name": "重新启动 👻",
-            "description": "重新启动 Home Assistant。",
+            "name": "重启 👻",
+            "description": "重启 Home Assistant。",
             "fields": {
                 "safe_mode": {
                     "name": "安全模式",
@@ -2038,16 +2041,16 @@
             }
         },
         "input_select_create": {
-            "name": "创建下拉选择辅助程序 👻",
-            "description": "动态创建一个新的下拉选择（input_select）辅助程序。返回新下拉选择辅助程序的实体 ID。",
+            "name": "创建下拉选择辅助元素 👻",
+            "description": "动态创建一个新的下拉选择（input_select）辅助元素。返回新下拉选择辅助元素的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
-                    "description": "新下拉选择辅助程序的名称。"
+                    "description": "新下拉选择辅助元素的名称。"
                 },
                 "input_select_id": {
-                    "name": "下拉选择辅助程序实体 ID",
-                    "description": "新下拉选择辅助程序的实体 ID。input_select. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                    "name": "下拉选择辅助元素实体 ID",
+                    "description": "新下拉选择辅助元素的实体 ID。input_select. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
                 },
                 "options": {
                     "name": "选项",
@@ -2055,21 +2058,21 @@
                 },
                 "initial": {
                     "name": "初始选项",
-                    "description": "起始时选中的选项，必须是选项之一。如果不填，它会保持 Home Assistant 重新启动前的选项。"
+                    "description": "起始时选中的选项，必须是选项之一。如果不填，它会保持 Home Assistant 重启前的选项。"
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "新下拉选择辅助程序的图标。"
+                    "description": "新下拉选择辅助元素的图标。"
                 }
             }
         },
         "input_select_delete": {
-            "name": "删除下拉选择辅助程序 👻",
-            "description": "删除通过 UI 或“创建下拉选择辅助程序”动作创建的下拉选择辅助程序。在 YAML 中设置的下拉选择辅助程序无法由 Spook 删除。",
+            "name": "删除下拉选择辅助元素 👻",
+            "description": "删除通过 UI 或“创建下拉选择辅助元素”动作创建的下拉选择辅助元素。在 YAML 中设置的下拉选择辅助元素无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要删除的下拉选择辅助程序。"
+                    "description": "要删除的下拉选择辅助元素。"
                 }
             }
         },
@@ -2085,7 +2088,7 @@
         },
         "input_select_reverse": {
             "name": "反转选项 👻",
-            "description": "将 `input_select` 实体的可选选项顺序前后反转。此更改不会持久保存，重新加载或 Home Assistant 重新启动后将被撤销。"
+            "description": "将 `input_select` 实体的可选选项顺序前后反转。此更改不会持久保存，重新加载或 Home Assistant 重启后将被撤销。"
         },
         "input_select_shuffle": {
             "name": "打乱选项 👻",
@@ -2113,7 +2116,7 @@
         },
         "input_number_set_range": {
             "name": "设置范围 👻",
-            "description": "修改通过 UI 创建的数值输入助手的最小值、最大值或步长，效果与编辑它相同。超出新范围的值会被移入范围内。",
+            "description": "修改通过 UI 创建的数值输入辅助元素的最小值、最大值或步长，效果与编辑它相同。超出新范围的值会被移入范围内。",
             "fields": {
                 "min": {
                     "name": "最小值",
@@ -2131,7 +2134,7 @@
         },
         "counter_create": {
             "name": "创建计数器 👻",
-            "description": "动态创建一个新的计数器辅助程序。返回新计数器的实体 ID。",
+            "description": "动态创建一个新的计数器辅助元素。返回新计数器的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
@@ -2169,7 +2172,7 @@
         },
         "counter_delete": {
             "name": "删除计数器 👻",
-            "description": "删除通过 UI 或“创建计数器”动作创建的计数器辅助程序。在 YAML 中设置的计数器无法由 Spook 删除。",
+            "description": "删除通过 UI 或“创建计数器”动作创建的计数器辅助元素。在 YAML 中设置的计数器无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
@@ -2178,52 +2181,52 @@
             }
         },
         "input_boolean_create": {
-            "name": "创建开关辅助程序 👻",
-            "description": "动态创建一个新的开关（input_boolean）辅助程序。返回新开关辅助程序的实体 ID。",
+            "name": "创建开关辅助元素 👻",
+            "description": "动态创建一个新的开关（input_boolean）辅助元素。返回新开关辅助元素的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
-                    "description": "新开关辅助程序的名称。"
+                    "description": "新开关辅助元素的名称。"
                 },
                 "input_boolean_id": {
-                    "name": "开关辅助程序实体 ID",
-                    "description": "新开关辅助程序的实体 ID。input_boolean. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                    "name": "开关辅助元素实体 ID",
+                    "description": "新开关辅助元素的实体 ID。input_boolean. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
                 },
                 "initial": {
                     "name": "初始值",
-                    "description": "起始时的值。如果不填，它会保持 Home Assistant 重新启动前的值。"
+                    "description": "起始时的值。如果不填，它会保持 Home Assistant 重启前的值。"
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "新开关辅助程序的图标。"
+                    "description": "新开关辅助元素的图标。"
                 }
             }
         },
         "input_boolean_delete": {
-            "name": "删除开关辅助程序 👻",
-            "description": "删除通过 UI 或“创建开关辅助程序”动作创建的开关辅助程序。在 YAML 中设置的开关辅助程序无法由 Spook 删除。",
+            "name": "删除开关辅助元素 👻",
+            "description": "删除通过 UI 或“创建开关辅助元素”动作创建的开关辅助元素。在 YAML 中设置的开关辅助元素无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要删除的开关辅助程序。"
+                    "description": "要删除的开关辅助元素。"
                 }
             }
         },
         "input_text_create": {
-            "name": "创建文本输入辅助程序 👻",
-            "description": "动态创建一个新的文本输入（input_text）辅助程序。返回新文本输入辅助程序的实体 ID。",
+            "name": "创建文本输入辅助元素 👻",
+            "description": "动态创建一个新的文本输入（input_text）辅助元素。返回新文本输入辅助元素的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
-                    "description": "新文本输入辅助程序的名称。"
+                    "description": "新文本输入辅助元素的名称。"
                 },
                 "input_text_id": {
-                    "name": "文本输入辅助程序实体 ID",
-                    "description": "新文本输入辅助程序的实体 ID。input_text. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                    "name": "文本输入辅助元素实体 ID",
+                    "description": "新文本输入辅助元素的实体 ID。input_text. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
                 },
                 "initial": {
                     "name": "初始值",
-                    "description": "起始时的文本。如果不填，它会保持 Home Assistant 重新启动前的文本。"
+                    "description": "起始时的文本。如果不填，它会保持 Home Assistant 重启前的文本。"
                 },
                 "min": {
                     "name": "最小长度",
@@ -2243,7 +2246,7 @@
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "新文本输入辅助程序的图标。"
+                    "description": "新文本输入辅助元素的图标。"
                 },
                 "unit_of_measurement": {
                     "name": "测量单位",
@@ -2252,54 +2255,54 @@
             }
         },
         "input_text_delete": {
-            "name": "删除文本输入辅助程序 👻",
-            "description": "删除通过 UI 或“创建文本输入辅助程序”动作创建的文本输入辅助程序。在 YAML 中设置的文本输入辅助程序无法由 Spook 删除。",
+            "name": "删除文本输入辅助元素 👻",
+            "description": "删除通过 UI 或“创建文本输入辅助元素”动作创建的文本输入辅助元素。在 YAML 中设置的文本输入辅助元素无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要删除的文本输入辅助程序。"
+                    "description": "要删除的文本输入辅助元素。"
                 }
             }
         },
         "input_button_create": {
-            "name": "创建按钮辅助程序 👻",
-            "description": "动态创建一个新的按钮（input_button）辅助程序。返回新按钮辅助程序的实体 ID。",
+            "name": "创建按钮辅助元素 👻",
+            "description": "动态创建一个新的按钮（input_button）辅助元素。返回新按钮辅助元素的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
-                    "description": "新按钮辅助程序的名称。"
+                    "description": "新按钮辅助元素的名称。"
                 },
                 "input_button_id": {
-                    "name": "按钮辅助程序实体 ID",
-                    "description": "新按钮辅助程序的实体 ID。input_button. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                    "name": "按钮辅助元素实体 ID",
+                    "description": "新按钮辅助元素的实体 ID。input_button. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "新按钮辅助程序的图标。"
+                    "description": "新按钮辅助元素的图标。"
                 }
             }
         },
         "input_button_delete": {
-            "name": "删除按钮辅助程序 👻",
-            "description": "删除通过 UI 或“创建按钮辅助程序”动作创建的按钮辅助程序。在 YAML 中设置的按钮辅助程序无法由 Spook 删除。",
+            "name": "删除按钮辅助元素 👻",
+            "description": "删除通过 UI 或“创建按钮辅助元素”动作创建的按钮辅助元素。在 YAML 中设置的按钮辅助元素无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要删除的按钮辅助程序。"
+                    "description": "要删除的按钮辅助元素。"
                 }
             }
         },
         "input_datetime_create": {
-            "name": "创建日期时间辅助程序 👻",
-            "description": "动态创建一个新的日期时间（input_datetime）辅助程序，可以保存日期、时间或两者。返回新日期时间辅助程序的实体 ID。",
+            "name": "创建日期时间辅助元素 👻",
+            "description": "动态创建一个新的日期时间（input_datetime）辅助元素，可以保存日期、时间或两者。返回新日期时间辅助元素的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
-                    "description": "新日期时间辅助程序的名称。"
+                    "description": "新日期时间辅助元素的名称。"
                 },
                 "input_datetime_id": {
-                    "name": "日期时间辅助程序实体 ID",
-                    "description": "新日期时间辅助程序的实体 ID。input_datetime. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                    "name": "日期时间辅助元素实体 ID",
+                    "description": "新日期时间辅助元素的实体 ID。input_datetime. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
                 },
                 "has_date": {
                     "name": "包含日期",
@@ -2311,21 +2314,21 @@
                 },
                 "initial": {
                     "name": "初始值",
-                    "description": "起始时的日期和/或时间，例如 2026-12-31、08:30:00 或 2026-12-31 08:30:00。如果不填，它会保持 Home Assistant 重新启动前的值。"
+                    "description": "起始时的日期和/或时间，例如 2026-12-31、08:30:00 或 2026-12-31 08:30:00。如果不填，它会保持 Home Assistant 重启前的值。"
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "新日期时间辅助程序的图标。"
+                    "description": "新日期时间辅助元素的图标。"
                 }
             }
         },
         "input_datetime_delete": {
-            "name": "删除日期时间辅助程序 👻",
-            "description": "删除通过 UI 或“创建日期时间辅助程序”动作创建的日期时间辅助程序。在 YAML 中设置的日期时间辅助程序无法由 Spook 删除。",
+            "name": "删除日期时间辅助元素 👻",
+            "description": "删除通过 UI 或“创建日期时间辅助元素”动作创建的日期时间辅助元素。在 YAML 中设置的日期时间辅助元素无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
-                    "description": "要删除的日期时间辅助程序。"
+                    "description": "要删除的日期时间辅助元素。"
                 }
             }
         },
@@ -2402,8 +2405,8 @@
             }
         },
         "zone_update": {
-            "name": "更新区域 👻",
-            "description": "动态更新区域的属性。",
+            "name": "更新地点 👻",
+            "description": "动态更新地点的属性。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
@@ -2411,27 +2414,27 @@
                 },
                 "name": {
                     "name": "名称",
-                    "description": "区域名称"
+                    "description": "地点名称"
                 },
                 "icon": {
                     "name": "图标",
-                    "description": "用于该区域的图标"
+                    "description": "用于该地点的图标"
                 },
                 "latitude": {
                     "name": "纬度",
-                    "description": "区域的纬度。这可以是一个模板。"
+                    "description": "地点的纬度。这可以是一个模板。"
                 },
                 "longitude": {
                     "name": "经度",
-                    "description": "区域的经度。这可以是一个模板。"
+                    "description": "地点的经度。这可以是一个模板。"
                 },
                 "radius": {
                     "name": "半径",
-                    "description": "区域半径"
+                    "description": "地点半径"
                 },
                 "passive": {
                     "name": "被动",
-                    "description": "被动区域只供自动化使用：它不会显示在地图上，也不会改变人员和设备追踪器所在的位置。"
+                    "description": "被动地点只供自动化使用：它不会显示在地图上，也不会改变人员和设备追踪器所在的位置。"
                 }
             }
         },
@@ -2479,7 +2482,7 @@
         },
         "timer_create": {
             "name": "创建计时器 👻",
-            "description": "动态创建一个新的计时器辅助程序。返回新计时器的实体 ID。",
+            "description": "动态创建一个新的计时器辅助元素。返回新计时器的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
@@ -2495,7 +2498,7 @@
                 },
                 "restore": {
                     "name": "恢复",
-                    "description": "在 Home Assistant 启动时恢复计时器的状态，这样正在运行的计时器在重新启动后会继续运行。"
+                    "description": "在 Home Assistant 启动时恢复计时器的状态，这样正在运行的计时器在重启后会继续运行。"
                 },
                 "icon": {
                     "name": "图标",
@@ -2505,7 +2508,7 @@
         },
         "timer_delete": {
             "name": "删除计时器 👻",
-            "description": "删除通过 UI 或“创建计时器”动作创建的计时器辅助程序。在 YAML 中设置的计时器无法由 Spook 删除。",
+            "description": "删除通过 UI 或“创建计时器”动作创建的计时器辅助元素。在 YAML 中设置的计时器无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
@@ -2885,13 +2888,13 @@
                 },
                 "level": {
                     "name": "层数",
-                    "description": "楼层在您家中所处的层级。"
+                    "description": "楼层在你家中所处的层级。"
                 }
             }
         },
         "schedule_create": {
             "name": "创建计划表",
-            "description": "动态创建一个新的计划表辅助程序，在每周各天给定的时间段内开启。返回新计划表的实体 ID。",
+            "description": "动态创建一个新的计划表辅助元素，在每周各天给定的时间段内开启。返回新计划表的实体 ID。",
             "fields": {
                 "name": {
                     "name": "名称",
@@ -2937,7 +2940,7 @@
         },
         "schedule_delete": {
             "name": "删除计划表",
-            "description": "删除在 UI 中创建的计划表辅助程序。在 YAML 中设置的计划表无法由 Spook 删除。",
+            "description": "删除在 UI 中创建的计划表辅助元素。在 YAML 中设置的计划表无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
@@ -2947,7 +2950,7 @@
         },
         "schedule_set_day": {
             "name": "设置某天的时间段",
-            "description": "替换在 UI 中创建的计划表辅助程序中一天或多天的时间段。在 YAML 中设置的计划表无法由 Spook 修改。",
+            "description": "替换在 UI 中创建的计划表辅助元素中一天或多天的时间段。在 YAML 中设置的计划表无法由 Spook 修改。",
             "fields": {
                 "day": {
                     "name": "星期",
@@ -2977,7 +2980,7 @@
         },
         "chance": {
             "name": "概率",
-            "description": "按设定的百分比概率通过，每次检查时随机选择。方便为您的自动化添加一些随机性。",
+            "description": "按设定的百分比概率通过，每次检查时随机选择。方便为你的自动化添加一些随机性。",
             "fields": {
                 "percentage": {
                     "name": "百分比",
@@ -3139,7 +3142,7 @@
         },
         "cron": {
             "name": "Cron 计划",
-            "description": "按 crontab 计划触发，用于 Home Assistant 自身的时间触发器无法表达的时间安排，例如每个工作日上午七点或每月最后一个星期五。",
+            "description": "按 crontab 计划触发，用于 Home Assistant 自身的时间触发条件无法表达的时间安排，例如每个工作日上午七点或每月最后一个星期五。",
             "fields": {
                 "schedule": {
                     "name": "计划",
@@ -3211,7 +3214,7 @@
         },
         "position_reached": {
             "name": "已到达位置",
-            "description": "当窗帘或阀门到达某个位置，或越过该位置时触发。已经处于该位置的，或从不可用状态恢复时正好处于该位置的，都不算。",
+            "description": "当卷帘或阀门到达某个位置，或越过该位置时触发。已经处于该位置的，或从不可用状态恢复时正好处于该位置的，都不算。",
             "fields": {
                 "position": {
                     "name": "位置",
@@ -3394,7 +3397,7 @@
         "info": {
             "ghosts_found": "发现的幽灵",
             "ghosts_ignored": "忽略的幽灵",
-            "helpers_linked": "已链接的辅助程序",
+            "helpers_linked": "已链接的辅助元素",
             "version": "版本"
         }
     }

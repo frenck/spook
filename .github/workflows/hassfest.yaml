@@ -17,9 +17,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: actions/checkout@v7.0.1
         with:
           persist-credentials: false
 
       - name: 🚀 Run hassfest validation
-        uses: home-assistant/actions/hassfest@86d4564712fa02543c808e3a693dd04f9d3f8361 # master
+        uses: home-assistant/actions/hassfest@9e9565e68f5a70d874202871f4c4064d23814235 # master

@@ -1343,10 +1343,6 @@
                 }
             }
         },
-        "assist_duplicate_names": {
-            "title": "Assist no els distingeix: {name}",
-            "description": "Spook ha trobat un fantasma als teus assistents de veu 👻\n\nLes entitats següents estan exposades a Assist, i totes responen al nom {name}:\n\n{entities}\n\nQuan els noms són iguals, Assist només les distingeix per l'àrea: la que anomenes, o aquella on és el teu satèl·lit de veu. Algunes d'aquestes comparteixen àrea, o no en tenen cap, així que Assist no les pot identificar per aquest nom des d'enlloc. Demanar {name} llavors falla, i res no diu quines entitats hi fan nosa.\n\nPer corregir-ho, dona a cadascuna un nom o àlies propi, o mou-les a àrees diferents. Pots canviar els àlies d'una entitat, i si Assist la veu o no, a [Entitats exposades](/config/voice-assistants/expose). Les àrees es defineixen a la [pàgina d'Àrees](/config/areas/dashboard).\n\nSpook 👻 El teu col·lega."
-        },
         "automation_unknown_attribute_references": {
             "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització fa servir els atributs següents, que les seves entitats no tenen. Ni ara mateix, ni com a cosa que aquest tipus d'entitat ofereix, ni enlloc del que el registrador en recorda:\n\n{attributes}\n\n\n\nUn disparador o condició que espera un atribut que no apareix mai no es dispara mai, i no t'ho diu. Una plantilla que en llegeix un no obté res. Per corregir-ho, [edita l'automatització]({edit}) i fes servir un atribut que l'entitat tingui.\n\nSpook 👻 El teu col·lega.",
             "title": "Atributs desconeguts utilitzats a: {automation}"

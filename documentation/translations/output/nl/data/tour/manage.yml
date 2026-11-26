@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/manage.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 3
+title: Alles wat Spook aan je Home Assistant toevoegt
+description: Spook voegt acties, helpers en sensoren toe op de plekken van Home Assistant die je al gebruikt. Zoek op het spookje, en je ziet alles.
+
+hero:
+  headline: De rest van de gereedschapskist 🧰
+  title: Typ 👻. Zie alles.
+  description: Spook voegt {actions} acties, drie helpers en een sensor voor alles in je huis toe. Geen lijst om uit je hoofd te leren. Zoek op het spookje als je een actie of een helper toevoegt, en je krijgt precies wat Spook meebrengt. Dat werkt ook in elke taal.
+  screenshot: actions-ghost-search
+  alt: Het dialoogvenster Actie toevoegen van Home Assistant, gezocht op de spook-emoji, met de acties van Spook zoals Snoozen, Verhoog temperatuur en Verhoog positie.
+
+sections:
+  - headline: Je huis, geteld
+    title: Hoeveel automatiseringen waren het ook alweer?
+    description: Spook geeft Home Assistant zelf een apparaat, met een sensor voor alles in je huis. Ruimtes, automatiseringen, apparaten, entiteiten, integraties, alle 53. Zet ze op een dashboard, gebruik ze in een automatisering, of kijk gewoon hoe de getallen groeien.
+    screenshot: home-assistant-numbers
+    alt: De diagnostische sensoren van het Home Assistant-apparaat van Spook, die ruimtes, automatiseringen, knoppen en meer tellen.
+    features:
+      - title: Een getal voor alles
+        description: Van ruimtes en automatiseringen tot aangepaste integraties en zones.
+        icon: i-mdi-counter
+      - title: Met geschiedenis
+        description: Langetermijnstatistieken, net als elke andere sensor. Zie je huis groeien, of krimpen na een flinke opruimbeurt.
+        icon: i-mdi-chart-line
+      - title: Klaar voor je dashboard
+        description: Gewone sensoren, dus elke kaart en elke automatisering kan ze gebruiken.
+        icon: i-mdi-view-dashboard-outline
+
+  - headline: Helpers die Home Assistant niet heeft
+    title: Omgedraaid, gecorrigeerd en getimed.
+    description: Een schakelaar die precies verkeerd om werkt, een sensor die een graad te hoog meet, een deur waarvan je wilt weten dat hij al de hele week dicht is. De helpers van Spook lossen dat op, aangemaakt in de interface zoals elke andere helper.
+    screenshot: helpers-ghost-search
+    alt: Het dialoogvenster om een helper aan te maken in Home Assistant, gezocht op de spook-emoji, met de helpers Kalibratie, Omgekeerd en Tijd in status van Spook.
+    features:
+      - title: Omgekeerd
+        description: Aan wordt uit, open wordt dicht, en acties worden ook omgedraaid. Voor de rolluiken met de motor aan de andere kant.
+        icon: i-mdi-swap-horizontal
+      - title: Kalibratie
+        description: Corrigeert een sensor die ernaast zit, met een factor en een offset.
+        icon: i-mdi-tune-variant
+      - title: Tijd in status
+        description: Sinds wanneer de deur dicht is. Anders dan "laatst gewijzigd" begint een herstart hem niet opnieuw.
+        icon: i-mdi-timer-sand
+
+more:
+  title: Duik in de gereedschapskist
+  links:
+    - title: Alle acties
+      description: De hele lijst, met een knop om ze allemaal in je eigen Home Assistant te proberen.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Je huis, beheerd
+      description: Ruimtes, verdiepingen, labels, apparaten en entiteiten, vanuit een automatisering.
+      icon: i-mdi-home-edit-outline
+      to: /core-extensions
+    - title: Helpers
+      description: Omgekeerd, kalibratie en tijd in status, uitgelegd.
+      icon: i-mdi-tools
+      to: /helpers
+    - title: De integraties
+      description: Wat Spook toevoegt aan elk van de integraties die je gebruikt.
+      icon: i-mdi-puzzle-outline
+      to: /enhanced-integrations

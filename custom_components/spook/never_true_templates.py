@@ -29,6 +29,7 @@ from homeassistant.helpers.template import (
     result_as_boolean,
 )
 
+from .configuration_cache import CACHE_SIZE
 from .reference_extraction import without_disabled_steps, without_never_rendered
 
 if TYPE_CHECKING:
@@ -193,7 +194,7 @@ def _pieces(body: list[nodes.Node]) -> list[_Piece] | None:
     return pieces
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _output_pieces(template_str: str) -> tuple[_Piece, ...] | None:
     """Return the pieces a template's output is made of, in order.
 
@@ -210,7 +211,7 @@ def _output_pieces(template_str: str) -> tuple[_Piece, ...] | None:
     return tuple(pieces)
 
 
-@lru_cache(maxsize=1024)
+@lru_cache(maxsize=CACHE_SIZE)
 def _is_constant(template_str: str) -> bool:
     """Return whether a template is made of constants alone.
 
@@ -353,6 +354,52 @@ def never_passes(hass: HomeAssistant, role: TemplateRole, template_str: str) -> 
     return _starts_untruthy(pieces)
 
 
+@lru_cache(maxsize=CACHE_SIZE)
+def _says_false(template_str: str) -> bool:
+    """Return whether a template is the word false and nothing else.
+
+    `{{ false }}`, or `false` without any Jinja around it. Nobody ends up
+    with that by a slip of the quotes or a missing brace: it says "never" in
+    so many words. Pure in its argument, so cached.
+    """
+    # Home Assistant strips what a template renders, so whitespace around it,
+    # like the indent and line end a YAML block leaves, says nothing more.
+    template_str = template_str.strip()
+
+    if not is_template_string(template_str):
+        return template_str.lower() == "false"
+
+    try:
+        body = _JINJA_PARSER.parse(template_str).body
+    except TemplateSyntaxError:
+        return False
+
+    if len(body) != 1 or not isinstance(output := body[0], nodes.Output):
+        return False
+
+    return (
+        len(output.nodes) == 1
+        and isinstance(printed := output.nodes[0], nodes.Const)
+        and printed.value is False
+    )
+
+
+def _condition_template(condition: Any) -> str | None:
+    """Return the template of a template condition, written out or as shorthand."""
+    if isinstance(condition, str):
+        return condition if is_template_string(condition) else None
+
+    if not isinstance(condition, dict):
+        return None
+
+    kind = condition.get("condition")
+    if kind == "template":
+        return _template_text(condition.get("value_template"))
+    if isinstance(kind, str) and is_template_string(kind):
+        return kind
+    return None
+
+
 def _as_list(value: Any) -> list[Any]:
     """Return a value Home Assistant takes as one or a list, as a list."""
     if value is None:
@@ -393,9 +440,23 @@ class _Collector:
             if trigger.get("trigger", trigger.get("platform")) == "template":
                 self._add(TemplateRole.TRIGGER, trigger.get("value_template"))
 
-    def conditions(self, conditions: Any) -> None:
-        """Collect template conditions, written out or as shorthand."""
+    def conditions(self, conditions: Any, *, ends_a_loop: bool = False) -> None:
+        """Collect template conditions, written out or as shorthand.
+
+        With `ends_a_loop`, these are what a `repeat` runs `until`. One that
+        says false in so many words is left out: that is how a loop is told
+        to go on until something inside it stops the run, and it does just
+        that. Any other template that can never pass still makes a loop
+        nobody meant to be endless. #2011.
+        """
         for condition in _as_list(conditions):
+            if (
+                ends_a_loop
+                and (template_str := _condition_template(condition)) is not None
+                and _says_false(template_str)
+            ):
+                continue
+
             if isinstance(condition, str):
                 # Home Assistant takes a template on its own as a template
                 # condition. Anything else here does not load at all.
@@ -448,7 +509,7 @@ class _Collector:
 
         if isinstance(repeat := step.get("repeat"), dict):
             self.conditions(repeat.get("while"))
-            self.conditions(repeat.get("until"))
+            self.conditions(repeat.get("until"), ends_a_loop=True)
             self.actions(repeat.get("sequence"))
 
         # A branch of `parallel` is a step, or a `sequence` of them, which is

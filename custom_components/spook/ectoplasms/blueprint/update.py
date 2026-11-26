@@ -61,7 +61,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later
 from homeassistant.util import dt as dt_util, yaml as yaml_util
 
-from ...const import DOMAIN, LOGGER
+from ...const import DOMAIN, LOGGER, SCREENSHOT_HOME
 from ...entity import SpookEntity, SpookEntityDescription
 from ...listeners import async_listen_once_tracked
 
@@ -137,7 +137,12 @@ _HOME_ASSISTANTS_OWN = f"homeassistant{os.sep}"
 # release, so the first round waits a random while rather than joining the
 # stampede, and every round after it picks its own moment a day or so on rather
 # than keeping to the hour the first one happened to land on.
-_FIRST_CHECK_WINDOW = (timedelta(minutes=5), timedelta(minutes=30))
+_FIRST_CHECK_WINDOW = (
+    # The screenshot home has nobody to stampede with, and no half hour.
+    (timedelta(seconds=5), timedelta(seconds=5))
+    if SCREENSHOT_HOME
+    else (timedelta(minutes=5), timedelta(minutes=30))
+)
 _CHECK_INTERVAL = timedelta(hours=24)
 _SPREAD = timedelta(hours=4)
 

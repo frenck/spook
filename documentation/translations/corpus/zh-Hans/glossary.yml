@@ -1,0 +1,155 @@
+# The Simplified Chinese glossary, by hand.
+#
+# `terms` are words in running text: what Home Assistant calls its own things
+# in Simplified Chinese, so the docs use the words the reader sees in the
+# product. English to Simplified Chinese. Short pairs only, no sentences:
+# this file ends up in a prompt.
+#
+# `labels` overrides what glossary.generated.yml found for a bold label. Give
+# a `reason`, and either the `key` of the string that is on that screen, or a
+# `translation` when no string has it.
+#
+# Looked up in the strings of Home Assistant 2026.11.3 and Spook, 2026-11-25.
+# Not yet read by a native speaker.
+#
+# Where the frontend and Spook's own strings disagree, this follows the
+# frontend, because that is the screen the reader has open:
+# - trigger is "触发条件", the editor's word (添加触发条件). Not "触发器".
+# - helper is "辅助元素", in Spook's strings too. Not "辅助程序" or "助手".
+# - cover is "卷帘", in Spook's strings too. Not "窗帘".
+# - entity ID is "实体标识符", the frontend's word. "实体 ID" shows up once.
+# No Home Assistant word:
+# - notifier: Home Assistant has none. "通知器" is Spook's own word.
+# - snooze: Spook's own action name, "打盹".
+terms:
+  action: 动作
+  alert: 警报
+  area: 区域
+  attribute: 属性
+  automation: 自动化
+  automation editor: 自动化编辑器
+  blueprint: 蓝图
+  condition: 条件
+  cover: 卷帘
+  custom integration: 自定义集成
+  dashboard: 仪表盘
+  debug logging: 调试日志
+  device: 设备
+  diagnostics: 诊断信息
+  entity: 实体
+  entity ID: 实体标识符
+  floor: 楼层
+  helper: 辅助元素
+  icon: 图标
+  integration: 集成
+  integration entry: 集成条目
+  issue: 问题
+  label: 标签
+  logs: 日志
+  notifier: 通知器
+  repair: 修复
+  repairs dashboard: 修复页面
+  restart: 重启
+  scene: 场景
+  script: 脚本
+  sidebar: 侧边栏
+  snooze: 打盹
+  state: 状态
+  template: 模板
+  trigger: 触发条件
+  trigger ID: 触发条件标识符
+  user: 用户
+
+  # Chosen for consistency on 2026-11-25 by an agent, not by a native
+  # speaker. Three translators wrote the first pages in parallel. Most of
+  # these they already agreed on; each is the variant most pages used,
+  # unless noted. Headings, labels and table cells first, then type names.
+  how to fix it: 怎么修复
+  how to use it: 使用方法
+  how Spook checks this: Spook 怎么检查
+  technical details: 技术细节
+  known limitations: 已知限制
+  use cases: 使用场景
+  example actions in YAML: YAML 动作示例
+  example triggers in YAML: YAML 触发条件示例
+  example conditions in YAML: YAML 条件示例
+  blueprints & tutorials: 蓝图与教程
+  feature requests, ideas, and support: 功能请求、想法和支持
+  action properties: 动作属性
+  action data parameters: 动作数据参数
+  action name: 动作名称
+  action targets: 动作目标
+  action response: 动作响应
+  trigger properties: 触发条件属性
+  trigger options: 触发条件选项
+  trigger name: 触发条件名称
+  condition properties: 条件属性
+  condition options: 条件选项
+  condition name: 条件名称
+  default / example: 默认值 / 示例
+  # 110 cells against 55 that said "Spook 的影响".
+  Spook's influence: Spook 的作用
+  tools: 工具
+  # Without 的, like 新增触发条件 and 新增条件 on the other pages.
+  newly added action: 新增动作
+  newly added trigger: 新增触发条件
+  newly added condition: 新增条件
+  no response: 无响应
+  no targets: 无目标
+  optional: 可选
+  string: 字符串
+  list of strings: 字符串列表
+  integer: 整数
+  float: 浮点数
+  boolean: 布尔值
+  list: 列表
+  mapping: 映射
+  datetime: 日期时间
+  try this action: 试试这个动作
+
+labels:
+  Unknown entity:
+    key: ui.panel.config.automation.editor.actions.type.service.description.target_unknown_entity
+    reason: What the automation editor shows for an entity that no longer exists. The automatic match missed it.
+  Import:
+    translation: "导入"
+    reason: The button on this website's own blueprint cards, so it says what the site says. The automatic match came from an energy sensor state.
+  Read more:
+    translation: "阅读更多"
+    reason: The other button on this website's own blueprint cards.
+  Update:
+    key: ui.dialogs.more_info_control.update.update
+    reason: The button in the update dialog. The automatic match was the name of Spook's update sensor.
+  Major:
+    translation: Major
+    reason: The parts of a version number. Kept as they are; they are names, not words.
+  Minor:
+    translation: Minor
+    reason: The parts of a version number. The automatic match came from a severity state of another integration.
+  Patch:
+    translation: Patch
+    reason: The parts of a version number.
+  Home Assistant Link:
+    translation: Home Assistant Link
+    reason: A product name, the same in every language. It used to be called Home Assistant Cloud.
+  Submit:
+    key: ui.panel.config.integrations.config_flow.submit
+    reason: The button in the dialog that sets up an integration. Home Assistant has "Submit" on other screens with another word.
+  Finish:
+    key: ui.panel.config.integrations.config_flow.finish
+    reason: The button in the dialog that sets up an integration.
+  Ignore:
+    key: ui.panel.config.repairs.dialog.ignore
+    reason: The button in a repair, not the one for a discovered integration.
+  Repairs:
+    key: ui.panel.config.repairs.caption
+    reason: The entry under Settings.
+  Logs:
+    key: ui.panel.config.logs.caption
+    reason: The entry under Settings > System.
+  About:
+    key: ui.panel.config.info.caption
+    reason: The entry under Settings.
+  System:
+    key: ui.panel.config.dashboard.system.main
+    reason: The entry under Settings.

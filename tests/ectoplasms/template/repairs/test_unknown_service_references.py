@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from types import SimpleNamespace
 
-from pytest_homeassistant_custom_component.common import (
+from pytest_homeassistant.common import (
     MockConfigEntry,
     MockModule,
     mock_integration,

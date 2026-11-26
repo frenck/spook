@@ -1,0 +1,344 @@
+# Everything people read in the home of the screenshots, in English.
+#
+# One file per language, named after it: nl.yml, de.yml, fr.yml. A name
+# missing from another language falls back to the one here, so this file has
+# them all.
+#
+# Only the names are in here, never the IDs. The keys are the IDs: entities
+# by their domain and object ID, like `light.living_room_lamp`, and areas,
+# floors and labels by theirs. Those stay the same in every language, because
+# the website shows them in YAML examples.
+#
+# The seed refers to a name as ${light.living_room_lamp}, always inside
+# double quotes.
+
+# The name of the home, in the settings and on the map.
+home: Spook's home
+
+area:
+  # Home Assistant itself creates these three when it is onboarded, in the
+  # language of the owner. They have to be the exact names it uses, or the
+  # home ends up with every room twice.
+  living_room: Living Room
+  kitchen: Kitchen
+  bedroom: Bedroom
+  # Ours.
+  hallway: Hallway
+  attic: Attic
+
+floor:
+  ground_floor: Ground floor
+  first_floor: First floor
+  basement: Basement
+
+label:
+  night_light:
+    name: Night light
+    description: Stays on at night.
+  christmas:
+    name: Christmas
+    description: The lights that come out in December.
+
+dashboard:
+  title: Home
+  upstairs: Upstairs
+  # The name of the default dashboard in Spook's repairs. Home Assistant
+  # gives it, from `dashboard.overview.title` in the translations of its
+  # onboarding. A language without one there keeps "Overview".
+  overview: Overview
+
+light:
+  living_room_lamp: Living room lamp
+  kitchen_lights: Kitchen lights
+  hallway_light: Hallway light
+  bedroom_lamp: Bedroom lamp
+
+# The switches the lamps remember their state in.
+input_boolean:
+  living_room_lamp: Living room lamp
+  kitchen_lights: Kitchen lights
+  hallway_light: Hallway light
+  bedroom_lamp: Bedroom lamp
+  dehumidifier_power: Dehumidifier power
+  guest_mode: Guest mode
+
+input_number:
+  bedroom_temperature: Bedroom temperature
+  kitchen_fan_speed: Kitchen fan memory
+
+input_select:
+  movie_night: Movie night
+
+sensor:
+  energy_meter: Energy meter
+  living_room_thermometer: Living room temperature
+  basement_humidity: Basement humidity
+
+select:
+  ghost_mood:
+    name: Ghost mood
+    options:
+      friendly: Friendly
+      spooky: Spooky
+      sleepy: Sleepy
+
+number:
+  kitchen_fan_speed: Kitchen fan speed
+
+zone:
+  gym: Gym
+
+group:
+  downstairs_lights: Downstairs lights
+
+device_tracker:
+  new_phone: New phone
+
+automation:
+  hallway_light_at_sunset:
+    name: Hallway light at sunset
+    description: Turns on the hallway light when the sun goes down.
+  movie_night:
+    name: Movie night
+    description: Dims the living room when the TV starts playing.
+  weekday_morning_lights:
+    name: Weekday morning lights
+    description: Kitchen lights on at half past six on weekdays, once.
+  garage_lights_off_at_night:
+    name: Garage lights off at night
+    description: Turns off everything in the garage at midnight.
+  doorbell_flash:
+    name: Doorbell flash
+    description: Flashes the hallway when someone rings.
+  automation_off_reminder:
+    name: Automation turned off by hand
+    description: Lets me know when somebody turns an automation off.
+    message: An automation was turned off. Remember to turn it back on.
+  new_device_found:
+    name: New device found
+    description: Tells me when Home Assistant discovers something new.
+    message: Home Assistant found a new device.
+  front_door_sensor_back:
+    name: Front door sensor is back
+    description: Tells me when the front door sensor works again after a while away.
+    message: The front door sensor is back.
+  new_device_added:
+    name: New device added
+    description: Tells me when a device is added to the home.
+    message: A new device was added.
+  living_room_sensor_quiet:
+    name: Living room sensor gone quiet
+    description: Tells me when the living room temperature has not changed for an hour.
+    message: The living room temperature sensor has gone quiet. Battery?
+  new_integration:
+    name: New integration
+    description: Tells me when an integration is added.
+    message: A new integration was added.
+  integration_failed:
+    name: Integration failed
+    description: Tells me when an integration still fails to set up after a quarter of an hour.
+    message: An integration fails to set up.
+  blinds_down_lamp_on:
+    name: Lamp on when the blinds go down
+    description: Turns on the living room lamp once the blinds are down to 30%.
+  repairs_news:
+    name: Repairs news
+    description: Tells me when a serious repair shows up, and when one is resolved.
+    message: Something changed under Repairs.
+  bedroom_warm:
+    name: Bedroom is warm
+    description: Tells me when the bedroom thermostat reaches its temperature.
+    message: The bedroom is warm.
+  hot_water_ready:
+    name: Hot water for the morning shower
+    description: At seven, tells me when the boiler is hot.
+    message: The hot water is ready.
+  update_installed:
+    name: Update installed
+    description: Tells me when an update is installed.
+    message: An update was installed.
+  ghost_goes_to_sleep:
+    name: Ghost goes to sleep
+    description: Puts the ghost to sleep when the goodnight script starts.
+  door_opens_hallway_light:
+    name: Hallway light when a door opens
+    description: Turns on the hallway light when any door opens.
+  new_user:
+    name: New user
+    description: Tells me when a user is added to Home Assistant.
+    message: A new user was added.
+  welcome_home:
+    name: Welcome home
+    description: Living room lamp on when the phone comes home and the front door opens, within five minutes.
+  door_settled:
+    name: Hallway light off when the door settles
+    description: Turns off the hallway light once the front door has been left alone for 30 seconds.
+  coming_in:
+    name: Coming in
+    description: Living room lamp on when the front door opens and closes again within two minutes.
+  front_door_still_open:
+    name: Front door still open
+    description: Reminds me every ten minutes while the front door is open.
+    message: The front door is still open.
+  nobody_up_yet:
+    name: Nobody up yet
+    description: Tells me when the kitchen lights stay off for an hour after seven.
+    message: Nobody is up yet.
+  front_door_sensor_acting_up:
+    name: Front door sensor acting up
+    description: Tells me when the front door sensor changes five times in five minutes.
+    message: The front door sensor will not settle.
+  blinds_down_when_warm:
+    name: Blinds down when it gets warm
+    description: Closes the living room blinds when the living room gets warmer than 25 °C.
+  lamp_off_by_itself:
+    name: Lamp turned off by itself
+    description: Tells me when the living room lamp turns off and no person did it.
+    message: The living room lamp turned off by itself.
+  spooky_surprise:
+    name: Spooky surprise
+    description: Some evenings, one in five, the ghost gets spooky.
+  follow_the_hallway:
+    name: Follow the hallway
+    description: Living room lamp on when the sunset automation turns on the hallway light.
+  morning_repairs_check:
+    name: Morning repairs check
+    description: At nine, tells me when something serious waits under Repairs.
+    message: Repairs are waiting.
+  doorbell_light:
+    name: Doorbell light
+    description: Turns on the hallway light when someone rings, three times an hour at most.
+  morning_radio_volume:
+    name: Morning radio volume
+    description: Turns the kitchen speaker down at half past seven, when it is there.
+  front_door_light:
+    name: Hallway light when the front door opens
+    description: Made from the door light blueprint.
+
+script:
+  goodnight: Goodnight
+
+scene:
+  cozy_evening: Cozy evening
+
+category:
+  lighting: Lighting
+
+user:
+  babysitter: Babysitter
+
+binary_sensor:
+  front_door: Front door
+
+climate:
+  bedroom_thermostat: Bedroom thermostat
+
+water_heater:
+  boiler: Boiler
+
+media_player:
+  kitchen_speaker: Kitchen speaker
+
+cover:
+  living_room_blinds: Living room blinds
+
+valve:
+  garden_tap: Garden tap
+
+humidifier:
+  basement_dehumidifier: Basement dehumidifier
+
+counter:
+  coffee_cups: Coffee cups
+
+input_button:
+  doorbell: Doorbell
+
+input_datetime:
+  alarm_clock: Alarm clock
+
+input_text:
+  welcome_message: Welcome message
+
+schedule:
+  heating: Heating schedule
+
+timer:
+  laundry: Laundry
+
+calendar:
+  family: Family
+
+todo:
+  shopping_list: Shopping list
+
+blueprints:
+  door_light:
+    name: Light on when a door opens
+    description: Turns on a light when a door opens.
+    new_description: Turns on a light when a door opens, and off again after a while.
+    door: Door
+    light: Light
+    wait_time: Time before the light goes off again
+  doorbell_flash:
+    name: Flash a light when the doorbell rings
+    description: Flashes a light once when somebody presses the doorbell.
+    doorbell: Doorbell
+    light: Light
+
+# What the action shots type into the Actions tool: new things to create,
+# and aliases to give.
+examples:
+  new_area: Secret room
+  new_area_alias: Hideout
+  area_alias: Lounge
+  other_area_alias: Front room
+  new_floor: Second floor
+  new_floor_alias: Upstairs
+  floor_alias: Downstairs
+  other_floor_alias: Street level
+  new_label: Haunted
+  new_label_description: Things that turn on by themselves.
+  new_entity_name: Hall light
+  new_input_number: Pool temperature
+  new_zone: Office
+  new_repair: The ghost is hungry
+  new_repair_description: Feed it a cookie, and this repair goes away.
+  renamed_label: Night lights
+  new_category: Security
+  renamed_category: Lights
+  device_name: Sky watcher
+  entity_alias: Reading lamp
+  other_entity_alias: Corner lamp
+  calendar_event: Dentist
+  new_counter: Cookies eaten
+  new_input_boolean: Vacation mode
+  new_input_button: Feed the ghost
+  new_input_datetime: Wake-up time
+  house_mode:
+    name: House mode
+    options:
+      home: Home
+      away: Away
+      night: Night
+  new_input_text: Note on the fridge
+  new_schedule: Watering the garden
+  new_timer: Pizza
+  todo_item: Milk
+  calibration: Living room temperature, corrected
+  time_in_state: Front door closed since
+
+# A word to search the Add action dialog for, the way somebody would type it
+# to find Spook's actions of a topic. It comes from Spook's own translations
+# of those actions. No English fallback here: a language without a word
+# skips that shot, rather than searching German actions for an English word.
+search:
+  area: area
+  floor: floor
+  label: label
+  input_number: input number
+  number: number
+  input_select: options
+  person: device tracker
+  zone: zone
+  repairs: repair

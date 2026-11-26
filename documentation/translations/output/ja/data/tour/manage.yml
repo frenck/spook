@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/manage.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 3
+title: SpookがHome Assistantに追加するものすべて
+description: Spookは、すでに使っているHome Assistantの場所にアクション、ヘルパー、センサーを追加します。ゴーストで検索すれば、全部見えます。
+
+hero:
+  headline: 道具箱のその他 🧰
+  title: 👻と入力。全部見えます。
+  description: Spookは{actions}個のアクション、3つのヘルパー、そして家の中のあらゆるものを数えるセンサーを追加します。覚えるリストはありません。アクションやヘルパーを追加するときにゴーストで検索すれば、Spookが持ってくるものだけが出てきます。どの言語でも使えます。
+  screenshot: actions-ghost-search
+  alt: Home Assistantの「アクションを追加」ダイアログ。ゴーストの絵文字で検索し、スヌーズ、温度を上げる、位置を上げるなどのSpookのアクションが一覧になっています。
+
+sections:
+  - headline: 家を数える
+    title: オートメーション、いくつあったっけ？
+    description: SpookはHome Assistant自体にデバイスを1つ作り、家の中のあらゆるものにセンサーを付けます。エリア、オートメーション、デバイス、エンティティ、統合など、全部で53個。ダッシュボードに置いたり、オートメーションで使ったり、数が増えるのをただ眺めたり。
+    screenshot: home-assistant-numbers
+    alt: SpookのHome Assistantデバイスの診断センサー。エリア、オートメーション、ボタンなどを数えています。
+    features:
+      - title: あらゆるものに数字を
+        description: エリアやオートメーションから、カスタム統合やゾーンまで。
+        icon: i-mdi-counter
+      - title: 履歴付き
+        description: ほかのセンサーと同じく、長期統計があります。家が育っていく様子や、しっかり片付けたあとに小さくなる様子が見えます。
+        icon: i-mdi-chart-line
+      - title: ダッシュボードにそのまま
+        description: 普通のセンサーなので、どのカードもどのオートメーションも使えます。
+        icon: i-mdi-view-dashboard-outline
+
+  - headline: Home Assistantにないヘルパー
+    title: 反転して、補正して、時間を計る。
+    description: 逆向きに動くスイッチ、1度高く出るセンサー、1週間ずっと閉まっていたかを知りたいドア。Spookのヘルパーがそれを解決します。ほかのヘルパーと同じくUIで作れます。
+    screenshot: helpers-ghost-search
+    alt: Home Assistantの「ヘルパーを作成」ダイアログ。ゴーストの絵文字で検索し、Spookのキャリブレーション、反転、状態の継続時間のヘルパーが表示されています。
+    features:
+      - title: 反転
+        description: オンはオフに、開は閉になり、アクションも反転します。モーターが反対側に付いたブラインドのために。
+        icon: i-mdi-swap-horizontal
+      - title: キャリブレーション
+        description: ずれた値を出すセンサーを、係数とオフセットで補正します。
+        icon: i-mdi-tune-variant
+      - title: 状態の継続時間
+        description: ドアがいつから閉まっているか。「最終変更」と違って、再起動してもやり直しになりません。
+        icon: i-mdi-timer-sand
+
+more:
+  title: 道具箱を掘り下げる
+  links:
+    - title: すべてのアクション
+      description: 全一覧。それぞれ、自分のHome Assistantで試せるボタン付きです。
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: 家を管理する
+      description: エリア、フロア、ラベル、デバイス、エンティティを、オートメーションから。
+      icon: i-mdi-home-edit-outline
+      to: /core-extensions
+    - title: ヘルパー
+      description: 反転、キャリブレーション、状態の継続時間の説明。
+      icon: i-mdi-tools
+      to: /helpers
+    - title: 統合
+      description: 使っている統合ごとに、Spookが追加するもの。
+      icon: i-mdi-puzzle-outline
+      to: /enhanced-integrations

@@ -1,0 +1,321 @@
+# Everything people read in the home of the screenshots, in Japanese. The
+# keys and how it works: see en.yml. A name missing here is the English one.
+
+home: Spookの家
+
+area:
+  # The names Home Assistant gives these when it is onboarded in Japanese.
+  living_room: リビングルーム
+  kitchen: 台所
+  bedroom: 寝室
+  hallway: 廊下
+  attic: 屋根裏
+
+floor:
+  ground_floor: 1階
+  first_floor: 2階
+  basement: 地下
+
+label:
+  night_light:
+    name: 常夜灯
+    description: 夜の間ずっとついています。
+  christmas:
+    name: クリスマス
+    description: 12月にだけ出してくる照明。
+
+dashboard:
+  title: 家
+  upstairs: 上の階
+  # Home Assistant's own name for the default dashboard in Japanese.
+  overview: 概要
+
+light:
+  living_room_lamp: リビングのランプ
+  kitchen_lights: 台所の照明
+  hallway_light: 廊下の照明
+  bedroom_lamp: 寝室のランプ
+
+input_boolean:
+  living_room_lamp: リビングのランプ
+  kitchen_lights: 台所の照明
+  hallway_light: 廊下の照明
+  bedroom_lamp: 寝室のランプ
+  dehumidifier_power: 除湿機の電源
+  guest_mode: ゲストモード
+
+input_number:
+  bedroom_temperature: 寝室の温度
+  kitchen_fan_speed: 換気扇の強さの記憶
+
+input_select:
+  movie_night: 映画の夜
+
+sensor:
+  energy_meter: 電力量計
+  living_room_thermometer: リビングの温度
+  basement_humidity: 地下室の湿度
+
+select:
+  ghost_mood:
+    name: ゴーストの気分
+    options:
+      friendly: 友好的
+      spooky: 不気味
+      sleepy: 眠い
+
+number:
+  kitchen_fan_speed: 換気扇の強さ
+
+zone:
+  gym: ジム
+
+group:
+  downstairs_lights: 1階の照明
+
+device_tracker:
+  new_phone: 新しいスマートフォン
+
+automation:
+  hallway_light_at_sunset:
+    name: 日没に廊下の照明をつける
+    description: 日が沈んだら廊下の照明をつけます。
+  movie_night:
+    name: 映画の夜
+    description: テレビの再生が始まったらリビングを暗くします。
+  weekday_morning_lights:
+    name: 平日の朝の照明
+    description: 平日の朝6時半に台所の照明を一度だけつけます。
+  garage_lights_off_at_night:
+    name: 夜にガレージの照明を消す
+    description: 真夜中にガレージのものをすべて消します。
+  doorbell_flash:
+    name: 呼び鈴で点滅
+    description: 誰かが呼び鈴を押したら廊下の照明を点滅させます。
+  automation_off_reminder:
+    name: オートメーションが手動でオフに
+    description: 誰かがオートメーションをオフにしたら知らせます。
+    message: オートメーションがオフになりました。オンに戻すのを忘れずに。
+  new_device_found:
+    name: 新しいデバイスを発見
+    description: Home Assistant が新しいものを見つけたら知らせます。
+    message: Home Assistant が新しいデバイスを見つけました。
+  front_door_sensor_back:
+    name: 玄関センサーが復帰
+    description: しばらく応答のなかった玄関ドアのセンサーがまた動き出したら知らせます。
+    message: 玄関ドアのセンサーが復帰しました。
+  new_device_added:
+    name: 新しいデバイスを追加
+    description: 家にデバイスが追加されたら知らせます。
+    message: 新しいデバイスが追加されました。
+  living_room_sensor_quiet:
+    name: リビングのセンサーが沈黙
+    description: リビングの温度が 1 時間変わらなかったら知らせます。
+    message: リビングの温度センサーが沈黙しています。電池切れ？
+  new_integration:
+    name: 新しい統合
+    description: 統合が追加されたら知らせます。
+    message: 新しい統合が追加されました。
+  integration_failed:
+    name: 統合のセットアップ失敗
+    description: 統合が 15 分たってもセットアップできなければ知らせます。
+    message: セットアップできない統合があります。
+  blinds_down_lamp_on:
+    name: ブラインドが下りたらランプをオン
+    description: ブラインドが 30% まで下りたらリビングのランプをつけます。
+  repairs_news:
+    name: 修復のお知らせ
+    description: 深刻な修復項目が出たとき、そして解決したときに知らせます。
+    message: 修復に変化がありました。
+  bedroom_warm:
+    name: 寝室が暖まった
+    description: 寝室のサーモスタットが設定温度に達したら知らせます。
+    message: 寝室が暖まりました。
+  hot_water_ready:
+    name: 朝のシャワー用のお湯
+    description: 7 時に給湯器が熱くなっているか知らせます。
+    message: お湯の準備ができました。
+  update_installed:
+    name: アップデートをインストール
+    description: アップデートがインストールされたら知らせます。
+    message: アップデートがインストールされました。
+  ghost_goes_to_sleep:
+    name: ゴーストのおやすみ
+    description: おやすみスクリプトが始まったらゴーストを寝かせます。
+  door_opens_hallway_light:
+    name: ドアが開いたら廊下の照明
+    description: どこかのドアが開いたら廊下の照明をつけます。
+  new_user:
+    name: 新しいユーザー
+    description: Home Assistant にユーザーが追加されたら知らせます。
+    message: 新しいユーザーが追加されました。
+  welcome_home:
+    name: おかえりなさい
+    description: スマホが帰宅して玄関ドアが開いたら、5 分以内ならリビングのランプをつけます。
+  door_settled:
+    name: ドアが落ち着いたら廊下を消灯
+    description: 玄関ドアが 30 秒動かなかったら廊下の照明を消します。
+  coming_in:
+    name: 帰ってきた
+    description: 玄関ドアが開いて 2 分以内に閉まったらリビングのランプをつけます。
+  front_door_still_open:
+    name: 玄関ドアが開いたまま
+    description: 玄関ドアが開いている間、10 分ごとに知らせます。
+    message: 玄関ドアがまだ開いています。
+  nobody_up_yet:
+    name: まだ誰も起きていない
+    description: 7 時を過ぎて 1 時間キッチンの照明が消えたままなら知らせます。
+    message: まだ誰も起きていません。
+  front_door_sensor_acting_up:
+    name: 玄関センサーの様子が変
+    description: 玄関ドアのセンサーが 5 分間に 5 回変わったら知らせます。
+    message: 玄関ドアのセンサーが落ち着きません。
+  blinds_down_when_warm:
+    name: 暑くなったらブラインドを下ろす
+    description: リビングが 25 °C を超えたらリビングのブラインドを閉めます。
+  lamp_off_by_itself:
+    name: ランプが勝手に消えた
+    description: 誰も触っていないのにリビングのランプが消えたら知らせます。
+    message: リビングのランプが勝手に消えました。
+  spooky_surprise:
+    name: 不気味なサプライズ
+    description: 5 晩に 1 晩くらい、ゴーストが不気味になります。
+  follow_the_hallway:
+    name: 廊下に合わせる
+    description: 日没のオートメーションが廊下の照明をつけたら、リビングのランプもつけます。
+  morning_repairs_check:
+    name: 朝の修復チェック
+    description: 9 時に、修復に深刻なものが残っていれば知らせます。
+    message: 修復が待っています。
+  doorbell_light:
+    name: ドアベルの照明
+    description: ドアベルが鳴ったら廊下の照明をつけます。1 時間に 3 回まで。
+  morning_radio_volume:
+    name: 朝のラジオの音量
+    description: 7 時半に、キッチンのスピーカーがあれば音量を下げます。
+  front_door_light:
+    name: 玄関ドアが開いたら廊下の照明
+    description: ドアの照明ブループリントから作成。
+
+script:
+  goodnight: おやすみ
+
+scene:
+  cozy_evening: くつろぎの夜
+
+category:
+  lighting: 照明
+
+user:
+  babysitter: ベビーシッター
+
+binary_sensor:
+  front_door: 玄関ドア
+
+climate:
+  bedroom_thermostat: 寝室のサーモスタット
+
+water_heater:
+  boiler: 給湯器
+
+media_player:
+  kitchen_speaker: キッチンのスピーカー
+
+cover:
+  living_room_blinds: リビングのブラインド
+
+valve:
+  garden_tap: 庭の蛇口
+
+humidifier:
+  basement_dehumidifier: 地下室の除湿機
+
+counter:
+  coffee_cups: コーヒーの杯数
+
+input_button:
+  doorbell: ドアベル
+
+input_datetime:
+  alarm_clock: 目覚まし
+
+input_text:
+  welcome_message: ウェルカムメッセージ
+
+schedule:
+  heating: 暖房スケジュール
+
+timer:
+  laundry: 洗濯
+
+calendar:
+  family: 家族
+
+todo:
+  shopping_list: 買い物リスト
+
+blueprints:
+  door_light:
+    name: ドアが開いたら照明をオン
+    description: ドアが開いたら照明をつけます。
+    new_description: ドアが開いたら照明をつけ、しばらくしたら消します。
+    door: ドア
+    light: 照明
+    wait_time: 照明が消えるまでの時間
+  doorbell_flash:
+    name: ドアベルが鳴ったら照明を点滅
+    description: 誰かがドアベルを押したら照明を一度点滅させます。
+    doorbell: ドアベル
+    light: 照明
+
+examples:
+  new_area: 隠し部屋
+  new_area_alias: 隠れ家
+  area_alias: 居間
+  other_area_alias: 応接間
+  new_floor: 3階
+  new_floor_alias: 上の階
+  floor_alias: 下の階
+  other_floor_alias: 道路側の階
+  new_label: お化け屋敷
+  new_label_description: 勝手にオンになるもの。
+  new_entity_name: 玄関の照明
+  new_input_number: プールの温度
+  new_zone: オフィス
+  new_repair: ゴーストがお腹をすかせています
+  new_repair_description: クッキーを1枚あげれば、この修復は消えます。
+  renamed_label: 常夜灯
+  new_category: セキュリティ
+  renamed_category: ランプ
+  device_name: 空の見張り番
+  entity_alias: 読書灯
+  other_entity_alias: コーナーランプ
+  calendar_event: 歯医者
+  new_counter: 食べたクッキー
+  new_input_boolean: バケーションモード
+  new_input_button: ゴーストにごはん
+  new_input_datetime: 起きる時間
+  house_mode:
+    name: 家のモード
+    options:
+      home: 在宅
+      away: 外出
+      night: 夜間
+  new_input_text: 冷蔵庫のメモ
+  new_schedule: 庭の水やり
+  new_timer: ピザ
+  todo_item: 牛乳
+  calibration: リビングの温度（補正済み）
+  time_in_state: 玄関ドアが閉まってから
+
+# From Spook's own Japanese action names, the way somebody types them.
+search:
+  area: エリア
+  floor: フロア
+  label: ラベル
+  input_number: 数値入力
+  number: 数値
+  input_select: オプション
+  person: デバイストラッカー
+  zone: ゾーン
+  repairs: 問題

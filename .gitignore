@@ -105,11 +105,22 @@ node_modules/
 # Deepcode AI
 .dccache
 
-# Mystjs
-.ipynb_checkpoints
-_build
+# Screenshots and console logs of the Playwright browser tool
+.playwright-mcp/
+
+# Documentation
+# The machine translations are generated, but committed: the site is built
+# from them. The Cookiecutter rule above would hide them.
+!documentation/translations/output/
+.data/
+.nuxt/
+.output/
+documentation/dist
 
 # Devcontainer
 config
 !.vscode/tasks.json
 !.vscode/launch.json
+
+# Screenshot tool: tokens and results of the last run
+documentation/screenshots/.state/

@@ -9,7 +9,7 @@ import sys
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant.common import async_fire_time_changed
 
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er

@@ -18,8 +18,19 @@ from ....repairs import AbstractSpookRepair
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from homeassistant.core import Event
+    from homeassistant.core import Event, State
     from homeassistant.helpers.entity_component import EntityComponent
+
+
+# The state attribute a person lists its device trackers in. Spelled out:
+# `PersonEntityStateAttribute` is younger than the oldest Home Assistant
+# Spook supports.
+_DEVICE_TRACKERS = "device_trackers"
+
+
+def _trackers_of(state: State | None) -> Any:
+    """Return the device trackers a person's state lists, if any."""
+    return None if state is None else state.attributes.get(_DEVICE_TRACKERS)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -37,7 +48,6 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
-    inspect_on_reload = True
     automatically_clean_up_issues = True
 
     async def async_activate(self) -> None:
@@ -69,7 +79,7 @@ class SpookRepair(AbstractSpookRepair):
 
         @callback
         def _async_call_inspect_debouncer(_: Event) -> None:
-            """Trigger an inspection when a device tracker appears or goes."""
+            """Trigger an inspection."""
             self.inspect_debouncer.async_schedule_call()
 
         self._event_subs.add(
@@ -77,6 +87,32 @@ class SpookRepair(AbstractSpookRepair):
                 EVENT_STATE_CHANGED,
                 _async_call_inspect_debouncer,
                 event_filter=_tracker_entity_changed,
+            ),
+        )
+
+        # A person changes in place: a `person.reload`, or an edit in the
+        # UI, hands the new configuration to the entity that is already
+        # there, which then writes a state listing its device trackers. That
+        # state is the moment there is something new to look at. The reload
+        # being called comes before anything was reloaded, and an edit in
+        # the UI sends nothing else at all. A person coming or going lists
+        # them where there was nothing before, or the other way around.
+        @callback
+        def _trackers_of_a_person_changed(event_data: Mapping[str, Any]) -> bool:
+            """Return if a person now lists other device trackers."""
+            entity_id = event_data.get("entity_id")
+            return (
+                isinstance(entity_id, str)
+                and entity_id.startswith(f"{person.DOMAIN}.")
+                and _trackers_of(event_data.get("old_state"))
+                != _trackers_of(event_data.get("new_state"))
+            )
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _async_call_inspect_debouncer,
+                event_filter=_trackers_of_a_person_changed,
             ),
         )
 

@@ -1,0 +1,13 @@
+# The spaces French puts around punctuation. The assembler writes them, so a
+# model or a person who types a plain space cannot get it wrong.
+#
+# A non-breaking space (U+00A0) goes before every mark in `before`, and
+# inside every pair of quotes in `inside`. Only in prose: never in code,
+# links, URLs, component props or front matter keys. A mark with something
+# right behind it, like the colon in `08:00`, is not punctuation and stays.
+#
+# Another language opts in with a file like this one in its own directory.
+non_breaking_space:
+  before: [":", ";", "!", "?"]
+  inside:
+    - ["«", "»"]

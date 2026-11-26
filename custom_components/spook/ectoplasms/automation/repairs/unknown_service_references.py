@@ -34,7 +34,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         EVENT_SERVICE_REMOVED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
 
     unavailable_entity_class = automation.UnavailableAutomationEntity
     entity_label = "automation"
@@ -53,4 +52,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
             self.hass,
             services=async_find_services_in_sequence(entity.action_script.sequence),
             known_services=self._known_services,
+            made_from_blueprint=getattr(entity, "referenced_blueprint", None)
+            is not None,
         )
