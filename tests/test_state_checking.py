@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 from pytest_homeassistant.components.recorder.common import (
@@ -27,6 +27,7 @@ from homeassistant.util import dt as dt_util
 
 from custom_components.spook import state_checking
 from custom_components.spook.state_checking import (
+    async_listen_for_awaited_states,
     DATA_STATE_KNOWLEDGE,
     UnknownState,
     async_domain_states,
@@ -776,3 +777,68 @@ async def test_answer_dropped_while_reading_news_is_not_continued(
     assert count_recorder_reads[-1]["light.tv"] is not None
 
     assert hass.data[DATA_STATE_KNOWLEDGE]["light.tv"].answer is None
+
+
+@pytest.mark.parametrize(
+    ("entity_id", "old", "new", "looks"),
+    [
+        (
+            "input_select.mode",
+            {"options": ["home", "away"]},
+            {"options": ["home", "away", "Away"]},
+            1,
+        ),
+        ("select.mode", {"options": ["home"]}, {"options": ["home", "Away"]}, 1),
+        ("input_select.mode", {"options": ["home", "away"]}, None, 1),
+        (
+            "input_select.mode",
+            {"options": ["home", "Away"]},
+            {"options": ["home", "Away"]},
+            0,
+        ),
+        (
+            "sensor.washer",
+            {"device_class": "enum", "options": ["idle", "Away"]},
+            {"device_class": "enum", "options": ["idle", "Away"]},
+            0,
+        ),
+        ("input_select.other", {"options": ["home"]}, {"options": ["Away"]}, 0),
+    ],
+    ids=[
+        "option added",
+        "select option added",
+        "entity in that state now",
+        "options unchanged",
+        "enum sensor updating",
+        "entity not waited on",
+    ],
+)
+async def test_looks_again_once_an_awaited_state_is_possible(
+    hass: HomeAssistant,
+    entity_id: str,
+    old: dict[str, Any],
+    new: dict[str, Any] | None,
+    looks: int,
+) -> None:
+    """Test a look comes once an entity offers or is in a state it was missing.
+
+    Only the update it shows up in: one that keeps offering it is no news.
+    """
+    awaited = {"input_select.mode": frozenset({"Away"})}
+    awaited["select.mode"] = frozenset({"Away"})
+    awaited["sensor.washer"] = frozenset({"Away"})
+    asked: list[None] = []
+    stop = async_listen_for_awaited_states(
+        hass, lambda: awaited, lambda: asked.append(None)
+    )
+
+    hass.states.async_set(entity_id, "home", old)
+    await hass.async_block_till_done()
+    asked.clear()
+    hass.states.async_set(
+        entity_id, "Away" if new is None else "home", old if new is None else new
+    )
+    await hass.async_block_till_done()
+    stop()
+
+    assert len(asked) == looks

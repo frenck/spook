@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import asyncio
+from collections import defaultdict
 from collections.abc import Coroutine
 from contextlib import suppress
 from dataclasses import dataclass, field
@@ -98,7 +99,7 @@ from .reference_extraction import (
 )
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
 from .repair_documentation import repair_documentation_url
-from .state_checking import async_unknown_states
+from .state_checking import async_listen_for_awaited_states, async_unknown_states
 from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
@@ -1426,6 +1427,27 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
     reference_label = "states"
     finding_line = "- `{name}` for `{entity_id}`"
 
+    _states_awaited: dict[str, frozenset[str]]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair, waiting on nothing yet."""
+        super().__init__(hass)
+        self._states_awaited = {}
+
+    async def async_activate(self) -> None:
+        """Look again once an entity can be in a state it was reported for."""
+        await super().async_activate()
+        self._event_subs.add(
+            async_listen_for_awaited_states(
+                self.hass, lambda: self._states_awaited, self._async_look_again
+            )
+        )
+
+    @callback
+    def _async_look_again(self) -> None:
+        """Ask for another look."""
+        self.inspect_debouncer.async_schedule_call()
+
     def _references_in(self, config: dict[str, Any]) -> NamedReferences:
         """Return the states a configuration names, and of which entities."""
         return extract_state_references_from_config(config)
@@ -1456,6 +1478,15 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
             )
             for finding in await async_unknown_attribute_values(self.hass, values)
         )
+
+        # Replaced every round, so what is fixed or gone is no longer waited on.
+        awaited: dict[str, set[str]] = defaultdict(set)
+        for finding in unknown:
+            if isinstance(finding.name, str):
+                awaited[finding.entity_id].add(finding.name)
+        self._states_awaited = {
+            entity_id: frozenset(states) for entity_id, states in awaited.items()
+        }
         return unknown
 
 

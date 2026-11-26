@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -310,3 +311,74 @@ async def test_own_name_hides_the_function(
     await SpookRepair(hass).async_inspect()
 
     assert async_issue_about(issue_registry, ISSUE) is None
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_an_option_added_later_gets_a_look(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an input select getting the option reported missing gets a look.
+
+    `set_options`, an edit in the UI or a reload give it new options and do
+    nothing else: no registry hears it, no entity comes or goes. The issue
+    stayed until the daily look.
+    """
+    assert await async_setup_component(
+        hass,
+        "input_select",
+        {"input_select": {"mode": {"options": ["home", "away"]}}},
+    )
+    await hass.async_block_till_done()
+    await async_wait_recording_done(hass)
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "triggers": [
+                        {
+                            "trigger": "state",
+                            "entity_id": "input_select.mode",
+                            "to": "Away",
+                        }
+                    ],
+                    "actions": [],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    await repair.async_inspect()
+    assert async_issue_about(issue_registry, ISSUE)
+
+    repair.inspect_debouncer.async_shutdown()
+    looks: list[None] = []
+    repair.inspect_debouncer = SimpleNamespace(  # type: ignore[assignment]
+        async_schedule_call=lambda: looks.append(None),
+        async_shutdown=lambda: None,
+    )
+
+    await hass.services.async_call(
+        "input_select",
+        "set_options",
+        {"entity_id": "input_select.mode", "options": ["home", "away", "Away"]},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+    # Selecting another option is no news: nothing awaited is new in it.
+    await hass.services.async_call(
+        "input_select",
+        "select_option",
+        {"entity_id": "input_select.mode", "option": "away"},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+    await repair.async_deactivate()
+
+    assert looks == [None]
