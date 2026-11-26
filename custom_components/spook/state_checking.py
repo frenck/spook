@@ -24,15 +24,15 @@ from enum import StrEnum
 import importlib
 import inspect
 import sys
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 
 from homeassistant.components.recorder import is_entity_recorded
 from homeassistant.components.recorder.db_schema import States
-from homeassistant.const import STATE_UNAVAILABLE, STATE_UNKNOWN
-from homeassistant.core import split_entity_id
+from homeassistant.const import EVENT_STATE_CHANGED, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.core import callback, split_entity_id
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.recorder import get_instance, session_scope
 from homeassistant.util import dt as dt_util
@@ -49,13 +49,13 @@ from .attribute_checking import (
 from .const import LOGGER
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping
+    from collections.abc import Callable, Iterable, Mapping
     from datetime import datetime
     from types import ModuleType
 
     from sqlalchemy.orm import Session
 
-    from homeassistant.core import HomeAssistant, State
+    from homeassistant.core import Event, HomeAssistant, State
 
 # The domains whose states core lists in an enum of their own, and where it
 # lives. Only where to find it: the states themselves are read from core, so
@@ -273,6 +273,60 @@ def _offered(domain: str, state: State) -> set[str]:
     if not isinstance(options, list | tuple):
         return set()
     return {option for option in options if isinstance(option, str)}
+
+
+@callback
+def async_listen_for_awaited_states(
+    hass: HomeAssistant,
+    awaited: Callable[[], Mapping[str, frozenset[str]]],
+    action: Callable[[], None],
+) -> Callable[[], None]:
+    """Call ``action`` once an entity can be in a state it was reported for.
+
+    An entity offers it as an option now, or is in it. A select or an input
+    select gets new options without anything else happening to it, by
+    `set_options`, an edit in the UI or a reload, and what was reported as
+    never possible for it stays reported until the next look otherwise.
+
+    Only the update it shows up in: an enum sensor that updates every second
+    must not bring a look, and the recorder question that comes with it,
+    each time. ``awaited`` is asked every time, so it can change.
+    """
+
+    @callback
+    def _an_awaited_state_became_possible(event_data: Mapping[str, Any]) -> bool:
+        """Return whether an entity just became able to be an awaited state."""
+        entity_id = event_data["entity_id"]
+        if (states := awaited().get(entity_id)) is None:
+            return False
+        if (new_state := event_data.get("new_state")) is None:
+            return False
+
+        domain = split_entity_id(entity_id)[0]
+
+        def _possible(state: State | None) -> set[str]:
+            if state is None:
+                return set()
+            return ({state.state} | _offered(domain, state)) & states
+
+        return bool(_possible(new_state) - _possible(event_data.get("old_state")))
+
+    @callback
+    def _look_again(event: Event) -> None:
+        # Noted right away: an option can be gone again by the time the look
+        # comes, and it was real all the same.
+        entity_id = event.data["entity_id"]
+        new_state = event.data["new_state"]
+        knowledge = _knowledge(hass, entity_id)
+        knowledge.see(new_state.state)
+        knowledge.offered |= _offered(split_entity_id(entity_id)[0], new_state)
+        action()
+
+    return hass.bus.async_listen(
+        EVENT_STATE_CHANGED,
+        _look_again,
+        event_filter=_an_awaited_state_became_possible,
+    )
 
 
 def entity_object(hass: HomeAssistant, entity_id: str) -> object | None:
