@@ -110,6 +110,34 @@ async def test_gives_up_on_a_reload_that_failed(
     assert not calls
 
 
+async def test_follows_overlapping_reloads_each(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Test two reloads under way at once are each followed when done.
+
+    Both start from the same customizations. The first one to finish must
+    not end the wait for the other.
+    """
+    calls: list[None] = []
+    stop = async_follow_customize_reloads(hass, lambda: calls.append(None))
+    reload_call = {"domain": "homeassistant", "service": "reload_core_config"}
+
+    hass.bus.async_fire(EVENT_CALL_SERVICE, reload_call)
+    hass.bus.async_fire(EVENT_CALL_SERVICE, reload_call)
+    await hass.async_block_till_done()
+
+    hass.data[DATA_CUSTOMIZE] = object()  # type: ignore[assignment]
+    await _let_time_pass(hass, freezer, 1)
+    assert calls == [None]
+
+    await _let_time_pass(hass, freezer, 3)
+    hass.data[DATA_CUSTOMIZE] = object()  # type: ignore[assignment]
+    await _let_time_pass(hass, freezer, 1)
+    stop()
+
+    assert calls == [None, None]
+
+
 async def test_stopping_drops_a_wait_under_way(
     hass: HomeAssistant, freezer: FrozenDateTimeFactory
 ) -> None:
