@@ -5,9 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
-from pytest_homeassistant.common import async_fire_time_changed
-
-from homeassistant.util import dt as dt_util
+from homeassistant.const import EVENT_HOMEASSISTANT_FINAL_WRITE
 
 from custom_components.spook.entity_renames import (
     DATA_ENTITY_RENAMES,
@@ -39,8 +37,13 @@ def _rename(entity_registry: er.EntityRegistry, entity_id: str, new: str) -> Non
 
 
 async def _written_down(hass: HomeAssistant, hass_storage: dict[str, Any]) -> Any:
-    """Let the delayed save happen and return what landed on disk."""
-    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=1))
+    """Have the pending save go out and return what landed on disk.
+
+    Through the final write Home Assistant does on its way down. Moving the
+    clock is not enough: a save asked for twice before it went out checks
+    the loop's own clock, which the tests do not move.
+    """
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_FINAL_WRITE)
     await hass.async_block_till_done()
     return hass_storage[STORAGE_KEY]["data"]
 
@@ -290,6 +293,34 @@ async def test_the_renamed_entity_coming_back_keeps_the_rename(
     await hass.async_block_till_done()
 
     assert _renamed_to(hass, "light.a") == "light.b"
+
+
+async def test_an_old_id_taken_while_unloaded_is_forgotten(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test an old ID taken while Spook was off is caught up on at setup.
+
+    Nobody heard the newcomer arrive. Should it leave again, the references
+    to its ID are not the renamed entity's to have.
+    """
+    unload = await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    _rename(entity_registry, _create(entity_registry, "x"), "light.y")
+    await hass.async_block_till_done()
+
+    unload()
+    newcomer = _create(entity_registry, "a", unique_id="newcomer")
+    assert newcomer == "light.a"
+    await async_setup_entity_renames(hass)
+
+    entity_registry.async_remove(newcomer)
+    await hass.async_block_till_done()
+
+    assert _renamed_to(hass, "light.a") is None
+    assert _renamed_to(hass, "light.x") == "light.y"
+    assert set(await _written_down(hass, hass_storage)) == {"light.x"}
 
 
 async def test_a_rename_survives_a_restart(

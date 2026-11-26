@@ -187,6 +187,27 @@ class EntityRenames:
         return self._renames.pop(entity_id, None) is not None
 
     @callback
+    def async_forget_taken(self) -> None:
+        """Forget the renames away from IDs that are in the registry again.
+
+        For what happened while nobody was listening. An entity created under
+        an old ID while Spook was off sent its event to no one, and should it
+        leave again later, the references to that ID are not the renamed
+        entity's to have.
+        """
+        registry = er.async_get(self._hass)
+        taken = [
+            old_entity_id
+            for old_entity_id in self._renames
+            if registry.async_get(old_entity_id) is not None
+        ]
+        for old_entity_id in taken:
+            del self._renames[old_entity_id]
+
+        if taken:
+            self._async_schedule_save()
+
+    @callback
     def _async_forget_old(self) -> bool:
         """Drop the renames too old to keep. Return whether any went."""
         cutoff = dt_util.utcnow() - KEEP_RENAMES_FOR
@@ -249,6 +270,9 @@ async def async_setup_entity_renames(hass: HomeAssistant) -> CALLBACK_TYPE:
         renames = hass.data[DATA_ENTITY_RENAMES] = EntityRenames(
             hass, store, await store.async_load()
         )
+
+    # Kept across a reload too, and Spook can be off for a while in between.
+    renames.async_forget_taken()
 
     return hass.bus.async_listen(
         er.EVENT_ENTITY_REGISTRY_UPDATED,
