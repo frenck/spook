@@ -425,7 +425,6 @@ async def test_an_issue_stays_when_the_actions_cannot_be_read(
 def test_looks_again_when_entries_or_actions_change(repair_class: type) -> None:
     """An entry added or removed, or an action showing up, changes the answer."""
     assert repair_class.inspect_config_entry_changed is True
-    assert repair_class.inspect_on_reload is True
     assert EVENT_SERVICE_REGISTERED in repair_class.inspect_events
 
 

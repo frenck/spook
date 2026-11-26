@@ -37,7 +37,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         EVENT_SERVICE_REMOVED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
 
     unavailable_entity_class = automation.UnavailableAutomationEntity
     entity_label = "automation"
