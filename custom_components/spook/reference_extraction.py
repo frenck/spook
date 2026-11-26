@@ -13,7 +13,7 @@ never to replace it.
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Container, Mapping
 from dataclasses import dataclass, field
 import re
 from typing import TYPE_CHECKING, Any, Literal
@@ -1170,8 +1170,45 @@ def _collect_every_string(node: Any, found: set[str]) -> None:
             _collect_every_string(item, found)
 
 
+# pylint: disable-next=too-few-public-methods
+class _MentionedStrings(Container[str]):
+    """Every string in any automation or script, gathered on the first ask.
+
+    Most areas, floors and labels are in use for a plainer reason: a device
+    in the area, an entity carrying the label. Those are never asked about,
+    and walking every automation and script for nothing takes time on a large
+    configuration. So the walk waits until something is asked.
+    """
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize, without walking anything yet."""
+        self._hass = hass
+        self._found: set[str] | None = None
+
+    def __contains__(self, value: object) -> bool:
+        """Return whether ``value`` appears anywhere, walking once if needed."""
+        if self._found is None:
+            self._found = _every_string_in_automations_and_scripts(self._hass)
+        return value in self._found
+
+
+def _every_string_in_automations_and_scripts(hass: HomeAssistant) -> set[str]:
+    """Return every string in the configuration of any automation or script."""
+    found: set[str] = set()
+
+    for domain in _CONFIGURED_DOMAINS:
+        if not (component := hass.data.get(DATA_INSTANCES, {}).get(domain)):
+            continue
+
+        for entity in component.entities:
+            if raw_config := getattr(entity, "raw_config", None):
+                _collect_every_string(raw_config, found)
+
+    return found
+
+
 @callback
-def async_collect_mentioned_strings(hass: HomeAssistant) -> set[str]:
+def async_collect_mentioned_strings(hass: HomeAssistant) -> Container[str]:
     """Return every string appearing in any automation or script.
 
     For deciding whether something is referenced, `referenced_areas` and
@@ -1187,18 +1224,11 @@ def async_collect_mentioned_strings(hass: HomeAssistant) -> set[str]:
     the same as a real reference, so this proves nothing about what is in use.
     It only decides whether Spook keeps quiet, and on something that offers to
     delete, a coincidence is a fine reason to.
+
+    The strings are gathered on the first question, not here, and kept from
+    then on. So ask within one round: an answer held on to goes stale.
     """
-    found: set[str] = set()
-
-    for domain in _CONFIGURED_DOMAINS:
-        if not (component := hass.data.get(DATA_INSTANCES, {}).get(domain)):
-            continue
-
-        for entity in component.entities:
-            if raw_config := getattr(entity, "raw_config", None):
-                _collect_every_string(raw_config, found)
-
-    return found
+    return _MentionedStrings(hass)
 
 
 type CoreReferenceKind = Literal["areas", "devices", "entities", "floors", "labels"]
