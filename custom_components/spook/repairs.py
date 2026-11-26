@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import asyncio
+from collections.abc import Coroutine
 from contextlib import suppress
 from dataclasses import dataclass, field
 from datetime import timedelta
@@ -100,7 +101,7 @@ from .state_checking import async_unknown_states
 from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Iterable, Mapping, Sized
+    from collections.abc import Callable, Iterable, Mapping, Sized
     from datetime import datetime
     from types import ModuleType
 
@@ -396,6 +397,40 @@ class AbstractSpookRepairBase(ABC):
         self._deactivated = True
 
 
+class _InspectionDebouncer(Debouncer[Coroutine[Any, Any, None]]):
+    """A debouncer that tells its repair every time it is asked for a look.
+
+    Home Assistant's debouncer drops a call that comes in while the function
+    runs, once the cooldown runs out before the run does: any call is as good
+    as another, it says. For an inspection it is not. Whatever changed after
+    the round read it went unseen until something else asked for a look,
+    which for some repairs is a day away. The repair uses this to look once
+    more after such a round, see `_async_inspect_with_cleanup`.
+    """
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        *,
+        function: Callable[[], Coroutine[Any, Any, None]],
+        asked: Callable[[], None],
+    ) -> None:
+        """Initialize the debouncer."""
+        super().__init__(hass, LOGGER, cooldown=3, immediate=False, function=function)
+        self._asked = asked
+
+    async def async_call(self) -> None:
+        """Ask for a look."""
+        self._asked()
+        await super().async_call()
+
+    @callback
+    def async_schedule_call(self) -> None:
+        """Ask for a look."""
+        self._asked()
+        super().async_schedule_call()
+
+
 class AbstractSpookRepair(AbstractSpookRepairBase):
     """Abstract base class to hold a Spook repairs."""
 
@@ -447,6 +482,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self._waiting_for_first_inspection = False
         self._attributes_awaited = {}
         self._config_entry_fingerprints = {}
+        self._asked_for_a_look = False
 
     @callback
     def _await_attributes(self, pairs: Iterable[tuple[str, str]]) -> None:
@@ -474,7 +510,20 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             ):
                 return
 
-            await self._async_inspect_and_clean_up()
+            # Whatever was asked for until now, this round reads after it.
+            self._asked_for_a_look = False
+            try:
+                await self._async_inspect_and_clean_up()
+            finally:
+                # Asked for a look while this one ran: what it was asked about
+                # may have changed after this round read it.
+                if self._asked_for_a_look:
+                    self.inspect_debouncer.async_schedule_call()
+
+    @callback
+    def _async_remember_a_look_was_asked_for(self) -> None:
+        """Remember a look was asked for, for a round that is reading."""
+        self._asked_for_a_look = True
 
     async def _async_inspect_and_clean_up(self) -> None:
         """Run an inspection and clean up issues that are no longer valid."""
@@ -534,12 +583,10 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         """Handle the activating a repair."""
         # Debouncer to prevent multiple inspections / inspections fired quickly
         # after each other.
-        self.inspect_debouncer = Debouncer(
+        self.inspect_debouncer = _InspectionDebouncer(
             self.hass,
-            LOGGER,
-            cooldown=3,
-            immediate=False,
             function=self._async_inspect_with_cleanup,
+            asked=self._async_remember_a_look_was_asked_for,
         )
 
         if self.first_inspection_delay is None:
