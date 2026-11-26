@@ -1,9 +1,9 @@
 """Spook - Your homie. Knowing when `customize:` was read again.
 
 `homeassistant.reload_core_config` reads the `homeassistant:` section again,
-`customize:` included, and `homeassistant.reload_all` does that along with
-everything else. Neither sends a word when it is done: the customizations
-are simply swapped for new ones. The service being called is too early to
+`customize:` included. `homeassistant.reload_all` calls it too, as a service
+of its own, so following that one call covers both. It sends no word when it
+is done: the customizations are simply swapped for new ones. The service being called is too early to
 look, as it still has the whole configuration to read and validate, which
 takes seconds on a large one.
 
@@ -18,7 +18,6 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.homeassistant import (
     DOMAIN as HOMEASSISTANT_DOMAIN,
-    SERVICE_RELOAD_ALL,
     SERVICE_RELOAD_CORE_CONFIG,
 )
 from homeassistant.const import EVENT_CALL_SERVICE
@@ -36,8 +35,6 @@ if TYPE_CHECKING:
 # times before giving up: a reload that failed keeps the old ones for good.
 _CHECK_EVERY = timedelta(seconds=1)
 _CHECKS = 60
-
-_READING_CUSTOMIZE = frozenset({SERVICE_RELOAD_CORE_CONFIG, SERVICE_RELOAD_ALL})
 
 
 class _CustomizeWatch:
@@ -111,7 +108,7 @@ def async_follow_customize_reloads(
         """Return whether a service call reads `customize:` again."""
         return (
             event_data.get("domain") == HOMEASSISTANT_DOMAIN
-            and event_data.get("service") in _READING_CUSTOMIZE
+            and event_data.get("service") == SERVICE_RELOAD_CORE_CONFIG
         )
 
     stop_listening = hass.bus.async_listen(

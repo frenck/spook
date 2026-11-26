@@ -77,7 +77,8 @@ async def test_waits_while_the_reload_is_still_reading(
     stop = async_follow_customize_reloads(hass, lambda: calls.append(None))
 
     hass.bus.async_fire(
-        EVENT_CALL_SERVICE, {"domain": "homeassistant", "service": "reload_all"}
+        EVENT_CALL_SERVICE,
+        {"domain": "homeassistant", "service": "reload_core_config"},
     )
     await _let_time_pass(hass, freezer, 5)
     assert not calls
@@ -159,14 +160,18 @@ async def test_stopping_drops_a_wait_under_way(
 async def test_other_reloads_are_not_followed(
     hass: HomeAssistant, freezer: FrozenDateTimeFactory
 ) -> None:
-    """Test a service that does not read `customize:` starts no wait."""
+    """Test a service that does not read `customize:` itself starts no wait.
+
+    `reload_all` reads it by calling `reload_core_config`, which is followed
+    on its own. Following both counted that reload twice.
+    """
     calls: list[None] = []
     stop = async_follow_customize_reloads(hass, lambda: calls.append(None))
 
-    hass.bus.async_fire(
-        EVENT_CALL_SERVICE,
-        {"domain": "homeassistant", "service": "reload_custom_templates"},
-    )
+    for service in ("reload_custom_templates", "reload_all"):
+        hass.bus.async_fire(
+            EVENT_CALL_SERVICE, {"domain": "homeassistant", "service": service}
+        )
     hass.data[DATA_CUSTOMIZE] = object()  # type: ignore[assignment]
     await _let_time_pass(hass, freezer, 1)
     stop()
@@ -197,3 +202,38 @@ async def test_a_customized_entity_that_is_gone_is_reported_after_a_reload(
     )
 
     await repair.async_deactivate()
+
+
+async def test_follows_a_reload_all_once_and_lets_go(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Test a real `reload_all` is followed once, and then nothing is left.
+
+    It calls `reload_core_config` as a service of its own. Counted twice,
+    the watch kept checking for a minute after the reload was done.
+    """
+    assert await async_setup_component(hass, "homeassistant", {})
+    # One more reload `reload_all` calls, there is no frontend in here.
+    hass.services.async_register("frontend", "reload_themes", lambda _call: None)
+    calls: list[None] = []
+    stop = async_follow_customize_reloads(hass, lambda: calls.append(None))
+
+    with (
+        patch(
+            "homeassistant.config.load_yaml_config_file",
+            autospec=True,
+            return_value=_customizing("light.ghost"),
+        ),
+        patch("homeassistant.config.async_check_ha_config_file", return_value=None),
+    ):
+        await hass.services.async_call("homeassistant", "reload_all", blocking=True)
+    await _let_time_pass(hass, freezer, 1)
+
+    assert calls == [None]
+
+    # Done watching: new customizations without a reload are no follow-up.
+    hass.data[DATA_CUSTOMIZE] = object()  # type: ignore[assignment]
+    await _let_time_pass(hass, freezer, 1)
+    stop()
+
+    assert calls == [None]
