@@ -1,0 +1,28 @@
+---
+name: Translations
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    paths:
+      - "documentation/translations/output/**"
+
+permissions:
+  contents: read
+
+jobs:
+  generated-output:
+    name: Generated output
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The check compares against where the branch left its base.
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: 🚀 Check that generated translations were not edited by hand
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: documentation/translations/pipeline/check-output-untouched.sh "${BASE_SHA}"

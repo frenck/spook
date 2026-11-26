@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/automations.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 2
+title: Automatiseringen zonder omwegen
+description: Spook voegt triggers, voorwaarden en acties toe aan de automatiseringseditor van Home Assistant, voor de dingen waar je steeds helpers voor bouwde.
+
+hero:
+  headline: Triggers, voorwaarden en acties 🧰
+  title: Automatiseringen, zonder omwegen.
+  description: Spook voegt {triggers} triggers, {conditions} voorwaarden en {actions} acties toe voor de dingen waar je steeds helpers voor bouwde. Ze staan in de automatiseringseditor, direct naast die van Home Assistant zelf.
+  screenshot: automation-editor
+  alt: Een automatisering in de editor van Home Assistant met de Cron-schema-trigger en de Afkoeltijd-voorwaarde van Spook, en een gewone lampactie.
+
+sections:
+  - headline: Zeg wanneer, zoals je het bedoelt
+    title: Elke werkdag om half zeven.
+    description: De tijdtriggers van Home Assistant kennen een tijdstip en een patroon. Het Cron-schema van Spook zegt "werkdagen om half zeven" of "de laatste vrijdag van de maand" in één regel, met de uitleg er direct bij in de editor.
+    screenshot: automation-cron
+    alt: De Cron-schema-trigger van Spook geopend in de automatiseringseditor, met de beschrijving en het schema 30 6 * * 1-5.
+    features:
+      - title: Voor de momenten waar Home Assistant geen naam voor heeft
+        description: Een apparaat dat net opdook, een automatisering die uit is gezet, een entiteit die stil is gevallen.
+        icon: i-mdi-timer-cog-outline
+      - title: Voorwaarden met een geheugen
+        description: Een afkoeltijd sinds de laatste keer, of alleen als een persoon hem startte, geen automatisering.
+        icon: i-mdi-account-check-outline
+      - title: Niets nieuws te leren
+        description: Gekozen, ingevuld en opgeslagen als elke andere. In de editor, in scripts, in YAML.
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: Acties waar je steeds naar greep
+    title: Snooze hem, zet hem niet uit.
+    description: Zet een automatisering een uur uit, en hij komt vanzelf terug, ook na een herstart. Een van {actions} acties, van automatiseringen snoozen tot ruimtes, labels en helpers aanmaken vanuit een automatisering.
+    screenshot: action-snooze
+    alt: Het dialoogvenster Actie toevoegen in de automatiseringseditor, gezocht op snooze, met de actie Snoozen van Spook omlijnd.
+    features:
+      - title: Zoeken, selecteren, klaar
+        description: De acties van Spook verschijnen als je een actie toevoegt, elk gemarkeerd met een 👻.
+        icon: i-mdi-magnify
+      - title: Overleeft een herstart
+        description: Gesnoozed is gesnoozed. Een herstart van Home Assistant tussendoor maakt hem niet eerder wakker.
+        icon: i-mdi-restart
+      - title: Beheer je huis vanuit een automatisering
+        description: Maak ruimtes, labels, zones en helpers aan en verwijder ze, of schakel een apparaat uit.
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: Alles in de gereedschapskist
+  links:
+    - title: Alle triggers
+      description: Elke trigger die Spook toevoegt, met waar hij voor is en een voorbeeld.
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: Alle voorwaarden
+      description: De voorwaarden, van een afkoeltijd tot een waakhond.
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: Alle acties
+      description: De hele lijst, met een knop om ze allemaal in je eigen Home Assistant te proberen.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Snoozen, stap voor stap
+      description: Hoe je het in je automatiseringen gebruikt, met voorbeelden.
+      icon: i-mdi-sleep
+      to: /automation#snooze

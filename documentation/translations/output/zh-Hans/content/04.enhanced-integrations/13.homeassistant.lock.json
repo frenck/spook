@@ -1,0 +1,273 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/13.homeassistant.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/13.homeassistant.md",
+  "language": "zh-Hans",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "5e9f7d9ad0fca0ca",
+      "source": "369a2a06e6dcb106",
+      "glossary": {
+        "area": "区域",
+        "blueprint": "蓝图",
+        "floor": "楼层",
+        "helper": "辅助元素",
+        "label": "标签"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "5ebff3c7ce37618e",
+      "source": "64b218002cafc0b3",
+      "glossary": {
+        "area": "区域",
+        "device": "设备",
+        "floor": "楼层",
+        "helper": "辅助元素",
+        "integration": "集成",
+        "label": "标签",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "devices-entities",
+      "hash": "0f55f363256dfe57",
+      "source": "1b0bf38ba0d58ad8",
+      "glossary": {
+        "area": "区域",
+        "device": "设备",
+        "entity": "实体",
+        "integration": "集成",
+        "restart": "重启",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "80b8cc3a55eaaa19",
+      "source": "3eba30a132630fc9",
+      "glossary": {
+        "action": "动作",
+        "area": "区域",
+        "device": "设备",
+        "entity": "实体",
+        "floor": "楼层",
+        "label": "标签",
+        "user": "用户"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "6807efd03db14fcb",
+      "source": "344a0f6d513c0ad1",
+      "glossary": {
+        "area": "区域",
+        "blueprint": "蓝图",
+        "dashboard": "仪表盘",
+        "floor": "楼层",
+        "label": "标签",
+        "repair": "修复",
+        "repairs dashboard": "修复页面"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-area-sensors",
+      "hash": "72cb1c9d002205ea",
+      "source": "19ba3f07eebf293c",
+      "glossary": {
+        "Clear the setting": "清除此设置",
+        "Let me fix it myself": "让我自己处理",
+        "Keep it, stop telling me": "保留，不要再提示我",
+        "area": "区域",
+        "entity": "实体",
+        "entity ID": "实体标识符",
+        "label": "标签",
+        "repair": "修复",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-customized-entities",
+      "hash": "0eb92cfbde49dbad",
+      "source": "08b2e5e9ffb14032",
+      "glossary": {
+        "attribute": "属性",
+        "entity": "实体",
+        "icon": "图标",
+        "integration": "集成",
+        "label": "标签",
+        "repair": "修复",
+        "restart": "重启",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-helper-sources",
+      "hash": "b54325d77e9b6720",
+      "source": "11dc74235e07f9be",
+      "glossary": {
+        "Remove this helper": "移除此辅助元素",
+        "Let me fix it myself": "让我自己处理",
+        "Keep it, stop telling me": "保留，不要再提示我",
+        "entity": "实体",
+        "helper": "辅助元素",
+        "label": "标签",
+        "repair": "修复",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-min-max-helper-members",
+      "hash": "5600589432a159bf",
+      "source": "11c49e8fdadc6998",
+      "glossary": {
+        "Remove these members": "移除这些成员",
+        "Let me fix it myself": "让我自己处理",
+        "Keep them, stop telling me": "保留，不要再提示我",
+        "helper": "辅助元素",
+        "label": "标签",
+        "repair": "修复",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "aa0aaaf7fc9e445e",
+      "source": "4526c7a38e9a9912",
+      "glossary": {
+        "area": "区域",
+        "entity": "实体",
+        "floor": "楼层",
+        "helper": "辅助元素",
+        "icon": "图标",
+        "integration": "集成",
+        "label": "标签",
+        "repair": "修复",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "known limitations": "已知限制",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-areas",
+      "hash": "326fcfdceff04348",
+      "source": "6447e37649959ea8",
+      "glossary": {
+        "Remove this empty area": "移除此空区域",
+        "Let me fix it myself": "让我自己处理",
+        "Keep it, stop telling me": "保留，不要再提示我",
+        "action": "动作",
+        "area": "区域",
+        "automation": "自动化",
+        "device": "设备",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查",
+        "list": "列表"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-floors",
+      "hash": "e73e8d61dfdb8bba",
+      "source": "1dc8dffbc38858a2",
+      "glossary": {
+        "Remove this empty floor": "移除此空楼层",
+        "Let me fix it myself": "让我自己处理",
+        "Keep it, stop telling me": "保留，不要再提示我",
+        "area": "区域",
+        "automation": "自动化",
+        "floor": "楼层",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-labels",
+      "hash": "79757a4e63aeb286",
+      "source": "b56369896b90e4ff",
+      "glossary": {
+        "Remove this unused label": "移除此未使用的标签",
+        "Let me fix it myself": "让我自己处理",
+        "Keep it, stop telling me": "保留，不要再提示我",
+        "area": "区域",
+        "automation": "自动化",
+        "device": "设备",
+        "entity": "实体",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-blueprints",
+      "hash": "a2907d6781058c62",
+      "source": "0c9d0302630f7b97",
+      "glossary": {
+        "Remove this unused blueprint": "移除此未使用的蓝图",
+        "Let me fix it myself": "让我自己处理",
+        "Keep it, stop telling me": "保留，不要再提示我",
+        "automation": "自动化",
+        "blueprint": "蓝图",
+        "label": "标签",
+        "repair": "修复",
+        "script": "脚本",
+        "how to fix it": "怎么修复",
+        "how Spook checks this": "Spook 怎么检查"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "85ceaec616d0f496",
+      "source": "1b7d2e38b0428375",
+      "glossary": {
+        "area": "区域",
+        "floor": "楼层",
+        "helper": "辅助元素",
+        "label": "标签",
+        "use cases": "使用场景"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

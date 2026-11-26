@@ -1,0 +1,378 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/03.automation.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/03.automation.md",
+  "language": "de",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "bf76ad8f1d79d571",
+      "source": "6d9e2300cba2453f",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "entity": "Entität",
+        "snooze": "schlummern"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "5286cd7fe8ca8526",
+      "source": "1a75e345c97e2e04",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "integration": "Integration",
+        "issue": "Problem",
+        "repair": "Reparatur"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "370320235d60acff",
+      "source": "eb7b67e177f675a2",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "snooze",
+      "hash": "876df3062de9a847",
+      "source": "a8222e6700da8e64",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Automation: Snooze 👻": "Automation: Schlummern 👻",
+        "Targets": "Ziele",
+        "Duration": "Dauer",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "area": "Bereich",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "entity": "Entität",
+        "helper": "Helfer",
+        "label": "Label",
+        "restart": "neu starten",
+        "script": "Skript",
+        "snooze": "schlummern",
+        "state": "Zustand"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "turn-on-for",
+      "hash": "d3b22518f0cd3b03",
+      "source": "b8dad0715304b049",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Automation: Turn on for 👻": "Automation: Einschalten für 👻",
+        "Targets": "Ziele",
+        "Duration": "Dauer",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "label": "Label",
+        "restart": "neu starten",
+        "script": "Skript",
+        "snooze": "schlummern",
+        "state": "Zustand"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "repairs",
+      "hash": "b954f26ae609eac5",
+      "source": "514387a1fd054bab",
+      "glossary": {
+        "area": "Bereich",
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "dashboard": "Dashboard",
+        "device": "Gerät",
+        "entity": "Entität",
+        "floor": "Etage",
+        "label": "Label",
+        "repair": "Reparatur",
+        "repairs dashboard": "Reparaturen-Dashboard",
+        "trigger": "Auslöser"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "d60e73e049a8637b",
+      "source": "f9866d1b36324166",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "device": "Gerät",
+        "entity": "Entität",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "template": "Template"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "724284dc42f1f3bf",
+      "source": "5d3591d4798068c8",
+      "glossary": {
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "entity": "Entität",
+        "integration": "Integration",
+        "label": "Label",
+        "repair": "Reparatur",
+        "state": "Zustand",
+        "template": "Template",
+        "trigger": "Auslöser"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "fa2f10649e6b921a",
+      "source": "a061cf5cdddeb02f",
+      "glossary": {
+        "action": "Aktion",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "device": "Gerät",
+        "entity": "Entität",
+        "helper": "Helfer",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "state": "Zustand",
+        "template": "Template",
+        "trigger": "Auslöser"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "d9645c4b3793d5bf",
+      "source": "c2c9d51beeacf48d",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "device": "Gerät",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "trigger": "Auslöser"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "51a5005e4fc6b869",
+      "source": "aaa8982ecf6bf512",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "integration": "Integration",
+        "integration entry": "Integrationseintrag",
+        "label": "Label",
+        "repair": "Reparatur",
+        "state": "Zustand",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "f4487970f6f9ee35",
+      "source": "d1ec65727456cb67",
+      "glossary": {
+        "automation": "Automation",
+        "entity": "Entität",
+        "entity ID": "Entitäts-ID",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "template": "Template"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "993314d721eb5a73",
+      "source": "456bc017d190bdf6",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "integration": "Integration",
+        "label": "Label",
+        "repair": "Reparatur"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "e389fad94bf1d515",
+      "source": "a577b33d4e85f423",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "helper": "Helfer",
+        "icon": "Symbol",
+        "label": "Label",
+        "repair": "Reparatur",
+        "template": "Template"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "2fb9b5d92814b154",
+      "source": "9a53cc54fd89a5a3",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "device": "Gerät",
+        "entity": "Entität",
+        "floor": "Etage",
+        "label": "Label",
+        "repair": "Reparatur",
+        "template": "Template"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "012d4c0aca59860b",
+      "source": "03690a0b1cdfa403",
+      "glossary": {
+        "area": "Bereich",
+        "automation": "Automation",
+        "label": "Label",
+        "repair": "Reparatur",
+        "template": "Template"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "f70e2b544db7331e",
+      "source": "c4c6d77d13c2bcfe",
+      "glossary": {
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "001e770cb48893b7",
+      "source": "fb2b3aa4cc926899",
+      "glossary": {
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "trigger": "Auslöser"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-trigger-ids",
+      "hash": "fde9476449660196",
+      "source": "18f0e53be9622669",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "blueprint": "Blueprint",
+        "condition": "Bedingung",
+        "label": "Label",
+        "repair": "Reparatur",
+        "template": "Template",
+        "trigger": "Auslöser",
+        "trigger ID": "Auslöser-ID"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "825b7c0068b41455",
+      "source": "ddde558b08404b8a",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "blueprint": "Blueprint",
+        "condition": "Bedingung",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "state": "Zustand",
+        "template": "Template",
+        "trigger": "Auslöser"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "df3e154ed43e9618",
+      "source": "4cbad7ba1c95a312",
+      "glossary": {
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "label": "Label",
+        "repair": "Reparatur",
+        "template": "Template",
+        "trigger": "Auslöser",
+        "user": "Benutzer"
+      },
+      "model": "manual-pilot",
+      "date": "2026-11-25"
+    }
+  ]
+}

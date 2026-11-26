@@ -1,0 +1,57 @@
+# The languages the docs are translated into, and how.
+#
+# Adding a language: add it here, give it a directory next to this file with
+# the same files `nl/` has, and run `npm run translate -- glossary`.
+
+# Part of the hash of every section. Raise it to have everything translated
+# again, after a big change to the style guides or the prompts. Small corpus
+# edits do not need it: they reach new and changed sections by themselves.
+corpus_version: 1
+
+models:
+  translate: claude-opus-5-5
+  # A different model than the translator, on purpose: a second reader should
+  # not share the first one's blind spots.
+  review: claude-sonnet-5-5
+  effort: high
+
+# A run that would send more sections than this to the model stops, unless it
+# was started with --full. It catches a careless change before it costs money.
+budget_sections: 60
+
+languages:
+  - code: nl
+    name: Dutch
+    native: Nederlands
+    # pilot: translated and readable, not yet for search engines.
+    status: pilot
+  - code: de
+    name: German
+    native: Deutsch
+    status: pilot
+  # planned: the corpus is there, nothing is translated. No command touches
+  # a planned language unless it is named with --lang.
+  - code: fr
+    name: French
+    native: Français
+    status: pilot
+  - code: es
+    name: Spanish
+    native: Español
+    status: pilot
+  - code: it
+    name: Italian
+    native: Italiano
+    status: pilot
+  - code: zh-Hans
+    name: Chinese (Simplified)
+    native: 简体中文
+    status: pilot
+  - code: pt-BR
+    name: Portuguese (Brazil)
+    native: Português (Brasil)
+    status: pilot
+  - code: ja
+    name: Japanese
+    native: 日本語
+    status: pilot

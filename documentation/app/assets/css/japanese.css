@@ -1,0 +1,28 @@
+/*
+ * Japanese. Like Chinese (see `chinese.css`): none of the three faces has
+ * Japanese characters, so the reader's own font draws them, and each face
+ * stays first for Latin text and digits. A separate list, because kanji are
+ * drawn differently in a Japanese font than in a Chinese one, and a Japanese
+ * reader notices.
+ *
+ * Noto Sans JP comes last: the web font, for a reader without any of the
+ * others. Google serves it in slices too, so it costs as little as the
+ * Chinese one.
+ */
+:root:lang(ja) {
+  --font-cjk:
+    "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic UI", "Yu Gothic",
+    "Meiryo", "Noto Sans CJK JP", "Source Han Sans JP", "Noto Sans JP";
+  --font-sans:
+    "Figtree", var(--font-cjk), ui-sans-serif, system-ui, -apple-system,
+    sans-serif;
+  --font-display:
+    "Space Grotesk", var(--font-cjk), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    "JetBrains Mono", ui-monospace, "SF Mono", Menlo, var(--font-cjk), monospace;
+}
+
+/* Kana and kanji sit as tight as Chinese characters: see `main.css`. */
+:lang(ja) :is(h1, h2, h3, h4) {
+  letter-spacing: 0;
+}

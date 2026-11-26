@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/automations.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 2
+title: Automationen ohne Umwege
+description: Spook fügt dem Automations-Editor von Home Assistant Auslöser, Bedingungen und Aktionen hinzu, für die Dinge, für die du immer wieder Helfer gebaut hast.
+
+hero:
+  headline: Auslöser, Bedingungen und Aktionen 🧰
+  title: Automationen, ohne Umwege.
+  description: Spook fügt {triggers} Auslöser, {conditions} Bedingungen und {actions} Aktionen hinzu, für die Dinge, für die du immer wieder Helfer gebaut hast. Sie sind im Automations-Editor, direkt neben denen von Home Assistant.
+  screenshot: automation-editor
+  alt: Eine Automation im Editor von Home Assistant mit dem Cron-Zeitplan-Auslöser und der Abklingzeit-Bedingung von Spook, dazu eine normale Licht-Aktion.
+
+sections:
+  - headline: Sag wann, so wie du es meinst
+    title: Jeden Werktag um halb sieben.
+    description: Die Zeit-Auslöser von Home Assistant kennen eine Uhrzeit und ein Muster. Der Cron-Zeitplan von Spook sagt „werktags um halb sieben“ oder „am letzten Freitag im Monat“ in einer Zeile, mit der Erklärung direkt im Editor.
+    screenshot: automation-cron
+    alt: Der Cron-Zeitplan-Auslöser von Spook, geöffnet im Automations-Editor, mit seiner Beschreibung und dem Zeitplan 30 6 * * 1-5.
+    features:
+      - title: Für die Momente, für die Home Assistant keinen Namen hat
+        description: Ein Gerät, das gerade aufgetaucht ist, eine ausgeschaltete Automation, eine Entität, die verstummt ist.
+        icon: i-mdi-timer-cog-outline
+      - title: Bedingungen mit Gedächtnis
+        description: Eine Abklingzeit seit dem letzten Lauf, oder nur, wenn eine Person sie gestartet hat und keine Automation.
+        icon: i-mdi-account-check-outline
+      - title: Nichts Neues zu lernen
+        description: Ausgewählt, ausgefüllt und gespeichert wie jede andere. Im Editor, in Skripten, in YAML.
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: Aktionen, nach denen du immer gegriffen hast
+    title: Schlummern statt ausschalten.
+    description: Schalte eine Automation für eine Stunde aus, und sie kommt von selbst zurück, auch nach einem Neustart. Eine von {actions} Aktionen, vom Schlummern von Automationen bis zum Erstellen von Bereichen, Labels und Helfern aus einer Automation.
+    screenshot: action-snooze
+    alt: Der Dialog Aktion hinzufügen im Automations-Editor, gesucht nach snooze, mit der Aktion Schlummern von Spook umrandet.
+    features:
+      - title: Suchen, auswählen, fertig
+        description: Die Aktionen von Spook tauchen auf, wenn du eine Aktion hinzufügst, jede mit einem 👻 markiert.
+        icon: i-mdi-magnify
+      - title: Übersteht einen Neustart
+        description: Schlummern ist Schlummern. Startet Home Assistant zwischendurch neu, weckt das die Automation nicht früher.
+        icon: i-mdi-restart
+      - title: Verwalte dein Zuhause aus einer Automation
+        description: Erstelle und entferne Bereiche, Labels, Zonen und Helfer, oder deaktiviere ein Gerät.
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: Alles im Werkzeugkasten
+  links:
+    - title: Alle Auslöser
+      description: Jeder Auslöser, den Spook hinzufügt, mit seinem Zweck und einem Beispiel.
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: Alle Bedingungen
+      description: Die Bedingungen, von einer Abklingzeit bis zu einem Watchdog.
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: Alle Aktionen
+      description: Die ganze Liste, mit einem Button, um jede in deinem eigenen Home Assistant auszuprobieren.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Schlummern, Schritt für Schritt
+      description: Wie du es in deinen Automationen nutzt, mit Beispielen.
+      icon: i-mdi-sleep
+      to: /automation#snooze

@@ -1,0 +1,396 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+/* Chinese pages: see the file. */
+@import "./chinese.css";
+/* Japanese pages: see the file. */
+@import "./japanese.css";
+
+@source "../../../content/**/*";
+
+/*
+ * The Spook design system, on top of Nuxt UI.
+ *
+ * Every colour comes from the design system's tokens: three brand colours
+ * sampled from the ghost (cyan body #24fefd, ink eyes #17191b, red tongue
+ * #ec1b24), with the scales built around them.
+ */
+@theme static {
+  --font-sans: "Figtree", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Spook Cyan, the ghost's body. */
+  --color-spook-50: #ecfeff;
+  --color-spook-100: #cffcfe;
+  --color-spook-200: #a4f8fc;
+  --color-spook-300: #62f2f8;
+  --color-spook-400: #24fefd;
+  --color-spook-500: #06d3e0;
+  --color-spook-600: #08a6b8;
+  --color-spook-700: #0e8393;
+  --color-spook-800: #156875;
+  --color-spook-900: #165863;
+  --color-spook-950: #083b44;
+
+  /* Spook Ink, a cool gray tuned toward the cyan. */
+  --color-ink-50: #f6f7f8;
+  --color-ink-100: #eceef1;
+  --color-ink-200: #d7dbe0;
+  --color-ink-300: #b4bbc3;
+  --color-ink-400: #8a929d;
+  --color-ink-500: #69717c;
+  --color-ink-600: #515862;
+  --color-ink-700: #40454e;
+  --color-ink-800: #2a2e34;
+  --color-ink-900: #1d2025;
+  --color-ink-950: #17191b;
+
+  /* Spook Red, the tongue: danger and errors only, never decoration. */
+  --color-tongue-50: #fef2f2;
+  --color-tongue-100: #fde3e4;
+  --color-tongue-200: #fbccce;
+  --color-tongue-300: #f7a4a7;
+  --color-tongue-400: #f16e74;
+  --color-tongue-500: #ef3f46;
+  --color-tongue-600: #ec1b24;
+  --color-tongue-700: #c71219;
+  --color-tongue-800: #a41318;
+  --color-tongue-900: #87161a;
+  --color-tongue-950: #4a0709;
+
+  /* Soft, cool-tinted shadows: mixed toward ink, never pure black. */
+  --shadow-xs: 0 1px 2px 0 rgb(23 25 27 / 0.08);
+  --shadow-sm:
+    0 1px 3px 0 rgb(23 25 27 / 0.1), 0 1px 2px -1px rgb(23 25 27 / 0.08);
+  --shadow-md:
+    0 4px 8px -2px rgb(23 25 27 / 0.12), 0 2px 4px -2px rgb(23 25 27 / 0.08);
+  --shadow-lg:
+    0 12px 20px -6px rgb(23 25 27 / 0.16), 0 4px 8px -4px rgb(23 25 27 / 0.1);
+  --shadow-xl: 0 24px 44px -12px rgb(23 25 27 / 0.22);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  /* Controls 8px, cards 12px, panels 16px, hero tiles 24px. */
+  --ui-radius: 0.375rem;
+  --ui-container: 76rem;
+
+  /*
+   * The design system's light primary (cyan-600) is 2.9:1 on white, too
+   * faint for text. Text, links and active states use cyan-800 (6.4:1)
+   * instead. Solid fills keep the signature pairing: cyan with ink text.
+   */
+  --ui-primary: var(--color-spook-800);
+  --ui-primary-fill: var(--color-spook-600);
+  --ui-primary-fill-hover: var(--color-spook-700);
+  --ui-on-primary: var(--color-ink-950);
+
+  --ui-text-highlighted: var(--color-ink-950);
+
+  /*
+   * The smallest print on the site, like the line under the footer. The
+   * default grey is too faint on white to read comfortably (3.1 to 1); this
+   * one passes (4.9 to 1).
+   */
+  --ui-text-dimmed: var(--color-ink-500);
+
+  --glow-cyan-sm:
+    0 0 0 1px rgb(36 254 253 / 0.4), 0 4px 16px -2px rgb(36 254 253 / 0.35);
+  --glow-cyan:
+    0 0 24px -2px rgb(36 254 253 / 0.55), 0 0 60px -12px rgb(36 254 253 / 0.45);
+  --gradient-haunt: linear-gradient(
+    160deg,
+    var(--color-ink-900) 0%,
+    var(--color-ink-950) 60%,
+    #0b1418 100%
+  );
+  --gradient-glow: radial-gradient(
+    60% 80% at 50% 0%,
+    color-mix(in oklab, var(--color-spook-400) 22%, transparent) 0%,
+    transparent 70%
+  );
+
+  /* What a screenshot of Home Assistant sits on: Spook's, not Home
+     Assistant's. A whisper of cyan in light mode. */
+  --screenshot-backdrop:
+    radial-gradient(
+      70% 90% at 50% 0%,
+      color-mix(in oklab, var(--color-spook-300) 30%, transparent) 0%,
+      transparent 70%
+    ),
+    linear-gradient(160deg, var(--color-spook-50) 0%, #fff 70%);
+}
+
+/*
+ * Dark is Spook's native habitat: the ghost's cyan, glowing on ink.
+ *
+ * Everything set on :root above sits outside Nuxt UI's theme layer, so it
+ * wins over Nuxt UI's own dark values too. Each one needs its dark value
+ * here, or dark mode quietly inherits the light one.
+ */
+.dark {
+  --ui-text-highlighted: #fff;
+  --ui-primary: var(--color-spook-400);
+  --ui-primary-fill: var(--color-spook-400);
+  --ui-primary-fill-hover: var(--color-spook-300);
+
+  --ui-bg: var(--color-ink-950);
+  --ui-bg-muted: var(--color-ink-900);
+  --ui-bg-elevated: var(--color-ink-800);
+  --ui-bg-accented: var(--color-ink-700);
+  --ui-border: var(--color-ink-800);
+  --ui-border-muted: var(--color-ink-900);
+  --ui-border-accented: var(--color-ink-700);
+  --ui-text-inverted: var(--color-ink-950);
+
+  /* The haunt, with the ghost's glow coming in from the top. */
+  --screenshot-backdrop: var(--gradient-glow), var(--gradient-haunt);
+}
+
+body {
+  font-feature-settings:
+    "cv05" 1,
+    "ss01" 1;
+}
+
+/* Headings in the display face, tight and balanced. */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/*
+ * Chinese characters are squares that already sit tight. Pulled closer
+ * together, as the Latin headings are, they touch.
+ */
+:lang(zh) :is(h1, h2, h3, h4) {
+  letter-spacing: 0;
+}
+
+::selection {
+  background: color-mix(in oklab, var(--color-spook-400) 35%, transparent);
+  color: var(--ui-text-highlighted);
+}
+
+/*
+ * An image inside a link is part of that link, like a My Home Assistant
+ * badge or an integration's icon on a card. It keeps its own size instead
+ * of stretching to fill the column, and a click follows the link instead of
+ * zooming in on the image.
+ */
+a > img {
+  width: auto;
+  pointer-events: none;
+}
+
+/*
+ * The reference pages (actions, triggers, conditions, glossary): an index
+ * with a search bar that stays under the header while you scroll. On a phone
+ * the "On this page" bar sticks there too, so the search bar goes below it.
+ *
+ * `--reference-toolbar` is how tall that search bar is, set by the page.
+ */
+.reference-index {
+  --reference-toc: 3.3125rem;
+}
+
+@media (min-width: 64rem) {
+  .reference-index {
+    --reference-toc: 0rem;
+  }
+}
+
+.reference-toolbar {
+  top: calc(var(--ui-header-height) + var(--reference-toc));
+}
+
+/* A jump to an entry lands below all those bars, not behind them. */
+.reference-anchor {
+  scroll-margin-top: calc(
+    var(--ui-header-height) + var(--reference-toc) +
+      var(--reference-toolbar, 4.5rem) + 1rem
+  );
+}
+
+/* The hashtag joke at the end of an entry. */
+.reference-tag {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  color: color-mix(in oklab, var(--ui-primary) 80%, transparent);
+}
+
+/* The entry somebody linked to, lit up so it is clear where they landed. */
+.reference-entry:target,
+.integration-repair:has(h3:target) {
+  background: color-mix(in oklab, var(--ui-primary) 8%, transparent);
+  box-shadow: inset 3px 0 0 var(--ui-primary);
+}
+
+/*
+ * Things that arrive as you scroll to them. app/plugins/reveal.client.ts
+ * marks them `data-revealed` when they come into view; until then, and only
+ * once that script runs (`reveal-ready`), they wait in their starting place.
+ *
+ * - reveal: rises into place.
+ * - reveal-left, reveal-right: slides in from that side, a screenshot next
+ *   to its text.
+ * - reveal-stagger: its children arrive one after the other, a grid of cards
+ *   or a list of features.
+ * - ghost-pop: the ghost on a screenshot, just after its screenshot arrives.
+ *
+ * And two that follow the scroll itself, where the browser can:
+ *
+ * - drift: moves up a little slower than the page, for a hero picture.
+ * - fade-away: fades a bit as it scrolls off the top, for hero text.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-ready :is(.reveal, .reveal-left, .reveal-right, .reveal-stagger > *) {
+    opacity: 0;
+    transition:
+      opacity 0.7s var(--ease-out),
+      transform 0.8s var(--ease-out);
+  }
+
+  .reveal-ready .reveal {
+    transform: translateY(56px) scale(0.96);
+  }
+
+  .reveal-ready .reveal-left {
+    transform: translateX(-96px) rotate(-3deg) scale(0.95);
+  }
+
+  .reveal-ready .reveal-right {
+    transform: translateX(96px) rotate(3deg) scale(0.95);
+  }
+
+  .reveal-ready .reveal-stagger > * {
+    transform: translateY(40px) scale(0.97);
+  }
+
+  .reveal-ready .reveal-stagger > :nth-child(3n + 2) {
+    transition-delay: 0.12s;
+  }
+
+  .reveal-ready .reveal-stagger > :nth-child(3n + 3) {
+    transition-delay: 0.24s;
+  }
+
+  .reveal-ready
+    :is(
+      .reveal,
+      .reveal-left,
+      .reveal-right,
+      .reveal-stagger > *
+    )[data-revealed] {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Its tilt comes from its own rotate class, which adds up with these. */
+  .reveal-ready .ghost-pop {
+    opacity: 0;
+    transform: scale(0.2) rotate(-30deg);
+  }
+
+  /* It goes with its screenshot: when that arrives, the ghost follows. */
+  .reveal-ready [data-revealed] .ghost-pop {
+    animation: ghost-pop 0.7s var(--ease-pop) 0.45s both;
+  }
+
+  @supports (animation-timeline: scroll()) {
+    .drift {
+      animation: drift linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    .fade-away {
+      animation: fade-away linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 70vh;
+    }
+  }
+
+  /* The ghost never quite sits still. */
+  .ghost-float {
+    animation: ghost-float 5s ease-in-out infinite;
+  }
+}
+
+/* Its tilt comes from its own rotate class, which adds up with these. */
+@keyframes ghost-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-30deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.2) rotate(8deg);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes drift {
+  to {
+    transform: translateY(-64px);
+  }
+}
+
+/* Not too far: a faded button should not look like it stopped working. */
+@keyframes fade-away {
+  to {
+    opacity: 0.5;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes ghost-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-7px) rotate(-3deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+ * "On this page" lights up every heading in view. Where headings sit close
+ * together, like a list of repairs, that is half the list in cyan and no
+ * answer to "where am I". So only the first one in view stays lit; a section
+ * and the first entry in it can both be.
+ */
+li:has(.toc-in-view) ~ li .toc-in-view {
+  color: var(--ui-text-muted);
+}
+
+/*
+ * Things that slide in from the side start out past the edge of the page.
+ * On a phone that made the whole page scroll sideways until they arrived.
+ *
+ * Clipped on the content, not on the page itself. A menu or the search locks
+ * scrolling on the page while it is open, and with the clipping on the page
+ * too, that made the header vanish for anyone who had scrolled down.
+ */
+main {
+  overflow-x: clip;
+}

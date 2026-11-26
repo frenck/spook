@@ -17,7 +17,7 @@ import homeassistant
 import yaml
 
 SPOOK = pathlib.Path(__file__).parents[1] / "custom_components" / "spook"
-DOCUMENTATION = pathlib.Path(__file__).parents[1] / "documentation"
+DOCUMENTATION = pathlib.Path(__file__).parents[1] / "documentation" / "content"
 CORE = pathlib.Path(homeassistant.__file__).parent / "components"
 
 # Something in backticks, called an action in the very next word. That is a
@@ -25,14 +25,20 @@ CORE = pathlib.Path(homeassistant.__file__).parent / "components"
 # or it does not.
 _CLAIMED_AS_AN_ACTION = re.compile(r"`([a-z_]+\.[a-z_]+)`\s+action\b")
 
+# An example in the docs, the YAML people copy into their own automation. Just
+# as much a claim: copy it, and it either runs or it does not.
+_USED_IN_AN_EXAMPLE = re.compile(
+    r"^\s*-?\s*action: ([a-z_0-9]+\.[a-z_0-9]+)\s*$", re.MULTILINE
+)
+
 # Notify services are named after whoever set them up, so these stand for
 # "your phone" rather than naming anything that exists anywhere.
-_STANDS_FOR_YOUR_OWN = {"notify.my_phone", "notify.phone"}
+_STANDS_FOR_YOUR_OWN = {"notify.my_phone", "notify.phone", "notify.mobile_app_phone"}
 
 # If the wording drifts and the pattern stops matching, this test would pass by
 # having nothing left to check. It has to keep finding at least what it found
 # the day it was written.
-_AT_LEAST_THIS_MANY = 10
+_AT_LEAST_THIS_MANY = 100
 
 
 def _referenced() -> set[tuple[str, str]]:
@@ -43,11 +49,13 @@ def _referenced() -> set[tuple[str, str]]:
             json.dumps(json.loads((SPOOK / "translations" / "en.json").read_text())),
         )
     }
+    # Only the English pages people write. The translations next to them are
+    # made from these, and their actions are the same identifiers.
     for markdown in DOCUMENTATION.rglob("*.md"):
-        found |= {
-            (ref, str(markdown.relative_to(DOCUMENTATION.parent)))
-            for ref in _CLAIMED_AS_AN_ACTION.findall(markdown.read_text())
-        }
+        text = markdown.read_text()
+        where = str(markdown.relative_to(DOCUMENTATION.parents[1]))
+        found |= {(ref, where) for ref in _CLAIMED_AS_AN_ACTION.findall(text)}
+        found |= {(ref, where) for ref in _USED_IN_AN_EXAMPLE.findall(text)}
 
     return found
 

@@ -1,0 +1,14 @@
+# A script from before the attic got its new lamp, and before the garage
+# was gone. Spook finds all three.
+goodnight:
+  alias: "${script.goodnight}"
+  sequence:
+    - action: light.turn_off
+      target:
+        entity_id: light.attic_lamp
+    - action: light.turn_off
+      target:
+        area_id: garage
+    - action: light.turn_off
+      target:
+        device_id: 0d4b5c1e9a7f4e2b8c3d6a1f5e9b7c2a

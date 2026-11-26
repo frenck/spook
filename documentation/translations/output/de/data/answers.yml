@@ -1,0 +1,67 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/answers.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+# The questions people ask before they install Spook, and the honest
+# answers. Keep them short, true, and checked against the code: this page only
+# works if every answer holds up.
+title: Klare Antworten
+description: Die Fragen, die Leute zu Spook stellen, ehrlich beantwortet. Was es ist, was es kostet, was schiefgehen kann und wie du es wieder loswirst.
+
+groups:
+  - title: Bevor du installierst
+    icon: i-mdi-magnify
+    questions:
+      - question: Ist das etwas Offizielles von Home Assistant?
+        answer: Nein. Spook ist eine benutzerdefinierte Integration, gemacht von Frenck. Er arbeitet an Home Assistant selbst, aber Spook ist sein eigenes Projekt, und das Projekt Home Assistant unterstützt es nicht. Frag dort also bitte nicht nach Hilfe mit Spook. Frag hier.
+        link: { label: Wo du Hilfe bekommst, to: /support }
+      - question: Warum ist das dann nicht in Home Assistant?
+        answer: Manches ist zu speziell, zu experimentell oder biegt Regeln, die Home Assistant aus guten Gründen einhält. Spook muss das nicht. Und manches ist ein Testlauf. Template-Funktionen und ein paar Reparaturen haben in Spook angefangen und sind in Home Assistant selbst umgezogen.
+        link: { label: "Funktionen, die weitergezogen sind", to: /previous-features }
+      - question: Was kostet es?
+        answer: Nichts. Spook ist kostenlos und MIT-lizenziert, ohne Pro-Version und ohne Haken. Willst du Danke sagen? Frenck auf GitHub zu sponsern, hält den Geist satt.
+        link: { label: Frenck sponsern, to: "https://github.com/sponsors/frenck" }
+      - question: Schickt es irgendwas irgendwohin?
+        answer: Nein. Kein Konto, keine Cloud, kein Tracking. Das Einzige, was Spook aus dem Internet holt, ist eine neue Version eines Blueprints, den du importiert hast, von dort, wo du ihn importiert hast. Teilst du die Analysedaten von Home Assistant selbst, taucht Spook in dieser Zählung auf, wie jede andere Integration, die du hast.
+
+  - title: Damit leben
+    icon: i-mdi-home-heart
+    questions:
+      - question: Bringt es meine Installation durcheinander?
+        answer: Probleme finden ändert nichts. Wo Spook anbietet, etwas zu beheben, fragt es zuerst und schaut direkt vorher noch einmal nach. Seine Aktionen tun nur, was du ihnen in deinen eigenen Automationen sagst.
+      - question: Macht es Home Assistant langsamer?
+        answer: "Spook arbeitet: Es liest deine Automationen, Dashboards und mehr. Die schwereren Prüfungen warten, bis Home Assistant fertig gestartet ist, und laufen wieder, wenn sich etwas ändert, nicht die ganze Zeit. Merkst du es trotzdem, ist das ein Bug, und wir wollen davon hören."
+      - question: Liegt es auch mal daneben?
+        answer: Ja, manchmal. Spook gibt sich Mühe, nur zu melden, was wirklich kaputt ist, und eine Reparatur, die falschen Alarm schlägt, ist ein Bug. Bis er behoben ist, ignoriere die Reparatur, und Spook schweigt zu genau diesen Funden.
+        link: { label: Einen melden, to: "https://github.com/frenck/spook/issues" }
+      - question: Kann ein Update von Home Assistant es kaputt machen?
+        answer: Ja. Spook nutzt Teile von Home Assistant, die nicht für Außenstehende gedacht sind. So tut es, was es tut, und deshalb kann ein Update es auch ins Stolpern bringen. Passiert das, behebt es ein Update von Spook.
+
+  - title: Wenn du raus willst
+    icon: i-mdi-door-open
+    questions:
+      - question: Was passiert, wenn ich es entferne?
+        answer: Seine Reparaturen und Sensoren gehen mit. Helfer, die du mit Spook gemacht hast, bleiben zurück, laden aber nicht mehr, also lösche die zuerst. Automationen, die Aktionen, Auslöser oder Bedingungen von Spook nutzen, funktionieren nicht mehr, und Spook ist nicht mehr da, um es dir zu sagen. Prüfe die also zuerst. Deine Geräte, Entitäten und alles andere bleiben genau, wie sie waren.
+        link: { label: So entfernst du es, to: /uninstalling }
+      - question: Bleibt es?
+        answer: Spook gibt es seit Februar 2023, mit einem Release, wann immer es etwas gibt, das sich zu veröffentlichen lohnt. Übernimmt Home Assistant eine Funktion, verlässt sie Spook, und die Release Notes und die Doku sagen, wohin sie gegangen ist.
+        link: { label: Die Geschichte hinter Spook, to: /background-and-history }
+
+  - title: Das Projekt
+    icon: i-mdi-ghost-outline
+    questions:
+      - question: Warum heißt es Spook?
+        answer: "Spook ist das niederländische Wort für Geist, mit einem Augenzwinkern zu Casper, dem freundlichen Geist. Es findet die Geister in deinem Home Assistant: die Dinge, die noch herumspuken, aber nicht mehr da sind."
+        link: { label: Die längere Geschichte, to: /background-and-history }
+      - question: Ich habe gehört, ich darf Spook nicht benutzen. Was hat es damit auf sich?
+        answer: Das stimmte mal. Vor Version 3.0.0 hatte Spook eine Lizenz, mit der du den Code lesen, aber nicht benutzen durftest, mit Absicht. Es war ein Experiment, und der Slogan war „Not your homie“. Die Leute haben es trotzdem benutzt und geliebt. Deshalb ist es seit 3.0.0 MIT-lizenziert, und der Slogan ist „Your homie“.
+        link: { label: Die Lizenz, to: /license }
+      - question: Was bedeuten die Versionsnummern?
+        answer: Major, Minor, Patch. Eine neue Major-Version ändert oder entfernt etwas, auf das du dich vielleicht verlässt, eine Minor-Version fügt Dinge hinzu, ein Patch behebt Dinge. Jedes Release hat Notes auf GitHub, die sagen, was sich geändert hat.
+        link: { label: Release Notes, to: "https://github.com/frenck/spook/releases" }
+      - question: Wann kommt das nächste Release?
+        answer: Wenn es fertig ist. Spook ist ein Herzensprojekt, gemacht in der Freizeit, also gibt es keine Termine und keine Versprechen.
+      - question: Ich habe eine Idee für Spook. Wohin damit?
+        answer: In die Diskussionen auf GitHub. Vieles, was Spook heute tut, hat dort als Idee von jemandem angefangen.
+        link: { label: Eine Idee teilen, to: "https://github.com/frenck/spook/discussions" }

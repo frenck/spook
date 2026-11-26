@@ -1,0 +1,1665 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/06.reference/01.actions.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/06.reference/01.actions.md",
+  "language": "ja",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "9904ede0e3db85d1",
+      "source": "7e78315b3a6fc094",
+      "glossary": {
+        "action": "アクション"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "393527dbcb7c48f1",
+      "source": "14debb4969877b50",
+      "glossary": {
+        "Add action": "アクションを追加",
+        "action": "アクション",
+        "automation": "オートメーション",
+        "script": "スクリプト",
+        "how to use it": "使い方",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-create-an-area",
+      "hash": "fa7c9ddb7f31800a",
+      "source": "45363e20afdcda24",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-update-an-area",
+      "hash": "d059c7d052fe59b9",
+      "source": "147235e48b01a768",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-delete-an-area",
+      "hash": "ba130da54200cfc6",
+      "source": "a29512aa4300b464",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-alias-to-an-area",
+      "hash": "9ff92d93c5072ea9",
+      "source": "e4d1747d2a017522",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-alias-from-an-area",
+      "hash": "2966c0511f6d6e80",
+      "source": "6ca2ac5592c963f3",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-set-aliases-for-an-area",
+      "hash": "3224ccdd8731b98b",
+      "source": "7e9d888288400c68",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-a-device-to-an-area",
+      "hash": "df63fe8fb455fd89",
+      "source": "4c202c096c7d2410",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "device": "デバイス",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-a-device-from-an-area",
+      "hash": "e7cc0b432608c06a",
+      "source": "736ac6fbdf98c25e",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "device": "デバイス",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-add-an-entity-to-an-area",
+      "hash": "009087afe0d3b642",
+      "source": "7fee1b296bed1e7b",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "areas-remove-an-entity-from-an-area",
+      "hash": "8fac3ba188d73446",
+      "source": "43187a122242003f",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-snooze",
+      "hash": "d391b67b5d6ee390",
+      "source": "38f32d05691898ef",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "restart": "再起動",
+        "snooze": "スヌーズ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "automation-turn-on-for",
+      "hash": "a5ad17b93ad5adaa",
+      "source": "319c5f79a85e0ea9",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "restart": "再起動",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "blueprint-import-blueprint",
+      "hash": "9c1bed4c65e00f34",
+      "source": "10965e29fe0627be",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "blueprint": "ブループリント",
+        "script": "スクリプト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-delete-event",
+      "hash": "e7255379bc67abee",
+      "source": "c41a3ca47547624e",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "calendar-update-event",
+      "hash": "f65111ab20551ec4",
+      "source": "059e83d8b27feec9",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-create-a-category",
+      "hash": "e5d342e407b3fc53",
+      "source": "58639afb175f4b59",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "helper": "ヘルパー",
+        "scene": "シーン",
+        "script": "スクリプト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-update-a-category",
+      "hash": "042ec072b00f6cf7",
+      "source": "c7ea912d3dd1fbcc",
+      "glossary": {
+        "action": "アクション",
+        "icon": "アイコン",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-delete-a-category",
+      "hash": "1508e2357d9bf8d4",
+      "source": "fc34b1c6fbfbf1fb",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-add-a-category-to-an-entity",
+      "hash": "e9045b7c737c51ed",
+      "source": "528a705c50a89d40",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "entity": "エンティティ",
+        "helper": "ヘルパー",
+        "scene": "シーン",
+        "script": "スクリプト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "categories-remove-a-category-from-an-entity",
+      "hash": "8634dba6a4f260a6",
+      "source": "1f324254a8141e73",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "entity": "エンティティ",
+        "helper": "ヘルパー",
+        "scene": "シーン",
+        "script": "スクリプト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-increase-temperature",
+      "hash": "cfa97b85b3b2160b",
+      "source": "3f2c0f5b770cc4f7",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "climate-decrease-temperature",
+      "hash": "b8bc6e2b7f8c987d",
+      "source": "206847c25376a58a",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-create",
+      "hash": "4f42fd3368a50aa2",
+      "source": "f0df5c3077f1c9cc",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "counter-delete",
+      "hash": "bb8d417824adbba2",
+      "source": "11b3334e6161eed4",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-increase-position",
+      "hash": "b9e5e7606b3f7cbd",
+      "source": "54587b992c95b8ad",
+      "glossary": {
+        "action": "アクション",
+        "cover": "カバー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "cover-decrease-position",
+      "hash": "cf335c82553cd77f",
+      "source": "346b63c59f6b3f1a",
+      "glossary": {
+        "action": "アクション",
+        "cover": "カバー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-disable",
+      "hash": "110ddee0db7c4dda",
+      "source": "2d65b54df3adf0cc",
+      "glossary": {
+        "action": "アクション",
+        "device": "デバイス",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-enable",
+      "hash": "d494cccc4562198c",
+      "source": "08a9a3c6d00c5e94",
+      "glossary": {
+        "action": "アクション",
+        "device": "デバイス",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "device-update",
+      "hash": "60b52ab725b07532",
+      "source": "5a82aae7771e5b72",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "device": "デバイス",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "delete-all-orphaned-entities",
+      "hash": "df385df8dfac38a4",
+      "source": "96a90ba8b0440c68",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "integration": "統合",
+        "restart": "再起動",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-disable",
+      "hash": "6b1cbdbfa6256500",
+      "source": "7bf83fbd3c54489f",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-enable",
+      "hash": "7a2c14a14af74067",
+      "source": "e1587c9cf927d93f",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-hide",
+      "hash": "01c30b55b20a5852",
+      "source": "2515fc8b87300941",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-unhide",
+      "hash": "021bbab3f716835d",
+      "source": "1ba4109a1161e3b0",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-rename",
+      "hash": "a44da16d5236882d",
+      "source": "eb36dfbc05e48074",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-icon",
+      "hash": "703f191894e85562",
+      "source": "bf4e306920ce0d7d",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "icon": "アイコン",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-add-an-alias",
+      "hash": "2d260fe4d3a790e4",
+      "source": "ae66375ea7e68988",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-remove-an-alias",
+      "hash": "55af5eaffce3c72c",
+      "source": "0e1a71b930edf934",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-set-aliases",
+      "hash": "89582eb9b994552e",
+      "source": "4377d0257d0eedeb",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-expose-to-assistants",
+      "hash": "03d7b76ed86dd9ab",
+      "source": "58cd034d696a80cc",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-stop-exposing-to-assistants",
+      "hash": "2d13c5fd7c2c2906",
+      "source": "c1aa37b13a740217",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "entity-update-id",
+      "hash": "ac51d9b9c3a4f204",
+      "source": "87b75dd839af5a4f",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "list-all-orphaned-database-entities",
+      "hash": "3b6ee605bba0c8af",
+      "source": "e8071212452fedd4",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-create-a-floor",
+      "hash": "2b64501457c47b01",
+      "source": "f013fde69736ec00",
+      "glossary": {
+        "action": "アクション",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-update-a-floor",
+      "hash": "6886472988bac81c",
+      "source": "27fc103b228da07d",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-delete-a-floor",
+      "hash": "5dca56c6f5665f47",
+      "source": "187892c90bdedf01",
+      "glossary": {
+        "action": "アクション",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-alias-to-a-floor",
+      "hash": "f5dc02423466d9ea",
+      "source": "286fdd62f1fc246c",
+      "glossary": {
+        "action": "アクション",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-alias-from-a-floor",
+      "hash": "42e0edfc76aa1d69",
+      "source": "38bbc968049f2de8",
+      "glossary": {
+        "action": "アクション",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-set-aliases-for-a-floor",
+      "hash": "11646e1a62e0a4d3",
+      "source": "a817438fb5d18a0c",
+      "glossary": {
+        "action": "アクション",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-add-an-area-to-a-floor",
+      "hash": "bb5b13a1654dbe37",
+      "source": "fab6e98bd700aa4a",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "floors-remove-an-area-from-a-floor",
+      "hash": "cb9a32560773e046",
+      "source": "b2a6dab5b0feab3f",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "floor": "フロア",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-add-members",
+      "hash": "467780d0d55af113",
+      "source": "f71df2953fa7d168",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-remove-members",
+      "hash": "f5fb10befca23f1a",
+      "source": "4575af4189040dad",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "group-set-members",
+      "hash": "9634c9114d3a5cb6",
+      "source": "03023f3aab11b3d6",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "restart",
+      "hash": "6b3d4e8fe4f8faf6",
+      "source": "d3d56d244deb0ce0",
+      "glossary": {
+        "action": "アクション",
+        "restart": "再起動",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-increase-humidity",
+      "hash": "0b9de948f4b60c60",
+      "source": "ee8e1c579fbfe7c1",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "humidifier-decrease-humidity",
+      "hash": "96693d25258dabec",
+      "source": "cacd68ec074639ff",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-create",
+      "hash": "20a9c2f6c6002245",
+      "source": "f7812cf040570ee8",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "boolean": "ブール値",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-boolean-delete",
+      "hash": "5c59da2878b9c14e",
+      "source": "b6d6d5f9b92faaf6",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "boolean": "ブール値",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-create",
+      "hash": "95e5b190401caca0",
+      "source": "f9932c2286f44825",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-button-delete",
+      "hash": "ab331a9bac345ce2",
+      "source": "0bd2ed2cdad955f7",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-create",
+      "hash": "6c6a8d47f35716d2",
+      "source": "f64bad322606e1ac",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-datetime-delete",
+      "hash": "dbf65ae70db33d3b",
+      "source": "0adaf4e950b99697",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-create",
+      "hash": "9d657cdbaa3b400b",
+      "source": "50d14866a6f13b85",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-delete",
+      "hash": "9d9ee38a41a8bc92",
+      "source": "566263b8c8a90a6e",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-decrease-value",
+      "hash": "de748dc08fffc74f",
+      "source": "134e7331ee4c4454",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-increase-value",
+      "hash": "efdb29a8a0228bb1",
+      "source": "cdc3bef29610730e",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-maximum-value",
+      "hash": "e0652fa8afa6cc33",
+      "source": "14738757955cd2a1",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-minimum-value",
+      "hash": "96b9f934448c07f2",
+      "source": "881051a428403506",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-number-set-range",
+      "hash": "1b9eafed74330803",
+      "source": "c690b509aa3834b4",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-create",
+      "hash": "20670bfe72a9ecde",
+      "source": "70df3e925b7f666d",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-delete",
+      "hash": "83d6da00e7d49269",
+      "source": "721ff7c60fccfa3f",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-select-random-option",
+      "hash": "d97130423890bfb6",
+      "source": "589bebfabf24bbaa",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "optional": "任意",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-reverse-options",
+      "hash": "19746a43b2424f15",
+      "source": "9b946636eb745c08",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-shuffle-options",
+      "hash": "5bb739f3c2c7999c",
+      "source": "eb9c7dcdee515ca6",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-select-sort-options",
+      "hash": "a52efa403c52abab",
+      "source": "e3d8bbe3f7fd690b",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-create",
+      "hash": "7714e22d1a6b25c2",
+      "source": "f65dd272abc769ca",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "input-text-delete",
+      "hash": "9b0e498d3cd160c1",
+      "source": "d336d44982db6ad3",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "ignore-all-discovered-devices-services",
+      "hash": "a703f385d17aa21d",
+      "source": "1e0686ce57c0ff90",
+      "glossary": {
+        "action": "アクション",
+        "dashboard": "ダッシュボード",
+        "device": "デバイス",
+        "integration": "統合",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable",
+      "hash": "73e2e70eb8e23006",
+      "source": "8c477108ebd6470a",
+      "glossary": {
+        "action": "アクション",
+        "dashboard": "ダッシュボード",
+        "integration": "統合",
+        "integration entry": "統合エントリ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable",
+      "hash": "586bfc22f75b9631",
+      "source": "00df5770bca6d9a9",
+      "glossary": {
+        "action": "アクション",
+        "integration": "統合",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-disable-polling-for-updates",
+      "hash": "2d14c957369fa5cc",
+      "source": "8fe544cee98d435e",
+      "glossary": {
+        "action": "アクション",
+        "dashboard": "ダッシュボード",
+        "integration": "統合",
+        "integration entry": "統合エントリ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "integration-enable-polling-for-updates",
+      "hash": "a42991a69087f3b7",
+      "source": "89af14a7d955067a",
+      "glossary": {
+        "action": "アクション",
+        "dashboard": "ダッシュボード",
+        "integration": "統合",
+        "integration entry": "統合エントリ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-create-a-label",
+      "hash": "5e223bbc4d487f27",
+      "source": "aae2e31ec3ebd56a",
+      "glossary": {
+        "action": "アクション",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-update-a-label",
+      "hash": "65895fef434970c5",
+      "source": "9aba8fe880ef45a2",
+      "glossary": {
+        "action": "アクション",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-delete-a-label",
+      "hash": "56f603ff08f258cf",
+      "source": "b5244dbfa714aa43",
+      "glossary": {
+        "action": "アクション",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-area",
+      "hash": "59e3c84980262397",
+      "source": "aa6400d84df2e5e0",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-area",
+      "hash": "ebcc20812a177d69",
+      "source": "0c105083bf7450a9",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-a-device",
+      "hash": "78124ce422b7e53c",
+      "source": "e0668f0d78cb6cf9",
+      "glossary": {
+        "action": "アクション",
+        "device": "デバイス",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-a-device",
+      "hash": "56a8c53947ecc976",
+      "source": "6e056912c9a3f9b6",
+      "glossary": {
+        "action": "アクション",
+        "device": "デバイス",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-add-a-label-to-an-entity",
+      "hash": "8a19c5af82ac2a50",
+      "source": "8595f13ce982d316",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "labels-remove-a-label-from-an-entity",
+      "hash": "cb64dc1a068f22fa",
+      "source": "257c2b2b46c88802",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "label": "ラベル",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-brightness",
+      "hash": "e27951ed6fc1ca73",
+      "source": "68a205bacaf6b2fc",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-increase-brightness",
+      "hash": "3d3efd09a27b2eea",
+      "source": "e3f48b829279af10",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-decrease-brightness",
+      "hash": "e53734159f6015fd",
+      "source": "8cd4775f20b68333",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color",
+      "hash": "abf43b8a9244d85b",
+      "source": "13830bd6bdd89cb9",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-color-temperature",
+      "hash": "3c8d0c24c30be5a8",
+      "source": "e7df1233759a686b",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "light-set-effect",
+      "hash": "e5c3062538f04750",
+      "source": "a389ea5f3ddbcd1d",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-increase-volume",
+      "hash": "0d5ceb06cc05eb86",
+      "source": "e3877319b2187f0a",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "media-player-decrease-volume",
+      "hash": "9613c712fe8acb93",
+      "source": "fd5fbe306c81d56c",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-decrease-value",
+      "hash": "3d1a806face55070",
+      "source": "35485b249f9d26f2",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-increase-value",
+      "hash": "55df5a971d942cfd",
+      "source": "5403c49c15a0239a",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-maximum-value",
+      "hash": "ff6b7fe6be1a4cd6",
+      "source": "4ef6d2bfca521e08",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "number-set-minimum-value",
+      "hash": "f67bd3dc971692ad",
+      "source": "5455cf7bebca98c3",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-add-a-device-tracker",
+      "hash": "3e941e7d51e7d54d",
+      "source": "49e6c182192889dc",
+      "glossary": {
+        "action": "アクション",
+        "device": "デバイス",
+        "person": "人",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "person-remove-a-device-tracker",
+      "hash": "753c1b30ceb39c3b",
+      "source": "c6f9b77d9f63b3b9",
+      "glossary": {
+        "action": "アクション",
+        "device": "デバイス",
+        "person": "人",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "recorder-import-statistics",
+      "hash": "9fc72a2f68989cbc",
+      "source": "24ea765fabc46c1d",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-create-issue",
+      "hash": "0c439fd42d69abd4",
+      "source": "744c786a00750dc1",
+      "glossary": {
+        "action": "アクション",
+        "issue": "問題",
+        "repair": "修復",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-ignore-all-issues",
+      "hash": "e6a07a4ccd75904e",
+      "source": "c5e262e8084c1510",
+      "glossary": {
+        "action": "アクション",
+        "issue": "問題",
+        "repair": "修復",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-list-issues",
+      "hash": "eec86206f28fa4a5",
+      "source": "4827f6642473f134",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "dashboard": "ダッシュボード",
+        "issue": "問題",
+        "repair": "修復",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-remove-issue",
+      "hash": "3282f8d10921cc61",
+      "source": "15ddeedd3336231e",
+      "glossary": {
+        "action": "アクション",
+        "issue": "問題",
+        "repair": "修復",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs-unignore-all-issues",
+      "hash": "0621b091269a36b8",
+      "source": "4afe7012cfcdf14e",
+      "glossary": {
+        "action": "アクション",
+        "issue": "問題",
+        "repair": "修復",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-create",
+      "hash": "05d6ffd159f2b1df",
+      "source": "93397dde51f95061",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-delete",
+      "hash": "7606e58f81f102ee",
+      "source": "cea37985b6a22849",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "schedule-set-the-time-blocks-of-a-day",
+      "hash": "22f3d1dcf56d980a",
+      "source": "6a8316128da4acd2",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "select-select-random-option",
+      "hash": "d29af88236f789e1",
+      "source": "b6d353c408aa135a",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "optional": "任意",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "sensor-set-display-precision",
+      "hash": "1df477d09e0b7014",
+      "source": "d628b43e7535cb1a",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "wait-for-a-condition",
+      "hash": "40b753c90601b10d",
+      "source": "e708f91ce886296e",
+      "glossary": {
+        "action": "アクション",
+        "condition": "条件",
+        "template": "テンプレート",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "boo",
+      "hash": "0d826cded6867911",
+      "source": "f92ff152411b1478",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "script": "スクリプト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "random-fail",
+      "hash": "c035e180610521ac",
+      "source": "14fbea313c1bb34a",
+      "glossary": {
+        "action": "アクション",
+        "automation": "オートメーション",
+        "script": "スクリプト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-create",
+      "hash": "2a2afbbb6c265d64",
+      "source": "00844ea89714d0d8",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-delete",
+      "hash": "0ac7f7353315f0e7",
+      "source": "4ceb5f9060116c94",
+      "glossary": {
+        "action": "アクション",
+        "helper": "ヘルパー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "timer-set-duration",
+      "hash": "bfb22b20335d2f0f",
+      "source": "955c1da4b85959ff",
+      "glossary": {
+        "action": "アクション",
+        "entity": "エンティティ",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "to-do-list-move-item",
+      "hash": "da6c8fc02aac6f8b",
+      "source": "bbb15cc31bde37a2",
+      "glossary": {
+        "action": "アクション",
+        "list": "リスト",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-disable",
+      "hash": "0f333de52809f5ed",
+      "source": "314b1eedb14f3eea",
+      "glossary": {
+        "action": "アクション",
+        "user": "ユーザー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "user-enable",
+      "hash": "f9614ac6385cdd41",
+      "source": "2fb8ac151a26c5f9",
+      "glossary": {
+        "action": "アクション",
+        "user": "ユーザー",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-increase-position",
+      "hash": "5f745056fa709fe3",
+      "source": "f2f4e45d5feab91b",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "valve-decrease-position",
+      "hash": "d198ac231751e42c",
+      "source": "c92856e472c3bf2b",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-increase-temperature",
+      "hash": "d1c7dd85fae421af",
+      "source": "7adafb60f6679ce9",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "water-heater-decrease-temperature",
+      "hash": "65fb39b977477405",
+      "source": "bcb3ef24d232159e",
+      "glossary": {
+        "action": "アクション",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-create",
+      "hash": "f51b7d24c909fc57",
+      "source": "5f4a74834751d2b2",
+      "glossary": {
+        "action": "アクション",
+        "zone": "ゾーン",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-update",
+      "hash": "c2198226f9856ce4",
+      "source": "8e0629178742af2a",
+      "glossary": {
+        "action": "アクション",
+        "zone": "ゾーン",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "zone-delete",
+      "hash": "df2fb11b81941045",
+      "source": "4af7f899353def9e",
+      "glossary": {
+        "action": "アクション",
+        "zone": "ゾーン",
+        "try this action": "このアクションを試す"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

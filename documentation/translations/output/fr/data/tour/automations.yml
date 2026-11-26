@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/automations.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 2
+title: Des automatisations sans bricolage
+description: Spook ajoute des déclencheurs, des conditions et des actions à l'éditeur d'automatisation de Home Assistant, pour tout ce que vous construisiez à coups d'entrées.
+
+hero:
+  headline: Déclencheurs, conditions et actions 🧰
+  title: Des automatisations, sans bricolage.
+  description: Spook ajoute {triggers} déclencheurs, {conditions} conditions et {actions} actions pour tout ce que vous construisiez à coups d'entrées. Ils sont dans l'éditeur d'automatisation, juste à côté de ceux de Home Assistant.
+  screenshot: automation-editor
+  alt: Une automatisation dans l'éditeur de Home Assistant, avec le déclencheur de planification cron et la condition de temps de repos de Spook, et une action de lumière classique.
+
+sections:
+  - headline: Dites quand, comme vous l'entendez
+    title: Chaque jour de semaine à six heures et demie.
+    description: Les déclencheurs horaires de Home Assistant couvrent une heure de la journée et un motif. La planification cron de Spook dit « en semaine à six heures et demie » ou « le dernier vendredi du mois » en une ligne, avec l'explication directement dans l'éditeur.
+    screenshot: automation-cron
+    alt: Le déclencheur de planification cron de Spook ouvert dans l'éditeur d'automatisation, avec sa description et la planification 30 6 * * 1-5.
+    features:
+      - title: Pour les moments que Home Assistant ne sait pas nommer
+        description: Un appareil qui vient d'apparaître, une automatisation désactivée, une entité devenue muette.
+        icon: i-mdi-timer-cog-outline
+      - title: Des conditions qui ont de la mémoire
+        description: Un temps de repos depuis la dernière exécution, ou seulement quand une personne l'a lancée, pas une automatisation.
+        icon: i-mdi-account-check-outline
+      - title: Rien de nouveau à apprendre
+        description: Choisis, remplis et enregistrés comme les autres. Dans l'éditeur, dans les scripts, en YAML.
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: Les actions que vous cherchiez toujours
+    title: Mettez-la en veille, ne la désactivez pas.
+    description: Désactivez une automatisation pendant une heure, et elle revient d'elle-même, même après un redémarrage. Une des {actions} actions, de la mise en veille d'automatisations à la création de pièces, d'étiquettes et d'entrées depuis une automatisation.
+    screenshot: action-snooze
+    alt: La boîte de dialogue Ajouter une action dans l'éditeur d'automatisation, avec une recherche sur « veille », et l'action Mettre en veille de Spook encadrée.
+    features:
+      - title: Chercher, sélectionner, terminé
+        description: Les actions de Spook apparaissent quand vous ajoutez une action, chacune marquée d'un 👻.
+        icon: i-mdi-magnify
+      - title: Survit à un redémarrage
+        description: En veille, c'est en veille. Un redémarrage de Home Assistant entre-temps ne la réveille pas plus tôt.
+        icon: i-mdi-restart
+      - title: Gérez votre maison depuis une automatisation
+        description: Créez et supprimez des pièces, des étiquettes, des zones et des entrées, ou désactivez un appareil.
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: Tout ce qu'il y a dans la boîte à outils
+  links:
+    - title: Tous les déclencheurs
+      description: Chaque déclencheur que Spook ajoute, avec son utilité et un exemple.
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: Toutes les conditions
+      description: Les conditions, du temps de repos au chien de garde.
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: Toutes les actions
+      description: La liste complète, avec un bouton pour essayer chacune dans votre propre Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: La mise en veille, étape par étape
+      description: Comment l'utiliser dans vos automatisations, avec des exemples.
+      icon: i-mdi-sleep
+      to: /automation#snooze

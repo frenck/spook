@@ -1,0 +1,281 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/03.core-extensions/04.floors.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/03.core-extensions/04.floors.md",
+  "language": "de",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "83088d98352202aa",
+      "source": "11ef8685298db427",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "floor": "Etage",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "92b81d435909c257",
+      "source": "d7701cf002cc96ea",
+      "glossary": {
+        "Settings": "Einstellungen",
+        "Areas, labels & zones": "Bereiche, Labels & Zonen",
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "floor": "Etage",
+        "label": "Label",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "208cfaf396a57168",
+      "source": "fe12ca575ed62a3a",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "floor": "Etage",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "create-a-floor",
+      "hash": "58be102ea9b48358",
+      "source": "35e7bf5076a9c9d2",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Create a floor 👻": "Home Assistant Core Integration: Etage anlegen 👻",
+        "Name": "Name",
+        "Icon": "Symbol",
+        "Level": "Ebene",
+        "Aliases": "Aliase",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "icon": "Symbol",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "update-a-floor",
+      "hash": "6471061fa104c2b8",
+      "source": "71ec1988615b4fab",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Update a floor 👻": "Home Assistant Core Integration: Etage aktualisieren 👻",
+        "Floor ID": "Etagen-ID",
+        "Name": "Name",
+        "Aliases": "Aliase",
+        "Icon": "Symbol",
+        "Level": "Ebene",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "area": "Bereich",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "icon": "Symbol",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "delete-a-floor",
+      "hash": "5da13dc5faf02939",
+      "source": "8930e46b32d8dc90",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Delete a floor 👻": "Home Assistant Core Integration: Etage löschen 👻",
+        "Floor ID": "Etagen-ID",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "area": "Bereich",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "add-an-alias-to-a-floor",
+      "hash": "dbda06d097b72553",
+      "source": "7aebdc9968b31b09",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Add an alias to a floor 👻": "Home Assistant Core Integration: Einer Etage ein Alias hinzufügen 👻",
+        "Floor ID": "Etagen-ID",
+        "Alias": "Alias",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "remove-an-alias-from-a-floor",
+      "hash": "d0b9cd88afb25fcc",
+      "source": "7a7df9e86d9f2a3e",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Remove an alias from a floor 👻": "Home Assistant Core Integration: Ein Alias von einer Etage entfernen 👻",
+        "Floor ID": "Etagen-ID",
+        "Alias": "Alias",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "set-aliases-for-a-floor",
+      "hash": "4ff3b99bce6fcc57",
+      "source": "e312d902165c252d",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Sets aliases for a floor 👻": "Home Assistant Core Integration: Aliase für eine Etage festlegen 👻",
+        "Floor ID": "Etagen-ID",
+        "Aliases": "Aliase",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "add-an-area-to-a-floor",
+      "hash": "918aae791fc0fef2",
+      "source": "1c6810262930339e",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Add an area to a floor 👻": "Home Assistant Core Integration: Einen Bereich einer Etage hinzufügen 👻",
+        "Floor ID": "Etagen-ID",
+        "Area ID": "Bereichs-ID",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "area": "Bereich",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "remove-an-area-from-a-floor",
+      "hash": "4c4688132958794d",
+      "source": "80cc7ea522f2e963",
+      "glossary": {
+        "Add action": "Aktion hinzufügen",
+        "Home Assistant Core Integration: Remove an area from a floor 👻": "Home Assistant Core Integration: Einen Bereich von einer Etage entfernen 👻",
+        "Area ID": "Bereichs-ID",
+        "Save": "Speichern",
+        "Attribute": "Attribut",
+        "Type": "Typ",
+        "Required": "Erforderlich",
+        "action": "Aktion",
+        "area": "Bereich",
+        "attribute": "Attribut",
+        "automation": "Automation",
+        "floor": "Etage",
+        "integration": "Integration",
+        "label": "Label",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "blueprints-tutorials",
+      "hash": "c90d9af687abdd1f",
+      "source": "90464cd8b17f20d4",
+      "glossary": {
+        "action": "Aktion",
+        "blueprint": "Blueprint"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "feature-requests-ideas-and-support",
+      "hash": "7ff965cbfdd8d0f6",
+      "source": "d2918cdd037ad84b",
+      "glossary": {
+        "action": "Aktion",
+        "entity": "Entität",
+        "repair": "Reparatur"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

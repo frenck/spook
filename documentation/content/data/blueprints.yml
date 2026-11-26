@@ -1,0 +1,66 @@
+# Blueprints that use Spook, found on the forum and GitHub. Checked by hand:
+# each one really uses what it says it uses. Shown on /blueprints, newest
+# first. `import` is the my.home-assistant.io link that imports it.
+blueprints:
+  - title: Person Device Tracker Switch
+    author: akentner
+    url: https://github.com/akentner/homeassistant-blueprints-template/blob/main/person_device_tracker.yaml
+    import: https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fakentner%2Fhomeassistant-blueprints-template%2Fmain%2Fperson_device_tracker.yaml
+    kind: template
+    date: "2026-03-17"
+    uses: [person.add_device_tracker, person.remove_device_tracker]
+    summary: A switch per device tracker. Turn it on and the tracker belongs to the person, turn it off and it no longer counts.
+
+  - title: Room-style lights controller
+    author: isaackehle
+    url: https://github.com/isaackehle/homeassistant/blob/main/blueprints/automation/lights/lights_controller.yaml
+    import: https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fisaackehle%2Fhomeassistant%2Fmain%2Fblueprints%2Fautomation%2Flights%2Flights_controller.yaml
+    kind: automation
+    date: "2026-02-21"
+    uses: [timer.set_duration]
+    summary: Runs a room's lights from doors, motion, buttons and a timer, and changes how long that timer runs as the room asks for it.
+
+  - title: Sync Device Labels to Entities (Configurable)
+    author: Inovaflex
+    url: https://github.com/Inovaflex/Label-Sync
+    import: https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2FInovaflex%2FLabel-Sync%2Fmain%2FLabel_sync.yaml
+    kind: automation
+    date: "2025-10-22"
+    uses:
+      [
+        homeassistant.add_label_to_entity,
+        homeassistant.remove_label_from_entity,
+      ]
+    summary: Put the sync label on a device and its entities get the device's labels too. Remove a label from the device and it leaves the entities as well.
+
+  - title: Device Management by Availability
+    author: akentner
+    url: https://github.com/akentner/homeassistant-blueprints-automation/blob/main/device_management_by_availability.yaml
+    import: https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fakentner%2Fhomeassistant-blueprints-automation%2Fmain%2Fdevice_management_by_availability.yaml
+    kind: automation
+    date: "2025-07-20"
+    uses: [homeassistant.disable_device, homeassistant.enable_device]
+    summary: Disables a device when its availability sensor says it is gone, and enables it again once it is back.
+
+  - title: Config Entry Management by Availability
+    author: akentner
+    url: https://github.com/akentner/homeassistant-blueprints-automation/blob/main/config_entry_management_by_availability.yaml
+    import: https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fakentner%2Fhomeassistant-blueprints-automation%2Fmain%2Fconfig_entry_management_by_availability.yaml
+    kind: automation
+    date: "2025-07-20"
+    uses:
+      [homeassistant.disable_config_entry, homeassistant.enable_config_entry]
+    summary: The same idea for a whole integration entry. Disabled while its availability sensor reports a problem, enabled again when it clears.
+
+  - title: Dynamic, Hue-like Color Scenes with Randomly Distributed Colors
+    author: nilsreiter
+    url: https://community.home-assistant.io/t/dynamic-hue-like-color-scenes-with-randomly-distributed-colors/714013
+    import: https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fraw.githubusercontent.com%2Fnilsreiter%2Fhome-assistant-scenes%2Fmain%2Fha-scenes.yaml
+    kind: script
+    date: "2024-04-07"
+    uses:
+      [
+        homeassistant.add_label_to_entity,
+        homeassistant.remove_label_from_entity,
+      ]
+    summary: Hue style color scenes spread over your lights. Give it a label and Spook tags every light taking part, so you can target them later.

@@ -1,0 +1,274 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/13.homeassistant.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/13.homeassistant.md",
+  "language": "ja",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "5406fe777425de80",
+      "source": "369a2a06e6dcb106",
+      "glossary": {
+        "area": "エリア",
+        "blueprint": "ブループリント",
+        "floor": "フロア",
+        "helper": "ヘルパー",
+        "label": "ラベル"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "a64f0cfa9001e149",
+      "source": "64b218002cafc0b3",
+      "glossary": {
+        "area": "エリア",
+        "device": "デバイス",
+        "floor": "フロア",
+        "helper": "ヘルパー",
+        "integration": "統合",
+        "label": "ラベル",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "devices-entities",
+      "hash": "c863ff39a72f4a4d",
+      "source": "1b0bf38ba0d58ad8",
+      "glossary": {
+        "area": "エリア",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "integration": "統合",
+        "restart": "再起動",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "0fb3bc76f3e0e0d6",
+      "source": "3eba30a132630fc9",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "floor": "フロア",
+        "label": "ラベル",
+        "user": "ユーザー"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "528237c68c493415",
+      "source": "344a0f6d513c0ad1",
+      "glossary": {
+        "area": "エリア",
+        "blueprint": "ブループリント",
+        "dashboard": "ダッシュボード",
+        "floor": "フロア",
+        "label": "ラベル",
+        "repair": "修復",
+        "repairs dashboard": "修復ページ"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-area-sensors",
+      "hash": "c7a5c9b4d915ed5b",
+      "source": "19ba3f07eebf293c",
+      "glossary": {
+        "Clear the setting": "設定をクリアする",
+        "Let me fix it myself": "自分で直す",
+        "Keep it, stop telling me": "残しておく、もう知らせないで",
+        "area": "エリア",
+        "entity": "エンティティ",
+        "entity ID": "エンティティ ID",
+        "label": "ラベル",
+        "repair": "修復",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-customized-entities",
+      "hash": "53914d75c487dbcd",
+      "source": "08b2e5e9ffb14032",
+      "glossary": {
+        "attribute": "属性",
+        "entity": "エンティティ",
+        "icon": "アイコン",
+        "integration": "統合",
+        "label": "ラベル",
+        "repair": "修復",
+        "restart": "再起動",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-helper-sources",
+      "hash": "1b5c9f70f6e3c558",
+      "source": "11dc74235e07f9be",
+      "glossary": {
+        "Remove this helper": "このヘルパーを削除する",
+        "Let me fix it myself": "自分で直す",
+        "Keep it, stop telling me": "残しておく、もう知らせないで",
+        "entity": "エンティティ",
+        "helper": "ヘルパー",
+        "label": "ラベル",
+        "repair": "修復",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-min-max-helper-members",
+      "hash": "08e445cd1a34d3af",
+      "source": "11c49e8fdadc6998",
+      "glossary": {
+        "Remove these members": "これらのメンバーを削除する",
+        "Let me fix it myself": "自分で直す",
+        "Keep them, stop telling me": "残しておく、もう知らせないで",
+        "helper": "ヘルパー",
+        "label": "ラベル",
+        "repair": "修復",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "3d2f2f0f1028718d",
+      "source": "4526c7a38e9a9912",
+      "glossary": {
+        "area": "エリア",
+        "entity": "エンティティ",
+        "floor": "フロア",
+        "helper": "ヘルパー",
+        "icon": "アイコン",
+        "integration": "統合",
+        "label": "ラベル",
+        "repair": "修復",
+        "zone": "ゾーン",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-areas",
+      "hash": "ad59ab67f08fb673",
+      "source": "6447e37649959ea8",
+      "glossary": {
+        "Remove this empty area": "この空のエリアを削除する",
+        "Let me fix it myself": "自分で直す",
+        "Keep it, stop telling me": "残しておく、もう知らせないで",
+        "action": "アクション",
+        "area": "エリア",
+        "automation": "オートメーション",
+        "device": "デバイス",
+        "label": "ラベル",
+        "repair": "修復",
+        "script": "スクリプト",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-floors",
+      "hash": "26c3f5493c6f9483",
+      "source": "1dc8dffbc38858a2",
+      "glossary": {
+        "Remove this empty floor": "この空のフロアを削除する",
+        "Let me fix it myself": "自分で直す",
+        "Keep it, stop telling me": "残しておく、もう知らせないで",
+        "area": "エリア",
+        "automation": "オートメーション",
+        "floor": "フロア",
+        "label": "ラベル",
+        "repair": "修復",
+        "script": "スクリプト",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-labels",
+      "hash": "d0f913be6c285f2a",
+      "source": "b56369896b90e4ff",
+      "glossary": {
+        "Remove this unused label": "この未使用のラベルを削除する",
+        "Let me fix it myself": "自分で直す",
+        "Keep it, stop telling me": "残しておく、もう知らせないで",
+        "area": "エリア",
+        "automation": "オートメーション",
+        "device": "デバイス",
+        "entity": "エンティティ",
+        "label": "ラベル",
+        "repair": "修復",
+        "script": "スクリプト",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-blueprints",
+      "hash": "441d16c107deda14",
+      "source": "0c9d0302630f7b97",
+      "glossary": {
+        "Remove this unused blueprint": "この未使用のブループリントを削除する",
+        "Let me fix it myself": "自分で直す",
+        "Keep it, stop telling me": "残しておく、もう知らせないで",
+        "automation": "オートメーション",
+        "blueprint": "ブループリント",
+        "label": "ラベル",
+        "repair": "修復",
+        "script": "スクリプト",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "295c5e005fbdd6e3",
+      "source": "1b7d2e38b0428375",
+      "glossary": {
+        "area": "エリア",
+        "floor": "フロア",
+        "helper": "ヘルパー",
+        "label": "ラベル",
+        "use cases": "使用例"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

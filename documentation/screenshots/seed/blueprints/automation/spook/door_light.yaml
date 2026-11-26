@@ -1,0 +1,35 @@
+# Imported from the copy in www/.blueprints/ a while ago. That copy has
+# moved on since, so Spook offers an update for this one. Home Assistant
+# serves www/ at /local/, so the source never leaves the container. The
+# folder is hidden because Spook points out files in www/ that nothing links
+# to, and this one is a source, not something lost.
+blueprint:
+  name: "${blueprints.door_light.name}"
+  description: "${blueprints.door_light.description}"
+  domain: automation
+  source_url: http://127.0.0.1:8123/local/.blueprints/door_light.yaml
+  input:
+    door_entity:
+      name: "${blueprints.door_light.door}"
+      selector:
+        entity:
+          filter:
+            - domain: binary_sensor
+              device_class: door
+    light_target:
+      name: "${blueprints.door_light.light}"
+      selector:
+        target:
+          entity:
+            - domain: light
+
+mode: restart
+
+triggers:
+  - trigger: state
+    entity_id: !input door_entity
+    to: "on"
+
+actions:
+  - action: light.turn_on
+    target: !input light_target

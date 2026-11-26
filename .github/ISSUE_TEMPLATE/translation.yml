@@ -1,0 +1,75 @@
+name: Report a translation problem
+description: Something on a translated page of spook.boo is wrong, or reads odd.
+labels:
+  - translations
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Thanks for helping Spook speak your language! 👻**
+
+        The translated pages of spook.boo are machine-translated. Your report improves the instructions the translator works from, so the fix sticks and similar sentences get better too. Pull requests against translated pages are not accepted: those pages are regenerated, and an edit would be overwritten.
+
+        Is it about the Spook integration inside Home Assistant, not the website? Those texts are translated by people, [on Weblate](https://hosted.weblate.org/engage/spook/).
+
+  - type: dropdown
+    id: language
+    validations:
+      required: true
+    attributes:
+      label: Language
+      options:
+        - Dutch
+        - German
+        - French
+        - Spanish
+        - Italian
+        - Chinese (Simplified)
+        - Brazilian Portuguese
+        - Japanese
+
+  - type: input
+    id: page
+    validations:
+      required: true
+    attributes:
+      label: Page
+      description: >-
+        The address of the page it is on.
+      placeholder: https://spook.boo/nl/automation
+
+  - type: textarea
+    id: text
+    validations:
+      required: true
+    attributes:
+      label: The sentence as it is on the page
+      description: >-
+        Copy it from the page, so we can find it.
+
+  - type: dropdown
+    id: problem
+    validations:
+      required: true
+    attributes:
+      label: What is wrong with it?
+      options:
+        - A label differs from the one Home Assistant uses
+        - It means something else than the English page
+        - It reads unnatural
+        - Something is not translated
+        - Something else
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: Your suggestion
+      description: >-
+        How would you write it? Optional, but it helps a lot.
+
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! 🙌
+
+        ../Frenck

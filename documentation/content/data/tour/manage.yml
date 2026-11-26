@@ -1,0 +1,63 @@
+order: 3
+title: Everything Spook adds to your Home Assistant
+description: Spook adds actions, helpers and sensors to the places of Home Assistant you already use. Search for the ghost, and you see all of it.
+
+hero:
+  headline: The rest of the toolbox 🧰
+  title: Type 👻. See all of it.
+  description: Spook adds {actions} actions, three helpers and a sensor for everything in your home. No list to memorize. Search for the ghost when you add an action or a helper, and you get exactly what Spook brings. It works in every language, too.
+  screenshot: actions-ghost-search
+  alt: The Add action dialog of Home Assistant, searched for the ghost emoji, listing Spook's actions like Snooze, Increase temperature and Increase position.
+
+sections:
+  - headline: Your home, counted
+    title: How many automations was it again?
+    description: Spook gives Home Assistant itself a device, with a sensor for everything in your home. Areas, automations, devices, entities, integrations, all 53 of them. Put them on a dashboard, use them in an automation, or just watch the numbers grow.
+    screenshot: home-assistant-numbers
+    alt: The diagnostic sensors of Spook's Home Assistant device, counting areas, automations, buttons and more.
+    features:
+      - title: A number for everything
+        description: From areas and automations to custom integrations and zones.
+        icon: i-mdi-counter
+      - title: With history
+        description: Long-term statistics, like any other sensor. See your home grow, or shrink after a good cleanup.
+        icon: i-mdi-chart-line
+      - title: Ready for your dashboard
+        description: Regular sensors, so every card and every automation can use them.
+        icon: i-mdi-view-dashboard-outline
+
+  - headline: Helpers Home Assistant doesn't have
+    title: Flipped, corrected, and timed.
+    description: A switch that works the wrong way round, a sensor that reads a degree too high, a door you want to know has been shut all week. Spook's helpers fix that, made in the UI like any other helper.
+    screenshot: helpers-ghost-search
+    alt: The Create helper dialog of Home Assistant, searched for the ghost emoji, showing Spook's Calibration, Inverse and Time in state helpers.
+    features:
+      - title: Inverse
+        description: On becomes off, open becomes closed, and actions are flipped too. For the blinds with the motor on the other side.
+        icon: i-mdi-swap-horizontal
+      - title: Calibration
+        description: Corrects a sensor that reads off, with a factor and an offset.
+        icon: i-mdi-tune-variant
+      - title: Time in state
+        description: Since when the door is shut. Unlike "last changed", a restart does not start it over.
+        icon: i-mdi-timer-sand
+
+more:
+  title: Dig into the toolbox
+  links:
+    - title: All actions
+      description: The full list, with a button to try each in your own Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Your home, managed
+      description: Areas, floors, labels, devices and entities, from an automation.
+      icon: i-mdi-home-edit-outline
+      to: /core-extensions
+    - title: Helpers
+      description: Inverse, calibration and time in state, explained.
+      icon: i-mdi-tools
+      to: /helpers
+    - title: The integrations
+      description: What Spook adds to each of the integrations you use.
+      icon: i-mdi-puzzle-outline
+      to: /enhanced-integrations

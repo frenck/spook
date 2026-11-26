@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/repairs.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 1
+title: O Spook encontra o que quebrou em silêncio
+description: O Spook verifica seu Home Assistant atrás de coisas que pararam de funcionar sem avisar, e relata na sua página de reparos. Muitas vêm com uma correção.
+
+hero:
+  headline: Encontra os fantasmas 👻
+  title: Ele encontra o que quebrou em silêncio.
+  description: Renomeie uma luminária, troque um sensor, remova uma integração, e em algum lugar uma automação para de funcionar sem dizer nada. O Spook percebe, e avisa na sua página de reparos. {repairs} tipos de problemas, e ele continua procurando.
+  screenshot: repairs-list
+  alt: A página de reparos do Home Assistant com sete reparos do Spook, como uma área vazia, uma etiqueta sem uso e uma automação que usa entidades que não existem mais.
+
+sections:
+  - headline: Exatamente o quê, e onde
+    title: Sem caçar no YAML.
+    description: Todo reparo cita o lugar com o problema, e o que está errado nele. Selecione o nome e você está no editor, bem onde precisa corrigir.
+    screenshot: repair-unknown-entities
+    alt: Um reparo do Spook que cita a automação Noite de cinema e as três entidades que ela usa que não existem mais, com uma sugestão do que você quis dizer.
+    features:
+      - title: Aponta o lugar
+        description: A automação, o script ou o dashboard, com um link direto para ele.
+        icon: i-mdi-target
+      - title: Adivinha o que você quis dizer
+        description: Renomeou uma luminária? Quando o Spook tem quase certeza, ele sugere o nome novo.
+        icon: i-mdi-lightbulb-question-outline
+      - title: Some sozinho
+        description: Corrija e salve. O Spook olha de novo e remove o reparo. Nada para marcar como feito.
+        icon: i-mdi-check-circle-outline
+
+  - headline: Resolvido para você
+    title: Diga sim, e pronto.
+    description: Muitos reparos vêm com uma correção. Uma área vazia, uma etiqueta sem uso, uma pessoa que ainda rastreia um celular antigo. O Spook se oferece para limpar, e pergunta antes.
+    screenshot: repair-fix-empty-area
+    alt: Um reparo do Spook para a área vazia Sótão, oferecendo removê-la, deixar você resolver sozinho, ou mantê-la e não perguntar mais.
+    features:
+      - title: Você decide
+        description: Remova, resolva sozinho, ou mantenha. O Spook nunca limpa sem perguntar.
+        icon: i-mdi-hand-back-right-outline
+      - title: Mantenha, e ele fica quieto
+        description: É para ser assim mesmo? Diga uma vez, e o Spook para de apontar.
+        icon: i-mdi-bell-off-outline
+      - title: Verificado de novo antes de agir
+        description: Se algo mudou desde que o Spook olhou, ele deixa como está.
+        icon: i-mdi-shield-check-outline
+
+more:
+  title: Onde o Spook procura
+  links:
+    - title: Automações e scripts
+      description: Entidades, dispositivos, áreas, ações e gatilhos que não existem mais, e templates que nunca podem passar.
+      icon: i-mdi-robot-outline
+      to: /automation#repairs
+    - title: Dashboards
+      description: Cards que apontam para entidades, ações ou visualizações que não existem mais.
+      icon: i-mdi-view-dashboard-outline
+      to: /lovelace#repairs
+    - title: Áreas, andares e etiquetas
+      description: As vazias, as sem uso, e os sensores que sumiram.
+      icon: i-mdi-floor-plan
+      to: /homeassistant#repairs
+    - title: Seu primeiro reparo
+      description: Passo a passo, da página de reparos a uma automação funcionando.
+      icon: i-mdi-wrench-outline
+      to: /fix-your-first-repair

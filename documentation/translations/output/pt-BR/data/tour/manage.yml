@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/manage.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 3
+title: Tudo o que o Spook adiciona ao seu Home Assistant
+description: O Spook adiciona ações, helpers e sensores aos lugares do Home Assistant que você já usa. Pesquise pelo fantasma e você vê tudo.
+
+hero:
+  headline: O resto da caixa de ferramentas 🧰
+  title: Digite 👻. Veja tudo.
+  description: O Spook adiciona {actions} ações, três helpers e um sensor para tudo na sua casa. Nenhuma lista para decorar. Pesquise pelo fantasma quando adicionar uma ação ou um helper, e você recebe exatamente o que o Spook traz. Funciona em qualquer idioma, também.
+  screenshot: actions-ghost-search
+  alt: A caixa de diálogo Adicionar ação do Home Assistant, com a pesquisa pelo emoji de fantasma, listando ações do Spook como Adiar, Aumentar a temperatura e Aumentar a posição.
+
+sections:
+  - headline: Sua casa, contada
+    title: Quantas automações eram mesmo?
+    description: O Spook dá ao próprio Home Assistant um dispositivo, com um sensor para tudo na sua casa. Áreas, automações, dispositivos, entidades, integrações, todos os 53. Coloque em um dashboard, use em uma automação, ou só veja os números crescerem.
+    screenshot: home-assistant-numbers
+    alt: Os sensores de diagnóstico do dispositivo Home Assistant do Spook, contando áreas, automações, botões e mais.
+    features:
+      - title: Um número para tudo
+        description: De áreas e automações a integrações personalizadas e zonas.
+        icon: i-mdi-counter
+      - title: Com histórico
+        description: Estatísticas de longo prazo, como qualquer outro sensor. Veja sua casa crescer, ou diminuir depois de uma boa faxina.
+        icon: i-mdi-chart-line
+      - title: Prontos para o seu dashboard
+        description: Sensores comuns, então qualquer card e qualquer automação pode usá-los.
+        icon: i-mdi-view-dashboard-outline
+
+  - headline: Helpers que o Home Assistant não tem
+    title: Invertidos, corrigidos e cronometrados.
+    description: Um interruptor que funciona ao contrário, um sensor que marca um grau a mais, uma porta que você quer saber se ficou fechada a semana toda. Os helpers do Spook resolvem isso, criados na interface como qualquer outro helper.
+    screenshot: helpers-ghost-search
+    alt: A caixa de diálogo Criar helper do Home Assistant, com a pesquisa pelo emoji de fantasma, mostrando os helpers Calibração, Inverso e Tempo no estado do Spook.
+    features:
+      - title: Inverso
+        description: Ligado vira desligado, aberto vira fechado, e as ações também são invertidas. Para a persiana com o motor do outro lado.
+        icon: i-mdi-swap-horizontal
+      - title: Calibração
+        description: Corrige um sensor que marca errado, com um fator e um deslocamento.
+        icon: i-mdi-tune-variant
+      - title: Tempo no estado
+        description: Desde quando a porta está fechada. Diferente de "última alteração", uma reinicialização não começa a contagem de novo.
+        icon: i-mdi-timer-sand
+
+more:
+  title: Explore a caixa de ferramentas
+  links:
+    - title: Todas as ações
+      description: A lista completa, com um botão para experimentar cada uma no seu próprio Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Sua casa, gerenciada
+      description: Áreas, andares, etiquetas, dispositivos e entidades, a partir de uma automação.
+      icon: i-mdi-home-edit-outline
+      to: /core-extensions
+    - title: Helpers
+      description: Inverso, calibração e tempo no estado, explicados.
+      icon: i-mdi-tools
+      to: /helpers
+    - title: As integrações
+      description: O que o Spook adiciona a cada uma das integrações que você usa.
+      icon: i-mdi-puzzle-outline
+      to: /enhanced-integrations

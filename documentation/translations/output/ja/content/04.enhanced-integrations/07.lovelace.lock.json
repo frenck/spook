@@ -1,0 +1,290 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/07.lovelace.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/07.lovelace.md",
+  "language": "ja",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "ad22885e268246c5",
+      "source": "d6e1802148a1734d",
+      "glossary": {
+        "action": "アクション",
+        "area": "エリア",
+        "dashboard": "ダッシュボード",
+        "icon": "アイコン"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "1c061310c83e7107",
+      "source": "f22479c7da53d224",
+      "glossary": {
+        "dashboard": "ダッシュボード",
+        "state": "状態"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "2f32f5a6a0add7f7",
+      "source": "1f52858c49c462d9",
+      "glossary": {
+        "Save": "保存",
+        "dashboard": "ダッシュボード",
+        "repair": "修復",
+        "repairs dashboard": "修復ページ"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "289cb2fef166a30b",
+      "source": "7c2725b0d5b65e0e",
+      "glossary": {
+        "Save": "保存",
+        "automation": "オートメーション",
+        "dashboard": "ダッシュボード",
+        "entity": "エンティティ",
+        "entity ID": "エンティティ ID",
+        "issue": "問題",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限",
+        "unknown referenced entities": "参照先が不明なエンティティ"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "36bbfdee1728f51c",
+      "source": "63c37ee9830cb4a0",
+      "glossary": {
+        "Save": "保存",
+        "action": "アクション",
+        "area": "エリア",
+        "dashboard": "ダッシュボード",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "6c81e2720e37e004",
+      "source": "b7052112b1797649",
+      "glossary": {
+        "Save": "保存",
+        "attribute": "属性",
+        "automation": "オートメーション",
+        "condition": "条件",
+        "dashboard": "ダッシュボード",
+        "entity": "エンティティ",
+        "label": "ラベル",
+        "repair": "修復",
+        "state": "状態",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "a00191e0e3d1ebe9",
+      "source": "a3af8c70eb585406",
+      "glossary": {
+        "Save": "保存",
+        "attribute": "属性",
+        "automation": "オートメーション",
+        "condition": "条件",
+        "dashboard": "ダッシュボード",
+        "entity": "エンティティ",
+        "entity ID": "エンティティ ID",
+        "integration": "統合",
+        "label": "ラベル",
+        "repair": "修復",
+        "state": "状態",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-actions",
+      "hash": "92aaebab7f2dc555",
+      "source": "c88b3f0332201693",
+      "glossary": {
+        "Save": "保存",
+        "action": "アクション",
+        "cover": "カバー",
+        "dashboard": "ダッシュボード",
+        "integration": "統合",
+        "label": "ラベル",
+        "repair": "修復",
+        "script": "スクリプト",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-views",
+      "hash": "3bbe124e1ca278cd",
+      "source": "06a75c1b22e0273e",
+      "glossary": {
+        "Save": "保存",
+        "action": "アクション",
+        "area": "エリア",
+        "dashboard": "ダッシュボード",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "d4d93592d6ca0d10",
+      "source": "8ab97f2621bdb7ba",
+      "glossary": {
+        "Save": "保存",
+        "Settings": "設定",
+        "Dashboards": "ダッシュボード",
+        "action": "アクション",
+        "dashboard": "ダッシュボード",
+        "icon": "アイコン",
+        "label": "ラベル",
+        "logs": "ログ",
+        "repair": "修復",
+        "sidebar": "サイドバー",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "c043072647c4b3c5",
+      "source": "d80406184140503a",
+      "glossary": {
+        "Save": "保存",
+        "action": "アクション",
+        "area": "エリア",
+        "condition": "条件",
+        "dashboard": "ダッシュボード",
+        "label": "ラベル",
+        "repair": "修復",
+        "user": "ユーザー",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-themes",
+      "hash": "3bd5ec03af77adce",
+      "source": "02d95cca1ade497d",
+      "glossary": {
+        "Save": "保存",
+        "condition": "条件",
+        "dashboard": "ダッシュボード",
+        "label": "ラベル",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "missing-dashboard-resources",
+      "hash": "2dbe0f0c1ad8113d",
+      "source": "e2596533f7728ad8",
+      "glossary": {
+        "Settings": "設定",
+        "Dashboards": "ダッシュボード",
+        "Resources": "リソース",
+        "dashboard": "ダッシュボード",
+        "integration": "統合",
+        "label": "ラベル",
+        "repair": "修復",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "duplicate-dashboard-resources",
+      "hash": "af5e62180c3e58eb",
+      "source": "0288a5728c8a5ac5",
+      "glossary": {
+        "Clear the extra copies, keep the most recent": "余分なコピーを削除して、最新のものを残す",
+        "Let me fix it myself": "自分で直す",
+        "Settings": "設定",
+        "Dashboards": "ダッシュボード",
+        "Resources": "リソース",
+        "Leave them, stop telling me": "そのままにしておく、もう知らせないで",
+        "dashboard": "ダッシュボード",
+        "label": "ラベル",
+        "repair": "修復",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "string": "文字列",
+        "list": "リスト"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "public-files-in-the-www-folder",
+      "hash": "e30e0a83339e957b",
+      "source": "72fffd7d4a29767a",
+      "glossary": {
+        "dashboard": "ダッシュボード",
+        "integration": "統合",
+        "label": "ラベル",
+        "logs": "ログ",
+        "repair": "修復",
+        "template": "テンプレート",
+        "how to fix it": "直し方",
+        "how Spook checks this": "Spookのチェック方法",
+        "known limitations": "既知の制限"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

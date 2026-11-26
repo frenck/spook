@@ -1,0 +1,496 @@
+# Automations that work, and one that broke when the living room got new
+# lamps. That one is what Spook finds in the screenshots.
+- id: "1732000000001"
+  alias: "${automation.hallway_light_at_sunset.name}"
+  description: "${automation.hallway_light_at_sunset.description}"
+  triggers:
+    - trigger: sun
+      event: sunset
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.hallway_light
+
+- id: "1732000000002"
+  alias: "${automation.movie_night.name}"
+  description: "${automation.movie_night.description}"
+  triggers:
+    - trigger: state
+      entity_id: media_player.living_room_tv
+      to: playing
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id:
+          - light.living_room_floor_lamp
+          - light.living_room_ceiling
+
+- id: "1732000000003"
+  alias: "${automation.weekday_morning_lights.name}"
+  description: "${automation.weekday_morning_lights.description}"
+  triggers:
+    - trigger: spook.cron
+      options:
+        schedule: "30 6 * * 1-5"
+  conditions:
+    - condition: spook.cooldown
+      options:
+        duration: "01:00:00"
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.kitchen_lights
+
+# The garage was torn down for a bigger kitchen, the old doorbell replaced.
+# Both still live on here.
+- id: "1732000000004"
+  alias: "${automation.garage_lights_off_at_night.name}"
+  description: "${automation.garage_lights_off_at_night.description}"
+  triggers:
+    - trigger: time
+      at: "00:00:00"
+  actions:
+    - action: light.turn_off
+      target:
+        area_id: garage
+
+- id: "1732000000005"
+  alias: "${automation.doorbell_flash.name}"
+  description: "${automation.doorbell_flash.description}"
+  triggers:
+    - trigger: time_pattern
+      hours: "/12"
+  actions:
+    - action: light.turn_on
+      target:
+        device_id: 0d4b5c1e9a7f4e2b8c3d6a1f5e9b7c2a
+
+# One automation for each of Spook's triggers and conditions, the way
+# somebody would use it, for the shots of each opened in the editor. They
+# point at things in the home that exist, so Spook has nothing to say about
+# them. The ones that fire while the setup runs only leave a notification,
+# and the setup clears those.
+- id: "1732000000010"
+  alias: "${automation.automation_off_reminder.name}"
+  description: "${automation.automation_off_reminder.description}"
+  triggers:
+    - trigger: spook.automation_turned_off
+      target:
+        entity_id:
+          - automation.movie_night
+          - automation.weekday_morning_lights
+  conditions:
+    - condition: spook.triggered_by_user
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.automation_off_reminder.message}"
+
+- id: "1732000000011"
+  alias: "${automation.new_device_found.name}"
+  description: "${automation.new_device_found.description}"
+  triggers:
+    - trigger: spook.device_discovered
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.new_device_found.message}"
+
+- id: "1732000000012"
+  alias: "${automation.front_door_sensor_back.name}"
+  description: "${automation.front_door_sensor_back.description}"
+  triggers:
+    - trigger: spook.recovered
+      target:
+        entity_id: binary_sensor.front_door
+      options:
+        for: "00:15:00"
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.front_door_sensor_back.message}"
+
+- id: "1732000000013"
+  alias: "${automation.new_device_added.name}"
+  description: "${automation.new_device_added.description}"
+  triggers:
+    - trigger: spook.device_added
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.new_device_added.message}"
+
+- id: "1732000000014"
+  alias: "${automation.living_room_sensor_quiet.name}"
+  description: "${automation.living_room_sensor_quiet.description}"
+  triggers:
+    - trigger: spook.stale
+      target:
+        entity_id: sensor.living_room_thermometer
+      options:
+        for: "01:00:00"
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.living_room_sensor_quiet.message}"
+
+- id: "1732000000015"
+  alias: "${automation.new_integration.name}"
+  description: "${automation.new_integration.description}"
+  triggers:
+    - trigger: spook.integration_added
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.new_integration.message}"
+
+- id: "1732000000016"
+  alias: "${automation.integration_failed.name}"
+  description: "${automation.integration_failed.description}"
+  triggers:
+    - trigger: spook.integration_failed
+      options:
+        for: "00:15:00"
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.integration_failed.message}"
+
+- id: "1732000000017"
+  alias: "${automation.blinds_down_lamp_on.name}"
+  description: "${automation.blinds_down_lamp_on.description}"
+  triggers:
+    - trigger: spook.position_reached
+      target:
+        entity_id: cover.living_room_blinds
+      options:
+        position: 30
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.living_room_lamp
+
+- id: "1732000000018"
+  alias: "${automation.repairs_news.name}"
+  description: "${automation.repairs_news.description}"
+  triggers:
+    - trigger: spook.repair_issue_created
+      options:
+        severity:
+          - critical
+          - error
+    - trigger: spook.repair_issue_removed
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.repairs_news.message}"
+
+- id: "1732000000019"
+  alias: "${automation.bedroom_warm.name}"
+  description: "${automation.bedroom_warm.description}"
+  triggers:
+    - trigger: spook.target_temperature_reached
+      target:
+        entity_id: climate.bedroom_thermostat
+      options:
+        tolerance: 0.5
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.bedroom_warm.message}"
+
+- id: "1732000000020"
+  alias: "${automation.hot_water_ready.name}"
+  description: "${automation.hot_water_ready.description}"
+  triggers:
+    - trigger: time
+      at: "07:00:00"
+  conditions:
+    - condition: spook.is_at_target_temperature
+      target:
+        entity_id: water_heater.boiler
+      options:
+        tolerance: 2
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.hot_water_ready.message}"
+
+- id: "1732000000021"
+  alias: "${automation.update_installed.name}"
+  description: "${automation.update_installed.description}"
+  triggers:
+    - trigger: spook.update_installed
+      target:
+        entity_id: update.door_light
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.update_installed.message}"
+
+- id: "1732000000022"
+  alias: "${automation.ghost_goes_to_sleep.name}"
+  description: "${automation.ghost_goes_to_sleep.description}"
+  triggers:
+    - trigger: spook.script_started
+      target:
+        entity_id: script.goodnight
+  actions:
+    - action: select.select_option
+      target:
+        entity_id: select.ghost_mood
+      data:
+        option: "${select.ghost_mood.options.sleepy}"
+
+- id: "1732000000023"
+  alias: "${automation.door_opens_hallway_light.name}"
+  description: "${automation.door_opens_hallway_light.description}"
+  triggers:
+    - trigger: spook.state_changed
+      target:
+        floor_id: ground_floor
+      options:
+        domain: binary_sensor
+        device_class: door
+        to: "on"
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.hallway_light
+
+- id: "1732000000024"
+  alias: "${automation.new_user.name}"
+  description: "${automation.new_user.description}"
+  triggers:
+    - trigger: spook.user_added
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.new_user.message}"
+
+- id: "1732000000025"
+  alias: "${automation.welcome_home.name}"
+  description: "${automation.welcome_home.description}"
+  triggers:
+    - trigger: spook.all_of
+      options:
+        within: "00:05:00"
+        triggers:
+          - trigger: state
+            entity_id: device_tracker.new_phone
+            to: home
+          - trigger: state
+            entity_id: binary_sensor.front_door
+            to: "on"
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.living_room_lamp
+
+- id: "1732000000026"
+  alias: "${automation.door_settled.name}"
+  description: "${automation.door_settled.description}"
+  triggers:
+    - trigger: spook.debounce
+      options:
+        for: "00:00:30"
+        triggers:
+          - trigger: state
+            entity_id: binary_sensor.front_door
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.hallway_light
+
+- id: "1732000000027"
+  alias: "${automation.coming_in.name}"
+  description: "${automation.coming_in.description}"
+  triggers:
+    - trigger: spook.sequence
+      options:
+        timeout: "00:02:00"
+        steps:
+          - trigger: state
+            entity_id: binary_sensor.front_door
+            to: "on"
+          - trigger: state
+            entity_id: binary_sensor.front_door
+            to: "off"
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.living_room_lamp
+
+- id: "1732000000028"
+  alias: "${automation.front_door_still_open.name}"
+  description: "${automation.front_door_still_open.description}"
+  triggers:
+    - trigger: spook.while
+      options:
+        every: "00:10:00"
+        condition:
+          - condition: state
+            entity_id: binary_sensor.front_door
+            state: "on"
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.front_door_still_open.message}"
+
+- id: "1732000000029"
+  alias: "${automation.nobody_up_yet.name}"
+  description: "${automation.nobody_up_yet.description}"
+  triggers:
+    - trigger: spook.watchdog
+      options:
+        within: "01:00:00"
+        arm:
+          - trigger: time
+            at: "07:00:00"
+        expect:
+          - trigger: state
+            entity_id: light.kitchen_lights
+            to: "on"
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.nobody_up_yet.message}"
+
+- id: "1732000000030"
+  alias: "${automation.front_door_sensor_acting_up.name}"
+  description: "${automation.front_door_sensor_acting_up.description}"
+  triggers:
+    - trigger: spook.flapping
+      target:
+        entity_id: binary_sensor.front_door
+      options:
+        changes: 5
+        within: "00:05:00"
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.front_door_sensor_acting_up.message}"
+
+- id: "1732000000031"
+  alias: "${automation.blinds_down_when_warm.name}"
+  description: "${automation.blinds_down_when_warm.description}"
+  triggers:
+    - trigger: spook.condition_met
+      options:
+        condition:
+          - condition: numeric_state
+            entity_id: sensor.living_room_thermometer
+            above: 25
+  actions:
+    - action: cover.close_cover
+      target:
+        entity_id: cover.living_room_blinds
+
+- id: "1732000000032"
+  alias: "${automation.lamp_off_by_itself.name}"
+  description: "${automation.lamp_off_by_itself.description}"
+  triggers:
+    - trigger: state
+      entity_id: light.living_room_lamp
+      to: "off"
+  conditions:
+    - condition: spook.not_triggered_by_user
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.lamp_off_by_itself.message}"
+
+- id: "1732000000033"
+  alias: "${automation.spooky_surprise.name}"
+  description: "${automation.spooky_surprise.description}"
+  triggers:
+    - trigger: sun
+      event: sunset
+  conditions:
+    - condition: spook.chance
+      options:
+        percentage: 20
+  actions:
+    - action: select.select_option
+      target:
+        entity_id: select.ghost_mood
+      data:
+        option: "${select.ghost_mood.options.spooky}"
+
+- id: "1732000000034"
+  alias: "${automation.follow_the_hallway.name}"
+  description: "${automation.follow_the_hallway.description}"
+  triggers:
+    - trigger: state
+      entity_id: light.hallway_light
+      to: "on"
+  conditions:
+    - condition: spook.triggered_by_automation
+      options:
+        automation:
+          - automation.hallway_light_at_sunset
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.living_room_lamp
+
+- id: "1732000000035"
+  alias: "${automation.morning_repairs_check.name}"
+  description: "${automation.morning_repairs_check.description}"
+  triggers:
+    - trigger: time
+      at: "09:00:00"
+  conditions:
+    - condition: spook.repair_issue_present
+      options:
+        severity:
+          - critical
+          - error
+  actions:
+    - action: persistent_notification.create
+      data:
+        message: "${automation.morning_repairs_check.message}"
+
+- id: "1732000000036"
+  alias: "${automation.doorbell_light.name}"
+  description: "${automation.doorbell_light.description}"
+  triggers:
+    - trigger: state
+      entity_id: input_button.doorbell
+  conditions:
+    - condition: spook.quota
+      options:
+        limit: 3
+        period: "01:00:00"
+  actions:
+    - action: light.turn_on
+      target:
+        entity_id: light.hallway_light
+
+- id: "1732000000037"
+  alias: "${automation.morning_radio_volume.name}"
+  description: "${automation.morning_radio_volume.description}"
+  triggers:
+    - trigger: time
+      at: "07:30:00"
+  conditions:
+    - condition: spook.is_available
+      target:
+        entity_id: media_player.kitchen_speaker
+  actions:
+    - action: media_player.volume_set
+      target:
+        entity_id: media_player.kitchen_speaker
+      data:
+        volume_level: 0.2
+
+# An automation from the blueprint that has an update waiting.
+- id: "1732000000040"
+  alias: "${automation.front_door_light.name}"
+  description: "${automation.front_door_light.description}"
+  use_blueprint:
+    path: spook/door_light.yaml
+    input:
+      door_entity: binary_sensor.front_door
+      light_target:
+        entity_id: light.hallway_light

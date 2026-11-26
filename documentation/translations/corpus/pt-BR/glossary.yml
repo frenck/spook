@@ -1,0 +1,123 @@
+# The Brazilian Portuguese glossary, by hand.
+#
+# `terms` are words in running text: what Home Assistant calls its own things
+# in Brazilian Portuguese, so the docs use the words the reader sees in the
+# product. English to Brazilian Portuguese, singular, lowercase. Short pairs
+# only, no sentences: this file ends up in a prompt.
+#
+# `labels` overrides what glossary.generated.yml found for a bold label. Give
+# a `reason`, and either the `key` of the string that is on that screen, or a
+# `translation` when no string has it.
+#
+# Looked up in the strings of Home Assistant 2026.11.3 and Spook, 2026-11-25.
+# Not yet read by a native speaker.
+#
+# Where the frontend and Spook's own strings disagree, this follows the
+# frontend, because that is the screen the reader has open:
+# - trigger is "gatilho", the editor's word (Adicionar gatilho). Spook's
+#   strings say "gatilho" too.
+# - helper stays "helper", the Helpers page has it. Spook's strings say
+#   "auxiliar".
+# - repair is "reparo": Settings has "Reparos".
+# No Home Assistant word:
+# - notifier: Home Assistant has none. "Notificador" is Spook's own word.
+# - snooze: Spook's own action name, "Adiar".
+terms:
+  # Decided 2026-11-25: "Seu mano", the way Spook's own Brazilian strings sign
+  # every repair. "Mano" is the everyday Brazilian word for a homie.
+  your homie: seu mano
+  action: ação
+  alert: alerta
+  area: área
+  attribute: atributo
+  automation: automação
+  automation editor: editor de automação
+  blueprint: blueprint
+  condition: condição
+  cover: cobertura
+  custom integration: integração personalizada
+  dashboard: dashboard
+  debug logging: log de depuração
+  device: dispositivo
+  diagnostics: diagnósticos
+  entity: entidade
+  entity ID: ID da entidade
+  floor: andar
+  helper: helper
+  icon: ícone
+  integration: integração
+  integration entry: entrada da integração
+  issue: problema
+  label: etiqueta
+  logs: logs
+  notifier: notificador
+  repair: reparo
+  repairs dashboard: página de reparos
+  restart: reiniciar
+  scene: cena
+  script: script
+  sidebar: barra lateral
+  snooze: adiar
+  state: estado
+  template: template
+  trigger: gatilho
+  trigger ID: ID do gatilho
+  user: usuário
+  # Chosen for consistency on 2026-11-25 by an agent, not by a native
+  # speaker: three translators worked in parallel, and these drifted. The
+  # majority variant, unless noted.
+  # - string is "texto", like the other type names that are translated
+  #   (inteiro, booleano, lista).
+  # - search for is "pesquise por": every search field in Home Assistant's
+  #   interface says "Pesquisar". Most pages had "procure por".
+  by hand: à mão
+  list of strings: lista de textos
+  search for: pesquise por
+  string: texto
+
+labels:
+  Unknown entity:
+    key: ui.panel.config.automation.editor.actions.type.service.description.target_unknown_entity
+    reason: What the automation editor shows for an entity that no longer exists. The automatic match missed it.
+  Import:
+    translation: "Importar"
+    reason: The button on this website's own blueprint cards, so it says what the site says. The automatic match came from an energy sensor state.
+  Read more:
+    translation: "Ler mais"
+    reason: The other button on this website's own blueprint cards.
+  Update:
+    key: ui.dialogs.more_info_control.update.update
+    reason: The button in the update dialog. The automatic match was the name of Spook's update sensor.
+  Major:
+    translation: Major
+    reason: The parts of a version number. Kept as they are; they are names, not words.
+  Minor:
+    translation: Minor
+    reason: The parts of a version number. The automatic match came from a severity state of another integration.
+  Patch:
+    translation: Patch
+    reason: The parts of a version number.
+  Home Assistant Link:
+    translation: Home Assistant Link
+    reason: A product name, the same in every language. It used to be called Home Assistant Cloud.
+  Submit:
+    key: ui.panel.config.integrations.config_flow.submit
+    reason: The button in the dialog that sets up an integration. Home Assistant has "Submit" on other screens with another word.
+  Finish:
+    key: ui.panel.config.integrations.config_flow.finish
+    reason: The button in the dialog that sets up an integration.
+  Ignore:
+    key: ui.panel.config.repairs.dialog.ignore
+    reason: The button in a repair, not the one for a discovered integration.
+  Repairs:
+    key: ui.panel.config.repairs.caption
+    reason: The entry under Settings.
+  Logs:
+    key: ui.panel.config.logs.caption
+    reason: The entry under Settings > System.
+  About:
+    key: ui.panel.config.info.caption
+    reason: The entry under Settings.
+  System:
+    key: ui.panel.config.dashboard.system.main
+    reason: The entry under Settings.

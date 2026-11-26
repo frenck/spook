@@ -1,0 +1,31 @@
+# A blueprint nothing uses, for Spook to point out. The setup makes the file
+# look two days old: Spook leaves a blueprint added today alone.
+blueprint:
+  name: "${blueprints.doorbell_flash.name}"
+  description: "${blueprints.doorbell_flash.description}"
+  domain: automation
+  input:
+    doorbell:
+      name: "${blueprints.doorbell_flash.doorbell}"
+      selector:
+        entity:
+          filter:
+            - domain: input_button
+    light_target:
+      name: "${blueprints.doorbell_flash.light}"
+      selector:
+        target:
+          entity:
+            - domain: light
+
+triggers:
+  - trigger: state
+    entity_id: !input doorbell
+
+actions:
+  - action: light.toggle
+    target: !input light_target
+  - delay:
+      seconds: 1
+  - action: light.toggle
+    target: !input light_target

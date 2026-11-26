@@ -1,0 +1,100 @@
+# The German glossary, by hand.
+#
+# `terms` are words in running text: what Home Assistant calls its own things
+# in German, so the docs use the words the reader sees in the product. English
+# to German, singular. Short pairs only, no sentences: this file ends
+# up in a prompt.
+#
+# `labels` overrides what glossary.generated.yml found for a bold label. Give
+# a `reason`, and either the `key` of the string that is on that screen, or a
+# `translation` when no string has it.
+#
+# Decided by Frenck (he reads German), 2026-11-25:
+# - automation: the text follows the interface and says "Automation". Spook's
+#   own strings say "Automatisierung", which shows up in repair titles and
+#   screenshots. That is fine as it is: it is not a mismatch to fix, here or
+#   in Spook.
+terms:
+  action: Aktion
+  alert: Alert
+  area: Bereich
+  attribute: Attribut
+  automation: Automation
+  automation editor: Automations-Editor
+  blueprint: Blueprint
+  condition: Bedingung
+  custom integration: benutzerdefinierte Integration
+  dashboard: Dashboard
+  debug logging: Debug-Protokoll
+  device: Gerät
+  diagnostics: Diagnosedaten
+  entity: Entität
+  entity ID: Entitäts-ID
+  floor: Etage
+  helper: Helfer
+  icon: Symbol
+  integration: Integration
+  integration entry: Integrationseintrag
+  issue: Problem
+  label: Label
+  logs: Protokolle
+  notifier: Notifier
+  repair: Reparatur
+  repairs dashboard: Reparaturen-Dashboard
+  restart: neu starten
+  scene: Szene
+  script: Skript
+  sidebar: Seitenleiste
+  snooze: schlummern
+  state: Zustand
+  template: Template
+  trigger: Auslöser
+  trigger ID: Auslöser-ID
+  user: Benutzer
+
+labels:
+  Unknown entity:
+    key: ui.panel.config.automation.editor.actions.type.service.description.target_unknown_entity
+    reason: What the automation editor shows for an entity that no longer exists. The automatic match missed it.
+  Update:
+    key: ui.dialogs.more_info_control.update.update
+    reason: The button in the update dialog. The automatic match was the name of Spook's update sensor.
+  Major:
+    translation: Major
+    reason: The parts of a version number. Kept as they are; they are names, not words.
+  Minor:
+    translation: Minor
+    reason: The parts of a version number. The automatic match came from a severity state of another integration.
+  Patch:
+    translation: Patch
+    reason: The parts of a version number.
+  Home Assistant Link:
+    translation: Home Assistant Link
+    reason: A product name, the same in every language. It used to be called Home Assistant Cloud.
+  Import:
+    translation: Importieren
+    reason: The button on this website's own blueprint cards, not a Home Assistant screen. The generated match came from an energy sensor state (grid import), which is wrong here.
+  Read more:
+    translation: Mehr erfahren
+    reason: The other button on this website's own blueprint cards. Must match what the site's own words say for that button.
+  Submit:
+    key: ui.panel.config.integrations.config_flow.submit
+    reason: The button in the dialog that sets up an integration. Home Assistant has "Submit" on other screens with another German word.
+  Finish:
+    key: ui.panel.config.integrations.config_flow.finish
+    reason: The button in the dialog that sets up an integration.
+  Ignore:
+    key: ui.panel.config.repairs.dialog.ignore
+    reason: The button in a repair, not the one for a discovered integration.
+  Repairs:
+    key: ui.panel.config.repairs.caption
+    reason: The entry under Settings.
+  Logs:
+    key: ui.panel.config.logs.caption
+    reason: The entry under Settings > System.
+  About:
+    key: ui.panel.config.info.caption
+    reason: The entry under Settings.
+  System:
+    key: ui.panel.config.dashboard.system.main
+    reason: The entry under Settings.

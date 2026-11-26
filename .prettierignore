@@ -7,3 +7,13 @@ custom_components/**/translations/*.json
 # A corpus case keeps the configuration the way people write it: the quoting,
 # the folding and the odd shapes are the point, so it is not reformatted.
 tests/corpus/**/*.yaml
+
+# What the screenshot tool leaves behind between runs: tokens and results,
+# never committed.
+documentation/screenshots/.state/
+
+# Written by the translation pipeline, never by hand. Formatting them here
+# would change a file that only the pipeline may change, and the next run
+# would change it back.
+documentation/translations/output/
+documentation/translations/corpus/*/glossary.generated.yml

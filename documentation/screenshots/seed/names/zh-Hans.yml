@@ -1,0 +1,326 @@
+# Everything people read in the home of the screenshots, in Simplified
+# Chinese. The keys and how it works: see en.yml. A name missing here is the
+# English one.
+
+home: Spook 的家
+
+area:
+  # The names Home Assistant gives these when it is onboarded in Simplified
+  # Chinese.
+  living_room: 客厅
+  kitchen: 厨房
+  bedroom: 卧室
+  hallway: 走廊
+  attic: 阁楼
+
+floor:
+  ground_floor: 一楼
+  first_floor: 二楼
+  basement: 地下室
+
+label:
+  night_light:
+    name: 夜灯
+    description: 晚上一直亮着。
+  christmas:
+    name: 圣诞节
+    description: 十二月才拿出来的灯。
+
+dashboard:
+  title: 家
+  upstairs: 楼上
+  # Home Assistant's own name for the default dashboard in Simplified
+  # Chinese.
+  overview: 概览
+
+light:
+  living_room_lamp: 客厅台灯
+  kitchen_lights: 厨房灯
+  hallway_light: 走廊灯
+  bedroom_lamp: 卧室台灯
+
+input_boolean:
+  living_room_lamp: 客厅台灯
+  kitchen_lights: 厨房灯
+  hallway_light: 走廊灯
+  bedroom_lamp: 卧室台灯
+  dehumidifier_power: 除湿机电源
+  guest_mode: 访客模式
+
+input_number:
+  bedroom_temperature: 卧室温度
+  kitchen_fan_speed: 油烟机档位记忆
+
+input_select:
+  movie_night: 电影之夜
+
+sensor:
+  energy_meter: 电表
+  living_room_thermometer: 客厅温度
+  basement_humidity: 地下室湿度
+
+select:
+  ghost_mood:
+    name: 幽灵心情
+    options:
+      friendly: 友好
+      spooky: 吓人
+      sleepy: 犯困
+
+number:
+  kitchen_fan_speed: 油烟机档位
+
+zone:
+  gym: 健身房
+
+group:
+  downstairs_lights: 楼下的灯
+
+device_tracker:
+  new_phone: 新手机
+
+automation:
+  hallway_light_at_sunset:
+    name: 日落时打开走廊灯
+    description: 太阳下山时打开走廊灯。
+  movie_night:
+    name: 电影之夜
+    description: 电视开始播放时调暗客厅。
+  weekday_morning_lights:
+    name: 工作日早晨开灯
+    description: 工作日早上六点半打开厨房灯，只开一次。
+  garage_lights_off_at_night:
+    name: 夜里关掉车库灯
+    description: 午夜关掉车库里的所有东西。
+  doorbell_flash:
+    name: 门铃闪灯
+    description: 有人按门铃时让走廊的灯闪一下。
+  automation_off_reminder:
+    name: 自动化被手动关闭
+    description: 有人关闭自动化时通知我。
+    message: 有个自动化被关闭了。记得再打开。
+  new_device_found:
+    name: 发现新设备
+    description: Home Assistant 发现新东西时通知我。
+    message: Home Assistant 发现了一个新设备。
+  front_door_sensor_back:
+    name: 前门传感器回来了
+    description: 前门传感器离线一阵后重新工作时通知我。
+    message: 前门传感器回来了。
+  new_device_added:
+    name: 新增设备
+    description: 家里添加设备时通知我。
+    message: 添加了一个新设备。
+  living_room_sensor_quiet:
+    name: 客厅传感器没动静了
+    description: 客厅温度一小时没有变化时通知我。
+    message: 客厅温度传感器没动静了。没电了？
+  new_integration:
+    name: 新增集成
+    description: 添加集成时通知我。
+    message: 添加了一个新集成。
+  integration_failed:
+    name: 集成设置失败
+    description: 集成过了一刻钟仍然无法设置时通知我。
+    message: 有个集成无法设置。
+  blinds_down_lamp_on:
+    name: 百叶窗放下时开灯
+    description: 百叶窗降到 30% 时打开客厅台灯。
+  repairs_news:
+    name: 修复动态
+    description: 出现严重的修复项，或者有修复项解决时通知我。
+    message: 修复里有变化。
+  bedroom_warm:
+    name: 卧室暖和了
+    description: 卧室温控器达到设定温度时通知我。
+    message: 卧室暖和了。
+  hot_water_ready:
+    name: 早上洗澡的热水
+    description: 七点时告诉我热水器是否已经热了。
+    message: 热水准备好了。
+  update_installed:
+    name: 已安装更新
+    description: 安装更新后通知我。
+    message: 安装了一个更新。
+  ghost_goes_to_sleep:
+    name: 幽灵去睡觉
+    description: 晚安脚本开始时让幽灵去睡觉。
+  door_opens_hallway_light:
+    name: 开门时开走廊灯
+    description: 任何一扇门打开时打开走廊灯。
+  new_user:
+    name: 新用户
+    description: Home Assistant 添加用户时通知我。
+    message: 添加了一个新用户。
+  welcome_home:
+    name: 欢迎回家
+    description: 手机到家且前门打开，五分钟内两件事都发生时打开客厅台灯。
+  door_settled:
+    name: 门安静后关走廊灯
+    description: 前门安静 30 秒后关闭走廊灯。
+  coming_in:
+    name: 进门
+    description: 前门打开后两分钟内又关上时打开客厅台灯。
+  front_door_still_open:
+    name: 前门还开着
+    description: 前门开着期间每十分钟提醒我一次。
+    message: 前门还开着。
+  nobody_up_yet:
+    name: 还没人起床
+    description: 七点后厨房灯一小时都没开时通知我。
+    message: 还没有人起床。
+  front_door_sensor_acting_up:
+    name: 前门传感器不正常
+    description: 前门传感器五分钟内变化五次时通知我。
+    message: 前门传感器一直不稳定。
+  blinds_down_when_warm:
+    name: 热了就放下百叶窗
+    description: 客厅温度超过 25 °C 时关上客厅百叶窗。
+  lamp_off_by_itself:
+    name: 台灯自己关了
+    description: 客厅台灯关闭且不是有人关的时通知我。
+    message: 客厅台灯自己关了。
+  spooky_surprise:
+    name: 吓人的惊喜
+    description: 有些晚上，五次里有一次，幽灵会变得吓人。
+  follow_the_hallway:
+    name: 跟着走廊
+    description: 日落自动化打开走廊灯时，也打开客厅台灯。
+  morning_repairs_check:
+    name: 早上检查修复
+    description: 九点时告诉我修复里是否有严重的问题在等着。
+    message: 有修复在等着处理。
+  doorbell_light:
+    name: 门铃灯
+    description: 有人按门铃时打开走廊灯，每小时最多三次。
+  morning_radio_volume:
+    name: 早上收音机音量
+    description: 七点半时把厨房音箱调小，前提是它在线。
+  front_door_light:
+    name: 前门打开时开走廊灯
+    description: 用门口灯光蓝图创建。
+
+script:
+  goodnight: 晚安
+
+scene:
+  cozy_evening: 温馨夜晚
+
+category:
+  lighting: 照明
+
+user:
+  babysitter: 保姆
+
+binary_sensor:
+  front_door: 前门
+
+climate:
+  bedroom_thermostat: 卧室温控器
+
+water_heater:
+  boiler: 热水器
+
+media_player:
+  kitchen_speaker: 厨房音箱
+
+cover:
+  living_room_blinds: 客厅百叶窗
+
+valve:
+  garden_tap: 花园水龙头
+
+humidifier:
+  basement_dehumidifier: 地下室除湿机
+
+counter:
+  coffee_cups: 咖啡杯数
+
+input_button:
+  doorbell: 门铃
+
+input_datetime:
+  alarm_clock: 闹钟
+
+input_text:
+  welcome_message: 欢迎语
+
+schedule:
+  heating: 供暖计划
+
+timer:
+  laundry: 洗衣
+
+calendar:
+  family: 家庭
+
+todo:
+  shopping_list: 购物清单
+
+blueprints:
+  door_light:
+    name: 开门时开灯
+    description: 门打开时打开一盏灯。
+    new_description: 门打开时打开一盏灯，过一会儿再关掉。
+    door: 门
+    light: 灯
+    wait_time: 灯再次关闭前的时间
+  doorbell_flash:
+    name: 门铃响时闪灯
+    description: 有人按门铃时让灯闪一下。
+    doorbell: 门铃
+    light: 灯
+
+examples:
+  new_area: 密室
+  new_area_alias: 藏身处
+  area_alias: 起居室
+  other_area_alias: 前厅
+  new_floor: 三楼
+  new_floor_alias: 楼上
+  floor_alias: 楼下
+  other_floor_alias: 临街层
+  new_label: 闹鬼
+  new_label_description: 会自己打开的东西。
+  new_entity_name: 门厅灯
+  new_input_number: 泳池温度
+  new_zone: 办公室
+  new_repair: 幽灵饿了
+  new_repair_description: 给它一块饼干，这条修复就会消失。
+  renamed_label: 夜灯们
+  new_category: 安防
+  renamed_category: 灯具
+  device_name: 观天者
+  entity_alias: 阅读灯
+  other_entity_alias: 角落灯
+  calendar_event: 看牙医
+  new_counter: 吃掉的饼干
+  new_input_boolean: 度假模式
+  new_input_button: 喂幽灵
+  new_input_datetime: 起床时间
+  house_mode:
+    name: 家居模式
+    options:
+      home: 在家
+      away: 外出
+      night: 夜间
+  new_input_text: 冰箱上的便条
+  new_schedule: 浇花园
+  new_timer: 披萨
+  todo_item: 牛奶
+  calibration: 客厅温度（已校正）
+  time_in_state: 前门关闭时间
+
+# From Spook's own Chinese action names. No word for zones: Spook calls a
+# zone "区域" in its actions, the same word as an area, where Home Assistant
+# says "地点". Neither finds only the zone actions, so the shot is skipped
+# until Spook's translation says "地点".
+search:
+  area: 区域
+  floor: 楼层
+  label: 标签
+  input_number: 数值输入
+  number: 数值
+  input_select: 选项
+  person: 设备追踪器
+  repairs: 问题

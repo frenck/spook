@@ -1,0 +1,249 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/13.homeassistant.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/13.homeassistant.md",
+  "language": "de",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "1262154c387fc61a",
+      "source": "369a2a06e6dcb106",
+      "glossary": {
+        "area": "Bereich",
+        "blueprint": "Blueprint",
+        "floor": "Etage",
+        "helper": "Helfer",
+        "label": "Label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "45f2c302a07e9a6b",
+      "source": "64b218002cafc0b3",
+      "glossary": {
+        "area": "Bereich",
+        "device": "Gerät",
+        "floor": "Etage",
+        "helper": "Helfer",
+        "integration": "Integration",
+        "label": "Label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "devices-entities",
+      "hash": "4743b0cd7b7c72e7",
+      "source": "1b0bf38ba0d58ad8",
+      "glossary": {
+        "area": "Bereich",
+        "device": "Gerät",
+        "entity": "Entität",
+        "integration": "Integration",
+        "restart": "neu starten"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "actions",
+      "hash": "eb295c6579b25000",
+      "source": "3eba30a132630fc9",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "device": "Gerät",
+        "entity": "Entität",
+        "floor": "Etage",
+        "label": "Label",
+        "user": "Benutzer"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "b751521e3964a15f",
+      "source": "344a0f6d513c0ad1",
+      "glossary": {
+        "area": "Bereich",
+        "blueprint": "Blueprint",
+        "dashboard": "Dashboard",
+        "floor": "Etage",
+        "label": "Label",
+        "repair": "Reparatur",
+        "repairs dashboard": "Reparaturen-Dashboard"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-area-sensors",
+      "hash": "fa3e740d19291151",
+      "source": "19ba3f07eebf293c",
+      "glossary": {
+        "Clear the setting": "Einstellung leeren",
+        "Let me fix it myself": "Lass es mich selbst beheben",
+        "Keep it, stop telling me": "Behalten und nicht mehr darauf hinweisen",
+        "area": "Bereich",
+        "entity": "Entität",
+        "entity ID": "Entitäts-ID",
+        "label": "Label",
+        "repair": "Reparatur"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-customized-entities",
+      "hash": "a34772d4dd58f32e",
+      "source": "08b2e5e9ffb14032",
+      "glossary": {
+        "attribute": "Attribut",
+        "entity": "Entität",
+        "icon": "Symbol",
+        "integration": "Integration",
+        "label": "Label",
+        "repair": "Reparatur",
+        "restart": "neu starten"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-helper-sources",
+      "hash": "3114a80f21b078c7",
+      "source": "11dc74235e07f9be",
+      "glossary": {
+        "Remove this helper": "Entferne diesen Helfer",
+        "Let me fix it myself": "Lass es mich selbst beheben",
+        "Keep it, stop telling me": "Behalten und nicht mehr darauf hinweisen",
+        "entity": "Entität",
+        "helper": "Helfer",
+        "label": "Label",
+        "repair": "Reparatur"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-min-max-helper-members",
+      "hash": "44fb241b232a2148",
+      "source": "11c49e8fdadc6998",
+      "glossary": {
+        "Remove these members": "Entferne diese Mitglieder",
+        "Let me fix it myself": "Lass es mich selbst beheben",
+        "Keep them, stop telling me": "Behalten und nicht mehr darauf hinweisen",
+        "helper": "Helfer",
+        "label": "Label",
+        "repair": "Reparatur"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "8823920bc15431aa",
+      "source": "4526c7a38e9a9912",
+      "glossary": {
+        "area": "Bereich",
+        "entity": "Entität",
+        "floor": "Etage",
+        "helper": "Helfer",
+        "icon": "Symbol",
+        "integration": "Integration",
+        "label": "Label",
+        "repair": "Reparatur"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-areas",
+      "hash": "9963a2de6a347792",
+      "source": "6447e37649959ea8",
+      "glossary": {
+        "Remove this empty area": "Entferne diesen leeren Bereich",
+        "Let me fix it myself": "Lass es mich selbst beheben",
+        "Keep it, stop telling me": "Behalten und nicht mehr darauf hinweisen",
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "device": "Gerät",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "empty-floors",
+      "hash": "8332c18da3da6c35",
+      "source": "1dc8dffbc38858a2",
+      "glossary": {
+        "Remove this empty floor": "Entferne diese leere Etage",
+        "Let me fix it myself": "Lass es mich selbst beheben",
+        "Keep it, stop telling me": "Behalten und nicht mehr darauf hinweisen",
+        "area": "Bereich",
+        "automation": "Automation",
+        "floor": "Etage",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-labels",
+      "hash": "8b92873f02db587c",
+      "source": "b56369896b90e4ff",
+      "glossary": {
+        "Remove this unused label": "Entferne dieses unbenutzte Label",
+        "Let me fix it myself": "Lass es mich selbst beheben",
+        "Keep it, stop telling me": "Behalten und nicht mehr darauf hinweisen",
+        "area": "Bereich",
+        "automation": "Automation",
+        "device": "Gerät",
+        "entity": "Entität",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "unused-blueprints",
+      "hash": "5d68f86451124a90",
+      "source": "0c9d0302630f7b97",
+      "glossary": {
+        "Remove this unused blueprint": "Entferne diesen unbenutzten Blueprint",
+        "Let me fix it myself": "Lass es mich selbst beheben",
+        "Keep it, stop telling me": "Behalten und nicht mehr darauf hinweisen",
+        "automation": "Automation",
+        "blueprint": "Blueprint",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-26"
+    },
+    {
+      "id": "use-cases",
+      "hash": "3363cd66c66a8763",
+      "source": "1b7d2e38b0428375",
+      "glossary": {
+        "area": "Bereich",
+        "floor": "Etage",
+        "helper": "Helfer",
+        "label": "Label"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

@@ -1,0 +1,292 @@
+{
+  "//": "GENERATED FILE. Do not edit: the next translation run overwrites it. Translated by a machine from documentation/content/04.enhanced-integrations/33.script.md. Something wrong? Report it, and it is fixed in what the machine works from: https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).",
+  "source": "documentation/content/04.enhanced-integrations/33.script.md",
+  "language": "de",
+  "sections": [
+    {
+      "id": "frontmatter",
+      "hash": "2eaa47f74ee784da",
+      "source": "a186f5fc9d567f52",
+      "glossary": {
+        "action": "Aktion",
+        "device": "Gerät",
+        "entity": "Entität",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "intro",
+      "hash": "1872366b7e18f392",
+      "source": "c95dc7873579e146",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "dashboard": "Dashboard",
+        "issue": "Problem",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "trigger": "Auslöser"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "repairs",
+      "hash": "23f912a8b95ec831",
+      "source": "238d7a5b8cb4f6d9",
+      "glossary": {
+        "area": "Bereich",
+        "dashboard": "Dashboard",
+        "device": "Gerät",
+        "entity": "Entität",
+        "floor": "Etage",
+        "label": "Label",
+        "repair": "Reparatur",
+        "repairs dashboard": "Reparaturen-Dashboard",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-areas",
+      "hash": "a30530e8f03734f1",
+      "source": "f31cfdc884dc9291",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "device": "Gerät",
+        "entity": "Entität",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-attributes",
+      "hash": "5ffcf4c546133c1e",
+      "source": "45d90bf7d5abd035",
+      "glossary": {
+        "attribute": "Attribut",
+        "condition": "Bedingung",
+        "entity": "Entität",
+        "integration": "Integration",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "state": "Zustand",
+        "template": "Template",
+        "trigger": "Auslöser"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-states",
+      "hash": "4a1d70a91decc47f",
+      "source": "1dbdb11142d34aec",
+      "glossary": {
+        "action": "Aktion",
+        "attribute": "Attribut",
+        "condition": "Bedingung",
+        "device": "Gerät",
+        "entity": "Entität",
+        "helper": "Helfer",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "state": "Zustand",
+        "template": "Template",
+        "trigger": "Auslöser"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-devices",
+      "hash": "38cd571121f8a63a",
+      "source": "5c310fb0f64631b3",
+      "glossary": {
+        "action": "Aktion",
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "device": "Gerät",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-integration-entries",
+      "hash": "22fe1b54129b64ba",
+      "source": "06fc19893331578f",
+      "glossary": {
+        "action": "Aktion",
+        "integration": "Integration",
+        "integration entry": "Integrationseintrag",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "state": "Zustand",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-entities",
+      "hash": "51bb75637ebd3101",
+      "source": "1525b70bd94cbec5",
+      "glossary": {
+        "automation": "Automation",
+        "entity": "Entität",
+        "entity ID": "Entitäts-ID",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-actions",
+      "hash": "293a0a268d418a73",
+      "source": "8efb129ad2e0df26",
+      "glossary": {
+        "action": "Aktion",
+        "integration": "Integration",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-icons",
+      "hash": "681a93a6c204ecd6",
+      "source": "00fb50b7f41b8752",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "helper": "Helfer",
+        "icon": "Symbol",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-floors",
+      "hash": "508e4e15e015e4f4",
+      "source": "582e3c6d947cddca",
+      "glossary": {
+        "action": "Aktion",
+        "area": "Bereich",
+        "automation": "Automation",
+        "floor": "Etage",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-labels",
+      "hash": "b5f378fbbe1bfd9e",
+      "source": "63d82355d9e7d4cc",
+      "glossary": {
+        "automation": "Automation",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "template": "Template"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-conditions",
+      "hash": "c54e4237ace507fc",
+      "source": "097d0ffcb508b484",
+      "glossary": {
+        "condition": "Bedingung",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "unknown-referenced-triggers",
+      "hash": "8c40bd9330118542",
+      "source": "1e594acecf97bbe5",
+      "glossary": {
+        "Wait for a trigger": "Auf einen Auslöser warten",
+        "integration": "Integration",
+        "issue": "Problem",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "trigger": "Auslöser"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "templates-that-can-never-pass",
+      "hash": "74124cf00615be31",
+      "source": "3de48595e096da8e",
+      "glossary": {
+        "automation": "Automation",
+        "condition": "Bedingung",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "state": "Zustand",
+        "template": "Template",
+        "trigger": "Auslöser"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    },
+    {
+      "id": "removed-users",
+      "hash": "78c36e2bf0319502",
+      "source": "67b31552830f566c",
+      "glossary": {
+        "automation": "Automation",
+        "label": "Label",
+        "repair": "Reparatur",
+        "script": "Skript",
+        "template": "Template",
+        "trigger": "Auslöser",
+        "user": "Benutzer"
+      },
+      "model": "manual",
+      "date": "2026-11-25"
+    }
+  ]
+}

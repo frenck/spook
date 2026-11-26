@@ -1,0 +1,63 @@
+order: 2
+title: Automations without the workarounds
+description: Spook adds triggers, conditions and actions to the automation editor of Home Assistant, for the things you kept building helpers for.
+
+hero:
+  headline: Triggers, conditions and actions 🧰
+  title: Automations, without the workarounds.
+  description: Spook adds {triggers} triggers, {conditions} conditions and {actions} actions for the things you kept building helpers for. They live in the automation editor, right next to the ones Home Assistant ships.
+  screenshot: automation-editor
+  alt: An automation in the Home Assistant editor using Spook's cron schedule trigger and cooldown condition, with a regular light action.
+
+sections:
+  - headline: Say when, the way you mean it
+    title: Every weekday at half past six.
+    description: Home Assistant's time triggers cover a time of day and a pattern. Spook's cron schedule says "weekdays at half past six" or "the last Friday of the month" in one line, with the explanation right there in the editor.
+    screenshot: automation-cron
+    alt: The cron schedule trigger from Spook opened in the automation editor, with its description and the schedule 30 6 * * 1-5.
+    features:
+      - title: For the moments Home Assistant cannot name
+        description: A device that just showed up, an automation switched off, an entity that fell silent.
+        icon: i-mdi-timer-cog-outline
+      - title: Conditions with memory
+        description: A cooldown since the last run, or only when a person started it, not an automation.
+        icon: i-mdi-account-check-outline
+      - title: Nothing new to learn
+        description: Picked, filled in and saved like any other. In the editor, in scripts, in YAML.
+        icon: i-mdi-puzzle-check-outline
+
+  - headline: Actions you kept reaching for
+    title: Snooze it, don't switch it off.
+    description: Turn an automation off for an hour, and it comes back by itself, even after a restart. One of {actions} actions, from snoozing automations to creating areas, labels and helpers from an automation.
+    screenshot: action-snooze
+    alt: The Add action dialog in the automation editor, searched for snooze, with Spook's Automation Snooze action outlined.
+    features:
+      - title: Search, select, done
+        description: Spook's actions show up when you add an action, each marked with a 👻.
+        icon: i-mdi-magnify
+      - title: Survives a restart
+        description: Snoozed is snoozed. Home Assistant restarting in between does not wake it early.
+        icon: i-mdi-restart
+      - title: Manage your home from an automation
+        description: Create and remove areas, labels, zones and helpers, or disable a device.
+        icon: i-mdi-home-edit-outline
+
+more:
+  title: Everything in the toolbox
+  links:
+    - title: All triggers
+      description: Every trigger Spook adds, with what it is for and an example.
+      icon: i-mdi-play-circle-outline
+      to: /triggers
+    - title: All conditions
+      description: The conditions, from a cooldown to a watchdog.
+      icon: i-mdi-call-split
+      to: /conditions
+    - title: All actions
+      description: The full list, with a button to try each in your own Home Assistant.
+      icon: i-mdi-lightning-bolt-outline
+      to: /actions
+    - title: Snooze, step by step
+      description: How to use it in your automations, with examples.
+      icon: i-mdi-sleep
+      to: /automation#snooze

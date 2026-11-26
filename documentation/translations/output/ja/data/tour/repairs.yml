@@ -1,0 +1,68 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/tour/repairs.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+order: 1
+title: Spookは静かに壊れたものを見つけます
+description: SpookはHome Assistantを調べ、何も言わずに動かなくなったものを修復ページに報告します。多くには修正方法が付いています。
+
+hero:
+  headline: ゴーストを見つける 👻
+  title: 静かに壊れたものを見つけます。
+  description: ランプの名前を変える、センサーを交換する、統合を削除する。するとどこかで、オートメーションが何も言わずに動かなくなります。Spookはそれに気づき、修復ページで知らせます。{repairs}種類の問題を、探し続けています。
+  screenshot: repairs-list
+  alt: Spookからの7件の修復が表示されたHome Assistantの修復ページ。空のエリア、使われていないラベル、もう存在しないエンティティを使うオートメーションなど。
+
+sections:
+  - headline: 何が、どこで、を正確に
+    title: YAMLを探し回る必要はありません。
+    description: どの修復も、問題のある場所と、何がおかしいのかを示します。名前を選択すれば、エディタの直すべき場所に直接移動します。
+    screenshot: repair-unknown-entities
+    alt: Spookからの修復。「映画の夜」オートメーションと、そこで使われているもう存在しない3つのエンティティを示し、意図していたものの候補を出しています。
+    features:
+      - title: その場所を指す
+        description: オートメーション、スクリプト、ダッシュボードを、そこへ直接飛べるリンク付きで。
+        icon: i-mdi-target
+      - title: 意図を推測する
+        description: ランプの名前を変えましたか？Spookがほぼ確信できるときは、新しい名前を提案します。
+        icon: i-mdi-lightbulb-question-outline
+      - title: 自然に消える
+        description: 直して保存します。Spookがもう一度見て、修復を消します。チェックを付けるものはありません。
+        icon: i-mdi-check-circle-outline
+
+  - headline: 代わりに直します
+    title: はいと言えば、消えます。
+    description: 多くの修復には修正方法が付いています。空のエリア、使われていないラベル、まだ古いスマートフォンを追跡している人。Spookが片付けを提案し、先に確認します。
+    screenshot: repair-fix-empty-area
+    alt: 空の「屋根裏」エリアについてのSpookからの修復。削除するか、自分で直すか、残して今後は聞かないようにするかを選べます。
+    features:
+      - title: 決めるのは自分
+        description: 削除するか、自分で直すか、残すか。Spookは確認せずに片付けることはありません。
+        icon: i-mdi-hand-back-right-outline
+      - title: 残せば、黙ります
+        description: わざとそうしていますか？一度そう伝えれば、Spookは指摘するのをやめます。
+        icon: i-mdi-bell-off-outline
+      - title: 実行する前にもう一度確認
+        description: Spookが見てから何かが変わっていたら、手を付けません。
+        icon: i-mdi-shield-check-outline
+
+more:
+  title: Spookが見る場所
+  links:
+    - title: オートメーションとスクリプト
+      description: なくなったエンティティ、デバイス、エリア、アクション、トリガーと、決して通らないテンプレート。
+      icon: i-mdi-robot-outline
+      to: /automation#repairs
+    - title: ダッシュボード
+      description: もう存在しないエンティティ、アクション、ビューを指しているカード。
+      icon: i-mdi-view-dashboard-outline
+      to: /lovelace#repairs
+    - title: エリア、フロア、ラベル
+      description: 空のもの、使われていないもの、そして行方不明になったセンサー。
+      icon: i-mdi-floor-plan
+      to: /homeassistant#repairs
+    - title: 最初の修復
+      description: 修復ページから、動くオートメーションまで、順を追って。
+      icon: i-mdi-wrench-outline
+      to: /fix-your-first-repair

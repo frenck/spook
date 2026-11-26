@@ -1,0 +1,163 @@
+# The Spanish glossary, by hand.
+#
+# `terms` are words in running text: what Home Assistant calls its own things
+# in Spanish, so the docs use the words the reader sees in the product. English
+# to Spanish, singular, lowercase. Short pairs only, no sentences: this file ends
+# up in a prompt.
+#
+# `labels` overrides what glossary.generated.yml found for a bold label. Give
+# a `reason`, and either the `key` of the string that is on that screen, or a
+# `translation` when no string has it.
+#
+# Looked up in the strings of Home Assistant 2026.11.3 and Spook, 2026-11-25.
+# Not yet read by a native speaker.
+#
+# Home Assistant's Spanish interface translates words other languages keep:
+# dashboard is "panel de control", blueprint is "plano", template is
+# "plantilla", helper is "ayudante". Spook's own strings keep "blueprint":
+# this follows the interface, the screen the reader has open.
+# No Home Assistant word:
+# - notifier: Home Assistant has none. "Notificador" is Spook's own word.
+# - snooze: Spook's own action name, "Posponer".
+terms:
+  action: acción
+  alert: alerta
+  area: área
+  attribute: atributo
+  automation: automatización
+  automation editor: editor de automatización
+  blueprint: plano
+  condition: condición
+  cover: persiana
+  custom integration: integración personalizada
+  dashboard: panel de control
+  debug logging: registro de depuración
+  device: dispositivo
+  diagnostics: diagnósticos
+  entity: entidad
+  entity ID: ID de entidad
+  floor: planta
+  helper: ayudante
+  icon: icono
+  integration: integración
+  integration entry: entrada de integración
+  issue: problema
+  label: etiqueta
+  logs: registros
+  notifier: notificador
+  repair: reparación
+  repairs dashboard: página de reparaciones
+  restart: reiniciar
+  scene: escena
+  script: script
+  sidebar: panel lateral
+  snooze: posponer
+  state: estado
+  template: plantilla
+  trigger: disparador
+  trigger ID: ID del disparador
+  user: usuario
+
+  # Chosen for consistency on 2026-11-25 by an agent, not by a native speaker.
+  # Three translators worked in parallel and recurring wording drifted. Each
+  # entry is the variant most pages used, unless another was more correct;
+  # those carry a note. Read by a native speaker: not yet.
+  # The sentences that repeat are wording rules in style.md, not pairs here.
+  #
+  # Headings and labels that repeat on many pages.
+  how to fix it: cómo arreglarlo
+  how spook checks this: cómo lo comprueba Spook
+  technical details: detalles técnicos
+  known limitations: limitaciones conocidas
+  use cases: casos de uso
+  example actions in yaml: ejemplos de acciones en YAML
+  example triggers in yaml: ejemplos de disparadores en YAML
+  example conditions in yaml: ejemplos de condiciones en YAML
+  blueprints & tutorials: planos y tutoriales
+  feature requests, ideas, and support: peticiones de funciones, ideas y soporte
+  # The button on the Repairs device is "Restaurar todos"; its heading follows it.
+  unignore all: restaurar todos
+  templates that can never pass: plantillas que nunca pueden cumplirse
+  # Table rows, headers and values.
+  action properties: propiedades de la acción
+  action data parameters: parámetros de datos de la acción
+  trigger properties: propiedades del disparador
+  trigger options: opciones del disparador
+  condition properties: propiedades de la condición
+  condition options: opciones de la condición
+  default / example: predeterminado / ejemplo
+  action name: nombre de la acción
+  action targets: objetivos de la acción
+  action response: respuesta de la acción
+  trigger name: nombre del disparador
+  condition name: nombre de la condición
+  spook's influence: influencia de Spook
+  tools: herramientas
+  no response: sin respuesta
+  no targets: sin objetivos
+  newly added action: acción nueva
+  newly added trigger: disparador nuevo
+  newly added condition: condición nueva
+  optional, the: opcional, el
+  with a setpoint: con un punto de consigna
+  # Type names.
+  string: cadena
+  list of strings: lista de cadenas
+  integer: entero
+  float: decimal
+  boolean: booleano
+  list: lista
+  number: número
+  datetime: fecha y hora
+  # The accordion label on every action page.
+  try this action: prueba esta acción
+  # "Registrador" won by pages, 5 to 4. "Frontend" stays a name, 2 pages to 1.
+  recorder: registrador
+  frontend: frontend
+
+labels:
+  Unknown entity:
+    key: ui.panel.config.automation.editor.actions.type.service.description.target_unknown_entity
+    reason: What the automation editor shows for an entity that no longer exists. The automatic match missed it.
+  Update:
+    key: ui.dialogs.more_info_control.update.update
+    reason: The button in the update dialog. The automatic match was the name of Spook's update sensor.
+  Major:
+    translation: Major
+    reason: The parts of a version number. Kept as they are; they are names, not words.
+  Minor:
+    translation: Minor
+    reason: The parts of a version number. The automatic match came from a severity state of another integration.
+  Patch:
+    translation: Patch
+    reason: The parts of a version number.
+  Home Assistant Link:
+    translation: Home Assistant Link
+    reason: A product name, the same in every language. It used to be called Home Assistant Cloud.
+  Import:
+    translation: "Importar"
+    reason: The button on this website's own blueprint cards, so it says what the site says. The automatic match came from an energy sensor state.
+  Read more:
+    translation: "Leer más"
+    reason: The other button on this website's own blueprint cards.
+  Submit:
+    key: ui.panel.config.integrations.config_flow.submit
+    reason: The button in the dialog that sets up an integration. Home Assistant has "Submit" on other screens with another word.
+  Finish:
+    key: ui.panel.config.integrations.config_flow.finish
+    reason: The button in the dialog that sets up an integration.
+  Ignore:
+    key: ui.panel.config.repairs.dialog.ignore
+    reason: The button in a repair, not the one for a discovered integration.
+  Repairs:
+    key: ui.panel.config.repairs.caption
+    reason: The entry under Settings.
+  Logs:
+    key: ui.panel.config.logs.caption
+    reason: The entry under Settings > System.
+  About:
+    key: ui.panel.config.info.caption
+    reason: The entry under Settings.
+  System:
+    key: ui.panel.config.dashboard.system.main
+    reason: The entry under Settings.

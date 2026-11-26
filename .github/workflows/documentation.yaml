@@ -9,8 +9,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      SITE_ORIGIN: https://spook.boo
     permissions:
       actions: write
       contents: read
@@ -19,82 +17,31 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          # The whole history: every page says when it last changed, from
+          # the last commit to its file. A shallow clone has one commit.
+          fetch-depth: 0
 
       - name: 🏗 Set up Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version-file: "documentation/.nvmrc"
 
-      - name: 🏗 Install MyST
+      - name: 🏗 Install Docus
         working-directory: ./documentation
         run: npm ci --ignore-scripts
 
+      - name: 🧪 Test the build tools of the site
+        working-directory: ./documentation
+        run: npm run test:site
+
       - name: 🚀 Build documentation
         working-directory: ./documentation
-        run: ./node_modules/.bin/myst build --html
-
-      - name: ©️ Public folder
-        run: cp ./documentation/public/* ./documentation/_build/html/
-
-      - name: 🔗 Correct generated site origin
-        run: |
-          # Required until MyST fixes static sitemap/robots origins:
-          # https://github.com/jupyter-book/mystmd/issues/2695
-          # https://github.com/jupyter-book/myst-theme/issues/669
-          # Remove this step once those issues are fixed upstream.
-          sed -i "s|http://localhost:3000|${SITE_ORIGIN}|g" \
-            ./documentation/_build/html/robots.txt \
-            ./documentation/_build/html/sitemap.xml
-
-          files=$(mktemp)
-          trap 'rm -f "$files"' EXIT
-          if grep -RIlZ \
-            --include='*.html' \
-            --include='*.json' \
-            '"domain":"http://localhost:3000"' \
-            ./documentation/_build/html > "$files"; then
-            xargs -0 sed -i \
-              "s|\"domain\":\"http://localhost:3000\"|\"domain\":\"${SITE_ORIGIN}\"|g" \
-              < "$files"
-          else
-            status=$?
-            if [ "$status" -ne 1 ]; then
-              exit "$status"
-            fi
-          fi
-
-      - name: 🔍 Verify generated site origin
-        run: |
-          if grep -q "http://localhost:3000" \
-            ./documentation/_build/html/robots.txt \
-            ./documentation/_build/html/sitemap.xml; then
-            echo "Found localhost URLs in generated SEO metadata"
-            exit 1
-          else
-            status=$?
-            if [ "$status" -ne 1 ]; then
-              exit "$status"
-            fi
-          fi
-
-          if grep -RIl \
-            --include='*.html' \
-            --include='*.json' \
-            '"domain":"http://localhost:3000"' \
-            ./documentation/_build/html; then
-            echo "Found localhost URLs in generated page metadata"
-            exit 1
-          else
-            status=$?
-            if [ "$status" -ne 1 ]; then
-              exit "$status"
-            fi
-          fi
+        run: npm run build
 
       - name: 🆙 Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
-          path: ./documentation/_build/html
+          path: ./documentation/.output/public
 
   deploy:
     name: Deploy
@@ -107,7 +54,84 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      SITE_URL: https://spook.boo
+      # Not a secret: IndexNow checks it against the file of the same name on
+      # the site (`documentation/public/`), which anyone can read.
+      INDEXNOW_KEY: e063a3eef69cd8c556e635676cf7fde2
     steps:
+      - name: 📥 Fetch the sitemap that is live now
+        run: |
+          curl --silent --fail --retry 3 --output "${RUNNER_TEMP}/before.xml" \
+            "${SITE_URL}/sitemap.xml?before=${GITHUB_SHA}" \
+            || echo "<urlset/>" > "${RUNNER_TEMP}/before.xml"
+
       - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+      # Bing, Yandex and the others that take IndexNow hear about the pages
+      # that are new, or changed since the last deploy (`lastmod`), right
+      # away. Most pushes change no page, and then nothing is sent. A failure
+      # here is not a failed deploy.
+      - name: 📣 Tell search engines about changed pages
+        continue-on-error: true
+        run: |
+          # The query string gets past the cache of Pages, which may still
+          # have the sitemap from before the deploy.
+          curl --silent --fail --retry 3 --output "${RUNNER_TEMP}/after.xml" \
+            "${SITE_URL}/sitemap.xml?after=${GITHUB_SHA}"
+
+          python3 - <<'PYTHON'
+          import json
+          import os
+          import urllib.request
+          import xml.etree.ElementTree as ET
+
+          NS = {"sitemap": "http://www.sitemaps.org/schemas/sitemap/0.9"}
+
+
+          def pages(path):
+              """Every address in a sitemap, with when it last changed."""
+              try:
+                  root = ET.parse(path).getroot()
+              except ET.ParseError:
+                  return {}
+
+              return {
+                  url.findtext("sitemap:loc", namespaces=NS): url.findtext(
+                      "sitemap:lastmod", namespaces=NS
+                  )
+                  for url in root.findall("sitemap:url", NS)
+              }
+
+
+          temp = os.environ["RUNNER_TEMP"]
+          before = pages(f"{temp}/before.xml")
+          after = pages(f"{temp}/after.xml")
+          changed = [
+              url
+              for url, lastmod in after.items()
+              if url not in before or before[url] != lastmod
+          ]
+          if not changed:
+              print("No new or changed pages.")
+              raise SystemExit
+
+          site = os.environ["SITE_URL"]
+          key = os.environ["INDEXNOW_KEY"]
+          body = {
+              "host": site.removeprefix("https://"),
+              "key": key,
+              "keyLocation": f"{site}/{key}.txt",
+              "urlList": changed,
+          }
+          request = urllib.request.Request(
+              "https://api.indexnow.org/indexnow",
+              data=json.dumps(body).encode(),
+              headers={"Content-Type": "application/json; charset=utf-8"},
+          )
+          with urllib.request.urlopen(request, timeout=30) as response:
+              print(f"IndexNow answered {response.status} for {len(changed)} pages:")
+          print("\n".join(changed))
+          PYTHON

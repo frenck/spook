@@ -1,0 +1,244 @@
+# The home in the screenshots on spook.boo. Small on purpose: just enough
+# for Spook to have something to show, and something to find.
+#
+# The names are in names/<language>.yml: "${light.living_room_lamp}" is the
+# name of that lamp in the language of the screenshots.
+default_config:
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+# Switches the lamps below remember their state in.
+input_boolean:
+  living_room_lamp:
+    name: "${input_boolean.living_room_lamp}"
+  kitchen_lights:
+    name: "${input_boolean.kitchen_lights}"
+  hallway_light:
+    name: "${input_boolean.hallway_light}"
+  bedroom_lamp:
+    name: "${input_boolean.bedroom_lamp}"
+  # What the basement dehumidifier below switches. Its icon is misspelled,
+  # for Spook to point out, and to say what was meant.
+  dehumidifier_power:
+    name: "${input_boolean.dehumidifier_power}"
+    icon: mdi:air-humidifer
+
+template:
+  - light:
+      - name: "${light.living_room_lamp}"
+        unique_id: living_room_lamp
+        default_entity_id: light.living_room_lamp
+        state: "{{ is_state('input_boolean.living_room_lamp', 'on') }}"
+        turn_on:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.living_room_lamp
+        turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.living_room_lamp
+      - name: "${light.kitchen_lights}"
+        unique_id: kitchen_lights
+        default_entity_id: light.kitchen_lights
+        state: "{{ is_state('input_boolean.kitchen_lights', 'on') }}"
+        turn_on:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.kitchen_lights
+        turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.kitchen_lights
+      - name: "${light.hallway_light}"
+        unique_id: hallway_light
+        default_entity_id: light.hallway_light
+        state: "{{ is_state('input_boolean.hallway_light', 'on') }}"
+        turn_on:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.hallway_light
+        turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.hallway_light
+      - name: "${light.bedroom_lamp}"
+        unique_id: bedroom_lamp
+        default_entity_id: light.bedroom_lamp
+        state: "{{ is_state('input_boolean.bedroom_lamp', 'on') }}"
+        turn_on:
+          - action: input_boolean.turn_on
+            target:
+              entity_id: input_boolean.bedroom_lamp
+        turn_off:
+          - action: input_boolean.turn_off
+            target:
+              entity_id: input_boolean.bedroom_lamp
+
+  # A meter to import old readings into, for the recorder action.
+  - sensor:
+      - name: "${sensor.energy_meter}"
+        unique_id: energy_meter
+        default_entity_id: sensor.energy_meter
+        state: "1520.5"
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+
+  # Something to pick at random, for the select action.
+  - select:
+      - name: "${select.ghost_mood.name}"
+        unique_id: ghost_mood
+        default_entity_id: select.ghost_mood
+        state: "${select.ghost_mood.options.friendly}"
+        options: "{{ ['${select.ghost_mood.options.friendly}', '${select.ghost_mood.options.spooky}', '${select.ghost_mood.options.sleepy}'] }}"
+        select_option: []
+
+  # Readings for the thermostat, the dehumidifier, the calibration helper,
+  # and the triggers that watch a sensor.
+  - sensor:
+      - name: "${sensor.living_room_thermometer}"
+        unique_id: living_room_thermometer
+        default_entity_id: sensor.living_room_thermometer
+        state: "21.3"
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
+      - name: "${sensor.basement_humidity}"
+        unique_id: basement_humidity
+        default_entity_id: sensor.basement_humidity
+        state: "64"
+        unit_of_measurement: "%"
+        device_class: humidity
+        state_class: measurement
+
+  # A door for the triggers that watch something open and close.
+  - binary_sensor:
+      - name: "${binary_sensor.front_door}"
+        unique_id: front_door
+        default_entity_id: binary_sensor.front_door
+        state: "off"
+        device_class: door
+
+  # A thermostat that keeps its target in the bedroom temperature above.
+  - climate:
+      - name: "${climate.bedroom_thermostat}"
+        unique_id: bedroom_thermostat
+        default_entity_id: climate.bedroom_thermostat
+        hvac_modes: "{{ ['heat', 'off'] }}"
+        hvac_mode: "heat"
+        current_temperature: "18.5"
+        target_temperature: "{{ states('input_number.bedroom_temperature') }}"
+        min_temperature: 15
+        max_temperature: 25
+        target_temperature_step: 0.5
+        set_hvac_mode: []
+        set_temperature:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.bedroom_temperature
+            data:
+              value: "{{ temperature }}"
+
+  # Something for the water heater and temperature actions to point at.
+  # An empty action is enough for Home Assistant to offer what it does.
+  - water_heater:
+      - name: "${water_heater.boiler}"
+        unique_id: boiler
+        default_entity_id: water_heater.boiler
+        operation_list: "{{ ['eco', 'performance'] }}"
+        operation_mode: "eco"
+        current_temperature: "52"
+        target_temperature: "55"
+        min_temperature: 40
+        max_temperature: 65
+        set_operation_mode: []
+        set_temperature: []
+
+  - media_player:
+      - name: "${media_player.kitchen_speaker}"
+        unique_id: kitchen_speaker
+        default_entity_id: media_player.kitchen_speaker
+        state: "idle"
+        volume_level: "0.3"
+        volume_set: []
+
+  - cover:
+      - name: "${cover.living_room_blinds}"
+        unique_id: living_room_blinds
+        default_entity_id: cover.living_room_blinds
+        device_class: blind
+        position: "60"
+        open_cover: []
+        close_cover: []
+        set_cover_position: []
+
+  # A number to turn up and down, for the number actions.
+  - number:
+      - name: "${number.kitchen_fan_speed}"
+        unique_id: kitchen_fan_speed
+        default_entity_id: number.kitchen_fan_speed
+        state: "{{ states('input_number.kitchen_fan_speed') | int(0) }}"
+        min: 0
+        max: 5
+        step: 1
+        set_value:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.kitchen_fan_speed
+            data:
+              value: "{{ value }}"
+
+input_number:
+  bedroom_temperature:
+    name: "${input_number.bedroom_temperature}"
+    min: 15
+    max: 25
+    step: 0.5
+    initial: 19
+    unit_of_measurement: "°C"
+    icon: mdi:thermometer
+  # What the kitchen fan speed above remembers its value in.
+  kitchen_fan_speed:
+    name: "${input_number.kitchen_fan_speed}"
+    min: 0
+    max: 5
+    step: 1
+
+input_select:
+  movie_night:
+    name: "${input_select.movie_night}"
+    icon: mdi:movie-open
+    options:
+      - Ghostbusters
+      - Casper
+      - Beetlejuice
+      - The Others
+
+# A group that still counts the fireplace in.
+group:
+  downstairs_lights:
+    name: "${group.downstairs_lights}"
+    entities:
+      - light.living_room_lamp
+      - light.kitchen_lights
+      - light.fireplace
+
+# A dehumidifier that runs on the switch above. Home Assistant has no way to
+# reload this one, so the setup names it through the entity registry.
+generic_hygrostat:
+  - name: "${humidifier.basement_dehumidifier}"
+    unique_id: basement_dehumidifier
+    humidifier: input_boolean.dehumidifier_power
+    target_sensor: sensor.basement_humidity
+    device_class: dehumidifier
+    target_humidity: 55
+    min_humidity: 30
+    max_humidity: 80
+
+# No YAML valve in Home Assistant has a position, so this one comes from a
+# small integration of our own, in custom_components/. Named by the setup too.
+valve:
+  - platform: screenshots_valve
+    name: "${valve.garden_tap}"

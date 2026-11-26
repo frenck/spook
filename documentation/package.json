@@ -2,9 +2,43 @@
   "name": "spook-documentation",
   "version": "1.0.0",
   "private": true,
-  "description": "Builds Spook's documentation with MyST.",
+  "description": "Spook's documentation and website, built with Nuxt, Nuxt UI and Nuxt Content.",
   "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt generate",
+    "preview": "npx serve .output/public",
+    "screenshots": "node screenshots/run.ts",
+    "screenshots:sheet": "node screenshots/sheet.ts",
+    "quote-avatars": "node scripts/quote-avatars.mjs",
+    "translate": "node --disable-warning=ExperimentalWarning translations/pipeline/cli.ts",
+    "test:translate": "node --disable-warning=ExperimentalWarning --test translations/pipeline/*.test.ts",
+    "test:site": "node --disable-warning=ExperimentalWarning --test tests/*.test.ts"
+  },
+  "dependencies": {
+    "@iconify-json/circle-flags": "1.2.14",
+    "@iconify-json/mdi": "1.2.3",
+    "@nuxt/content": "3.17.0",
+    "@nuxt/image": "2.2.1",
+    "@nuxt/ui": "4.13.1",
+    "@nuxtjs/i18n": "^10.6.0",
+    "@nuxtjs/sitemap": "9.2.0",
+    "@takumi-rs/core": "2.22.1",
+    "minisearch": "^7.2.0",
+    "nuxt": "4.7.0",
+    "nuxt-agent-discovery": "0.8.2",
+    "nuxt-llms": "0.3.2",
+    "nuxt-og-image": "7.0.7",
+    "tailwindcss": "4.3.5"
+  },
   "devDependencies": {
-    "mystmd": "1.14.0"
+    "@anthropic-ai/sdk": "1.14.0",
+    "@nuxt/fonts": "1.2.0",
+    "@playwright/test": "1.65.1",
+    "micromark": "4.0.3",
+    "micromark-extension-gfm": "3.0.0",
+    "sharp": "0.35.5",
+    "yaml": "2.9.1"
   }
 }

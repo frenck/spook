@@ -1,0 +1,67 @@
+# GENERATED FILE. Do not edit: the next translation run overwrites it.
+# Translated by a machine from documentation/content/data/answers.yml.
+# Something wrong? Report it, and it is fixed in what the machine works from:
+# https://github.com/frenck/spook/issues/new/choose (see documentation/translations/corpus/README.md).
+
+# The questions people ask before they install Spook, and the honest
+# answers. Keep them short, true, and checked against the code: this page only
+# works if every answer holds up.
+title: 率直な回答
+description: Spookについてよく聞かれる質問に、正直に答えます。何なのか、いくらかかるのか、何がうまくいかないことがあるのか、どうやって外すのか。
+
+groups:
+  - title: インストールする前に
+    icon: i-mdi-magnify
+    questions:
+      - question: これはHome Assistantの公式なものですか？
+        answer: いいえ。SpookはFrenckが作ったカスタム統合です。FrenckはHome Assistant自体の開発にも携わっていますが、Spookは個人のプロジェクトで、Home Assistantプロジェクトはサポートしていません。なので、Spookについてのヘルプはそちらに頼まないでください。ここで聞いてください。
+        link: { label: ヘルプを受けられる場所, to: /support }
+      - question: では、なぜHome Assistantに入っていないのですか？
+        answer: 一部は具体的すぎたり、実験的すぎたり、Home Assistantがもっともな理由で守っているルールを曲げていたりします。Spookはそれを守る必要がありません。そして一部は試運転です。テンプレート関数といくつかの修復はSpookで始まり、Home Assistant自体に移りました。
+        link: { label: 移っていった機能, to: /previous-features }
+      - question: いくらかかりますか？
+        answer: 無料です。SpookはMITライセンスで無料です。プロ版もなく、裏もありません。お礼をしたいなら、GitHubでFrenckのスポンサーになればゴーストのごはん代になります。
+        link: { label: Frenckを支援する, to: "https://github.com/sponsors/frenck" }
+      - question: どこかに何かを送信しますか？
+        answer: いいえ。アカウントも、クラウドも、トラッキングもありません。Spookがインターネットから取ってくるのは、インポートしたブループリントの新しいバージョンだけで、インポート元から取ってきます。Home Assistant自体の分析データを共有している場合は、ほかの統合と同じように、Spookもその数に入ります。
+
+  - title: 使っていくうえで
+    icon: i-mdi-home-heart
+    questions:
+      - question: 設定をいじられたりしませんか？
+        answer: 問題を見つけても、何も変わりません。Spookが何かを直そうと提案するときは、先に確認し、実行する直前にもう一度見直します。アクションは、自分のオートメーションで指示したことだけをします。
+      - question: Home Assistantが遅くなりませんか？
+        answer: Spookは仕事をします。オートメーション、ダッシュボードなどを読みます。重めのチェックはHome Assistantの起動が終わるまで待ち、何かが変わったときにもう一度動きます。常に動いているわけではありません。それでも遅さに気づいたら、それはバグなので、ぜひ知らせてください。
+      - question: 間違うことはありますか？
+        answer: はい、ときどき。Spookは本当に壊れているものだけを報告するよう努めていて、オオカミ少年のような修復はバグです。直るまでは、その修復を無視してください。Spookはその検出結果については黙っています。
+        link: { label: 報告する, to: "https://github.com/frenck/spook/issues" }
+      - question: Home Assistantのアップデートで壊れることはありますか？
+        answer: はい。SpookはHome Assistantの、外部向けではない部分を使っています。それがSpookにできることの理由であり、アップデートでつまずくことがある理由でもあります。そうなったら、Spookのアップデートで直ります。
+
+  - title: やめたいとき
+    icon: i-mdi-door-open
+    questions:
+      - question: 外すとどうなりますか？
+        answer: 修復とセンサーは一緒になくなります。Spookで作ったヘルパーは残りますが、もう読み込めないので、先に削除してください。Spookのアクション、トリガー、条件を使っているオートメーションは動かなくなり、それを知らせるSpookはもういません。なので、先にそれを確認してください。デバイス、エンティティ、そのほかすべてはそのまま残ります。
+        link: { label: 外し方, to: /uninstalling }
+      - question: この先も続きますか？
+        answer: Spookは2023年2月からあり、出す価値のあるものができるたびにリリースしています。Home Assistantが機能を引き継ぐと、その機能はSpookから外れ、リリースノートとドキュメントに行き先が書かれます。
+        link: { label: Spookの裏話, to: /background-and-history }
+
+  - title: プロジェクト
+    icon: i-mdi-ghost-outline
+    questions:
+      - question: なぜSpookという名前なのですか？
+        answer: Spookはオランダ語で「おばけ」のことで、「キャスパー」へのオマージュでもあります。Home Assistantの中のゴースト、つまりまだ残っているのに、もうそこにないものを見つけます。
+        link: { label: もっと長い話, to: /background-and-history }
+      - question: Spookを使ってはいけないと聞きました。どういうことですか？
+        answer: かつてはそうでした。バージョン3.0.0より前、Spookはコードを読めても使えないライセンスを、わざと採用していました。実験で、スローガンは「Not your homie」でした。それでもみんな使い、気に入ってくれました。それで3.0.0からはMITライセンスになり、スローガンは「Your homie」です。
+        link: { label: ライセンス, to: /license }
+      - question: バージョン番号の意味は？
+        answer: Major、minor、patchです。新しいmajorバージョンは頼りにしているかもしれないものを変えたり削除したりし、minorは機能を追加し、patchは修正をします。どのリリースにも、何が変わったかを書いたノートがGitHubにあります。
+        link: { label: リリースノート, to: "https://github.com/frenck/spook/releases" }
+      - question: 次のリリースはいつですか？
+        answer: できたときです。Spookは趣味のプロジェクトで、空いた時間に作っているので、日付も約束もありません。
+      - question: Spookのアイデアがあります。どこに出せばいいですか？
+        answer: GitHubのディスカッションです。今Spookがやっていることの多くは、そこで誰かのアイデアとして始まりました。
+        link: { label: アイデアを共有, to: "https://github.com/frenck/spook/discussions" }
