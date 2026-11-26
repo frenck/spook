@@ -28,10 +28,10 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     # Templates look floors up through areas as well, so a renamed area
     # can change what they find.
     inspect_events = {
+        automation.EVENT_AUTOMATION_RELOADED,
         ar.EVENT_AREA_REGISTRY_UPDATED,
         fr.EVENT_FLOOR_REGISTRY_UPDATED,
     }
-    inspect_on_reload = True
 
     unavailable_entity_class = automation.UnavailableAutomationEntity
     entity_label = "automation"
