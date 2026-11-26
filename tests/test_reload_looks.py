@@ -61,6 +61,7 @@ _NOT_WOKEN_BY_OTHER_RELOADS = [
     "script.repairs.unknown_service_references",
     "script.repairs.unknown_trigger_references",
     "script.repairs.unknown_user_references",
+    "person.repairs.unknown_device_trackers",
 ]
 
 _AUTOMATION_REPAIRS = [
@@ -218,11 +219,19 @@ def _scripts(sequence: list[Any]) -> dict[str, Any]:
     return {"script": {"wake_up": {"sequence": sequence}}}
 
 
-async def _looks_after_a_script_reload(
-    hass: HomeAssistant, module: str, sequence: list[Any]
+async def _looks_after_a_reload(
+    hass: HomeAssistant,
+    module: str,
+    before: dict[str, Any],
+    after: dict[str, Any],
 ) -> int:
-    """Return how many looks a real script reload asks a repair for."""
-    assert await async_setup_component(hass, "script", _scripts([]))
+    """Return how many looks a real reload asks a repair for.
+
+    Sets up the one domain ``before`` holds, then reloads it with ``after``
+    as the configuration it reads back.
+    """
+    (domain,) = before
+    assert await async_setup_component(hass, domain, before)
     await hass.async_block_till_done()
     repair = _repair_class(module)(hass)
     await repair.async_activate()
@@ -231,13 +240,20 @@ async def _looks_after_a_script_reload(
     with patch(
         "homeassistant.config.load_yaml_config_file",
         autospec=True,
-        return_value=_scripts(sequence),
+        return_value=after,
     ):
-        await hass.services.async_call("script", "reload", blocking=True)
+        await hass.services.async_call(domain, "reload", blocking=True)
     await hass.async_block_till_done()
     await repair.async_deactivate()
 
     return len(looks)
+
+
+async def _looks_after_a_script_reload(
+    hass: HomeAssistant, module: str, sequence: list[Any]
+) -> int:
+    """Return how many looks a real script reload asks a repair for."""
+    return await _looks_after_a_reload(hass, module, _scripts([]), _scripts(sequence))
 
 
 @pytest.mark.parametrize("module", _LOOKING_WHEN_SCRIPTS_COME_OR_GO)
@@ -310,3 +326,69 @@ async def test_entity_reference_repairs_look_when_any_entity_comes(
     await repair.async_deactivate()
 
     assert looks == 1
+
+
+def _people(device_trackers: list[str]) -> dict[str, Any]:
+    """Return a configuration holding one person."""
+    return {
+        "person": [
+            {"id": "frenck", "name": "Frenck", "device_trackers": device_trackers}
+        ]
+    }
+
+
+async def test_person_repair_looks_after_a_person_reload(hass: HomeAssistant) -> None:
+    """Test a person, really reloaded with other trackers, gets a look.
+
+    A person changes in place: the reload hands the new configuration to
+    the entity that is already there. Nothing goes or comes, and there is
+    no reload event, so the state listing its device trackers is the sign.
+    """
+    looks = await _looks_after_a_reload(
+        hass,
+        "person.repairs.unknown_device_trackers",
+        _people(["device_tracker.phone"]),
+        _people(["device_tracker.phone", "device_tracker.watch"]),
+    )
+
+    assert looks
+
+
+async def test_person_repair_leaves_a_reload_that_changed_nothing_alone(
+    hass: HomeAssistant,
+) -> None:
+    """Test a person reload that left every person as it was asks for no look."""
+    people = _people(["device_tracker.phone"])
+
+    looks = await _looks_after_a_reload(
+        hass, "person.repairs.unknown_device_trackers", people, people
+    )
+
+    assert looks == 0
+
+
+async def test_person_repair_leaves_a_person_moving_around_alone(
+    hass: HomeAssistant,
+) -> None:
+    """Test a person changing state, trackers and all the same, asks for no look.
+
+    A person's state changes with every step its device trackers take, so
+    only a change to the trackers it lists is worth a look.
+    """
+    trackers = {"device_trackers": ["device_tracker.phone"]}
+    repair = _repair_class("person.repairs.unknown_device_trackers")(hass)
+    await repair.async_activate()
+
+    looks = await _count_looks_asked_for(
+        hass,
+        repair,
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "person.frenck",
+            "old_state": State("person.frenck", "home", trackers),
+            "new_state": State("person.frenck", "not_home", trackers),
+        },
+    )
+    await repair.async_deactivate()
+
+    assert looks == 0
