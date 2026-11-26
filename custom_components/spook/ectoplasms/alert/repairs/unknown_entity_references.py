@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.alert.const import DOMAIN
@@ -37,6 +38,11 @@ class SpookRepair(AbstractSpookRepair):
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     automatically_clean_up_issues = True
+    # A configuration that could not be read is read again on the next look,
+    # and nothing about a broken file says when that is. Once a day, so it
+    # is not left to whatever happens to come along. Cheap, as a read that
+    # worked is kept for the rest of the run.
+    inspect_interval = timedelta(days=1)
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
