@@ -431,7 +431,7 @@ class _InspectionDebouncer(Debouncer[Coroutine[Any, Any, None]]):
         super().async_schedule_call()
 
 
-class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-instance-attributes
+class AbstractSpookRepair(AbstractSpookRepairBase):
     """Abstract base class to hold a Spook repairs."""
 
     #: Re-run the inspection when one of these is fired. Entity registry
@@ -482,8 +482,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
         self._waiting_for_first_inspection = False
         self._attributes_awaited = {}
         self._config_entry_fingerprints = {}
-        self._inspecting = False
-        self._asked_while_inspecting = False
+        self._asked_for_a_look = False
 
     @callback
     def _await_attributes(self, pairs: Iterable[tuple[str, str]]) -> None:
@@ -511,25 +510,20 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
             ):
                 return
 
-            self._inspecting = True
-            self._asked_while_inspecting = False
+            # Whatever was asked for until now, this round reads after it.
+            self._asked_for_a_look = False
             try:
                 await self._async_inspect_and_clean_up()
             finally:
-                self._inspecting = False
-
                 # Asked for a look while this one ran: what it was asked about
-                # may have changed after this round read it. A look asked for
-                # while waiting for the turn needs nothing extra, as nothing
-                # was read yet.
-                if self._asked_while_inspecting:
+                # may have changed after this round read it.
+                if self._asked_for_a_look:
                     self.inspect_debouncer.async_schedule_call()
 
     @callback
-    def _async_asked_for_a_look(self) -> None:
-        """Remember a look was asked for while this repair inspects."""
-        if self._inspecting:
-            self._asked_while_inspecting = True
+    def _async_remember_a_look_was_asked_for(self) -> None:
+        """Remember a look was asked for, for a round that is reading."""
+        self._asked_for_a_look = True
 
     async def _async_inspect_and_clean_up(self) -> None:
         """Run an inspection and clean up issues that are no longer valid."""
@@ -592,7 +586,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
         self.inspect_debouncer = _InspectionDebouncer(
             self.hass,
             function=self._async_inspect_with_cleanup,
-            asked=self._async_asked_for_a_look,
+            asked=self._async_remember_a_look_was_asked_for,
         )
 
         if self.first_inspection_delay is None:

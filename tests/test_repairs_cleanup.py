@@ -482,6 +482,82 @@ async def test_a_look_asked_for_mid_round_is_not_lost(
     await repair.async_deactivate()
 
 
+async def test_a_look_asked_for_mid_round_is_one_round_when_the_round_ends_first(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a round that ends before the cooldown does gets one round after.
+
+    The look the debouncer has planned anyway and the one asked for again
+    are the same look, so they make one round, not two.
+    """
+    repair = MockSlowRepair(hass)
+    await repair.async_activate()
+
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await repair.started.wait()
+
+    hass.bus.async_fire("mock_event")
+    await _let_tasks_run()
+    repair.release.set()
+    await hass.async_block_till_done()
+
+    await _flush_debouncer(hass, freezer)
+    await _flush_debouncer(hass, freezer)
+
+    assert repair.inspections == EXPECTED_LOOKED_AGAIN_INSPECTIONS
+
+    await repair.async_deactivate()
+
+
+class MockWaitingRepair(MockSlowRepair):
+    """Mock repair listening to an event of its own."""
+
+    inspect_events = {"waiting_event"}
+
+
+async def test_a_look_asked_for_while_waiting_for_the_turn_adds_nothing(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a look asked for before the round read anything adds no round.
+
+    The round waiting for its turn reads after the change it was asked
+    about, so it sees it, even with the cooldown running out meanwhile.
+    """
+    holder = MockSlowRepair(hass)
+    waiting = MockWaitingRepair(hass)
+    waiting.release.set()
+    await holder.async_activate()
+    await waiting.async_activate()
+
+    # Both rounds start, the first one takes the turn and holds on to it.
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await holder.started.wait()
+    await _let_tasks_run()
+    assert waiting.inspections == 0
+
+    # Asked for a look while waiting, and the cooldown runs out meanwhile.
+    hass.bus.async_fire("waiting_event")
+    await _let_tasks_run()
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await _let_tasks_run()
+
+    holder.release.set()
+    await hass.async_block_till_done()
+    await _flush_debouncer(hass, freezer)
+    await _flush_debouncer(hass, freezer)
+
+    assert holder.inspections == 1
+    assert waiting.inspections == 1
+
+    await holder.async_deactivate()
+    await waiting.async_deactivate()
+
+
 async def test_config_entry_update_retries_after_failed_inspection(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
