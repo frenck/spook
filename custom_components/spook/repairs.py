@@ -50,6 +50,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later, async_track_time_interval
 from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
+from homeassistant.util.hass_dict import HassKey
 
 from .attribute_checking import (
     NAMES_THE_STATE_HINT,
@@ -137,6 +138,15 @@ _MIN_MAX_MINIMUM_MEMBERS = 2
 # often still has integrations adding devices, is a solid block of work at
 # the worst moment for it. #1898.
 FIRST_INSPECTIONS_SPREAD_OVER = timedelta(minutes=2)
+
+# Whose turn it is to inspect: one repair at a time, for all of them. Each
+# round hands the loop back every few milliseconds, but the loop runs every
+# task that is ready before it gets back to Home Assistant's own I/O. With
+# a few dozen rounds started by the same reload, all of them are ready, so
+# those few milliseconds added up to the better part of a second. Taking
+# turns keeps each stretch to what one round holds. The total work stays
+# the same, it is only spread out.
+_INSPECTION_TURN: HassKey[asyncio.Lock] = HassKey("spook_inspection_turn")
 
 # What an entity registry entry can have written to it that no repair looks
 # at. Integrations write these all day long: a media player's sources, a
@@ -453,11 +463,21 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         }
 
     async def _async_inspect_with_cleanup(self) -> None:
-        """Run an inspection and clean up issues that are no longer valid."""
-        # Don't inspect if we are stopping, or should not look yet
-        if self.hass.is_stopping or self._waiting_for_first_inspection:
-            return
+        """Run an inspection in turn, and clean up issues no longer valid."""
+        async with self.hass.data.setdefault(_INSPECTION_TURN, asyncio.Lock()):
+            # Checked once the turn comes: waiting for it can take a while,
+            # and Home Assistant may be stopping, or Spook unloaded, by then.
+            if (
+                self.hass.is_stopping
+                or self._waiting_for_first_inspection
+                or self._deactivated
+            ):
+                return
 
+            await self._async_inspect_and_clean_up()
+
+    async def _async_inspect_and_clean_up(self) -> None:
+        """Run an inspection and clean up issues that are no longer valid."""
         if not self.automatically_clean_up_issues:
             try:
                 await self.async_inspect()
