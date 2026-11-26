@@ -1,0 +1,59 @@
+# What is written the same in every language.
+#
+# The pipeline already keeps code blocks, inline code, link targets, component
+# names and their props, anchors, entity IDs and action names like
+# `automation.snooze` byte for byte. This file is about names in running text.
+
+# Names. When the English has one of these, the translation has it too,
+# spelled exactly like this.
+keep:
+  - Spook
+  - Home Assistant
+  - HACS
+  - YAML
+  - Jinja
+  - GitHub
+
+# Never in a translation, as regular expressions. A section that matches one
+# is not written, unless the English matches it as well.
+never:
+  all:
+    # Em-dashes and en-dashes. Use a full stop, a colon, a comma or brackets.
+    - "[—–]"
+    # "Home Assistant" is written in full.
+    - "(?<!\\p{L})HASS(?!\\p{L})"
+    - "(?<!\\p{L})HA(?!\\p{L})"
+  nl:
+    # "Selecteer" or "kies", not "klik".
+    - "(?<!\\p{L})[Kk]lik"
+    # Informal address: "je", not "u".
+    - "(?<!\\p{L})[Uu]w?(?!\\p{L})"
+  de:
+    # "Wähle ... aus", not "klicke".
+    - "(?<!\\p{L})[Kk]lick"
+  fr:
+    # "Sélectionnez", not "cliquez".
+    - "(?<!\\p{L})[Cc]liqu"
+    # Home Assistant's French interface says "vous", so do the docs.
+    - "(?<!\\p{L})[Tt]u(?!\\p{L})"
+  es:
+    # "Selecciona", not "haz clic".
+    - "(?<!\\p{L})[Cc]lic"
+    # Informal address: "tú", not "usted".
+    - "(?<!\\p{L})[Uu]sted(es)?(?!\\p{L})"
+  it:
+    # "Seleziona", not "clicca".
+    - "(?<!\\p{L})[Cc]lic"
+  zh-Hans:
+    # "选择", not "点击".
+    - "点击|单击"
+    # "你", not "您", like Spook's own strings.
+    - "您"
+  pt-BR:
+    # "Selecione", not "clique".
+    - "(?<!\\p{L})[Cc]li(c|qu)"
+  ja:
+    # "選択します", not "クリック".
+    - "クリック"
+    # The polite form, not humble keigo.
+    - "ございます|させていただ"

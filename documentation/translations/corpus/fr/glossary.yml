@@ -1,0 +1,156 @@
+# The French glossary, by hand.
+#
+# `terms` are words in running text: what Home Assistant calls its own things
+# in French, so the docs use the words the reader sees in the product. English
+# to French, singular, lowercase. Short pairs only, no sentences: this file ends
+# up in a prompt.
+#
+# `labels` overrides what glossary.generated.yml found for a bold label. Give
+# a `reason`, and either the `key` of the string that is on that screen, or a
+# `translation` when no string has it.
+#
+# Looked up in the strings of Home Assistant 2026.11.3 and Spook, 2026-11-25.
+# Not yet read by a native speaker.
+#
+# Where the frontend and Spook's own strings disagree, this follows the
+# frontend, because that is the screen the reader has open:
+# - repair is "correction": Settings has "Corrections". Spook's strings say
+#   "correction" too.
+# - helper is "entrée": the Helpers page is "Entrées". Spook's strings say
+#   "entrée" too, and "assistant" in places.
+# - area is "pièce", like the interface. "Zone" is the zone integration.
+# No Home Assistant word:
+# - notifier: Home Assistant has none. "Notificateur" is Spook's own word.
+# - snooze: Spook's own action name, "Mettre en veille".
+terms:
+  action: action
+  alert: alerte
+  area: pièce
+  attribute: attribut
+  automation: automatisation
+  automation editor: éditeur d'automatisation
+  blueprint: blueprint
+  condition: condition
+  cover: ouverture
+  custom integration: intégration personnalisée
+  dashboard: tableau de bord
+  debug logging: journalisation de débogage
+  device: appareil
+  diagnostics: diagnostics
+  entity: entité
+  entity ID: ID d'entité
+  floor: étage
+  helper: entrée
+  icon: icône
+  integration: intégration
+  integration entry: entrée d'intégration
+  issue: problème
+  label: étiquette
+  logs: journaux
+  notifier: notificateur
+  repair: correction
+  repairs dashboard: page des corrections
+  restart: redémarrer
+  scene: scène
+  script: script
+  sidebar: barre latérale
+  snooze: mettre en veille
+  state: état
+  template: modèle
+  trigger: déclencheur
+  trigger ID: ID du déclencheur
+  user: utilisateur
+
+  # Chosen for consistency on 2026-11-25 by an agent, not by a native
+  # speaker. Three translators wrote the first pages in parallel, and these
+  # recurring words had drifted apart. Each is the variant most pages used,
+  # unless noted. Headings, labels and table cells first, then type names.
+  # The sentences that repeat on every action page are in style.md.
+  how to fix it: comment le régler
+  how to use it: comment l'utiliser
+  how Spook checks this: comment Spook le vérifie
+  technical details: détails techniques
+  known limitations: limites connues
+  use cases: cas d'usage
+  example actions in YAML: exemples d'actions en YAML
+  example triggers in YAML: exemples de déclencheurs en YAML
+  example conditions in YAML: exemples de conditions en YAML
+  blueprints & tutorials: blueprints et tutoriels
+  feature requests, ideas, and support: demandes de fonctionnalités, idées et support
+  action properties: propriétés de l'action
+  action data parameters: paramètres de données de l'action
+  action name: nom de l'action
+  action targets: cibles de l'action
+  action response: réponse de l'action
+  trigger properties: propriétés du déclencheur
+  trigger options: options du déclencheur
+  trigger name: nom du déclencheur
+  condition properties: propriétés de la condition
+  condition options: options de la condition
+  condition name: nom de la condition
+  default / example: par défaut / exemple
+  Spook's influence: influence de Spook
+  tools: outils
+  newly added action: nouvelle action
+  newly added trigger: nouveau déclencheur
+  newly added condition: nouvelle condition
+  # "Pas de", not "Aucune": four early pages said "Aucune".
+  no response: pas de réponse
+  no targets: pas de cibles
+  string: chaîne
+  list of strings: liste de chaînes
+  integer: entier
+  float: nombre décimal
+  boolean: booléen
+  list: liste
+  number: nombre
+  mapping: dictionnaire
+  datetime: date et heure
+  try this action: essayer cette action
+
+labels:
+  Unknown entity:
+    key: ui.panel.config.automation.editor.actions.type.service.description.target_unknown_entity
+    reason: What the automation editor shows for an entity that no longer exists. The automatic match missed it.
+  Update:
+    key: ui.dialogs.more_info_control.update.update
+    reason: The button in the update dialog. The automatic match was the name of Spook's update sensor.
+  Major:
+    translation: Major
+    reason: The parts of a version number. Kept as they are; they are names, not words.
+  Minor:
+    translation: Minor
+    reason: The parts of a version number. The automatic match came from a severity state of another integration.
+  Patch:
+    translation: Patch
+    reason: The parts of a version number.
+  Home Assistant Link:
+    translation: Home Assistant Link
+    reason: A product name, the same in every language. It used to be called Home Assistant Cloud.
+  Import:
+    translation: "Importer"
+    reason: The button on this website's own blueprint cards, so it says what the site says. The automatic match came from an energy sensor state.
+  Read more:
+    translation: "Lire la suite"
+    reason: The other button on this website's own blueprint cards.
+  Submit:
+    key: ui.panel.config.integrations.config_flow.submit
+    reason: The button in the dialog that sets up an integration. Home Assistant has "Submit" on other screens with another word.
+  Finish:
+    key: ui.panel.config.integrations.config_flow.finish
+    reason: The button in the dialog that sets up an integration.
+  Ignore:
+    key: ui.panel.config.repairs.dialog.ignore
+    reason: The button in a repair, not the one for a discovered integration.
+  Repairs:
+    key: ui.panel.config.repairs.caption
+    reason: The entry under Settings.
+  Logs:
+    key: ui.panel.config.logs.caption
+    reason: The entry under Settings > System.
+  About:
+    key: ui.panel.config.info.caption
+    reason: The entry under Settings.
+  System:
+    key: ui.panel.config.dashboard.system.main
+    reason: The entry under Settings.
