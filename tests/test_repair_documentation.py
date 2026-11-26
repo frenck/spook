@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import importlib
 from pathlib import Path
-import re
 from typing import TYPE_CHECKING
 
 import pytest
@@ -18,11 +17,12 @@ from custom_components.spook.repair_documentation import (
     repair_documentation_url,
 )
 
+from tests.documentation_helpers import headings, page as documentation_page
+
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 SPOOK = Path(repairs.__file__).parent
-DOCUMENTATION = SPOOK.parent.parent / "documentation" / "integrations"
 
 
 def _repair_modules() -> list[str]:
@@ -43,22 +43,23 @@ def _repairs() -> dict[str, type[repairs.AbstractSpookRepair]]:
     return found
 
 
-def _anchor(heading: str) -> str:
-    """Return the anchor the documentation gives a heading."""
-    return re.sub(r"[^a-z0-9]+", "-", heading.lower()).strip("-")
+# Each page explains its repairs under `## Repairs`, one `###` heading each.
+_SECTION = 2
+_REPAIR = 3
 
 
-def _repair_anchors(page: str) -> set[str]:
+def _repair_anchors(slug: str) -> set[str]:
     """Return the anchors of the headings in a page's Repairs section."""
+    path = documentation_page(slug)
+    assert path is not None, f"no documentation page served at /{slug}"
+
     anchors = set()
     in_repairs = False
-    for line in (
-        (DOCUMENTATION / f"{page.replace('-', '_')}.md").read_text().splitlines()
-    ):
-        if line.startswith("## "):
-            in_repairs = line == "## Repairs"
-        elif in_repairs and line.startswith("### "):
-            anchors.add(_anchor(line.removeprefix("### ")))
+    for level, text, anchor in headings(path.read_text()):
+        if level == _SECTION:
+            in_repairs = text == "Repairs"
+        elif in_repairs and level == _REPAIR:
+            anchors.add(anchor)
     return anchors
 
 

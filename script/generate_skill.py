@@ -24,7 +24,7 @@ import yaml
 
 ROOT = Path(__file__).parents[1]
 SPOOK = ROOT / "custom_components" / "spook"
-DOCS = ROOT / "documentation"
+DOCS = ROOT / "documentation" / "content"
 REFERENCES = ROOT / "plugins" / "spook" / "skills" / "spook" / "references"
 
 GENERATED = (
@@ -89,9 +89,19 @@ def _url(reference: str) -> str:
     return f"{url}#{anchor}" if anchor else url
 
 
-def _documentation_links(page: str) -> dict[str, str]:
+def _documentation_page(slug: str) -> Path:
+    """Return the content file the site serves at `/<slug>`.
+
+    Each file is named after its address, behind the number that orders it
+    within its section, like `06.reference/01.actions.md`.
+    """
+    (path,) = DOCS.glob(f"*/[0-9][0-9].{slug}.md")
+    return path
+
+
+def _documentation_links(slug: str) -> dict[str, str]:
     """Return the documentation address of every entry on a reference page."""
-    text = (DOCS / page).read_text(encoding="utf-8")
+    text = _documentation_page(slug).read_text(encoding="utf-8")
     return {match["name"]: _url(match["link"]) for match in _DOCUMENTED.finditer(text)}
 
 
@@ -318,7 +328,7 @@ def render_actions() -> str:
     """Return the reference of every action Spook adds, grouped by domain."""
     described = _yaml("services.yaml")
     translated = _translations()["services"]
-    links = _documentation_links("actions.md")
+    links = _documentation_links("actions")
     domains = action_domains()
     responses = action_responses()
 
@@ -355,7 +365,7 @@ def _automation_reference(kind: str, introduction: str) -> str:
     """Return the reference for Spook's triggers or conditions."""
     described = _yaml(f"{kind}.yaml")
     translated = _translations()[kind]
-    links = _documentation_links(f"{kind}.md")
+    links = _documentation_links(kind)
 
     lines: list[str] = []
     for key in sorted(described):

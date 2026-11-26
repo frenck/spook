@@ -1,0 +1,72 @@
+# The questions people ask before they install Spook, and the honest
+# answers. Keep them short, true, and checked against the code: this page only
+# works if every answer holds up.
+title: Straight answers
+description: The questions people ask about Spook, answered honestly. What it is, what it costs, what can go wrong, and how to get rid of it again.
+
+groups:
+  - title: Before you install
+    icon: i-mdi-magnify
+    questions:
+      - question: Is this an official Home Assistant thing?
+        answer: No. Spook is a custom integration, made by Frenck. He works on Home Assistant itself, but Spook is his own project, and the Home Assistant project does not support it. So please don't ask them for help with Spook. Ask here.
+        link: { label: Where to get help, to: /support }
+      - question: Then why isn't this in Home Assistant?
+        answer: Some of it is too specific, too experimental, or bends rules Home Assistant keeps for good reasons. Spook doesn't have to. And some of it is a test run. Template functions and a few repairs started out in Spook, and moved into Home Assistant itself.
+        link: { label: Features that moved on, to: /previous-features }
+      - question: What does it cost?
+        answer: Nothing. Spook is free and MIT licensed, without a pro version and without a catch. If you want to say thanks, sponsoring Frenck on GitHub keeps the ghost fed.
+        link:
+          { label: Sponsor Frenck, to: "https://github.com/sponsors/frenck" }
+      - question: Does it send anything anywhere?
+        answer: No. No account, no cloud, no tracking. The only thing Spook fetches from the internet is a new version of a blueprint you imported, from where you imported it. If you share Home Assistant's own analytics, Spook shows up in that count, like every other integration you have.
+
+  - title: Living with it
+    icon: i-mdi-home-heart
+    questions:
+      - question: Will it mess with my setup?
+        answer: Finding problems changes nothing. Where Spook offers to fix something, it asks first, and looks again right before it acts. Its actions only do what you tell them to in your own automations.
+      - question: Will it slow Home Assistant down?
+        answer: Spook does work, it reads your automations, dashboards and more. The heavier checks wait until Home Assistant has finished starting, and run again when something changes, not all the time. If you notice it anyway, that's a bug, and we want to hear about it.
+      - question: Will it ever be wrong?
+        answer: Yes, sometimes. Spook tries hard to only report what is really broken, and a repair that cries wolf is a bug. Until it's fixed, ignore the repair, and Spook stays quiet about those exact findings.
+        link:
+          { label: Report one, to: "https://github.com/frenck/spook/issues" }
+      - question: Can a Home Assistant update break it?
+        answer: Yes. Spook uses parts of Home Assistant that are not meant for outsiders. That is how it does what it does, and also why an update can trip it up. When that happens, a Spook update fixes it.
+
+  - title: When you want out
+    icon: i-mdi-door-open
+    questions:
+      - question: What happens when I remove it?
+        answer: Its repairs and sensors go with it. Helpers you made with Spook stay behind but can't load anymore, so delete those first. Automations that use Spook's actions, triggers or conditions stop working, and Spook isn't around anymore to tell you. So check those first. Your devices, entities and everything else stay exactly as they were.
+        link: { label: How to remove it, to: /uninstalling }
+      - question: Is it here to stay?
+        answer: Spook has been around since February 2023, with a release whenever there is something worth releasing. When Home Assistant takes a feature over, it leaves Spook, and the release notes and the docs say where it went.
+        link: { label: The story behind Spook, to: /background-and-history }
+
+  - title: The project
+    icon: i-mdi-ghost-outline
+    questions:
+      - question: Why is it called Spook?
+        answer: Spook is the Dutch word for ghost, with a nod to Casper the Friendly Ghost. It finds the ghosts in your Home Assistant, the things that are still around but no longer there.
+        link: { label: The longer story, to: /background-and-history }
+      - question: I heard I'm not allowed to use Spook. What is that about?
+        answer: That was true once. Before version 3.0.0, Spook had a license that let you read the code but not use it, on purpose. It was an experiment, and its slogan was "Not your homie". People used it anyway, and loved it. So since 3.0.0 it is MIT licensed, and the slogan is "Your homie".
+        link: { label: The license, to: /license }
+      - question: What do the version numbers mean?
+        answer: Major, minor, patch. A new major version changes or removes something you may rely on, a minor one adds things, a patch fixes things. Every release has notes on GitHub that say what changed.
+        link:
+          {
+            label: Release notes,
+            to: "https://github.com/frenck/spook/releases",
+          }
+      - question: When is the next release?
+        answer: When it is ready. Spook is a pet project, made in spare time, so there are no dates and no promises.
+      - question: I have an idea for Spook. Where does it go?
+        answer: In the discussions on GitHub. Plenty of what Spook does today started there as somebody's idea.
+        link:
+          {
+            label: Share an idea,
+            to: "https://github.com/frenck/spook/discussions",
+          }

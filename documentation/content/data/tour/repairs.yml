@@ -1,0 +1,63 @@
+order: 1
+title: Spook finds what quietly broke
+description: Spook checks your Home Assistant for things that stopped working without telling you, and reports them on your repairs dashboard. Many come with a fix.
+
+hero:
+  headline: Finds the ghosts 👻
+  title: It finds what quietly broke.
+  description: Rename a lamp, replace a sensor, remove an integration, and somewhere an automation stops working without a word. Spook notices, and tells you on your repairs dashboard. {repairs} kinds of problems, and it keeps looking.
+  screenshot: repairs-list
+  alt: The repairs dashboard of Home Assistant with seven repairs from Spook, like an empty area, an unused label and an automation using entities that no longer exist.
+
+sections:
+  - headline: Exactly what, and where
+    title: No hunting through YAML.
+    description: Every repair names the place with the problem, and what is wrong with it. Select the name, and you are in the editor, right where it needs fixing.
+    screenshot: repair-unknown-entities
+    alt: A repair from Spook naming the Movie night automation and the three entities it uses that no longer exist, with a suggestion for what was meant.
+    features:
+      - title: Points at the spot
+        description: The automation, script or dashboard, with a link straight to it.
+        icon: i-mdi-target
+      - title: Guesses what you meant
+        description: Renamed a lamp? When Spook is nearly certain, it suggests the new name.
+        icon: i-mdi-lightbulb-question-outline
+      - title: Goes away by itself
+        description: Fix it and save. Spook looks again and clears the repair. Nothing to tick off.
+        icon: i-mdi-check-circle-outline
+
+  - headline: Fixed for you
+    title: Say yes, and it is gone.
+    description: Plenty of repairs come with a fix. An empty area, an unused label, a person still tracking an old phone. Spook offers to clean it up, and asks first.
+    screenshot: repair-fix-empty-area
+    alt: A repair from Spook for the empty Attic area, offering to remove it, to let you fix it yourself, or to keep it and stop asking.
+    features:
+      - title: You decide
+        description: Remove it, fix it yourself, or keep it. Spook never cleans up without asking.
+        icon: i-mdi-hand-back-right-outline
+      - title: Keep it, and it stays quiet
+        description: Meant to be like that? Say so once, and Spook stops pointing it out.
+        icon: i-mdi-bell-off-outline
+      - title: Checked again before it acts
+        description: If something changed since Spook looked, it leaves it alone.
+        icon: i-mdi-shield-check-outline
+
+more:
+  title: Where Spook looks
+  links:
+    - title: Automations and scripts
+      description: Entities, devices, areas, actions and triggers that are gone, and templates that can never pass.
+      icon: i-mdi-robot-outline
+      to: /automation#repairs
+    - title: Dashboards
+      description: Cards that point at entities, actions or views that no longer exist.
+      icon: i-mdi-view-dashboard-outline
+      to: /lovelace#repairs
+    - title: Areas, floors and labels
+      description: The empty ones, the unused ones, and sensors that went missing.
+      icon: i-mdi-floor-plan
+      to: /homeassistant#repairs
+    - title: Your first repair
+      description: Step by step, from the repairs dashboard to a working automation.
+      icon: i-mdi-wrench-outline
+      to: /fix-your-first-repair

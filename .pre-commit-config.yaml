@@ -71,7 +71,11 @@ repos:
         types: [python]
         entry: uv run --frozen pylint
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v2.7.1
+    rev: v3.1.0
     hooks:
       - id: prettier
         name: 🎨 Format using prettier
+        # The website is written in Prettier 3, so the hook runs that too:
+        # two versions disagree on trailing commas and keep undoing each other.
+        additional_dependencies:
+          - prettier@3.10.1

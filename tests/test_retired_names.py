@@ -19,7 +19,7 @@ import re
 
 ROOT = pathlib.Path(__file__).parents[1]
 SPOOK = ROOT / "custom_components" / "spook"
-DOCUMENTATION = ROOT / "documentation"
+DOCUMENTATION = ROOT / "documentation" / "content"
 
 # Deliberately loose about what sits between the two words. Eight captions
 # said "developer actions tools", which a tighter matcher walked past.
@@ -51,8 +51,6 @@ def _lines_naming_it() -> list[str]:
         # the UI as much as anything else here is.
         *SPOOK.rglob("*.yaml"),
     ]:
-        if "_build" in str(path):
-            continue
         for number, line in enumerate(path.read_text().splitlines(), start=1):
             # Cut the allowed phrases out rather than passing over the whole
             # line that carries one. A line is allowed to explain the rename
@@ -69,9 +67,7 @@ def _lines_naming_it() -> list[str]:
 def test_the_deliberate_mentions_are_still_there() -> None:
     """Otherwise the check below passes by having nothing to allow."""
     everything = "\n".join(
-        p.read_text()
-        for p in [*DOCUMENTATION.rglob("*.md"), *SPOOK.rglob("*.py")]
-        if "_build" not in str(p)
+        p.read_text() for p in [*DOCUMENTATION.rglob("*.md"), *SPOOK.rglob("*.py")]
     )
 
     for allowed in _DELIBERATE:
