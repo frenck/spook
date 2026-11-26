@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code  # Mirrors the script one; one shared base is its own change.
 """Spook - Your homie."""
 
 from __future__ import annotations
@@ -5,7 +6,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import automation
-from homeassistant.const import EVENT_COMPONENT_LOADED
+from homeassistant.const import (
+    EVENT_COMPONENT_LOADED,
+    EVENT_SERVICE_REGISTERED,
+    EVENT_SERVICE_REMOVED,
+)
 from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
@@ -296,12 +301,16 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
 
     domain = automation.DOMAIN
     repair = "automation_unknown_entity_references"
+    # A name that is an action is no unknown entity, so an action coming or
+    # going changes the answer.
     inspect_events = {
+        automation.EVENT_AUTOMATION_RELOADED,
         EVENT_COMPONENT_LOADED,
+        EVENT_SERVICE_REGISTERED,
+        EVENT_SERVICE_REMOVED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
     inspect_on_entity_added_or_removed = True
 
     unavailable_entity_class = automation.UnavailableAutomationEntity

@@ -8,6 +8,8 @@ from homeassistant.components.lovelace import DOMAIN
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_LOVELACE_UPDATED,
+    EVENT_SERVICE_REGISTERED,
+    EVENT_SERVICE_REMOVED,
 )
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
@@ -106,13 +108,16 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = DOMAIN
     repair = "lovelace_unknown_entity_references"
+    # A name that is an action is no unknown entity, so an action coming or
+    # going changes the answer.
     inspect_events = {
         EVENT_COMPONENT_LOADED,
         EVENT_LOVELACE_UPDATED,
+        EVENT_SERVICE_REGISTERED,
+        EVENT_SERVICE_REMOVED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
     inspect_on_entity_added_or_removed = True
     automatically_clean_up_issues = True
 
