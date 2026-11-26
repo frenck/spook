@@ -22,6 +22,7 @@ from .const import DOMAIN, LOGGER, PLATFORMS
 from .core_compat import async_clear_custom_components_cache
 from .dismissals import async_setup_dismissals
 from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
+from .entity_renames import async_setup_entity_renames
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
 from .listeners import async_listen_once_tracked
 from .repairs import SpookRepairManager
@@ -141,6 +142,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Loaded before any repair looks, because the first thing a repair does
     # with what it finds is check whether somebody already said to leave it.
     entry.async_on_unload(await async_setup_dismissals(hass))
+
+    # Following renames from the start. Home Assistant tells about one only in
+    # the moment it happens, so one missed here is not coming back.
+    entry.async_on_unload(await async_setup_entity_renames(hass))
 
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)
