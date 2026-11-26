@@ -32,8 +32,10 @@ repos:
         types: [yaml]
         # A corpus case is two documents with Home Assistant's own tags in
         # them. Its own loader reads those and turns away a key written
-        # twice, and a test checks every case.
-        exclude: ^tests/corpus/
+        # twice, and a test checks every case. The screenshot home is a
+        # Home Assistant configuration too, `!include` and `!input` and all,
+        # and the Home Assistant that photographs it is what reads it.
+        exclude: ^(tests/corpus/|documentation/screenshots/seed/)
         entry: uv run check-yaml
       - id: zizmor
         name: 🌈 Check GitHub Actions workflows with zizmor

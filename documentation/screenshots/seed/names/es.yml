@@ -1,0 +1,323 @@
+# Everything people read in the home of the screenshots, in Spanish. The keys
+# and how it works: see en.yml. A name missing here is the English one.
+
+home: La casa de Spook
+
+area:
+  # The names Home Assistant gives these when it is onboarded in Spanish.
+  living_room: Salón
+  kitchen: Cocina
+  bedroom: Dormitorio
+  hallway: Pasillo
+  attic: Desván
+
+floor:
+  ground_floor: Planta baja
+  first_floor: Primera planta
+  basement: Sótano
+
+label:
+  night_light:
+    name: Luz nocturna
+    description: Se queda encendida por la noche.
+  christmas:
+    name: Navidad
+    description: Las luces que salen en diciembre.
+
+dashboard:
+  title: Casa
+  upstairs: Arriba
+  # Home Assistant's own name for the default dashboard in Spanish.
+  overview: Vista general
+
+light:
+  living_room_lamp: Lámpara del salón
+  kitchen_lights: Luces de la cocina
+  hallway_light: Luz del pasillo
+  bedroom_lamp: Lámpara del dormitorio
+
+input_boolean:
+  living_room_lamp: Lámpara del salón
+  kitchen_lights: Luces de la cocina
+  hallway_light: Luz del pasillo
+  bedroom_lamp: Lámpara del dormitorio
+  dehumidifier_power: Corriente del deshumidificador
+  guest_mode: Modo invitados
+
+input_number:
+  bedroom_temperature: Temperatura del dormitorio
+  kitchen_fan_speed: Memoria del extractor
+
+input_select:
+  movie_night: Noche de cine
+
+sensor:
+  energy_meter: Contador de energía
+  living_room_thermometer: Temperatura del salón
+  basement_humidity: Humedad del sótano
+
+select:
+  ghost_mood:
+    name: Humor del fantasma
+    options:
+      friendly: Simpático
+      spooky: Espeluznante
+      sleepy: Dormilón
+
+number:
+  kitchen_fan_speed: Velocidad del extractor
+
+zone:
+  gym: Gimnasio
+
+group:
+  downstairs_lights: Luces de abajo
+
+device_tracker:
+  new_phone: Móvil nuevo
+
+automation:
+  hallway_light_at_sunset:
+    name: Luz del pasillo al anochecer
+    description: Enciende la luz del pasillo cuando se pone el sol.
+  movie_night:
+    name: Noche de cine
+    description: Baja las luces del salón cuando la tele empieza a reproducir.
+  weekday_morning_lights:
+    name: Luces de las mañanas entre semana
+    description: Las luces de la cocina a las seis y media entre semana, una vez.
+  garage_lights_off_at_night:
+    name: Garaje apagado por la noche
+    description: Apaga todo el garaje a medianoche.
+  doorbell_flash:
+    name: Destello del timbre
+    description: Hace parpadear el pasillo cuando alguien llama.
+  automation_off_reminder:
+    name: Automatización desactivada a mano
+    description: Me avisa cuando alguien desactiva una automatización.
+    message: Se ha desactivado una automatización. No olvides volver a activarla.
+  new_device_found:
+    name: Nuevo dispositivo encontrado
+    description: Me avisa cuando Home Assistant descubre algo nuevo.
+    message: Home Assistant ha encontrado un dispositivo nuevo.
+  front_door_sensor_back:
+    name: El sensor de la puerta ha vuelto
+    description: Me avisa cuando el sensor de la puerta principal vuelve a funcionar tras un rato fuera.
+    message: El sensor de la puerta principal ha vuelto.
+  new_device_added:
+    name: Nuevo dispositivo añadido
+    description: Me avisa cuando se añade un dispositivo a la casa.
+    message: Se ha añadido un dispositivo nuevo.
+  living_room_sensor_quiet:
+    name: Sensor del salón callado
+    description: Me avisa cuando la temperatura del salón no cambia en una hora.
+    message: El sensor de temperatura del salón se ha quedado callado. ¿La pila?
+  new_integration:
+    name: Nueva integración
+    description: Me avisa cuando se añade una integración.
+    message: Se ha añadido una integración nueva.
+  integration_failed:
+    name: Integración fallida
+    description: Me avisa cuando una integración sigue sin arrancar tras un cuarto de hora.
+    message: Una integración no arranca.
+  blinds_down_lamp_on:
+    name: Lámpara encendida al bajar las persianas
+    description: Enciende la lámpara del salón en cuanto las persianas llegan al 30 %.
+  repairs_news:
+    name: Novedades en Reparaciones
+    description: Me avisa cuando aparece una reparación seria, y cuando se resuelve una.
+    message: Algo ha cambiado en Reparaciones.
+  bedroom_warm:
+    name: El dormitorio está caliente
+    description: Me avisa cuando el termostato del dormitorio alcanza su temperatura.
+    message: El dormitorio está caliente.
+  hot_water_ready:
+    name: Agua caliente para la ducha de la mañana
+    description: A las siete, me dice si el termo está caliente.
+    message: El agua caliente está lista.
+  update_installed:
+    name: Actualización instalada
+    description: Me avisa cuando se instala una actualización.
+    message: Se ha instalado una actualización.
+  ghost_goes_to_sleep:
+    name: El fantasma se va a dormir
+    description: Manda al fantasma a la cama cuando empieza el script Buenas noches.
+  door_opens_hallway_light:
+    name: Luz del pasillo al abrir una puerta
+    description: Enciende la luz del pasillo cuando se abre cualquier puerta.
+  new_user:
+    name: Nuevo usuario
+    description: Me avisa cuando se añade un usuario a Home Assistant.
+    message: Se ha añadido un usuario nuevo.
+  welcome_home:
+    name: Bienvenido a casa
+    description: Lámpara del salón encendida cuando el móvil llega a casa y se abre la puerta, en menos de cinco minutos.
+  door_settled:
+    name: Pasillo apagado cuando la puerta se calma
+    description: Apaga la luz del pasillo en cuanto la puerta principal lleva 30 segundos tranquila.
+  coming_in:
+    name: Entrando
+    description: Lámpara del salón encendida cuando la puerta principal se abre y se vuelve a cerrar en menos de dos minutos.
+  front_door_still_open:
+    name: La puerta sigue abierta
+    description: Me lo recuerda cada diez minutos mientras la puerta principal esté abierta.
+    message: La puerta principal sigue abierta.
+  nobody_up_yet:
+    name: Nadie se ha levantado
+    description: Me avisa cuando la luz de la cocina sigue apagada una hora después de las siete.
+    message: Todavía no se ha levantado nadie.
+  front_door_sensor_acting_up:
+    name: El sensor de la puerta hace cosas raras
+    description: Me avisa cuando el sensor de la puerta principal cambia cinco veces en cinco minutos.
+    message: El sensor de la puerta principal no se estabiliza.
+  blinds_down_when_warm:
+    name: Persianas abajo cuando hace calor
+    description: Baja las persianas del salón cuando allí hace más de 25 °C.
+  lamp_off_by_itself:
+    name: Lámpara apagada sola
+    description: Me avisa cuando la lámpara del salón se apaga sin que nadie la toque.
+    message: La lámpara del salón se ha apagado sola.
+  spooky_surprise:
+    name: Sorpresa espeluznante
+    description: Algunas noches, una de cada cinco, el fantasma se pone espeluznante.
+  follow_the_hallway:
+    name: Seguir al pasillo
+    description: Lámpara del salón encendida cuando la automatización del atardecer enciende el pasillo.
+  morning_repairs_check:
+    name: Repaso matinal de reparaciones
+    description: A las nueve, me dice si hay algo serio esperando en Reparaciones.
+    message: Hay reparaciones esperando.
+  doorbell_light:
+    name: Luz del timbre
+    description: Enciende la luz del pasillo cuando llaman, tres veces por hora como mucho.
+  morning_radio_volume:
+    name: Volumen de la radio por la mañana
+    description: Baja el altavoz de la cocina a las siete y media, si está.
+  front_door_light:
+    name: Luz del pasillo al abrir la puerta principal
+    description: Hecha con el blueprint de luz en la puerta.
+
+script:
+  goodnight: Buenas noches
+
+scene:
+  cozy_evening: Tarde acogedora
+
+category:
+  lighting: Iluminación
+
+user:
+  babysitter: Canguro
+
+binary_sensor:
+  front_door: Puerta principal
+
+climate:
+  bedroom_thermostat: Termostato del dormitorio
+
+water_heater:
+  boiler: Termo
+
+media_player:
+  kitchen_speaker: Altavoz de la cocina
+
+cover:
+  living_room_blinds: Persianas del salón
+
+valve:
+  garden_tap: Grifo del jardín
+
+humidifier:
+  basement_dehumidifier: Deshumidificador del sótano
+
+counter:
+  coffee_cups: Tazas de café
+
+input_button:
+  doorbell: Timbre
+
+input_datetime:
+  alarm_clock: Despertador
+
+input_text:
+  welcome_message: Mensaje de bienvenida
+
+schedule:
+  heating: Horario de calefacción
+
+timer:
+  laundry: Colada
+
+calendar:
+  family: Familia
+
+todo:
+  shopping_list: Lista de la compra
+
+blueprints:
+  door_light:
+    name: Luz encendida al abrir una puerta
+    description: Enciende una luz cuando se abre una puerta.
+    new_description: Enciende una luz cuando se abre una puerta, y la apaga pasado un rato.
+    door: Puerta
+    light: Luz
+    wait_time: Tiempo hasta que la luz se apaga
+  doorbell_flash:
+    name: Hacer parpadear una luz cuando llaman
+    description: Hace parpadear una luz una vez cuando alguien llama al timbre.
+    doorbell: Timbre
+    light: Luz
+
+examples:
+  new_area: Habitación secreta
+  new_area_alias: Escondite
+  area_alias: Sala de estar
+  other_area_alias: Cuarto de estar
+  new_floor: Segunda planta
+  new_floor_alias: Arriba
+  floor_alias: Abajo
+  other_floor_alias: A pie de calle
+  new_label: Embrujado
+  new_label_description: Cosas que se encienden solas.
+  new_entity_name: Luz del recibidor
+  new_input_number: Temperatura de la piscina
+  new_zone: Oficina
+  new_repair: El fantasma tiene hambre
+  new_repair_description: Dale una galleta y esta reparación desaparece.
+  renamed_label: Luces de noche
+  new_category: Seguridad
+  renamed_category: Lámparas
+  device_name: Vigía del cielo
+  entity_alias: Lámpara de lectura
+  other_entity_alias: Lámpara de rincón
+  calendar_event: Dentista
+  new_counter: Galletas comidas
+  new_input_boolean: Modo vacaciones
+  new_input_button: Dar de comer al fantasma
+  new_input_datetime: Hora de despertar
+  house_mode:
+    name: Modo de la casa
+    options:
+      home: En casa
+      away: Fuera
+      night: Noche
+  new_input_text: Nota en la nevera
+  new_schedule: Riego del jardín
+  new_timer: Pizza
+  todo_item: Leche
+  calibration: Temperatura del salón, corregida
+  time_in_state: Puerta principal cerrada desde
+
+search:
+  area: un área
+  floor: planta
+  label: etiqueta
+  input_number: entrada numérica
+  number: valor
+  input_select: opciones
+  person: rastreador
+  zone: zona
+  # Spanish Home Assistant shows these as "Repairs: ...", like French does.
+  # Every one of them has "problema" in it too, but so do many of
+  # Home Assistant's own actions.
+  repairs: repairs

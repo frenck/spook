@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace",
+  "data": {
+    "config": {
+      "title": "${dashboard.title}",
+      "views": [
+        {
+          "title": "${dashboard.title}",
+          "path": "home",
+          "type": "sections",
+          "max_columns": 3,
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "${area.living_room}"
+                },
+                {
+                  "type": "tile",
+                  "entity": "light.living_room_lamp"
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.outdoor_temperature"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "${area.kitchen}"
+                },
+                {
+                  "type": "tile",
+                  "entity": "light.kitchen_lights"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "${dashboard.upstairs}"
+                },
+                {
+                  "type": "tile",
+                  "entity": "light.hallway_light"
+                },
+                {
+                  "type": "tile",
+                  "entity": "light.bedroom_lamp"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

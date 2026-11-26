@@ -1,0 +1,320 @@
+# Everything people read in the home of the screenshots, in German. The keys
+# and how it works: see en.yml. A name missing here is the English one.
+
+home: Spooks Zuhause
+
+area:
+  # The names Home Assistant gives these when it is onboarded in German.
+  living_room: Wohnzimmer
+  kitchen: Küche
+  bedroom: Schlafzimmer
+  hallway: Flur
+  attic: Dachboden
+
+floor:
+  ground_floor: Erdgeschoss
+  first_floor: Obergeschoss
+  basement: Keller
+
+label:
+  night_light:
+    name: Nachtlicht
+    description: Bleibt nachts an.
+  christmas:
+    name: Weihnachten
+    description: Die Lichter, die im Dezember aufgehängt werden.
+
+dashboard:
+  title: Zuhause
+  upstairs: Oben
+  # Home Assistant's own name for the default dashboard in German.
+  overview: Übersicht
+
+light:
+  living_room_lamp: Wohnzimmerlampe
+  kitchen_lights: Küchenlicht
+  hallway_light: Flurlicht
+  bedroom_lamp: Schlafzimmerlampe
+
+input_boolean:
+  living_room_lamp: Wohnzimmerlampe
+  kitchen_lights: Küchenlicht
+  hallway_light: Flurlicht
+  bedroom_lamp: Schlafzimmerlampe
+  dehumidifier_power: Strom Luftentfeuchter
+  guest_mode: Gästemodus
+
+input_number:
+  bedroom_temperature: Schlafzimmertemperatur
+  kitchen_fan_speed: Speicher Dunstabzug
+
+input_select:
+  movie_night: Filmabend
+
+sensor:
+  energy_meter: Stromzähler
+  living_room_thermometer: Temperatur Wohnzimmer
+  basement_humidity: Luftfeuchtigkeit Keller
+
+select:
+  ghost_mood:
+    name: Geisterlaune
+    options:
+      friendly: Freundlich
+      spooky: Gruselig
+      sleepy: Verschlafen
+
+number:
+  kitchen_fan_speed: Stufe Dunstabzug
+
+zone:
+  gym: Fitnessstudio
+
+group:
+  downstairs_lights: Lichter unten
+
+device_tracker:
+  new_phone: Neues Handy
+
+automation:
+  hallway_light_at_sunset:
+    name: Flurlicht bei Sonnenuntergang
+    description: Schaltet das Flurlicht ein, wenn die Sonne untergeht.
+  movie_night:
+    name: Filmabend
+    description: Dimmt das Wohnzimmer, sobald der Fernseher abspielt.
+  weekday_morning_lights:
+    name: Morgenlicht an Werktagen
+    description: Werktags um halb sieben das Küchenlicht an, einmal.
+  garage_lights_off_at_night:
+    name: Garagenlicht nachts aus
+    description: Schaltet um Mitternacht alles in der Garage aus.
+  doorbell_flash:
+    name: Türklingel-Blinken
+    description: Lässt den Flur blinken, wenn jemand klingelt.
+  automation_off_reminder:
+    name: Automatisierung von Hand ausgeschaltet
+    description: Sagt mir Bescheid, wenn jemand eine Automatisierung ausschaltet.
+    message: Eine Automatisierung wurde ausgeschaltet. Vergiss nicht, sie wieder einzuschalten.
+  new_device_found:
+    name: Neues Gerät gefunden
+    description: Sagt mir Bescheid, wenn Home Assistant etwas Neues entdeckt.
+    message: Home Assistant hat ein neues Gerät gefunden.
+  front_door_sensor_back:
+    name: Haustürsensor ist zurück
+    description: Sagt mir Bescheid, wenn der Haustürsensor nach einer Weile wieder funktioniert.
+    message: Der Haustürsensor ist zurück.
+  new_device_added:
+    name: Neues Gerät hinzugefügt
+    description: Sagt mir Bescheid, wenn ein Gerät dazukommt.
+    message: Ein neues Gerät wurde hinzugefügt.
+  living_room_sensor_quiet:
+    name: Wohnzimmersensor verstummt
+    description: Sagt mir Bescheid, wenn sich die Temperatur im Wohnzimmer eine Stunde nicht ändert.
+    message: Der Temperatursensor im Wohnzimmer meldet sich nicht mehr. Batterie?
+  new_integration:
+    name: Neue Integration
+    description: Sagt mir Bescheid, wenn eine Integration dazukommt.
+    message: Eine neue Integration wurde hinzugefügt.
+  integration_failed:
+    name: Integration fehlgeschlagen
+    description: Sagt mir Bescheid, wenn eine Integration nach einer Viertelstunde immer noch nicht startet.
+    message: Eine Integration startet nicht.
+  blinds_down_lamp_on:
+    name: Lampe an, wenn die Rollos runtergehen
+    description: Schaltet die Wohnzimmerlampe ein, sobald die Rollos bei 30 % sind.
+  repairs_news:
+    name: Neues aus den Reparaturen
+    description: Sagt mir Bescheid, wenn eine ernste Reparatur auftaucht, und wenn eine erledigt ist.
+    message: Unter Reparaturen hat sich etwas geändert.
+  bedroom_warm:
+    name: Schlafzimmer ist warm
+    description: Sagt mir Bescheid, wenn das Thermostat im Schlafzimmer seine Temperatur erreicht.
+    message: Das Schlafzimmer ist warm.
+  hot_water_ready:
+    name: Warmes Wasser zum Duschen am Morgen
+    description: Sagt mir um sieben, ob der Warmwasserspeicher heiß ist.
+    message: Das warme Wasser ist bereit.
+  update_installed:
+    name: Update installiert
+    description: Sagt mir Bescheid, wenn ein Update installiert wurde.
+    message: Ein Update wurde installiert.
+  ghost_goes_to_sleep:
+    name: Das Gespenst geht schlafen
+    description: Schickt das Gespenst ins Bett, wenn das Gute-Nacht-Skript startet.
+  door_opens_hallway_light:
+    name: Flurlicht, wenn eine Tür aufgeht
+    description: Schaltet das Flurlicht ein, wenn irgendeine Tür aufgeht.
+  new_user:
+    name: Neuer Benutzer
+    description: Sagt mir Bescheid, wenn in Home Assistant ein Benutzer dazukommt.
+    message: Ein neuer Benutzer wurde hinzugefügt.
+  welcome_home:
+    name: Willkommen zu Hause
+    description: Wohnzimmerlampe an, wenn das Handy nach Hause kommt und die Haustür aufgeht, innerhalb von fünf Minuten.
+  door_settled:
+    name: Flurlicht aus, wenn die Tür zur Ruhe kommt
+    description: Schaltet das Flurlicht aus, sobald die Haustür 30 Sekunden in Ruhe gelassen wurde.
+  coming_in:
+    name: Reinkommen
+    description: Wohnzimmerlampe an, wenn die Haustür aufgeht und innerhalb von zwei Minuten wieder zu.
+  front_door_still_open:
+    name: Haustür noch offen
+    description: Erinnert mich alle zehn Minuten, solange die Haustür offen ist.
+    message: Die Haustür ist noch offen.
+  nobody_up_yet:
+    name: Noch niemand wach
+    description: Sagt mir Bescheid, wenn die Küchenbeleuchtung eine Stunde nach sieben noch aus ist.
+    message: Es ist noch niemand auf.
+  front_door_sensor_acting_up:
+    name: Haustürsensor spinnt
+    description: Sagt mir Bescheid, wenn der Haustürsensor fünfmal in fünf Minuten wechselt.
+    message: Der Haustürsensor kommt nicht zur Ruhe.
+  blinds_down_when_warm:
+    name: Rollos runter, wenn es warm wird
+    description: Schließt die Rollos im Wohnzimmer, wenn es dort wärmer als 25 °C wird.
+  lamp_off_by_itself:
+    name: Lampe von selbst aus
+    description: Sagt mir Bescheid, wenn die Wohnzimmerlampe ausgeht, ohne dass es jemand war.
+    message: Die Wohnzimmerlampe ist von selbst ausgegangen.
+  spooky_surprise:
+    name: Gruselige Überraschung
+    description: An manchen Abenden, einem von fünf, wird das Gespenst gruselig.
+  follow_the_hallway:
+    name: Dem Flur folgen
+    description: Wohnzimmerlampe an, wenn die Sonnenuntergangsautomatisierung das Flurlicht einschaltet.
+  morning_repairs_check:
+    name: Morgendlicher Reparaturen-Check
+    description: Sagt mir um neun, ob unter Reparaturen etwas Ernstes wartet.
+    message: Es warten Reparaturen.
+  doorbell_light:
+    name: Licht bei der Türklingel
+    description: Schaltet das Flurlicht ein, wenn es klingelt, höchstens dreimal pro Stunde.
+  morning_radio_volume:
+    name: Lautstärke Morgenradio
+    description: Dreht den Küchenlautsprecher um halb acht leiser, wenn er da ist.
+  front_door_light:
+    name: Flurlicht, wenn die Haustür aufgeht
+    description: Aus der Blaupause für Licht an der Tür gemacht.
+
+script:
+  goodnight: Gute Nacht
+
+scene:
+  cozy_evening: Gemütlicher Abend
+
+category:
+  lighting: Beleuchtung
+
+user:
+  babysitter: Babysitter
+
+binary_sensor:
+  front_door: Haustür
+
+climate:
+  bedroom_thermostat: Thermostat Schlafzimmer
+
+water_heater:
+  boiler: Warmwasserspeicher
+
+media_player:
+  kitchen_speaker: Küchenlautsprecher
+
+cover:
+  living_room_blinds: Rollos Wohnzimmer
+
+valve:
+  garden_tap: Gartenwasserhahn
+
+humidifier:
+  basement_dehumidifier: Luftentfeuchter Keller
+
+counter:
+  coffee_cups: Tassen Kaffee
+
+input_button:
+  doorbell: Türklingel
+
+input_datetime:
+  alarm_clock: Wecker
+
+input_text:
+  welcome_message: Begrüßung
+
+schedule:
+  heating: Heizplan
+
+timer:
+  laundry: Wäsche
+
+calendar:
+  family: Familie
+
+todo:
+  shopping_list: Einkaufsliste
+
+blueprints:
+  door_light:
+    name: Licht an, wenn eine Tür aufgeht
+    description: Schaltet ein Licht ein, wenn eine Tür aufgeht.
+    new_description: Schaltet ein Licht ein, wenn eine Tür aufgeht, und nach einer Weile wieder aus.
+    door: Tür
+    light: Licht
+    wait_time: Zeit, bis das Licht wieder ausgeht
+  doorbell_flash:
+    name: Licht blinken lassen, wenn es klingelt
+    description: Lässt ein Licht einmal blinken, wenn jemand klingelt.
+    doorbell: Türklingel
+    light: Licht
+
+examples:
+  new_area: Geheimzimmer
+  new_area_alias: Versteck
+  area_alias: Stube
+  other_area_alias: Wohnstube
+  new_floor: Zweites Obergeschoss
+  new_floor_alias: Ganz oben
+  floor_alias: Unten
+  other_floor_alias: Parterre
+  new_label: Spuk
+  new_label_description: Dinge, die sich von selbst einschalten.
+  new_entity_name: Dielenlicht
+  new_input_number: Pooltemperatur
+  new_zone: Büro
+  new_repair: Das Gespenst hat Hunger
+  new_repair_description: Gib ihm einen Keks, und diese Reparatur verschwindet.
+  renamed_label: Nachtlichter
+  new_category: Sicherheit
+  renamed_category: Lampen
+  device_name: Himmelsgucker
+  entity_alias: Leselampe
+  other_entity_alias: Ecklampe
+  calendar_event: Zahnarzt
+  new_counter: Gegessene Kekse
+  new_input_boolean: Urlaubsmodus
+  new_input_button: Gespenst füttern
+  new_input_datetime: Weckzeit
+  house_mode:
+    name: Hausmodus
+    options:
+      home: Zu Hause
+      away: Unterwegs
+      night: Nacht
+  new_input_text: Zettel am Kühlschrank
+  new_schedule: Garten gießen
+  new_timer: Pizza
+  todo_item: Milch
+  calibration: Temperatur Wohnzimmer, korrigiert
+  time_in_state: Haustür zu seit
+
+search:
+  area: Bereich
+  floor: Etage
+  label: Label
+  input_number: Zahleneingabe
+  number: Wert
+  input_select: optionen
+  person: Geräte-Tracker
+  zone: Zone
+  repairs: Problem
