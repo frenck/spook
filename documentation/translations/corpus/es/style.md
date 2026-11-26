@@ -14,6 +14,14 @@ Spanish, as written in Spain, the way one Home Assistant user explains something
 - No gerund chains: "Abre la automatización y selecciona...", not "Abriendo la automatización, seleccionando...".
 - Dry humor stays dry. "That is a bit late." is "Eso es un poco tarde.", not a joke with a wink. No exclamation marks the English does not have.
 
+## Read by a native speaker
+
+Feedback from a native speaker from Spain, 2026-11-26. It holds over the rest of this guide.
+
+- Short, but Spanish. Two English fragments in a row ("Scary powerful. Your homie.") read clipped and odd in Spanish. Make them one sentence: "Tu colega terroríficamente potente.". In a title split over two lines, the sentence runs on across them.
+- Active voice. Neutral Spanish uses the passive far less than English, and "quedar" + participle ("quedar embrujado") is Latin American. Say who does what: "Tres pasos para embrujar tu casa".
+- "To spook" is "embrujar". In Spanish it is not a negative word: it is more like enchanting something, giving it otherworldly powers. That is the point of Spook.
+
 ## Words
 
 - "Select" is "selecciona". Never "haz clic" or "pulsa".
