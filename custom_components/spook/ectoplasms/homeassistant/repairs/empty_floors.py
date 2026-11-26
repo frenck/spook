@@ -36,6 +36,9 @@ class SpookRepair(AbstractSpookRepair):
         ar.EVENT_AREA_REGISTRY_UPDATED,
     }
     inspect_on_reload = True
+    # Once a day: one younger than `_MINIMUM_AGE` is left alone, and nothing
+    # that happens to the floor says when it is old enough to look at.
+    inspect_interval = timedelta(days=1)
     automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
