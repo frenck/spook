@@ -17,6 +17,8 @@ from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
 from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
 
+from .const import SCREENSHOT_HOME
+
 if TYPE_CHECKING:
     from collections.abc import Mapping
     from datetime import datetime
@@ -33,7 +35,8 @@ _ORPHAN_ISSUE_TYPE = "no_state"
 # How long a statistic has to keep looking abandoned before Spook says so.
 # Nothing here is urgent: statistics left behind by a sensor removed last
 # year keep just as well for another quarter of an hour.
-_SETTLING_TIME = timedelta(minutes=15)
+# The screenshot home does not wait at all, see `SCREENSHOT_HOME`.
+_SETTLING_TIME = timedelta(minutes=0 if SCREENSHOT_HOME else 15)
 
 # When each currently abandoned statistic was first seen that way. Held per
 # instance rather than written down, so a restart starts every wait over,

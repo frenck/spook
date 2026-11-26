@@ -97,7 +97,7 @@ async def async_setup_entry(
     _entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Spook Home Assistant Cloud switches."""
+    """Set up Spook Home Assistant Link switches."""
     if CLOUD_DOMAIN in hass.config.components:
         cloud: Cloud[CloudClient] = hass.data[CLOUD_DOMAIN]
         async_add_entities(
@@ -107,7 +107,7 @@ async def async_setup_entry(
 
 
 class HomeAssistantCloudSpookSwitchEntity(HomeAssistantCloudSpookEntity, SwitchEntity):
-    """Spook switch providing Home Assistant Cloud controls."""
+    """Spook switch providing Home Assistant Link controls."""
 
     entity_description: HomeAssistantCloudSpookSwitchEntityDescription
 

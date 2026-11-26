@@ -22,7 +22,7 @@ CLOUD_DOMAIN = "cloud"
 
 
 class HomeAssistantCloudSpookEntity(SpookEntity):
-    """Defines an base Spook entity for Home Assistant Cloud related entities."""
+    """Defines an base Spook entity for Home Assistant Link related entities."""
 
     def __init__(
         self, cloud: Cloud[CloudClient], description: SpookEntityDescription
@@ -33,7 +33,7 @@ class HomeAssistantCloudSpookEntity(SpookEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, CLOUD_DOMAIN)},
             manufacturer="Nabu Casa Inc.",
-            name="Home Assistant Cloud",
+            name="Home Assistant Link",
             configuration_url="https://account.nabucasa.com/",
         )
         self._attr_unique_id = f"{CLOUD_DOMAIN}_{description.key}"
