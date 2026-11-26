@@ -21,6 +21,7 @@ import voluptuous as vol
 
 from custom_components.spook.ectoplasms.spook.triggers.state_changed import (
     SpookTrigger,
+    _EntityFilter,
 )
 from custom_components.spook.trigger import async_get_triggers
 
@@ -3848,3 +3849,16 @@ async def test_it_works_in_an_automation_without_a_target(
     await _set(hass, door.entity_id, "on")
 
     assert ran == [door.entity_id]
+
+
+def test_category_only_filter_can_be_empty(hass: HomeAssistant) -> None:
+    """Ignoring entity categories also ignores a category-only filter."""
+    entity_filter = _EntityFilter(entity_categories=frozenset({"diagnostic"}))
+    entity_ids = ["sensor.diagnostic"]
+
+    assert not entity_filter.is_empty
+    assert entity_filter.keep(
+        hass,
+        entity_ids,
+        include_entity_categories=False,
+    ) == set(entity_ids)

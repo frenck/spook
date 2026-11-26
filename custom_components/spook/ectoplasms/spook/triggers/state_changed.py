@@ -250,12 +250,20 @@ class _EntityFilter:
     @property
     def is_empty(self) -> bool:
         """Return whether this filter asks for nothing at all."""
+        return self._is_empty()
+
+    def _is_empty(
+        self,
+        *,
+        include_entity_categories: bool = True,
+    ) -> bool:
+        """Return whether this filter has no active criteria."""
         return not (
             self.domains
             or self.integrations
             or self.config_entries
             or self.device_classes
-            or self.entity_categories
+            or (include_entity_categories and self.entity_categories)
         )
 
     @callback
@@ -270,13 +278,7 @@ class _EntityFilter:
         entity_categories = (
             self.entity_categories if include_entity_categories else frozenset()
         )
-        if not (
-            self.domains
-            or self.integrations
-            or self.config_entries
-            or self.device_classes
-            or entity_categories
-        ):
+        if self._is_empty(include_entity_categories=include_entity_categories):
             return set(entity_ids)
 
         registry = er.async_get(hass)
