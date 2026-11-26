@@ -54,10 +54,20 @@ commit("content/guides/old.md", "2026-01-02T03:04:05+00:00");
 commit("content/new.md", "2026-11-24T12:00:00+00:00");
 writeFileSync(join(repository, "content", "draft.md"), "not committed");
 
+// The moment, not how git spells it: one git writes +00:00, a newer one Z.
+function moments(dates: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(dates).map(([file, date]) => [
+      file,
+      new Date(date).toISOString(),
+    ]),
+  );
+}
+
 test("pages get the date of their last commit, by their path in the folder", () => {
-  assert.deepEqual(lastChanged(join(repository, "content")), {
-    "guides/old.md": "2026-01-02T03:04:05+00:00",
-    "new.md": "2026-11-24T12:00:00+00:00",
+  assert.deepEqual(moments(lastChanged(join(repository, "content"))), {
+    "guides/old.md": "2026-01-02T03:04:05.000Z",
+    "new.md": "2026-11-24T12:00:00.000Z",
   });
 });
 
