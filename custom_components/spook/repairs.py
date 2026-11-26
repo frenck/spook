@@ -30,11 +30,12 @@ from homeassistant.config_entries import (
     ConfigEntryState,
 )
 from homeassistant.const import (
+    ATTR_RESTORED,
     CONF_ENTITIES,
     EVENT_LOVELACE_UPDATED,
     EVENT_STATE_CHANGED,
 )
-from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.core import Event, HomeAssistant, State, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
@@ -165,8 +166,22 @@ def _entity_added_or_removed(
     """Return an event filter for entities appearing or going.
 
     Of any domain for `True`, of the one domain named otherwise.
+
+    For one domain, an entity also goes and comes back when it passes through
+    the state Home Assistant keeps for it while it is away. A reload takes an
+    entity in the entity registry away without taking its state: that turns
+    unavailable and restored until the entity is back, so neither side of it
+    is ever no state at all. For any domain that is left out, as an entity
+    that is only away for a moment changes nothing about whether it exists.
     """
     prefix = None if domain is True else f"{domain}."
+
+    def _away(state: State | None) -> bool:
+        """Return whether a state says the entity is not there."""
+        if state is None:
+            return True
+
+        return prefix is not None and state.attributes.get(ATTR_RESTORED) is True
 
     @callback
     def _added_or_removed(event_data: Mapping[str, Any]) -> bool:
@@ -174,9 +189,7 @@ def _entity_added_or_removed(
         if prefix is not None and not event_data["entity_id"].startswith(prefix):
             return False
 
-        return (
-            event_data.get("old_state") is None or event_data.get("new_state") is None
-        )
+        return _away(event_data.get("old_state")) or _away(event_data.get("new_state"))
 
     return _added_or_removed
 
@@ -1213,16 +1226,6 @@ class AbstractSpookUnknownEntityNamesRepair(
         """
         await super().async_activate()
 
-        prefix = f"{self.domain}."
-
-        @callback
-        def _own_entity_added_or_removed(event_data: Mapping[str, Any]) -> bool:
-            """Return whether one of this domain's entities appeared or went."""
-            return event_data["entity_id"].startswith(prefix) and (
-                event_data.get("old_state") is None
-                or event_data.get("new_state") is None
-            )
-
         @callback
         def _look_again(_: Event) -> None:
             self.inspect_debouncer.async_schedule_call()
@@ -1231,7 +1234,7 @@ class AbstractSpookUnknownEntityNamesRepair(
             self.hass.bus.async_listen(
                 EVENT_STATE_CHANGED,
                 _look_again,
-                event_filter=_own_entity_added_or_removed,
+                event_filter=_entity_added_or_removed(domain=self.domain),
             )
         )
 
