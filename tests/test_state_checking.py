@@ -842,3 +842,21 @@ async def test_looks_again_once_an_awaited_state_is_possible(
     stop()
 
     assert len(asked) == looks
+
+
+async def test_an_option_offered_for_a_moment_still_counts(hass: HomeAssistant) -> None:
+    """Test an option gone again before the look comes is not forgotten.
+
+    The look comes seconds later, and by then only the old options are
+    there to read. That the option was offered is noted when it shows up.
+    """
+    awaited = {"input_select.mode": frozenset({"Away"})}
+    stop = async_listen_for_awaited_states(hass, lambda: awaited, lambda: None)
+
+    hass.states.async_set("input_select.mode", "home", {"options": ["home"]})
+    hass.states.async_set("input_select.mode", "home", {"options": ["home", "Away"]})
+    hass.states.async_set("input_select.mode", "home", {"options": ["home"]})
+    await hass.async_block_till_done()
+    stop()
+
+    assert "Away" in hass.data[DATA_STATE_KNOWLEDGE]["input_select.mode"].offered

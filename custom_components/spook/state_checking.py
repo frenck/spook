@@ -312,7 +312,14 @@ def async_listen_for_awaited_states(
         return bool(_possible(new_state) - _possible(event_data.get("old_state")))
 
     @callback
-    def _look_again(_: Event) -> None:
+    def _look_again(event: Event) -> None:
+        # Noted right away: an option can be gone again by the time the look
+        # comes, and it was real all the same.
+        entity_id = event.data["entity_id"]
+        new_state = event.data["new_state"]
+        knowledge = _knowledge(hass, entity_id)
+        knowledge.see(new_state.state)
+        knowledge.offered |= _offered(split_entity_id(entity_id)[0], new_state)
         action()
 
     return hass.bus.async_listen(
