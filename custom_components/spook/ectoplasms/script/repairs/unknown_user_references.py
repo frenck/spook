@@ -31,7 +31,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         EVENT_USER_ADDED,
         EVENT_USER_REMOVED,
     }
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
 
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"

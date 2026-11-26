@@ -41,7 +41,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         EVENT_SERVICE_REMOVED,
     }
     inspect_config_entry_changed = True
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
 
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"

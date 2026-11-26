@@ -26,7 +26,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     domain = script.DOMAIN
     repair = "script_unknown_label_references"
     inspect_events = {lr.EVENT_LABEL_REGISTRY_UPDATED}
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
 
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"
