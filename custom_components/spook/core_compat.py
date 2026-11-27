@@ -199,3 +199,28 @@ def async_extract_excluded_entity_ids(call: ServiceCall) -> set[str]:
         return set()
 
     return extract_excluded(call.hass, target_helpers.TargetSelection(call.data))
+
+
+@callback
+def async_get_raw_blueprint_inputs(entity: Any) -> dict[str, Any] | None:
+    """Return the configuration an automation or script was written with.
+
+    That is the `use_blueprint` block with the inputs filled in, from before
+    the blueprint was substituted into it. Home Assistant Core 2026.12 made it
+    public as `raw_blueprint_inputs`, on an entity that loaded and on one that
+    did not. Before that it is private, and not even under one name: a loaded
+    entity keeps it as `_blueprint_inputs`, one that failed to load as
+    `_raw_blueprint_inputs`. Core fills all three from the same validated
+    configuration, so they hold the same thing.
+
+    An entity that has none of them returns None, the same as one that was
+    not made from a blueprint, so a rename upstream reads as "cannot tell"
+    rather than as a guess.
+    Can be replaced with the attribute once Spook requires Core 2026.12 or
+    later.
+    """
+    for name in ("raw_blueprint_inputs", "_blueprint_inputs", "_raw_blueprint_inputs"):
+        if hasattr(entity, name):
+            return cast("dict[str, Any] | None", getattr(entity, name))
+
+    return None

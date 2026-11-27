@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from typing import TYPE_CHECKING
 
 import pytest
@@ -46,7 +47,11 @@ async def test_device_is_spooks_and_runs_its_version(
     entity = entity_class(SpookEntityDescription(key="test"))
     entity.hass = hass
 
+    # Home Assistant 2026.12 made the device info a dataclass, and reading it
+    # as the dict it was before is deprecated.
     device_info = entity.device_info
+    if not isinstance(device_info, dict):
+        device_info = asdict(device_info)
 
     assert device_info["manufacturer"] == "Spook 👻"
     assert device_info["name"] == name
