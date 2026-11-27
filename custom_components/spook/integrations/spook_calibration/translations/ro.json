@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entitate sursă",
+                    "name": "Nume",
+                    "offset": "Decalaj",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "Se adaugă la valoarea sursei. Un senzor care citește cu 1,5 grade prea mult primește -1,5. În unitatea în care raportează sursa.",
+                    "factor": "Valoarea sursei este înmulțită mai întâi cu acesta. Lasă 1 pentru a adăuga doar decalajul."
+                },
+                "description": "Acest ajutor corectează un senzor care citește greșit: o temperatură cu un grad prea mare, o umiditate cu câteva procente prea mică. Afișează valoarea sursei înmulțită cu factorul, plus decalajul.",
+                "title": "Calibrare 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entitate sursă",
+                    "offset": "Decalaj",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "Se adaugă la valoarea sursei. Un senzor care citește cu 1,5 grade prea mult primește -1,5. În unitatea în care raportează sursa.",
+                    "factor": "Valoarea sursei este înmulțită mai întâi cu acesta. Lasă 1 pentru a adăuga doar decalajul."
+                },
+                "title": "Calibrare 👻"
+            }
+        }
+    },
+    "title": "Calibrare 👻"
+}
