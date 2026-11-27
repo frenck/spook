@@ -40,6 +40,10 @@ class SpookRepair(AbstractSpookRepair):
         ar.EVENT_AREA_REGISTRY_UPDATED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
+    # Home Assistant only takes a sensor for an area, so only a sensor
+    # coming or going changes the answer. One without a unique ID arrives as
+    # a state, without the entity registry hearing.
+    inspect_on_entity_added_or_removed = "sensor"
     automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:

@@ -14,15 +14,18 @@ from typing import TYPE_CHECKING
 
 from .entity_filtering import (
     async_get_all_entity_ids_by_domain,
-    async_get_deleted_entities,
     async_get_rename_suggestion_cache,
+)
+from .removal_evidence import (
+    async_deleted_entry,
+    async_removed_on_purpose,
+    is_registry_id_shaped,
 )
 
 if TYPE_CHECKING:
     from collections.abc import Collection, Iterable
 
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import entity_registry as er
 
 # Only suggest a rename when the names are quite close, to avoid pointing
 # at an unrelated entity.
@@ -71,7 +74,6 @@ def async_describe_warmed_unknown_entities(
     `async_warm_rename_suggestions`. Anything it missed is compared right
     here on the event loop, which is the stall the warming exists to avoid.
     """
-    deleted_by_entity_id = async_get_deleted_entities(hass)
     known_by_domain = async_get_all_entity_ids_by_domain(hass)
     suggestions = async_get_rename_suggestion_cache(hass)
     # Parenthesized, like the deleted-on and did-you-mean details below.
@@ -80,8 +82,8 @@ def async_describe_warmed_unknown_entities(
     return "\n".join(
         f"- `{entity_id}`"
         + _detail(
+            hass,
             entity_id,
-            deleted_by_entity_id,
             known_by_domain,
             suggestions,
             referenced_by,
@@ -92,14 +94,21 @@ def async_describe_warmed_unknown_entities(
 
 
 def _detail(
+    hass: HomeAssistant,
     entity_id: str,
-    deleted_by_entity_id: dict[str, er.DeletedRegistryEntry],
     known_by_domain: dict[str, list[str]],
     suggestions: dict[str, str | None],
     referenced_by: Collection[str],
 ) -> str:
-    """Return the trailing detail for a single unknown entity ID."""
-    if (deleted := deleted_by_entity_id.get(entity_id)) is not None:
+    """Return the trailing detail for a single unknown entity ID.
+
+    Saying "deleted" is what a fix flow promises to act on, so it says so
+    exactly when there is proof of it, asked the way the fix asks.
+    """
+    if is_registry_id_shaped(entity_id):
+        return _registry_id_detail(hass, entity_id)
+
+    if (deleted := async_deleted_entry(hass, entity_id)) is not None:
         when = deleted.modified_at.date().isoformat()
         return f" (deleted on {when}, was provided by `{deleted.platform}`)"
 
@@ -110,6 +119,25 @@ def _detail(
         return ""
 
     return f" (did you mean `{match}`?)"
+
+
+def _registry_id_detail(hass: HomeAssistant, registry_id: str) -> str:
+    """Return the trailing detail for an entity registry ID that is unknown.
+
+    Nobody recognizes an entity by its registry ID, so the entity ID it was
+    is named as well, while Home Assistant still remembers it.
+    """
+    if (deleted := async_deleted_entry(hass, registry_id)) is not None:
+        when = deleted.modified_at.date().isoformat()
+        return (
+            f" (deleted on {when}, was `{deleted.entity_id}`, "
+            f"provided by `{deleted.platform}`)"
+        )
+
+    if async_removed_on_purpose(hass, [registry_id]):
+        return " (deleted)"
+
+    return ""
 
 
 def _rename_suggestion(
@@ -183,15 +211,18 @@ async def async_warm_rename_suggestions(
     worked out where it always was, on the event loop. Which is the one
     outcome worth avoiding, so nothing here returns without filling the cache.
     """
-    deleted_by_entity_id = async_get_deleted_entities(hass)
     suggestions = async_get_rename_suggestion_cache(hass)
 
     # Deleted entities never reach the comparison: Spook has something better
-    # to say about those, and says it instead.
+    # to say about those, and says it instead. Asked the way the description
+    # asks, so that the two agree on which ones those are: one Home Assistant
+    # has forgotten deleting gets a suggestion, and needs it worked out here.
     missing = [
         entity_id
         for entity_id in entity_ids
-        if entity_id not in suggestions and entity_id not in deleted_by_entity_id
+        if entity_id not in suggestions
+        and not is_registry_id_shaped(entity_id)
+        and async_deleted_entry(hass, entity_id) is None
     ]
     if not missing:
         return

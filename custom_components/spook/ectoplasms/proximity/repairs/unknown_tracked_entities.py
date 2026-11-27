@@ -29,6 +29,9 @@ class SpookRepair(AbstractSpookRepair):
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = "proximity"
+    # A tracked device tracker or person can be state-only, arriving
+    # without the entity registry hearing.
+    inspect_on_entity_added_or_removed = True
 
     automatically_clean_up_issues = True
 

@@ -29,6 +29,10 @@ class SpookRepair(AbstractSpookRepair):
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = True
+    # A source can be state-only, a YAML sensor without a unique ID, which
+    # arrives long after the helper that reads it, without the entity
+    # registry hearing.
+    inspect_on_entity_added_or_removed = True
 
     automatically_clean_up_issues = True
 

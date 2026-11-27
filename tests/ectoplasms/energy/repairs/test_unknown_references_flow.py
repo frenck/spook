@@ -12,7 +12,10 @@ from typing import TYPE_CHECKING, Any
 import pytest
 
 from homeassistant.components.energy import const as energy_const
-from homeassistant.components.energy.data import async_get_manager
+from homeassistant.components.energy.data import (
+    ENERGY_SOURCE_SCHEMA,
+    async_get_manager,
+)
 from homeassistant.components.energy.validate import ValidationIssues
 
 from custom_components.spook import energy_preferences, repairs
@@ -21,9 +24,15 @@ from custom_components.spook.repairs import (
     EnergyUnknownReferencesFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import wire_fix_flow
+from tests.repair_helpers import (
+    async_delete_entity,
+    async_forget_deleted_entities,
+    wire_fix_flow,
+)
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.components.energy.data import EnergyManager
     from homeassistant.core import HomeAssistant
 
@@ -77,8 +86,14 @@ async def test_the_flow_is_chosen_for_this_issue(hass: HomeAssistant) -> None:
     assert isinstance(flow, EnergyUnknownReferencesFixFlow)
 
 
-async def test_the_menu_lists_what_was_shown(hass: HomeAssistant) -> None:
+async def test_the_menu_lists_what_was_shown(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test the menu names the entities the way the issue named them."""
+    async_delete_entity(hass, "sensor.gone_solar")
+    await _energy_settings(hass, monkeypatch, {"sensor.gone_solar"})
+
     result = await _flow(hass, "sensor.gone_solar").async_step_init()
 
     assert result["menu_options"] == ["remove", "manage", "ignore"]
@@ -90,6 +105,8 @@ async def test_taking_out_cleans_the_settings(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test the meter takes its source along, and the price is only cleared."""
+    async_delete_entity(hass, "sensor.gone_solar")
+    async_delete_entity(hass, "sensor.gone_price")
     manager = await _energy_settings(
         hass, monkeypatch, {"sensor.gone_solar", "sensor.gone_price"}
     )
@@ -116,6 +133,8 @@ async def test_one_that_came_back_is_left_alone(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test an entity known again when the button is pressed stays."""
+    async_delete_entity(hass, "sensor.gone_solar")
+    async_delete_entity(hass, "sensor.gone_price")
     manager = await _energy_settings(hass, monkeypatch, {"sensor.gone_price"})
 
     await _flow(hass, "sensor.gone_solar,sensor.gone_price").async_step_remove()
@@ -130,7 +149,12 @@ async def test_nothing_is_taken_out_that_was_never_shown(
     hass: HomeAssistant,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test an entity that went missing after the issue was raised stays."""
+    """Test an entity that went missing after the issue was raised stays.
+
+    Deleted even, which makes it no less one nobody was shown.
+    """
+    async_delete_entity(hass, "sensor.gone_solar")
+    async_delete_entity(hass, "sensor.gone_price")
     manager = await _energy_settings(
         hass, monkeypatch, {"sensor.gone_solar", "sensor.gone_price"}
     )
@@ -161,6 +185,7 @@ async def test_settings_changed_elsewhere_take_out_nothing(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test an entity somebody took out already leaves nothing to write."""
+    async_delete_entity(hass, "sensor.elsewhere")
     manager = await _energy_settings(hass, monkeypatch, {"sensor.elsewhere"})
 
     result = await _flow(hass, "sensor.elsewhere").async_step_remove()
@@ -281,6 +306,7 @@ async def test_what_was_taken_out_is_not_found_again(
     A fix that leaves the entity somewhere in the settings leaves the issue
     standing, and pressing the button again does the same thing again.
     """
+    async_delete_entity(hass, GONE)
     manager = await async_get_manager(hass)
     manager.data = copy.deepcopy(preferences)
     _install_validation_of_2026_12(hass, monkeypatch, manager)
@@ -291,3 +317,125 @@ async def test_what_was_taken_out_is_not_found_again(
 
     assert result["type"] == "create_entry"
     assert await async_unknown_energy_entities(hass) == set()
+
+
+async def test_one_that_may_not_be_up_yet_gets_no_remove_button(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a meter Home Assistant never deleted stays in the energy settings.
+
+    A YAML sensor without a unique ID whose platform is still retrying has
+    no state, no registry entry and no statistics with a name. So has one
+    that is gone. Taking a working meter out of the energy dashboard on
+    that is a guess.
+    """
+    manager = await _energy_settings(hass, monkeypatch, {"sensor.gone_solar"})
+    flow = _flow(hass, "sensor.gone_solar")
+
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["manage", "ignore"]
+    assert result["type"] == "abort"
+    assert result["reason"] == "nothing_to_remove"
+    assert manager.data["energy_sources"] == _PREFERENCES["energy_sources"]
+
+
+async def test_one_deleted_from_home_assistant_can_be_taken_out(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a meter the entity registry deleted keeps its remove button."""
+    async_delete_entity(hass, "sensor.gone_solar")
+    manager = await _energy_settings(hass, monkeypatch, {"sensor.gone_solar"})
+    flow = _flow(hass, "sensor.gone_solar")
+
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
+    assert result["type"] == "create_entry"
+    assert manager.data["energy_sources"] == _PREFERENCES["energy_sources"][1:]
+
+
+async def test_only_the_deleted_ones_are_taken_out(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a deleted price is cleared, and a meter not up yet keeps its source."""
+    async_delete_entity(hass, "sensor.gone_price")
+    manager = await _energy_settings(
+        hass, monkeypatch, {"sensor.gone_solar", "sensor.gone_price"}
+    )
+
+    await _flow(hass, "sensor.gone_solar,sensor.gone_price").async_step_remove()
+
+    assert manager.data["energy_sources"] == [
+        {"type": "solar", "stat_energy_from": "sensor.gone_solar"},
+        {
+            "type": "gas",
+            "stat_energy_from": "sensor.gas",
+            "stat_cost": None,
+            "entity_energy_price": None,
+            "number_energy_price": None,
+        },
+    ]
+
+
+async def test_one_home_assistant_forgot_deleting_stays(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the proof is asked for again when the button is pressed."""
+    async_delete_entity(hass, "sensor.gone_solar")
+    manager = await _energy_settings(hass, monkeypatch, {"sensor.gone_solar"})
+    flow = _flow(hass, "sensor.gone_solar")
+
+    async_forget_deleted_entities(hass, freezer)
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "nothing_to_remove"
+    assert manager.data["energy_sources"] == _PREFERENCES["energy_sources"]
+
+
+@_GAS_DEVICES_TAKEN
+async def test_a_battery_keeping_a_meter_not_proven_gone_is_still_taken(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test what is left when only part of what is unknown goes still validates.
+
+    The battery's meter from the grid may just not be up yet, so it stays,
+    and the battery with it. Its power sensor for that way was deleted and
+    goes. Home Assistant has to take what is left.
+    """
+    async_delete_entity(hass, "sensor.charging_from_grid")
+    manager = await async_get_manager(hass)
+    manager.data = _battery(
+        stat_energy_from_grid="sensor.not_up_yet",
+        stat_rate="sensor.battery_power",
+        power_config={
+            "stat_rate_from_grid": "sensor.charging_from_grid",
+            "stat_rate_to_home": "sensor.discharging_to_home",
+        },
+    )
+
+    async def _async_unknown(_hass: HomeAssistant) -> set[str]:
+        return {"sensor.not_up_yet", "sensor.charging_from_grid"}
+
+    monkeypatch.setattr(repairs, "async_unknown_energy_entities", _async_unknown)
+
+    result = await _flow(
+        hass, "sensor.not_up_yet,sensor.charging_from_grid"
+    ).async_step_remove()
+
+    assert result["type"] == "create_entry"
+    (battery,) = manager.data["energy_sources"]
+    assert battery["stat_energy_from_grid"] == "sensor.not_up_yet"
+    assert battery["power_config"] == {
+        "stat_rate_to_home": "sensor.discharging_to_home"
+    }
+    assert ENERGY_SOURCE_SCHEMA(manager.data["energy_sources"])

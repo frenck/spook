@@ -98,6 +98,7 @@ from .reference_extraction import (
     extract_state_references_from_config,
 )
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
+from .removal_evidence import async_removed_on_purpose
 from .repair_documentation import repair_documentation_url
 from .state_checking import async_listen_for_awaited_states, async_unknown_states
 from .statistics_sources import async_settled_orphaned_statistic_ids
@@ -1760,12 +1761,30 @@ class _RemoveOrIgnoreFixFlow(RepairsFlow):
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
-        """Offer to remove the thing, fix it yourself, or keep and ignore it."""
+        """Offer to remove the thing, fix it yourself, or keep and ignore it.
+
+        Removing is only on offer when there is something it would remove,
+        asked the moment the dialog opens. A button that can only say it did
+        nothing is no option at all.
+        """
+        menu_options = ["manage", "ignore"]
+        if await self._async_can_remove():
+            menu_options.insert(0, "remove")
+
         return self.async_show_menu(
             step_id="init",
-            menu_options=["remove", "manage", "ignore"],
+            menu_options=menu_options,
             description_placeholders=self._menu_placeholders(),
         )
+
+    async def _async_can_remove(self) -> bool:
+        """Return whether removing would act on anything right now.
+
+        Every flow can, unless it says otherwise. Those removing a reference
+        to an entity say otherwise when nothing they would remove has proof
+        of being deleted, see `async_removed_on_purpose`.
+        """
+        return True
 
     def _menu_placeholders(self) -> dict[str, str]:
         """Return the placeholders naming the thing in the menu step."""
@@ -1859,11 +1878,12 @@ class EmptyAreaFixFlow(_RemoveOrIgnoreFixFlow):
 class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for an area whose temperature or humidity sensor is gone.
 
-    Clears the settings that point at nothing, so the area can be given a
-    new sensor. Only the settings the issue showed, and of those only the ones
-    still pointing at nothing: a sensor that came back since is kept, and a
-    setting that broke after the issue was raised is not the one somebody
-    agreed to clear.
+    Clears the settings that point at a sensor Home Assistant deleted, so the
+    area can be given a new one. Only the settings the issue showed, and of
+    those only the ones still pointing at nothing: a sensor that came back
+    since is kept, and a setting that broke after the issue was raised is not
+    the one somebody agreed to clear. A sensor that may just not be there yet
+    keeps its setting.
     """
 
     _key = "area"
@@ -1874,18 +1894,21 @@ class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
         data = self.data or {}
         return {key: str(data.get(key, "")) for key in ("area", "entities")}
 
+    async def _async_can_remove(self) -> bool:
+        """Return whether a setting the issue showed can be cleared."""
+        area_id = str((self.data or {}).get(self._id_key, ""))
+        area = ar.async_get(self.hass).async_get_area(area_id)
+        return area is not None and bool(self._clearing(area))
+
     @callback
-    def _remove(self, thing_id: str) -> bool:
-        """Clear the area's sensor settings that still point at what was shown.
+    def _clearing(self, area: ar.AreaEntry) -> dict[str, None]:
+        """Return the sensor settings of the area to clear, cleared.
 
         A setting is cleared only while it holds the very entity the issue
-        named and that entity is still unknown. One changed to another sensor
-        since, which then went missing too, is not the setting somebody saw.
+        named, that entity is still unknown, and Home Assistant deleted it.
+        One changed to another sensor since, which then went missing too, is
+        not the setting somebody saw.
         """
-        area_registry = ar.async_get(self.hass)
-        if (area := area_registry.async_get_area(thing_id)) is None:
-            return True
-
         offered = dict(
             reference.split(":", 1)
             for reference in str(
@@ -1894,8 +1917,8 @@ class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
             if ":" in reference
         )
         known_entity_ids = async_get_all_entity_ids(self.hass)
-        cleared = {
-            field: None
+        still_gone = {
+            field: entity_id
             for field, entity_id in offered.items()
             if field in ("temperature_entity_id", "humidity_entity_id")
             and getattr(area, field) == entity_id
@@ -1903,7 +1926,22 @@ class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
                 self.hass, [entity_id], known_entity_ids=known_entity_ids
             )
         }
-        if not cleared:
+        deleted = async_removed_on_purpose(self.hass, still_gone.values())
+
+        return {
+            field: None
+            for field, entity_id in still_gone.items()
+            if entity_id in deleted
+        }
+
+    @callback
+    def _remove(self, thing_id: str) -> bool:
+        """Clear the area's sensor settings that still point at what was shown."""
+        area_registry = ar.async_get(self.hass)
+        if (area := area_registry.async_get_area(thing_id)) is None:
+            return True
+
+        if not (cleared := self._clearing(area)):
             return False
 
         area_registry.async_update(thing_id, **cleared)
@@ -2087,8 +2125,8 @@ class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
 class PersonUnknownDeviceTrackerFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for a person's unknown device trackers.
 
-    Offers to strip the unknown device trackers from the person, or to keep
-    them and ignore the issue. Removal reuses Spook's own
+    Offers to strip the device trackers Home Assistant deleted from the
+    person, or to keep them and ignore the issue. Removal reuses Spook's own
     ``person.remove_device_tracker`` action, which only edits storage-backed
     persons; a YAML person cannot be edited, so that is reported instead.
     """
@@ -2104,14 +2142,18 @@ class PersonUnknownDeviceTrackerFixFlow(_RemoveOrIgnoreFixFlow):
             "device_trackers": str(data.get("device_trackers", "")),
         }
 
-    async def async_step_remove(
-        self,
-        _: dict[str, str] | None = None,
-    ) -> FlowResult:
-        """Remove the still-unknown device trackers from the person."""
-        data = self.data or {}
-        entity_id = str(data.get("person_entity_id", ""))
-        candidates = [t for t in str(data.get("unknown_trackers", "")).split(",") if t]
+    async def _async_can_remove(self) -> bool:
+        """Return whether a device tracker the issue showed can be removed."""
+        return bool(self._removing())
+
+    @callback
+    def _removing(self) -> list[str]:
+        """Return the device trackers to take off the person.
+
+        Only the ones the issue named, still unknown the way the repair asks
+        it, and deleted from Home Assistant.
+        """
+        candidates = _offered(self.data, "unknown_trackers")
 
         entity_registry = er.async_get(self.hass)
         unknown = [
@@ -2120,26 +2162,37 @@ class PersonUnknownDeviceTrackerFixFlow(_RemoveOrIgnoreFixFlow):
             if entity_registry.async_get(tracker) is None
             and self.hass.states.get(tracker) is None
         ]
-        if unknown:
-            try:
-                await self.hass.services.async_call(
-                    "person",
-                    "remove_device_tracker",
-                    {"entity_id": entity_id, "device_tracker": unknown},
-                    blocking=True,
-                )
-            except HomeAssistantError:
-                # YAML persons are not editable; nothing Spook can remove.
-                return self.async_abort(reason="not_editable")
+        return sorted(async_removed_on_purpose(self.hass, unknown))
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the deleted device trackers from the person."""
+        entity_id = str((self.data or {}).get("person_entity_id", ""))
+        if not (removing := self._removing()):
+            return self.async_abort(reason="changed")
+
+        try:
+            await self.hass.services.async_call(
+                "person",
+                "remove_device_tracker",
+                {"entity_id": entity_id, "device_tracker": removing},
+                blocking=True,
+            )
+        except HomeAssistantError:
+            # YAML persons are not editable; nothing Spook can remove.
+            return self.async_abort(reason="not_editable")
+
         return self.async_create_entry(data={})
 
 
 class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for a group's unknown members.
 
-    Prunes the missing members from a UI-managed group's config entry. Only
-    config-entry groups can be edited; a YAML group cannot, so that is
-    reported instead.
+    Prunes the members Home Assistant deleted from a UI-managed group's
+    config entry. Only config-entry groups can be edited; a YAML group
+    cannot, so that is reported instead.
     """
 
     _key = "group"
@@ -2154,11 +2207,33 @@ class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
             "entities": str(data.get("entities", "")),
         }
 
+    async def _async_can_remove(self) -> bool:
+        """Return whether a member the issue showed can be dropped."""
+        return bool(self._dropping(_offered(self.data, "group_unknown_entity_ids")))
+
+    @callback
+    def _dropping(self, members: Iterable[str]) -> set[str]:
+        """Return which of these members to drop from the group.
+
+        Only the members the issue named, and of those only the ones still
+        gone and deleted from Home Assistant. Another member missing for a
+        moment right now, an integration reloading say, is not one somebody
+        agreed to drop, and neither is one that may just not be there yet.
+        Asked the way the repair asked it: Home Assistant knows more entities
+        than the registry and the state machine hold between them, like the
+        time and date sensors and scenes made on the fly.
+        """
+        offered = _offered(self.data, "group_unknown_entity_ids")
+        still_gone = async_filter_known_entity_ids(
+            self.hass, [member for member in members if member in offered]
+        )
+        return async_removed_on_purpose(self.hass, still_gone)
+
     async def async_step_remove(
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
-        """Remove the members that no longer exist from the group."""
+        """Remove the members Home Assistant deleted from the group."""
         entity_id = str((self.data or {}).get("group_entity_id", ""))
         entity_registry = er.async_get(self.hass)
 
@@ -2173,19 +2248,7 @@ class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
         entry = self.hass.config_entries.async_get_entry(entry_entity.config_entry_id)
         if entry is not None:
             members = list(entry.options.get(CONF_ENTITIES) or [])
-            # Only the members the issue named, and of those only the ones
-            # still gone. Another member missing for a moment right now, an
-            # integration reloading say, is not one somebody agreed to drop.
-            # Asked the way the repair asked it: Home Assistant knows more
-            # entities than the registry and the state machine hold between
-            # them, like the time and date sensors and scenes made on the fly.
-            offered = _offered(self.data, "group_unknown_entity_ids")
-            dropping = set(
-                async_filter_known_entity_ids(
-                    self.hass, [member for member in members if member in offered]
-                )
-            )
-            if not dropping:
+            if not (dropping := self._dropping(members)):
                 return self.async_abort(reason="changed")
 
             remaining = [member for member in members if member not in dropping]
@@ -2207,8 +2270,9 @@ class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
 class MinMaxUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for a min/max helper's missing members.
 
-    Prunes the members that no longer exist from the helper's config entry,
-    keeping the ones that remain, so the helper carries on working.
+    Prunes the members Home Assistant deleted from the helper's config entry,
+    keeping the ones that remain, so the helper carries on working. A member
+    that may just not be there yet stays.
     """
 
     _key = "helper"
@@ -2225,21 +2289,35 @@ class MinMaxUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
             "sources": str(data.get("sources", "")),
         }
 
+    async def _async_can_remove(self) -> bool:
+        """Return whether a member the issue showed can be dropped."""
+        entry_id = str((self.data or {}).get(self._id_key, ""))
+        entry = self.hass.config_entries.async_get_entry(entry_id)
+        return entry is not None and bool(self._dropping(entry))
+
+    @callback
+    def _dropping(self, entry: ConfigEntry) -> set[str]:
+        """Return which members to drop from the helper.
+
+        Only the members the issue named, of those only the ones still gone,
+        asked the way the repair asked it, and of those only the ones deleted
+        from Home Assistant.
+        """
+        still_gone = _offered(
+            self.data, "min_max_unknown_sources"
+        ) & async_unknown_min_max_members(self.hass, entry)
+        return async_removed_on_purpose(self.hass, still_gone)
+
     async def async_step_remove(
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
-        """Remove the members that no longer exist from the helper."""
+        """Remove the members Home Assistant deleted from the helper."""
         entry_id = str((self.data or {}).get("min_max_config_entry_id", ""))
         entry = self.hass.config_entries.async_get_entry(entry_id)
         if entry is not None:
             members = list(entry.options.get(MIN_MAX_ENTITY_IDS) or [])
-            # Only the members the issue named, and of those only the ones
-            # still gone, asked the way the repair asked it.
-            dropping = _offered(
-                self.data, "min_max_unknown_sources"
-            ) & async_unknown_min_max_members(self.hass, entry)
-            if not dropping:
+            if not (dropping := self._dropping(entry)):
                 return self.async_abort(reason="changed")
 
             remaining = [value for value in members if value not in dropping]
@@ -2263,10 +2341,13 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for a helper whose source entities are gone.
 
     A single-source helper whose source no longer exists is broken; there is
-    nothing to prune, so the fix is to remove the whole helper. Warns, up
-    front, when the helper is still used by automations or scripts, and is
-    honest that those become dangling references, which Spook itself will
-    then point out.
+    nothing to prune, so the fix is to remove the whole helper. Only offered
+    once Home Assistant deleted every source it is missing: one that may just
+    not be there yet makes it a helper that may work again in a minute.
+
+    Warns, up front, when the helper is still used by automations or scripts,
+    and is honest that those become dangling references, which Spook itself
+    will then point out.
     """
 
     _key = "helper"
@@ -2316,29 +2397,48 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
             "point out for you."
         )
 
+    async def _async_can_remove(self) -> bool:
+        """Return whether the helper is still as broken as it was shown."""
+        entry_id = str((self.data or {}).get(self._id_key, ""))
+        entry = self.hass.config_entries.async_get_entry(entry_id)
+        return entry is not None and self._still_as_shown(entry)
+
+    @callback
+    def _still_as_shown(self, entry: ConfigEntry) -> bool:
+        """Return whether the helper is the broken one the issue showed.
+
+        Looked at again, the way the repair looked. The helper as it was
+        shown, sources and all: one given another source since, even a
+        working one, is not the helper somebody saw. And every source it is
+        missing deleted from Home Assistant, not one of them merely absent.
+        """
+        offered = _offered(self.data, "helper_unknown_sources")
+        configured = _offered(self.data, "helper_configured_sources")
+        if not offered or configured != async_helper_sources(entry):
+            return False
+
+        missing = async_unknown_helper_sources(self.hass, entry)
+        if not offered <= missing:
+            return False
+
+        return async_removed_on_purpose(self.hass, missing) == missing
+
     async def async_step_remove(
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
         """Remove the whole helper, if it is still as broken as it was shown.
 
-        This deletes the helper outright, so it looks again first, the way
-        the repair looked. A source that came back, or a helper pointed at
-        something that works since, leaves the helper where it is.
+        This deletes the helper outright, so it looks again first. A source
+        that came back, a helper pointed at something that works since, or a
+        source Home Assistant no longer remembers deleting, leaves the helper
+        where it is.
         """
         entry_id = str((self.data or {}).get("helper_config_entry_id", ""))
         if (entry := self.hass.config_entries.async_get_entry(entry_id)) is None:
             return self.async_create_entry(data={})
 
-        # The helper as it was shown, sources and all. One given another
-        # source since, even a working one, is not the helper somebody saw.
-        offered = _offered(self.data, "helper_unknown_sources")
-        configured = _offered(self.data, "helper_configured_sources")
-        if (
-            not offered
-            or configured != async_helper_sources(entry)
-            or not offered <= async_unknown_helper_sources(self.hass, entry)
-        ):
+        if not self._still_as_shown(entry):
             return self.async_abort(reason="changed")
 
         await self.hass.config_entries.async_remove(entry_id)
@@ -2433,8 +2533,15 @@ class EnergyUnknownReferencesFixFlow(_RemoveOrIgnoreFixFlow):
 
     Takes them out of the energy settings, each in the way its setting allows:
     a meter takes its source along, a price or a cost is only cleared. What
-    goes is what the issue showed and is still unknown when the button is
-    pressed, so one that came back meanwhile stays.
+    goes is what the issue showed, is still unknown when the button is
+    pressed, and was deleted from Home Assistant. One that came back
+    meanwhile stays, and so does one that may just not be there yet.
+
+    Everything on the list is written as an entity ID, so the proof is asked
+    of all of it. Home Assistant only looks for a state behind a statistic
+    named like an entity, and Spook lets off the ones an integration imported
+    under such a name. One named the other way, like `tibber:energy_price`,
+    is never reported missing in the first place.
     """
 
     _key = "entities"
@@ -2444,14 +2551,23 @@ class EnergyUnknownReferencesFixFlow(_RemoveOrIgnoreFixFlow):
         """List the entities the way the issue listed them."""
         return {"entities": str((self.data or {}).get("entities", ""))}
 
+    async def _async_can_remove(self) -> bool:
+        """Return whether an entity the issue showed can be taken out."""
+        return bool(await self._async_removing())
+
+    async def _async_removing(self) -> set[str]:
+        """Return the entities to take out of the energy settings."""
+        still_gone = _offered(
+            self.data, self._id_key
+        ) & await async_unknown_energy_entities(self.hass)
+        return async_removed_on_purpose(self.hass, still_gone)
+
     async def async_step_remove(
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
         """Take the entities out of the energy settings, after looking again."""
-        offered = _offered(self.data, self._id_key)
-        removing = offered & await async_unknown_energy_entities(self.hass)
-        if not removing:
+        if not (removing := await self._async_removing()):
             return self.async_abort(reason="nothing_to_remove")
 
         manager = await async_get_energy_manager(self.hass)

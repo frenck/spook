@@ -1008,9 +1008,9 @@
         "step": {
           "init": {
             "title": "Unknown entities used in the energy dashboard",
-            "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. Renamed? Then open [Settings > Dashboards > Energy](/config/energy) and pick the new one, so its history stays on the dashboard.\n\nRemoved for good? Spook can take these out of the energy configuration for you. A missing meter takes its source or device along, a missing price or cost is only cleared. The dashboard then stops showing the history of what is taken out; the statistics themselves stay.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. Renamed? Then open [Settings > Dashboards > Energy](/config/energy) and pick the new one, so its history stays on the dashboard.\n\nRemoved for good? Spook can take the ones marked as deleted out of the energy configuration for you: Home Assistant deleted those. A missing meter takes its source or device along, a missing price or cost is only cleared. The dashboard then stops showing the history of what is taken out; the statistics themselves stay.\n\nFor any other, Spook cannot tell whether it is gone or just not there yet, like a sensor of an integration that is still starting up. Those are left for you to check.\n\nSpook 👻 Your homie.",
             "menu_options": {
-              "remove": "Take these out of the energy configuration",
+              "remove": "Take the deleted ones out of the energy configuration",
               "manage": "Let me do it myself",
               "ignore": "Keep them, stop telling me"
             }
@@ -1019,7 +1019,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about these entities from now on.",
           "manage": "You can update or remove these yourself in the [energy configuration](/config/energy).",
-          "nothing_to_remove": "None of these is still unknown, so nothing has been taken out. They may be back, or somebody already changed the energy configuration."
+          "nothing_to_remove": "None of these is still unknown and deleted from Home Assistant, so nothing has been taken out. They may be back, or somebody already changed the energy configuration."
         }
       }
     },
@@ -1029,9 +1029,9 @@
         "step": {
           "init": {
             "title": "Unknown group members in: {group}",
-            "description": "Spook has found a ghost in your groups 👻\n\nThe group {group} (`{entity_id}`) has members that are unknown to Home Assistant:\n\n{entities}\n\nRemove them from the group, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your groups 👻\n\nThe group {group} (`{entity_id}`) has members that are unknown to Home Assistant:\n\n{entities}\n\nSpook offers to remove a member only when it is marked as deleted: Home Assistant deleted it. For any other, Spook cannot tell whether it is gone or just not there yet, like an entity of an integration that is still starting up. Check those yourself.\n\nOr keep them all, and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
             "menu_options": {
-              "remove": "Remove these members",
+              "remove": "Remove the deleted members",
               "manage": "Let me fix it myself",
               "ignore": "Keep them, stop telling me"
             }
@@ -1041,7 +1041,7 @@
           "issue_ignored": "Spook will keep quiet about this group from now on.",
           "not_editable": "This group is set up in YAML, so Spook cannot edit it. Update the group in your configuration instead.",
           "manage": "You can manage this group yourself on the [Helpers page](/config/helpers).",
-          "changed": "The members this repair listed are back, or have changed, since Spook looked, so nothing has been removed from the group. Spook looks again on its own and updates this repair."
+          "changed": "None of the members this repair listed is still unknown and deleted from Home Assistant, so nothing has been removed from the group. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -1128,9 +1128,9 @@
         "step": {
           "init": {
             "title": "Unknown members used in min/max helper: {helper}",
-            "description": "Spook has found a ghost in your helpers 👻\n\nThe min/max helper {helper} (`{entity_id}`) combines the following members, which are unknown to Home Assistant:\n\n{sources}\n\nRemove them so the helper carries on with the members that remain, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your helpers 👻\n\nThe min/max helper {helper} (`{entity_id}`) combines the following members, which are unknown to Home Assistant:\n\n{sources}\n\nSpook offers to remove a member only when it is marked as deleted: Home Assistant deleted it. The helper then carries on with the members that remain. For any other, Spook cannot tell whether it is gone or just not there yet, like a sensor of an integration that is still starting up. Check those yourself.\n\nOr keep them all, and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
             "menu_options": {
-              "remove": "Remove these members",
+              "remove": "Remove the deleted members",
               "manage": "Let me fix it myself",
               "ignore": "Keep them, stop telling me"
             }
@@ -1139,7 +1139,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this helper from now on.",
           "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers).",
-          "changed": "The members this repair listed are back, or have changed, since Spook looked, so nothing has been removed from the helper. Spook looks again on its own and updates this repair.",
+          "changed": "None of the members this repair listed is still unknown and deleted from Home Assistant, so nothing has been removed from the helper. Spook looks again on its own and updates this repair.",
           "too_few_members": "A min/max helper needs at least two members, so removing the missing ones would leave too few. Reconfigure or remove the helper yourself on the [Helpers page](/config/helpers)."
         }
       }
@@ -1176,9 +1176,9 @@
         "step": {
           "init": {
             "title": "Unknown device trackers tracked by: {person}",
-            "description": "Spook has found a ghost in your people 👻\n\n{person} tracks the following device trackers, which are unknown to Home Assistant:\n\n{device_trackers}\n\nThis often happens when a device tracker was renamed or its integration was removed.\n\nRemove them from {person}, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your people 👻\n\n{person} tracks the following device trackers, which are unknown to Home Assistant:\n\n{device_trackers}\n\nThis often happens when a device tracker was renamed or its integration was removed.\n\nSpook offers to remove a device tracker only when it is marked as deleted: Home Assistant deleted it. For any other, Spook cannot tell whether it is gone or just not there yet, like one of an integration that is still starting up. Check those yourself.\n\nOr keep them all, and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
             "menu_options": {
-              "remove": "Remove these device trackers",
+              "remove": "Remove the deleted device trackers",
               "ignore": "Keep them, stop telling me",
               "manage": "Let me fix it myself"
             }
@@ -1187,6 +1187,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this person from now on.",
           "not_editable": "This person is set up in YAML, so Spook cannot edit it. Update the person in your configuration instead.",
+          "changed": "None of the device trackers this repair listed is still unknown and deleted from Home Assistant, so nothing has been removed. Spook looks again on its own and updates this repair.",
           "manage": "You can manage this person yourself on the [People page](/config/person)."
         }
       }
@@ -1304,7 +1305,7 @@
         "step": {
           "init": {
             "title": "Unknown temperature sensor for area: {area}",
-            "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a temperature sensor that is unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks this sensor when it is picked, so when it was removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a temperature reading from it.\n\nClear the setting so you can pick a sensor again, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a temperature sensor that is unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks this sensor when it is picked, so when it was removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a temperature reading from it.\n\nSpook offers to clear the setting only when the sensor is marked as deleted: Home Assistant deleted it. Otherwise Spook cannot tell whether it is gone or just not there yet, like a sensor of an integration that is still starting up. Check it yourself.\n\nOr keep the setting, and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Clear the setting",
               "manage": "Let me fix it myself",
@@ -1315,7 +1316,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this area from now on.",
           "manage": "You can pick a different sensor in the settings of this area on the [Areas page](/config/areas/dashboard).",
-          "changed": "This sensor is back, or the setting now points somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
+          "changed": "This sensor is back, is no longer known to be deleted, or the setting now points somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -1325,7 +1326,7 @@
         "step": {
           "init": {
             "title": "Unknown humidity sensor for area: {area}",
-            "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a humidity sensor that is unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks this sensor when it is picked, so when it was removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a humidity reading from it.\n\nClear the setting so you can pick a sensor again, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a humidity sensor that is unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks this sensor when it is picked, so when it was removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a humidity reading from it.\n\nSpook offers to clear the setting only when the sensor is marked as deleted: Home Assistant deleted it. Otherwise Spook cannot tell whether it is gone or just not there yet, like a sensor of an integration that is still starting up. Check it yourself.\n\nOr keep the setting, and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Clear the setting",
               "manage": "Let me fix it myself",
@@ -1336,7 +1337,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this area from now on.",
           "manage": "You can pick a different sensor in the settings of this area on the [Areas page](/config/areas/dashboard).",
-          "changed": "This sensor is back, or the setting now points somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
+          "changed": "This sensor is back, is no longer known to be deleted, or the setting now points somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -1346,9 +1347,9 @@
         "step": {
           "init": {
             "title": "Unknown temperature and humidity sensors for area: {area}",
-            "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a temperature and a humidity sensor that are unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks these sensors when they are picked, so when they were removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a reading from them.\n\nClear the settings so you can pick sensors again, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your areas 👻\n\nThe area {area} uses a temperature and a humidity sensor that are unknown to Home Assistant:\n\n{entities}\n\nHome Assistant only checks these sensors when they are picked, so when they were removed or renamed, the area kept pointing at nothing. Assist and area cards no longer get a reading from them.\n\nSpook offers to clear a setting only when its sensor is marked as deleted: Home Assistant deleted it. For any other, Spook cannot tell whether it is gone or just not there yet, like a sensor of an integration that is still starting up. Check those yourself.\n\nOr keep the settings, and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
             "menu_options": {
-              "remove": "Clear the settings",
+              "remove": "Clear the settings of deleted sensors",
               "manage": "Let me fix it myself",
               "ignore": "Keep them, stop telling me"
             }
@@ -1357,7 +1358,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this area from now on.",
           "manage": "You can pick different sensors in the settings of this area on the [Areas page](/config/areas/dashboard).",
-          "changed": "These sensors are back, or the settings now point somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
+          "changed": "None of these sensors is still unknown and deleted from Home Assistant, or the settings now point somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -1375,7 +1376,7 @@
         "step": {
           "init": {
             "title": "Unknown source entities used in helper: {helper}",
-            "description": "Spook has found a ghost in your helpers 👻\n\nThe helper {helper} (`{domain}`, `{entity_id}`) references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\nWithout its sources this helper cannot work. {usage}\n\nRemove the helper, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your helpers 👻\n\nThe helper {helper} (`{domain}`, `{entity_id}`) references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\nWithout its sources this helper cannot work. {usage}\n\nSpook offers to remove the helper only when Home Assistant deleted every one of these sources. One that is just not there yet, like a sensor of an integration that is still starting up, looks exactly like one that is gone, and Spook cannot tell them apart. Then it is yours to check.\n\nOr keep it, and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this helper",
               "manage": "Let me fix it myself",
@@ -1386,7 +1387,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this helper from now on.",
           "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers).",
-          "changed": "The sources of this helper have changed since Spook looked, so the helper has been left alone. Spook looks again on its own and updates this repair."
+          "changed": "The sources of this helper have changed since Spook looked, or Home Assistant no longer has a record of deleting them, so the helper has been left alone. Spook looks again on its own and updates this repair."
         }
       }
     },
