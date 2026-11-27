@@ -679,6 +679,32 @@ async def test_a_templated_link_clears_a_folder_named_the_way_a_url_is(
     assert _issue(issue_registry, "printer")
 
 
+async def test_a_templated_link_is_decoded_only_once(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a templated link clears the folder it names, and no lookalike.
+
+    A folder can have a `%` in its name. The link into it encodes that, and
+    decoding it twice would end up at another folder.
+    """
+    await hass.async_add_executor_job(
+        _write, www, "my%20icons/rain.png", "my icons/cover.png"
+    )
+    hass.states.async_set(
+        "sensor.picture",
+        "on",
+        {"entity_picture": "/local/my%2520icons/{{ kind }}.png"},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "my%20icons") is None
+    assert _issue(issue_registry, "my icons")
+
+
 async def test_a_link_in_a_script_is_in_use(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

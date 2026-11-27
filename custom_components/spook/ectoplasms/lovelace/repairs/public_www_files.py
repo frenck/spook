@@ -68,11 +68,12 @@ def _collect_local_links(node: Any, found: set[str]) -> None:
     goes for state attributes and what automations and scripts send along.
     The text is kept whole: where a link ends cannot be told from the outside,
     as a file may be called `plan (1).png`. A file is in use when its own link
-    is somewhere in there, written out or encoded the way a URL is.
+    is somewhere in there, written out or encoded the way a URL is. Decoding
+    comes later, and once: here the text is kept as it was written.
     """
     if isinstance(node, str):
         if _LOCAL_PREFIX in node:
-            found.update((node, unquote(node)))
+            found.add(node)
     elif isinstance(node, Mapping):
         for value in node.values():
             _collect_local_links(value, found)
@@ -254,7 +255,9 @@ class SpookRepair(AbstractSpookRepair):
         public = await self.hass.async_add_executor_job(
             _public_files,
             Path(self.hass.config.path("www")),
-            "\n".join(in_use),
+            # As written and decoded both: a link may spell a file's name out,
+            # or encode it the way a URL does.
+            "\n".join(in_use | {unquote(link) for link in in_use}),
             folders_in_use,
         )
 
