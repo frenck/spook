@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
 from collections.abc import Coroutine
-from contextlib import suppress
+from contextlib import asynccontextmanager, suppress
 from dataclasses import dataclass, field
 from datetime import timedelta
 from enum import StrEnum
@@ -107,7 +107,7 @@ from .statistics_sources import async_settled_orphaned_statistic_ids
 from .template_extraction import ComparedState
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Mapping, Sized
+    from collections.abc import AsyncIterator, Callable, Iterable, Mapping, Sized
     from datetime import datetime
     from types import ModuleType
 
@@ -158,6 +158,9 @@ LOOK_ONCE_MORE_AFTER = timedelta(minutes=1)
 # those few milliseconds added up to the better part of a second. Taking
 # turns keeps each stretch to what one round holds. The total work stays
 # the same, it is only spread out.
+#
+# This one is for repairs made on their own. The repairs Spook sets up get
+# one of their own from the repair manager, see `inspection_turn`.
 _INSPECTION_TURN: HassKey[asyncio.Lock] = HassKey("spook_inspection_turn")
 
 # What an entity registry entry can have written to it that no repair looks
@@ -536,6 +539,13 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
     #: instead, so they do not all look at the same moment.
     first_inspection_delay: timedelta | None = None
 
+    #: Whose turn it is to look, handed over by the repair manager: one for
+    #: all the repairs of one setup of Spook. A look that never ends then
+    #: holds up the repairs set up alongside it and no others, so reloading
+    #: Spook is a way out. A repair made on its own, without a manager,
+    #: shares the one in `hass.data`.
+    inspection_turn: asyncio.Lock | None = None
+
     #: Re-run the inspection when an entity appears or goes. Needed by repairs
     #: about entity references, as plenty of entities never touch the entity
     #: registry: one set by a script or a template without a unique ID arrives
@@ -572,6 +582,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
         self._asked_for_a_look = False
         self._looked_once_more = False
         self._cancel_look_once_more: Callable[[], None] | None = None
+        self._round_waiting_for_its_turn: asyncio.Task[Any] | None = None
         self.last_look: LastLook | None = None
 
     @callback
@@ -588,16 +599,52 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
             for entity_id, attributes in awaited.items()
         }
 
+    @callback
+    def _nothing_to_look_for(self) -> bool:
+        """Return whether a round that came due should not look after all."""
+        return (
+            self.hass.is_stopping
+            or self._waiting_for_first_inspection
+            or self._deactivated
+        )
+
+    @asynccontextmanager
+    async def _async_turn(self) -> AsyncIterator[None]:
+        """Wait for the turn to look, and hand it on afterwards.
+
+        Deactivating the repair calls the wait off. Behind a look that never
+        ends, the round would otherwise wait for as long as Home Assistant
+        runs, holding on to a repair that is long gone, one more with every
+        reload of Spook.
+        """
+        turn = self.inspection_turn
+        if turn is None:
+            turn = self.hass.data.setdefault(_INSPECTION_TURN, asyncio.Lock())
+
+        self._round_waiting_for_its_turn = asyncio.current_task()
+        try:
+            await turn.acquire()
+        finally:
+            self._round_waiting_for_its_turn = None
+
+        try:
+            yield
+        finally:
+            turn.release()
+
     async def _async_inspect_with_cleanup(self) -> None:
         """Run an inspection in turn, and clean up issues no longer valid."""
-        async with self.hass.data.setdefault(_INSPECTION_TURN, asyncio.Lock()):
-            # Checked once the turn comes: waiting for it can take a while,
-            # and Home Assistant may be stopping, or Spook unloaded, by then.
-            if (
-                self.hass.is_stopping
-                or self._waiting_for_first_inspection
-                or self._deactivated
-            ):
+        # Checked before waiting for the turn. A round that comes due while
+        # Home Assistant stops is one it waits for, and behind a look that
+        # never ends, it waited until its stop gave up on it.
+        if self._nothing_to_look_for():
+            return
+
+        async with self._async_turn():
+            # Checked again once the turn comes: waiting for it can take a
+            # while, and Home Assistant may be stopping, or Spook unloaded,
+            # by then.
+            if self._nothing_to_look_for():
                 return
 
             # Whatever was asked for until now, this round reads after it.
@@ -1018,6 +1065,12 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
         self._async_call_off_the_look_once_more()
         if (debouncer := getattr(self, "inspect_debouncer", None)) is not None:
             debouncer.async_shutdown()
+
+        # Shutting the debouncer down leaves a round that already started
+        # waiting for its turn, see `_async_turn`.
+        if self._round_waiting_for_its_turn is not None:
+            self._round_waiting_for_its_turn.cancel()
+
         await super().async_deactivate()
 
 
@@ -1746,6 +1799,12 @@ class SpookRepairManager:
     #: Assistant has started, and takes a moment once it does.
     setup_state: RepairSetupState = RepairSetupState.WAITING_FOR_HOME_ASSISTANT_TO_START
 
+    #: Whose turn it is to look, for the repairs of this setup and no
+    #: others. Kept for the whole process, a look that never ended held up
+    #: every repair of every setup after it, and reloading Spook, the first
+    #: thing anybody tries, changed nothing until Home Assistant restarted.
+    inspection_turn: asyncio.Lock = field(default_factory=asyncio.Lock)
+
     def __post_init__(self) -> None:
         """Post initialization."""
         self.issue_registry = ir.async_get(self.hass)
@@ -1885,6 +1944,7 @@ class SpookRepairManager:
             repair.domain,
             repair.repair,
         )
+        repair.inspection_turn = self.inspection_turn
         await repair.async_activate()
         self._repairs.add(repair)
 

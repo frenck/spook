@@ -236,6 +236,9 @@ async def test_a_repair_unloaded_while_waiting_its_turn_does_not_look(
     waiting_round = asyncio.create_task(unloaded._async_inspect_with_cleanup())
     await asyncio.sleep(0)
     await unloaded.async_deactivate()
-    await asyncio.gather(first_round, waiting_round)
+    await asyncio.gather(first_round, waiting_round, return_exceptions=True)
 
     assert log == ["first starts", "first ends"]
+
+    # Not left waiting until the turn comes: deactivating called it off.
+    assert waiting_round.cancelled()
