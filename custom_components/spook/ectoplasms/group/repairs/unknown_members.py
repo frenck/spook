@@ -127,8 +127,6 @@ class SpookRepair(AbstractSpookRepair):
         self._group_entity_ids |= {entity.entity_id for entity, _ in groups}
 
         for entity, members in groups:
-            self.possible_issue_ids.add(entity.entity_id)
-
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass, entity_ids=members, known_entity_ids=known_entity_ids
             ):

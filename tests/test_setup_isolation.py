@@ -8,12 +8,20 @@ prevent the rest of Spook from loading.
 
 from __future__ import annotations
 
+from datetime import timedelta
 import importlib
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 import pytest
-from pytest_homeassistant.common import MockConfigEntry, async_mock_service
+from pytest_homeassistant.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+    async_mock_service,
+    get_scheduled_timer_handles,
+)
+
+from homeassistant.util import dt as dt_util
 
 from custom_components.spook import condition, setup_helpers, trigger
 from custom_components.spook.const import DOMAIN, PLATFORMS
@@ -24,6 +32,7 @@ from custom_components.spook.services import (
 )
 
 if TYPE_CHECKING:
+    import asyncio
     from types import ModuleType
 
     from homeassistant.const import Platform
@@ -70,6 +79,160 @@ async def test_broken_repair_module_does_not_abort_setup(
     assert len(manager._repairs) == 1
     assert "mock.broken_repair failed to set up" in caplog.text
     assert "Boo! This one is haunted" in caplog.text
+
+    await manager.async_on_unload()
+
+
+class _HalfActivatingRepair(AbstractSpookRepair):
+    """Repair that starts listening, and then fails to finish activating."""
+
+    domain = "mock"
+    repair = "mock_half_activating_repair"
+    inspect_events = {"mock_event"}
+    inspect_interval = timedelta(days=1)
+
+    #: Shared by every instance: the one that failed is not kept anywhere.
+    looks: ClassVar[list[str]] = []
+
+    async def async_activate(self) -> None:
+        """Activate the repair, and fail after the framework set it up."""
+        await super().async_activate()
+        msg = "Boo! This one is haunted"
+        raise RuntimeError(msg)
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair."""
+        self.looks.append(self.repair)
+
+
+class _FailingBeforeItListensRepair(_WorkingRepair):
+    """Repair that fails before the framework set anything up."""
+
+    repair = "mock_failing_before_it_listens_repair"
+
+    async def async_activate(self) -> None:
+        """Fail right away, before a debouncer exists."""
+        msg = "Boo! This one is haunted"
+        raise RuntimeError(msg)
+
+
+class _FailingToTidyUpRepair(_HalfActivatingRepair):
+    """Repair that fails to activate, and fails to deactivate as well."""
+
+    repair = "mock_failing_to_tidy_up_repair"
+
+    async def async_deactivate(self) -> None:
+        """Deactivate the repair, and fail at it."""
+        await super().async_deactivate()
+        msg = "Boo! This one haunts the cleanup too"
+        raise RuntimeError(msg)
+
+
+def _live_timers(hass: HomeAssistant) -> set[asyncio.TimerHandle]:
+    """Return the timers on the loop that are still to go off."""
+    return {
+        handle
+        for handle in get_scheduled_timer_handles(hass.loop)
+        if not handle.cancelled()
+    }
+
+
+async def test_repair_failing_halfway_its_activation_is_taken_down(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a repair failing after it started listening stops listening.
+
+    Nobody keeps track of a repair that failed to set up, so nobody
+    deactivates it when Spook unloads. What it had subscribed to by then
+    kept calling into it: through every reload of Spook, for good.
+    """
+    manager = SpookRepairManager(hass)
+    timers_before = _live_timers(hass)
+    _HalfActivatingRepair.looks.clear()
+
+    await manager._async_setup_repair_module(
+        SimpleNamespace(__name__="mock.half_repair", SpookRepair=_HalfActivatingRepair)
+    )
+
+    assert not manager._repairs
+    assert "mock.half_repair failed to set up" in caplog.text
+    assert "Boo! This one is haunted" in caplog.text
+
+    # Nothing it subscribed to is left: no listener, no interval, and no
+    # first look the debouncer was waiting to give it.
+    assert "mock_event" not in hass.bus.async_listeners()
+    assert not _live_timers(hass) - timers_before
+
+    hass.bus.async_fire("mock_event")
+    await hass.async_block_till_done()
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=10))
+    await hass.async_block_till_done()
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(days=2))
+    await hass.async_block_till_done()
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(days=2, seconds=10))
+    await hass.async_block_till_done()
+
+    assert not _HalfActivatingRepair.looks
+
+
+async def test_repair_failing_before_it_listens_does_not_abort_setup(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test taking down a repair that set nothing up yet goes quietly.
+
+    It never got a debouncer, and the cleanup must not trip over that and
+    bury the error that matters under one about the cleanup.
+    """
+    manager = SpookRepairManager(hass)
+
+    await manager._async_setup_repair_module(
+        SimpleNamespace(
+            __name__="mock.early_repair", SpookRepair=_FailingBeforeItListensRepair
+        )
+    )
+    await manager._async_setup_repair_module(
+        SimpleNamespace(__name__="mock.working_repair", SpookRepair=_WorkingRepair)
+    )
+
+    assert len(manager._repairs) == 1
+    assert "mock.early_repair failed to set up" in caplog.text
+    assert "Boo! This one is haunted" in caplog.text
+    assert "inspect_debouncer" not in caplog.text
+    assert "failed to clean up" not in caplog.text
+
+    await manager.async_on_unload()
+
+
+async def test_repair_failing_to_clean_up_keeps_the_original_error(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a cleanup that fails as well is logged next to the first error.
+
+    The first error is the one that says what is wrong, and the rest of Spook
+    sets up regardless.
+    """
+    manager = SpookRepairManager(hass)
+
+    await manager._async_setup_repair_module(
+        SimpleNamespace(
+            __name__="mock.untidy_repair", SpookRepair=_FailingToTidyUpRepair
+        )
+    )
+    await manager._async_setup_repair_module(
+        SimpleNamespace(__name__="mock.working_repair", SpookRepair=_WorkingRepair)
+    )
+
+    assert len(manager._repairs) == 1
+    assert "mock.untidy_repair failed to set up" in caplog.text
+    assert "Boo! This one is haunted" in caplog.text
+    assert "mock.untidy_repair failed to clean up" in caplog.text
+    assert "Boo! This one haunts the cleanup too" in caplog.text
+
+    # What it listened to was taken down before its own cleanup failed.
+    assert "mock_event" not in hass.bus.async_listeners()
 
     await manager.async_on_unload()
 

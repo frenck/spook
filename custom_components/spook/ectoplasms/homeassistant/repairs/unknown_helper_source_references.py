@@ -41,16 +41,12 @@ class SpookRepair(AbstractSpookRepair):
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
-        self.possible_issue_ids.clear()
-
         # Worked out once for the round, not once per helper.
         known_entity_ids = async_get_all_entity_ids(self.hass)
 
         for entry in self.hass.config_entries.async_entries():
             if entry.domain not in self._inspected_domains:
                 continue
-
-            self.possible_issue_ids.add(entry.entry_id)
 
             unknown = async_unknown_helper_sources(
                 self.hass, entry, known_entity_ids=known_entity_ids

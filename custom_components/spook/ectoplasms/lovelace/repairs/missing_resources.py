@@ -75,8 +75,6 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        self.possible_issue_ids.add(self.repair)
-
         # Reached straight rather than guarded: Lovelace is a hard dependency
         # in the manifest, so Home Assistant has set it up before Spook. A
         # guard here would be worse than none, because returning early counts

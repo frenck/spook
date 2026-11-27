@@ -72,8 +72,6 @@ class SpookRepair(AbstractSpookRepair):
         # load after Spook, and this is where it is known to be there.
         await async_follow_energy_settings(self.hass)
 
-        self.possible_issue_ids.add(self.repair)
-
         if unknown := await async_unknown_energy_entities(self.hass):
             entities = await async_describe_unknown_entities(self.hass, sorted(unknown))
             self.async_create_issue(

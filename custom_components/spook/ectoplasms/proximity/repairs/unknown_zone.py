@@ -44,7 +44,6 @@ class SpookRepair(AbstractSpookRepair):
         # integration, and only a loaded entry has one at all.
         for entry in self.hass.config_entries.async_loaded_entries(self.domain):
             coordinator: ProximityDataUpdateCoordinator = entry.runtime_data
-            self.possible_issue_ids.add(entry.entry_id)
             if coordinator.proximity_zone_id not in known_entity_ids:
                 self.async_create_issue(
                     issue_id=entry.entry_id,

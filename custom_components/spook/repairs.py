@@ -940,12 +940,17 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
         return True
 
     async def async_deactivate(self) -> None:
-        """Unregister the repair."""
+        """Unregister the repair.
+
+        Also for a repair that failed to activate, which may have failed
+        before its debouncer was made.
+        """
         for sub in self._event_subs.copy():
             sub()
             self._event_subs.discard(sub)
         self._async_call_off_the_look_once_more()
-        self.inspect_debouncer.async_shutdown()
+        if (debouncer := getattr(self, "inspect_debouncer", None)) is not None:
+            debouncer.async_shutdown()
         await super().async_deactivate()
 
 
@@ -1720,7 +1725,13 @@ class SpookRepairManager:
 
         A repair that fails to set up must not prevent the rest of Spook
         from loading.
+
+        Nor may it leave anything behind. A repair subscribes as it goes, and
+        one failing halfway was already listening by then. Skipped, it is
+        never handed back to be deactivated when Spook unloads, so what it
+        had subscribed to kept calling into it, reload after reload.
         """
+        repair: AbstractSpookRepair | None = None
         try:
             repair = module.SpookRepair(self.hass)
 
@@ -1732,6 +1743,28 @@ class SpookRepairManager:
         except Exception:  # noqa: BLE001
             LOGGER.exception(
                 "Spook repair %s failed to set up and has been skipped; "
+                "please report this issue at "
+                "https://github.com/frenck/spook/issues",
+                module.__name__,
+            )
+
+            if repair is not None:
+                await self._async_take_down_skipped_repair(module, repair)
+
+    async def _async_take_down_skipped_repair(
+        self, module: ModuleType, repair: AbstractSpookRepair
+    ) -> None:
+        """Deactivate whatever a repair that failed to set up got to start.
+
+        Logged on its own when that fails too: the error above is the one that
+        says what went wrong, and the rest of Spook sets up regardless.
+        """
+        try:
+            await repair.async_deactivate()
+        # pylint: disable-next=broad-exception-caught
+        except Exception:  # noqa: BLE001
+            LOGGER.exception(
+                "Spook repair %s failed to clean up after failing to set up; "
                 "please report this issue at "
                 "https://github.com/frenck/spook/issues",
                 module.__name__,

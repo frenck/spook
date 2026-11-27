@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import timedelta
 
 from homeassistant.components import automation
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.helpers import (
     area_registry as ar,
     floor_registry as fr,
@@ -35,7 +34,6 @@ class SpookRepair(AbstractSpookRepair):
     # once its reload is done: automations with their reload event, scripts
     # by going and coming back. Edited, it is no registry change at all.
     inspect_events = {
-        EVENT_HOMEASSISTANT_STARTED,
         automation.EVENT_AUTOMATION_RELOADED,
         fr.EVENT_FLOOR_REGISTRY_UPDATED,
         ar.EVENT_AREA_REGISTRY_UPDATED,

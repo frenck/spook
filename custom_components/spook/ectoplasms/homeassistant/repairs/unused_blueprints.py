@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from homeassistant.components import automation, blueprint
 from homeassistant.components.automation import automations_with_blueprint
 from homeassistant.components.script import scripts_with_blueprint
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
@@ -46,7 +45,6 @@ class SpookRepair(AbstractSpookRepair):
     # so once its reload is done: automations with their reload event,
     # scripts by going and coming back.
     inspect_events = {
-        EVENT_HOMEASSISTANT_STARTED,
         automation.EVENT_AUTOMATION_RELOADED,
     }
     inspect_on_entity_added_or_removed = "script"

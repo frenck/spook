@@ -130,8 +130,6 @@ class SpookRepair(AbstractSpookRepair):
             if entry.entry_id in self._options
         }
         for entry in entries:
-            self.possible_issue_ids.add(entry.entry_id)
-
             options = self._options_of(entry)
             shadowed = names_given_to_templates(options)
             referenced = await async_extract_entities_from_config(
@@ -190,7 +188,6 @@ class SpookRepair(AbstractSpookRepair):
             # Reading a configuration is CPU-bound, and there can be many
             # template entities: the event loop gets a turn after each.
             await asyncio.sleep(0)
-            self.possible_issue_ids.add(template_entity.entity_id)
 
             config = template_entity.config
             # Read once as it is and once without its disabled steps, for the
