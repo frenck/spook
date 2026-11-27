@@ -628,6 +628,57 @@ async def test_a_template_next_to_a_plain_link_clears_nothing_more(
     assert issue.translation_placeholders["files"] == "- `/local/loose.png`"
 
 
+async def test_a_template_behind_the_file_name_clears_only_that_file(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a template in the query of a link leaves the link a plain one.
+
+    A picture that changes is given a different address each time, so the
+    browser fetches it again. Which file it is does not change with it.
+    """
+    await hass.async_add_executor_job(
+        _write, www, "doorbell.png", "loose.png", "printer/cover.png"
+    )
+    hass.states.async_set(
+        "sensor.picture",
+        "on",
+        {"entity_picture": "/local/doorbell.png?v={{ now().timestamp() }}"},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    issue = _issue(issue_registry, ".")
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["files"] == "- `/local/loose.png`"
+    assert _issue(issue_registry, "printer")
+
+
+async def test_a_templated_link_clears_a_folder_named_the_way_a_url_is(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a templated link clears a folder whose name it has to encode."""
+    await hass.async_add_executor_job(
+        _write, www, "my icons/rain.png", "printer/cover.png"
+    )
+    hass.states.async_set(
+        "sensor.picture",
+        "on",
+        {"entity_picture": "/local/my%20icons/{{ kind }}.png"},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "my icons") is None
+    assert _issue(issue_registry, "printer")
+
+
 async def test_a_link_in_a_script_is_in_use(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

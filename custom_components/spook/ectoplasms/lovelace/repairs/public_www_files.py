@@ -54,8 +54,10 @@ _CONFIGURED_DOMAINS = ("automation", "script")
 # one, or a quoted start that a template joins the rest onto, as in
 # `'/local/icons/' ~ kind`. Read up to the first space, so a template elsewhere
 # in the same text, like the value in a notification, is not taken for a part
-# of the link.
-_BUILT_LINK = re.compile(r"""/local/([^\s'"]*?)(?:\{\{|\{%|\$\{|['"]\s*[~+])""")
+# of the link. And no further than a `?` or `#`: what is filled in behind
+# those, like a version to get around the cache, does not change which file
+# it is.
+_BUILT_LINK = re.compile(r"""/local/([^\s'"?#]*?)(?:\{\{|\{%|\$\{|['"]\s*[~+])""")
 
 
 def _collect_local_links(node: Any, found: set[str]) -> None:
@@ -93,7 +95,10 @@ def _folders_built_into(links: Iterable[str]) -> set[str] | None:
             folder, slash, _ = match[1].partition("/")
             if not slash:
                 return None
-            folders.add(folder)
+
+            # The folder is called what the link decodes to: `my%20icons`
+            # in a link is `my icons` on disk.
+            folders.add(unquote(folder))
 
     return folders
 
