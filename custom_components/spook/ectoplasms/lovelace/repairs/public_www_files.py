@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import asyncio
 from bisect import insort
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from datetime import timedelta
 from pathlib import Path
+import re
+import time
 from typing import TYPE_CHECKING, Any
 from urllib.parse import unquote
 
@@ -15,12 +19,13 @@ from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import EVENT_LOVELACE_UPDATED, EVENT_THEMES_UPDATED
 from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.entity_component import DATA_INSTANCES
 
-from ....const import DOMAIN as SPOOK_DOMAIN, LOGGER
+from ....const import DOMAIN as SPOOK_DOMAIN, LOGGER, YIELD_AFTER
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Iterator
 
     from homeassistant.components.lovelace.dashboard import (
         LovelaceStorage,
@@ -42,25 +47,55 @@ _ROOT = "."
 # Enough to recognise what it is, without turning the issue into a listing.
 _SHOWN = 10
 
+# Only automations and scripts keep the configuration they were made from.
+_CONFIGURED_DOMAINS = ("automation", "script")
+
+# A link that something fills in when it runs: a Jinja template, a JavaScript
+# one, or a quoted start that a template joins the rest onto, as in
+# `'/local/icons/' ~ kind`. Read up to the first space, so a template elsewhere
+# in the same text, like the value in a notification, is not taken for a part
+# of the link.
+_BUILT_LINK = re.compile(r"""/local/([^\s'"]*?)(?:\{\{|\{%|\$\{|['"]\s*[~+])""")
+
 
 def _collect_local_links(node: Any, found: set[str]) -> None:
     """Collect every text in this config that links into `www`.
 
     Cards keep their images under all sorts of keys, custom cards most of all,
-    so every string is looked at rather than a list of known keys. The text
-    is kept whole: where a link ends cannot be told from the outside, as a
-    file may be called `plan (1).png`. A file is in use when its own link is
-    somewhere in there, written out or encoded the way a URL is.
+    so every string is looked at rather than a list of known keys. The same
+    goes for state attributes and what automations and scripts send along.
+    The text is kept whole: where a link ends cannot be told from the outside,
+    as a file may be called `plan (1).png`. A file is in use when its own link
+    is somewhere in there, written out or encoded the way a URL is.
     """
     if isinstance(node, str):
         if _LOCAL_PREFIX in node:
             found.update((node, unquote(node)))
-    elif isinstance(node, dict):
+    elif isinstance(node, Mapping):
         for value in node.values():
             _collect_local_links(value, found)
-    elif isinstance(node, list):
+    elif isinstance(node, (list, tuple, set)):
         for value in node:
             _collect_local_links(value, found)
+
+
+def _folders_built_into(links: Iterable[str]) -> set[str] | None:
+    """Return the folders that links filled in when they run point into.
+
+    Which file `/local/icons/{{ kind }}.png` ends up at is only known when it
+    runs, so every file in `icons` may be the one. When the folder itself is
+    filled in, or the file straight in `www`, any file may be: then this
+    returns nothing at all, and nothing can be said about any of them.
+    """
+    folders: set[str] = set()
+    for link in links:
+        for match in _BUILT_LINK.finditer(link):
+            folder, slash, _ = match[1].partition("/")
+            if not slash:
+                return None
+            folders.add(folder)
+
+    return folders
 
 
 def _is_code(path: Path) -> bool:
@@ -119,7 +154,7 @@ def _found_among(
     return found if found.count else None
 
 
-def _public_files(www: Path, links: str) -> dict[str, _Found]:
+def _public_files(www: Path, links: str, folders_in_use: set[str]) -> dict[str, _Found]:
     """Return the files nobody seems to have put up on purpose, by folder."""
     if not www.is_dir():
         return {}
@@ -127,7 +162,9 @@ def _public_files(www: Path, links: str) -> dict[str, _Found]:
     entries = [
         entry
         for entry in www.iterdir()
-        if not entry.name.startswith(".") and entry.name != _MARKETPLACE_FOLDER
+        if not entry.name.startswith(".")
+        and entry.name != _MARKETPLACE_FOLDER
+        and entry.name not in folders_in_use
     ]
 
     # Files straight in `www` are judged one by one: a card next to them says
@@ -175,7 +212,8 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        # Collect what dashboards and themes link to, to leave those files alone.
+        # Collect what dashboards and themes link to, and what runs: states,
+        # automations, scripts and config entries. Those files are left alone.
         in_use: set[str] = set()
         for key, dashboard in list(self._dashboards.items()):
             # The old default dashboard, a leftover nobody can open. #1593.
@@ -197,9 +235,22 @@ class SpookRepair(AbstractSpookRepair):
                 return
             _collect_local_links(config, in_use)
         _collect_local_links(self.hass.data.get(DATA_THEMES, {}), in_use)
+        await self._async_collect_running_links(in_use)
+
+        # Issues raised before go as well. Unlike a dashboard that cannot be
+        # read, a template is here to stay.
+        if (folders_in_use := _folders_built_into(in_use)) is None:
+            LOGGER.debug(
+                "Spook found a link into www that a template fills in, "
+                "so any file there may be in use"
+            )
+            return
 
         public = await self.hass.async_add_executor_job(
-            _public_files, Path(self.hass.config.path("www")), "\n".join(in_use)
+            _public_files,
+            Path(self.hass.config.path("www")),
+            "\n".join(in_use),
+            folders_in_use,
         )
 
         # Keyed to the folder and not to the files in it: an integration that
@@ -217,6 +268,38 @@ class SpookRepair(AbstractSpookRepair):
                     ),
                 },
             )
+
+    async def _async_collect_running_links(self, found: set[str]) -> None:
+        """Collect what states, automations, scripts and config entries link to.
+
+        A picture set with `customize:` or by an integration ends up in a
+        state, a notification image in an automation, a picture of a helper
+        made in the UI in its config entry. Thousands of states on a large
+        installation, so the event loop gets a turn in between.
+        """
+        slice_started = time.monotonic()
+        for config in self._running_configs():
+            _collect_local_links(config, found)
+            if time.monotonic() - slice_started > YIELD_AFTER:
+                await asyncio.sleep(0)
+                slice_started = time.monotonic()
+
+    def _running_configs(self) -> Iterator[Any]:
+        """Yield the states, configurations and entry contents to look at."""
+        for state in self.hass.states.async_all():
+            yield state.state
+            yield state.attributes
+
+        for domain in _CONFIGURED_DOMAINS:
+            if component := self.hass.data.get(DATA_INSTANCES, {}).get(domain):
+                # A copy: the event loop gets turns in between, and a reload
+                # in one of them would change what is being walked.
+                for entity in list(component.entities):
+                    yield getattr(entity, "raw_config", None)
+
+        for entry in self.hass.config_entries.async_entries():
+            yield entry.data
+            yield entry.options
 
     @callback
     def _async_keep_issues(self) -> None:
