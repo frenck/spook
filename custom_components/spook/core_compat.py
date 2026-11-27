@@ -8,11 +8,12 @@ from typing import TYPE_CHECKING, Any, cast
 from homeassistant import loader
 from homeassistant.const import MAJOR_VERSION, MINOR_VERSION
 from homeassistant.core import callback
+from homeassistant.helpers import target as target_helpers
 from homeassistant.helpers.service import _load_services_file
 from homeassistant.util.yaml import load_yaml_dict
 
 if TYPE_CHECKING:
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import HomeAssistant, ServiceCall
     from homeassistant.helpers import device_registry as dr, issue_registry as ir
     from homeassistant.loader import Integration
 
@@ -179,3 +180,22 @@ def async_is_issue_hidden(
         return False
 
     return is_hidden(issue)
+
+
+@callback
+def async_extract_excluded_entity_ids(call: ServiceCall) -> set[str]:
+    """Return the entity IDs the exclude block of an action call takes out.
+
+    Home Assistant Core 2026.11 lets a target carry an `exclude` block, and
+    subtracts it from `entity_id: all` with this helper. Before that there is
+    no such block, and the schema refuses one, so nothing is ever excluded.
+    Can be replaced with the target helper once Spook requires Core 2026.11 or
+    later.
+    """
+    extract_excluded: Callable[..., set[str]] | None = getattr(
+        target_helpers, "async_extract_excluded_entity_ids", None
+    )
+    if extract_excluded is None:
+        return set()
+
+    return extract_excluded(call.hass, target_helpers.TargetSelection(call.data))

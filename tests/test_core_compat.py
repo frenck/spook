@@ -15,11 +15,14 @@ from homeassistant.helpers.service import (
     async_set_service_schema,
 )
 from homeassistant import loader
+from homeassistant.core import ServiceCall
+from homeassistant.helpers import target as target_helpers
 from homeassistant.loader import async_get_integration
 
 from custom_components.spook import core_compat
 from custom_components.spook.core_compat import (
     async_clear_custom_components_cache,
+    async_extract_excluded_entity_ids,
     async_get_child_device_ids,
     async_get_child_devices_for_parent,
     async_get_device_entries,
@@ -365,3 +368,33 @@ async def test_issue_never_hidden_before_core_could(
     entry.add_to_hass(hass)
 
     assert not async_is_issue_hidden(ir.async_get(hass), _issue_of(hass, entry))
+
+
+async def test_excluded_entity_ids_come_from_core(hass: HomeAssistant) -> None:
+    """Test the exclude block is resolved by Core's own target helper."""
+    call = ServiceCall(
+        hass,
+        "light",
+        "set_brightness",
+        {"entity_id": "all", "exclude": {"entity_id": ["light.dim"]}},
+    )
+
+    assert async_extract_excluded_entity_ids(call) == {"light.dim"}
+
+
+async def test_nothing_is_excluded_before_core_could(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test nothing is excluded on Core 2026.10 and older."""
+    monkeypatch.delattr(
+        target_helpers, "async_extract_excluded_entity_ids", raising=False
+    )
+    call = ServiceCall(
+        hass,
+        "light",
+        "set_brightness",
+        {"entity_id": "all", "exclude": {"entity_id": ["light.dim"]}},
+    )
+
+    assert async_extract_excluded_entity_ids(call) == set()

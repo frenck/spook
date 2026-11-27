@@ -11,7 +11,9 @@ from homeassistant.const import ATTR_ENTITY_ID, ENTITY_MATCH_ALL
 from homeassistant.exceptions import Unauthorized, UnknownUser
 from homeassistant.helpers.service import async_extract_entity_ids
 
+from ...core_compat import async_extract_excluded_entity_ids
 from ...services import AbstractSpookService
+from . import async_is_light_group
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -39,10 +41,21 @@ class AbstractAdjustLightService(AbstractSpookService):
         if call.data.get(ATTR_ENTITY_ID) == ENTITY_MATCH_ALL:
             # Everything, which for somebody with limited rights means
             # everything they may control, the rest passed over quietly.
+            # Less what the target excludes, the way Home Assistant does it
+            # for its own actions.
+            #
+            # Groups are left out: every light in one is on this list by
+            # itself already. All a group would add is a way back to the very
+            # lights the target excluded.
+            excluded = async_extract_excluded_entity_ids(call)
             targets = {
-                entity_id
-                for entity_id in self.hass.states.async_entity_ids(DOMAIN)
-                if may_control is None or may_control(entity_id, POLICY_CONTROL)
+                state.entity_id
+                for state in self.hass.states.async_all(DOMAIN)
+                if state.entity_id not in excluded
+                and not async_is_light_group(state)
+                and (
+                    may_control is None or may_control(state.entity_id, POLICY_CONTROL)
+                )
             }
         else:
             referenced = await async_extract_entity_ids(call)
