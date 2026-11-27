@@ -121,10 +121,12 @@ def _read_until(stored: object) -> datetime:
         return _TIME_UP
 
     # Text that is no time at all comes back as nothing. A time that cannot
-    # be, like the thirtieth of February, raises instead.
+    # be raises instead: the thirtieth of February as a `ValueError`, and
+    # midnight at the end of the last day of the calendar as an
+    # `OverflowError`.
     try:
         until = dt_util.parse_datetime(stored)
-    except ValueError:
+    except ValueError, OverflowError:
         return _TIME_UP
 
     if until is None:

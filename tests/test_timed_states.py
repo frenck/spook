@@ -2337,6 +2337,7 @@ async def test_a_store_that_is_not_records_at_all_does_not_stop_setting_up(
         pytest.param("2026-02-01T25:00:00+00:00", id="hour-twenty-five"),
         pytest.param("nonsense", id="no-time-at-all"),
         pytest.param("9999-12-31T23:59:59-01:00", id="past-the-end-in-utc"),
+        pytest.param("9999-12-31T24:00:00+00:00", id="midnight-past-the-end"),
     ],
 )
 async def test_a_time_that_cannot_be_read_puts_it_back_now(
