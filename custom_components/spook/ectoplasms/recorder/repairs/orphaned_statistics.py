@@ -8,6 +8,7 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
+from ....attribute_checking import recorder_can_answer
 from ....const import LOGGER
 from ....dismissals import async_get_dismissals
 from ....repairs import AbstractSpookRepair, CouldNotLook
@@ -49,6 +50,14 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         if DATA_INSTANCE not in self.hass.data:
             return  # Recorder is not set up.
+
+        if not recorder_can_answer(self.hass):
+            # There, but busy migrating its database. A question asked now
+            # may not be answered until that is done, and holds up the other
+            # repairs while it waits. What is up may well still be true, and
+            # a clean round would take it down.
+            msg = "The recorder is migrating its database"
+            raise CouldNotLook(msg)
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 

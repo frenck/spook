@@ -57,7 +57,7 @@ def _install_fake_recorder(
     monkeypatch: pytest.MonkeyPatch,
     validation: dict[str, list[Any]],
     recorded: dict[str, str | None] | None = None,
-) -> None:
+) -> SimpleNamespace:
     """Stand in for the recorder, answering with the given validation.
 
     `recorded` is what the recorder holds by way of metadata for those IDs:
@@ -72,6 +72,8 @@ def _install_fake_recorder(
     `validation` is read on every call rather than copied, so a test that
     needs the answer to change part way through mutates the mapping it
     passed in.
+
+    Not migrating its database, unless a test says so on what this returns.
     """
     names = dict.fromkeys(validation) | (recorded or {})
 
@@ -91,9 +93,13 @@ def _install_fake_recorder(
         """Run it here, the way the recorder would run it over there."""
         return func(*args)
 
-    instance = SimpleNamespace(async_add_executor_job=_async_add_executor_job)
+    instance = SimpleNamespace(
+        async_add_executor_job=_async_add_executor_job,
+        migration_in_progress=False,
+    )
     hass.data[DATA_INSTANCE] = instance
     monkeypatch.setattr(statistics_sources, "get_instance", lambda _hass: instance)
+    return instance
 
 
 async def test_orphaned_statistics_create_issue(
@@ -460,3 +466,49 @@ async def test_a_resolved_issue_still_goes_once_nothing_is_waiting(
     await repair._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
+
+
+async def test_a_recorder_migrating_its_database_is_not_asked(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a recorder busy migrating is left alone, and what is up stays up.
+
+    Asked now, the question may not be answered until the migration is done,
+    and the other repairs wait their turn behind it all that time. Ending
+    the round early would count as a clean one and take down the issue,
+    while the statistics on it may well still be left behind.
+    """
+    validation = {"sensor.ghost": [SimpleNamespace(type="no_state")]}
+    recorder = _install_fake_recorder(hass, monkeypatch, validation)
+    repair = SpookRepair(hass)
+    await _inspect_until_settled(repair, freezer)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    asked: list[None] = []
+
+    def _validate(_hass: HomeAssistant) -> dict[str, list[Any]]:
+        asked.append(None)
+        return validation
+
+    monkeypatch.setattr(statistics_sources, "validate_statistics", _validate)
+    recorder.migration_in_progress = True
+    validation.clear()
+
+    await repair._async_inspect_with_cleanup()
+
+    assert not asked
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+    assert repair.last_look.detail == "The recorder is migrating its database"
+
+    # Done migrating, and the statistics have something behind them again.
+    recorder.migration_in_progress = False
+    await repair._async_inspect_with_cleanup()
+
+    assert asked
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+    assert repair.last_look.outcome is LookOutcome.FINE
