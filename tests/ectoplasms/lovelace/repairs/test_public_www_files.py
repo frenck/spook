@@ -7,11 +7,14 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 import pytest
+from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.components.frontend import DATA_THEMES
 from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import EVENT_COMPONENT_LOADED
+from homeassistant.core_config import async_process_ha_core_config
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.public_www_files import (
@@ -363,3 +366,394 @@ def test_a_component_loading_is_no_reason_to_look() -> None:
     the `www` folder.
     """
     assert EVENT_COMPONENT_LOADED not in SpookRepair.inspect_events
+
+
+async def test_a_customized_entity_picture_is_in_use(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a picture given to an entity with `customize:` is in use. #2158.
+
+    Its sibling, which nothing shows, is still reported.
+    """
+    await hass.async_add_executor_job(
+        _write, www, "example-icons/status.png", "example-icons/unused.png"
+    )
+    await async_process_ha_core_config(
+        hass,
+        {
+            "customize": {
+                "input_boolean.example": {
+                    "entity_picture": "/local/example-icons/status.png"
+                }
+            }
+        },
+    )
+    assert await async_setup_component(
+        hass, "input_boolean", {"input_boolean": {"example": {}}}
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    issue = _issue(issue_registry, "example-icons")
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["count"] == "1"
+    assert issue.translation_placeholders["files"] == (
+        "- `/local/example-icons/unused.png`"
+    )
+
+
+async def test_a_folder_of_entity_pictures_all_in_use_is_left_alone(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a folder is not reported when every file in it is a picture. #2158."""
+    await hass.async_add_executor_job(
+        _write, www, "example-icons/status.png", "example-icons/unused.png"
+    )
+    await async_process_ha_core_config(
+        hass,
+        {
+            "customize": {
+                "input_boolean.example": {
+                    "entity_picture": "/local/example-icons/status.png"
+                },
+                "input_boolean.other": {
+                    "entity_picture": "/local/example-icons/unused.png"
+                },
+            }
+        },
+    )
+    assert await async_setup_component(
+        hass, "input_boolean", {"input_boolean": {"example": {}, "other": {}}}
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "example-icons") is None
+
+
+async def test_an_entity_picture_an_integration_sets_is_in_use(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a picture an integration gives its entity is in use. #2160."""
+    await hass.async_add_executor_job(_write, www, "waste/paper.png")
+    hass.states.async_set(
+        "sensor.waste_collection",
+        "paper",
+        {"entity_picture": "/local/waste/paper.png?v=3", "days": 2},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "waste") is None
+
+
+async def test_a_notification_image_in_an_automation_is_in_use(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test an image a notification sends along is in use. #2161."""
+    await hass.async_add_executor_job(_write, www, "icons/doorbell.png")
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": {
+                "alias": "Doorbell",
+                "triggers": {"trigger": "event", "event_type": "doorbell"},
+                "actions": {
+                    "action": "notify.mobile_app_phone",
+                    "data": {
+                        "message": "Somebody is at the door",
+                        "data": {
+                            "image": "https://ha.example.com/local/icons/doorbell.png"
+                        },
+                    },
+                },
+            }
+        },
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "icons") is None
+
+
+async def test_a_templated_link_clears_the_folder_it_points_into(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a link built by a template leaves its whole folder alone. #2161.
+
+    Which file it ends up at is only known when it runs. Other folders are
+    still reported.
+    """
+    await hass.async_add_executor_job(
+        _write, www, "icons/washer.png", "icons/dryer.png", "printer/cover.png"
+    )
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": {
+                "alias": "Appliance done",
+                "triggers": {"trigger": "event", "event_type": "appliance_done"},
+                "actions": {
+                    "action": "notify.mobile_app_phone",
+                    "data": {
+                        "message": "Done",
+                        "data": {
+                            "image": "/local/icons/{{ trigger.event.data.kind }}.png"
+                        },
+                    },
+                },
+            }
+        },
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "icons") is None
+    assert _issue(issue_registry, "printer")
+
+
+async def test_a_template_building_onto_a_folder_clears_it(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a template joining the file name onto a folder clears that folder."""
+    await hass.async_add_executor_job(_write, www, "icons/washer.png")
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "appliance_done": {
+                    "sequence": {
+                        "action": "notify.mobile_app_phone",
+                        "data": {
+                            "message": "Done",
+                            "data": {"image": "{{ '/local/icons/' ~ kind ~ '.png' }}"},
+                        },
+                    }
+                }
+            }
+        },
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "icons") is None
+
+
+async def test_a_templated_link_into_no_known_folder_skips_the_round(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a template choosing the folder, or a loose file, silences the round.
+
+    It can point at any file in `www`, so nothing can be said about any of
+    them. Issues raised before go too: this is no passing state.
+    """
+    await hass.async_add_executor_job(_write, www, "printer/cover.png", "loose.png")
+    _set_dashboards(hass)
+    repair = await _async_inspect(hass)
+    assert _issue(issue_registry, "printer")
+
+    hass.states.async_set(
+        "sensor.picture", "on", {"entity_picture": "/local/{{ folder }}/a.png"}
+    )
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert _issue(issue_registry, "printer") is None
+    assert _issue(issue_registry, ".") is None
+
+
+async def test_a_templated_loose_file_skips_the_round(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a template choosing a file straight in `www` silences the round."""
+    await hass.async_add_executor_job(_write, www, "printer/cover.png")
+    hass.states.async_set(
+        "sensor.picture", "on", {"entity_picture": "/local/{{ name }}.png"}
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "printer") is None
+
+
+async def test_a_template_next_to_a_plain_link_clears_nothing_more(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a template elsewhere in the same text leaves the link a plain one.
+
+    A notification showing a picture and a value, the most common message
+    there is, would otherwise silence the repair for everyone writing one.
+    """
+    await hass.async_add_executor_job(_write, www, "doorbell.png", "loose.png")
+    hass.states.async_set(
+        "sensor.picture",
+        "on",
+        {"message": "![](/local/doorbell.png) {{ states('sensor.visitor') }}"},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    issue = _issue(issue_registry, ".")
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["files"] == "- `/local/loose.png`"
+
+
+async def test_a_template_behind_the_file_name_clears_only_that_file(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a template in the query of a link leaves the link a plain one.
+
+    A picture that changes is given a different address each time, so the
+    browser fetches it again. Which file it is does not change with it.
+    """
+    await hass.async_add_executor_job(
+        _write, www, "doorbell.png", "loose.png", "printer/cover.png"
+    )
+    hass.states.async_set(
+        "sensor.picture",
+        "on",
+        {"entity_picture": "/local/doorbell.png?v={{ now().timestamp() }}"},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    issue = _issue(issue_registry, ".")
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["files"] == "- `/local/loose.png`"
+    assert _issue(issue_registry, "printer")
+
+
+async def test_a_templated_link_clears_a_folder_named_the_way_a_url_is(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a templated link clears a folder whose name it has to encode."""
+    await hass.async_add_executor_job(
+        _write, www, "my icons/rain.png", "printer/cover.png"
+    )
+    hass.states.async_set(
+        "sensor.picture",
+        "on",
+        {"entity_picture": "/local/my%20icons/{{ kind }}.png"},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "my icons") is None
+    assert _issue(issue_registry, "printer")
+
+
+async def test_a_templated_link_is_decoded_only_once(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a templated link clears the folder it names, and no lookalike.
+
+    A folder can have a `%` in its name. The link into it encodes that, and
+    decoding it twice would end up at another folder.
+    """
+    await hass.async_add_executor_job(
+        _write, www, "my%20icons/rain.png", "my icons/cover.png"
+    )
+    hass.states.async_set(
+        "sensor.picture",
+        "on",
+        {"entity_picture": "/local/my%2520icons/{{ kind }}.png"},
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "my%20icons") is None
+    assert _issue(issue_registry, "my icons")
+
+
+async def test_a_link_in_a_script_is_in_use(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a file a script links to is in use."""
+    await hass.async_add_executor_job(_write, www, "sounds/chime.mp3")
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "chime": {
+                    "sequence": {
+                        "action": "media_player.play_media",
+                        "target": {"entity_id": "media_player.kitchen"},
+                        "data": {
+                            "media_content_id": "/local/sounds/chime.mp3",
+                            "media_content_type": "music",
+                        },
+                    }
+                }
+            }
+        },
+    )
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "sounds") is None
+
+
+async def test_a_link_in_config_entry_options_is_in_use(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    www: Path,
+) -> None:
+    """Test a file a helper made in the UI links to is in use.
+
+    Looked at in the entry itself, as a helper that fails to load still
+    shows it once it does.
+    """
+    await hass.async_add_executor_job(_write, www, "pictures/boiler.png")
+    MockConfigEntry(
+        domain="template",
+        options={"template_type": "sensor", "picture": "/local/pictures/boiler.png"},
+    ).add_to_hass(hass)
+    _set_dashboards(hass)
+
+    await _async_inspect(hass)
+
+    assert _issue(issue_registry, "pictures") is None
