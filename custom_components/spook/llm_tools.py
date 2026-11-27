@@ -297,8 +297,16 @@ async def _async_fix_flow(
         msg = "Home Assistant's repairs are not set up."
         raise _FixFlowUnavailableError(msg)
 
+    # The issue ID goes in both. Up to Core 2026.9 the flow manager only reads
+    # it from the data, and asserts it is there. From 2026.10 it reads it from
+    # the context, and copies it into the data by itself. Once Spook requires
+    # Core 2026.10 or later, the data can go.
     try:
-        result = await manager.async_init(DOMAIN, context={"issue_id": issue.issue_id})
+        result = await manager.async_init(
+            DOMAIN,
+            context={"issue_id": issue.issue_id},
+            data={"issue_id": issue.issue_id},
+        )
     except UnknownStep as err:
         raise _FixFlowUnavailableError(str(err)) from err
 

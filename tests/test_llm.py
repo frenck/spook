@@ -517,6 +517,41 @@ async def test_fix_ghost_removes_the_label(
 
 
 @pytest.mark.usefixtures("repairs")
+async def test_fix_ghost_hands_the_issue_id_to_every_core(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    unused_label: lr.LabelEntry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the fix flow gets the issue ID in its context and in its data.
+
+    Up to Core 2026.9 the flow manager asserts the issue ID is in the data,
+    from 2026.10 it reads it from the context. Neither can run here, so this
+    pins what the flow is started with.
+    """
+    issue_id = f"unused_labels_{unused_label.label_id}"
+    manager = repairs_flow_manager(hass)
+    assert manager is not None
+    started_with: list[dict[str, Any]] = []
+    real_async_init = manager.async_init
+
+    async def _recording_async_init(handler: str, **kwargs: Any) -> Any:
+        started_with.append(kwargs)
+        return await real_async_init(handler, **kwargs)
+
+    monkeypatch.setattr(manager, "async_init", _recording_async_init)
+
+    result = await _call(
+        hass, "spook__fix_ghost", hass_admin_user, issue_id=issue_id, option="remove"
+    )
+
+    assert result.data == {"issue_id": issue_id, "outcome": "fixed"}
+    assert started_with == [
+        {"context": {"issue_id": issue_id}, "data": {"issue_id": issue_id}}
+    ]
+
+
+@pytest.mark.usefixtures("repairs")
 async def test_fix_ghost_reports_an_abort_in_words(
     hass: HomeAssistant, hass_admin_user: MockUser, unused_label: lr.LabelEntry
 ) -> None:
