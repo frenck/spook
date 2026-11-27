@@ -15,7 +15,7 @@ from homeassistant.core import callback
 
 from ....const import LOGGER
 from ....dashboard_extraction import extract_themes_from_dashboard_view
-from ....repairs import AbstractSpookRepair
+from ....repairs import AbstractSpookRepair, CouldNotLook
 from ..dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
@@ -63,10 +63,12 @@ class SpookRepair(AbstractSpookRepair):
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         # Without the frontend there is no list of themes to hold anything
-        # against, and nothing that puts one on either. Home Assistant sets it
-        # up before anything else, so this is a guard, not a waiting room.
+        # against. Home Assistant sets it up before anything else, so this is
+        # a guard, not a waiting room. Should it ever be missing, the themes
+        # a dashboard names are no more right than they were.
         if (known_themes := self.hass.data.get(DATA_THEMES)) is None:
-            return
+            msg = "The themes of the frontend could not be read"
+            raise CouldNotLook(msg)
 
         async for dashboard, url_path, config in async_dashboard_configs(
             self._dashboards

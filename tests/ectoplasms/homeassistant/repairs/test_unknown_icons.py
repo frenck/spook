@@ -27,8 +27,14 @@ from custom_components.spook import icon_checking
 from custom_components.spook.ectoplasms.homeassistant.repairs.unknown_icons import (
     SpookRepair,
 )
+from custom_components.spook.repairs import CouldNotLook
 import pytest
-from tests.icon_helpers import ICON_VERSION, install_frontend, uninstall_frontend
+from tests.icon_helpers import (
+    ICON_NAMES,
+    ICON_VERSION,
+    install_frontend,
+    uninstall_frontend,
+)
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
@@ -48,6 +54,16 @@ async def _async_reported(
         return None
     assert issue.translation_placeholders
     return issue.translation_placeholders["icons"]
+
+
+async def _async_could_not_look(
+    hass: HomeAssistant, issue_registry: ir.IssueRegistry
+) -> None:
+    """Inspect, and see the repair say it could not look, reporting nothing."""
+    with pytest.raises(CouldNotLook, match="The icons of the frontend"):
+        await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, _ISSUE) is None
 
 
 def _area_with_icon(hass: HomeAssistant, icon: str) -> None:
@@ -358,7 +374,7 @@ async def test_no_frontend_means_nothing_is_judged(
     uninstall_frontend(monkeypatch)
     _area_with_icon(hass, "mdi:kitchen-ghost")
 
-    assert await _async_reported(hass, issue_registry) is None
+    await _async_could_not_look(hass, issue_registry)
 
 
 async def test_an_empty_list_means_nothing_is_judged(
@@ -371,7 +387,7 @@ async def test_an_empty_list_means_nothing_is_judged(
     install_frontend(monkeypatch, tmp_path, names=())
     _area_with_icon(hass, "mdi:kitchen-ghost")
 
-    assert await _async_reported(hass, issue_registry) is None
+    await _async_could_not_look(hass, issue_registry)
 
 
 async def test_a_frontend_without_the_list_means_nothing_is_judged(
@@ -385,7 +401,7 @@ async def test_a_frontend_without_the_list_means_nothing_is_judged(
     (folder / "iconMetadata.json").unlink()
     _area_with_icon(hass, "mdi:kitchen-ghost")
 
-    assert await _async_reported(hass, issue_registry) is None
+    await _async_could_not_look(hass, issue_registry)
 
 
 async def test_a_list_with_a_part_missing_means_nothing_is_judged(
@@ -399,7 +415,7 @@ async def test_a_list_with_a_part_missing_means_nothing_is_judged(
     (folder / "chunk1.json").unlink()
     _area_with_icon(hass, "mdi:lightbulb")
 
-    assert await _async_reported(hass, issue_registry) is None
+    await _async_could_not_look(hass, issue_registry)
 
 
 async def test_a_list_with_an_empty_part_means_nothing_is_judged(
@@ -413,7 +429,7 @@ async def test_a_list_with_an_empty_part_means_nothing_is_judged(
     (folder / "chunk1.json").write_text("{}")
     _area_with_icon(hass, "mdi:sofa")
 
-    assert await _async_reported(hass, issue_registry) is None
+    await _async_could_not_look(hass, issue_registry)
 
 
 async def test_every_part_of_the_list_is_read(
@@ -447,6 +463,39 @@ async def test_the_list_is_read_once(
     await repair._async_inspect_with_cleanup()  # noqa: SLF001
 
     assert async_issue_about(issue_registry, _ISSUE)
+
+
+async def test_icons_that_cannot_be_read_keep_what_was_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """Test no list to judge by is no icon that is fine now.
+
+    The icon in the settings is the same as before. A start with a frontend
+    built for development has no list, and found the issue from before up.
+    Clearing it would say the icon is drawn.
+    """
+    folder = install_frontend(monkeypatch, tmp_path)
+    _area_with_icon(hass, "mdi:kitchen-ghost")
+    repair = SpookRepair(hass)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert async_issue_about(issue_registry, _ISSUE)
+
+    # The list is read once per run, so it is gone the way a start finds it.
+    (folder / "iconMetadata.json").unlink()
+    hass.data.pop(icon_checking.DATA_MDI_ICONS)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert async_issue_about(issue_registry, _ISSUE)
+
+    # Readable again, and judged as usual: the icon is in this list.
+    install_frontend(monkeypatch, tmp_path / "fixed", (*ICON_NAMES, "kitchen-ghost"))
+    hass.data.pop(icon_checking.DATA_MDI_ICONS)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert async_issue_about(issue_registry, _ISSUE) is None
 
 
 @pytest.mark.parametrize("work", ["_load_mdi_icons", "_suggestions"])

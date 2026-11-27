@@ -25,7 +25,11 @@ from homeassistant.util import dt as dt_util
 
 from custom_components.spook import condition, setup_helpers, trigger
 from custom_components.spook.const import DOMAIN, PLATFORMS
-from custom_components.spook.repairs import AbstractSpookRepair, SpookRepairManager
+from custom_components.spook.repairs import (
+    AbstractSpookRepair,
+    RepairModuleState,
+    SpookRepairManager,
+)
 from custom_components.spook.services import (
     ReplaceExistingService,
     SpookServiceManager,
@@ -79,6 +83,12 @@ async def test_broken_repair_module_does_not_abort_setup(
     assert len(manager._repairs) == 1
     assert "mock.broken_repair failed to set up" in caplog.text
     assert "Boo! This one is haunted" in caplog.text
+
+    # Written down for the diagnostics download, each for what it is.
+    assert manager.module_states == {
+        "mock.broken_repair": RepairModuleState.FAILED_TO_SET_UP,
+        "mock.working_repair": RepairModuleState.SET_UP,
+    }
 
     await manager.async_on_unload()
 
@@ -156,6 +166,9 @@ async def test_repair_failing_halfway_its_activation_is_taken_down(
     )
 
     assert not manager._repairs
+    assert manager.module_states == {
+        "mock.half_repair": RepairModuleState.FAILED_TO_SET_UP
+    }
     assert "mock.half_repair failed to set up" in caplog.text
     assert "Boo! This one is haunted" in caplog.text
 
@@ -349,11 +362,20 @@ def _failing_to_import(
     monkeypatch.setattr(importlib, "import_module", _import_module)
 
 
-async def _async_set_up_repair_modules(hass: HomeAssistant) -> set[str]:
-    """Set up every Spook repair, and return the modules that made it."""
+async def _async_set_up_repair_modules(
+    hass: HomeAssistant,
+    module_states: dict[str, RepairModuleState] | None = None,
+) -> set[str]:
+    """Set up every Spook repair, and return the modules that made it.
+
+    What the manager wrote down about each module goes in `module_states`,
+    when one is handed over.
+    """
     manager = SpookRepairManager(hass)
     await manager.async_setup()
     set_up = {type(repair).__module__ for repair in manager._repairs}
+    if module_states is not None:
+        module_states.update(manager.module_states)
     await manager.async_on_unload()
     return set_up
 
@@ -390,11 +412,17 @@ async def test_repair_module_failing_to_import_does_not_abort_setup(
     _failing_to_import(
         monkeypatch, broken.removeprefix("custom_components.spook."), error
     )
-    survivors = await _async_set_up_repair_modules(hass)
+    module_states: dict[str, RepairModuleState] = {}
+    survivors = await _async_set_up_repair_modules(hass, module_states)
 
     assert survivors == everything - {broken}
     assert f"Spook repair {broken} failed to load and has been skipped" in caplog.text
     assert str(error) in caplog.text
+
+    # Written down for the diagnostics download, under the name it has.
+    assert module_states[broken] is RepairModuleState.FAILED_TO_LOAD
+    assert module_states[sibling] is RepairModuleState.SET_UP
+    assert set(module_states) == everything
 
 
 async def _async_set_up_service_modules(hass: HomeAssistant) -> set[str]:

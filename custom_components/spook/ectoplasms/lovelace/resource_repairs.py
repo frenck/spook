@@ -13,7 +13,7 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
 
 from ...const import LOGGER
 from ...dashboard_resources import async_watch_resources
-from ...repairs import AbstractSpookRepair
+from ...repairs import AbstractSpookRepair, CouldNotLook
 
 
 class AbstractSpookDashboardResourcesRepair(AbstractSpookRepair, ABC):
@@ -54,13 +54,17 @@ class AbstractSpookDashboardResourcesRepair(AbstractSpookRepair, ABC):
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         # Reached straight rather than guarded: Lovelace is a hard dependency
-        # in the manifest, so Home Assistant has set it up before Spook. A
-        # guard here would be worse than none, because returning early counts
-        # as a clean inspection and cleanup would then delete every issue this
-        # repair has, ignored ones included. If that invariant ever breaks, a
-        # KeyError is what should happen: it leaves the bookkeeping intact.
+        # in the manifest, so Home Assistant has set it up before Spook. If
+        # that invariant ever breaks, a KeyError is what should happen: it
+        # leaves the bookkeeping intact.
+        #
+        # Home Assistant always makes the collection, too. Should it ever not,
+        # the resources are still there, Spook just cannot see them, and
+        # returning early would count as a clean look and take down every
+        # issue this repair has, ignored ones included.
         if (resources := self.hass.data[DOMAIN].resources) is None:
-            return
+            msg = "The dashboard resources could not be read"
+            raise CouldNotLook(msg)
 
         # Storage-mode resources are loaded the first time somebody asks for
         # them, which is normally the dashboard, and Spook inspects long

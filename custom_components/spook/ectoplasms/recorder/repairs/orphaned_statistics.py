@@ -8,9 +8,9 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
-from ....const import DOMAIN, LOGGER
+from ....const import LOGGER
 from ....dismissals import async_get_dismissals
-from ....repairs import AbstractSpookRepair
+from ....repairs import AbstractSpookRepair, CouldNotLook
 from ....statistics_sources import (
     async_settled_orphaned_statistic_ids,
     async_statistics_still_settling,
@@ -59,13 +59,8 @@ class SpookRepair(AbstractSpookRepair):
             # nothing is settled yet. That is not the same as everything
             # being fine, and clearing what is up now would only put it back
             # a quarter of an hour later. Leave it until it is known.
-            prefix = f"{self.repair}_"
-            self.issue_ids.update(
-                issue_id.removeprefix(prefix)
-                for domain, issue_id in self.issue_registry.issues
-                if domain == DOMAIN and issue_id.startswith(prefix)
-            )
-            return
+            msg = "The statistics are still settling after a start"
+            raise CouldNotLook(msg)
 
         # Reported apart: what is new on an issue of its own, and what
         # somebody already said to keep on another that is ignored from the

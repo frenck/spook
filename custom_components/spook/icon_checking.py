@@ -26,6 +26,7 @@ from homeassistant.util.hass_dict import HassKey
 from .attribute_checking import suggest_name
 from .const import LOGGER
 from .reference_extraction import VALUE_KEYS
+from .repairs import CouldNotLook
 
 if TYPE_CHECKING:
     import asyncio
@@ -154,6 +155,20 @@ async def async_get_mdi_icons(hass: HomeAssistant) -> MdiIcons | None:
         loading = hass.async_add_executor_job(_load_mdi_icons)
         hass.data[DATA_MDI_ICONS] = loading
     return await loading
+
+
+async def async_require_mdi_icons(hass: HomeAssistant) -> MdiIcons:
+    """Return the icons the installed frontend draws, for a repair to judge by.
+
+    Without them there is nothing to tell an icon by, while what a repair
+    reported before may well still be wrong. So the round could not look,
+    rather than found nothing. A frontend built for development has no list
+    at all, and never will until it is replaced.
+    """
+    if (icons := await async_get_mdi_icons(hass)) is None:
+        msg = "The icons of the frontend could not be read"
+        raise CouldNotLook(msg)
+    return icons
 
 
 def _suggestions(names: Iterable[str], known: frozenset[str]) -> dict[str, str | None]:

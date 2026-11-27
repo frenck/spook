@@ -21,6 +21,7 @@ from custom_components.spook.dismissals import async_setup_dismissals
 from custom_components.spook.ectoplasms.recorder.repairs.orphaned_statistics import (
     SpookRepair,
 )
+from custom_components.spook.repairs import LookOutcome
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
@@ -46,9 +47,9 @@ async def _inspect_until_settled(
     Nothing is reported on a single sighting, so a test that wants to see an
     issue has to give the repair the second look it waits for.
     """
-    await repair.async_inspect()
+    await repair._async_inspect_with_cleanup()
     freezer.tick(_LONG_ENOUGH)
-    await repair.async_inspect()
+    await repair._async_inspect_with_cleanup()
 
 
 def _install_fake_recorder(
@@ -129,7 +130,7 @@ async def test_no_orphans_create_no_issue(
     }
     _install_fake_recorder(hass, monkeypatch, validation)
 
-    await SpookRepair(hass).async_inspect()
+    await SpookRepair(hass)._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
@@ -141,7 +142,7 @@ async def test_recorder_not_set_up_is_a_no_op(
     """Test the repair does nothing when the recorder is not set up."""
     hass.data.pop(DATA_INSTANCE, None)
 
-    await SpookRepair(hass).async_inspect()
+    await SpookRepair(hass)._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
@@ -198,7 +199,7 @@ async def test_a_registered_entity_without_a_state_is_not_an_orphan(
     validation = {"sensor.resting": [SimpleNamespace(type="no_state")]}
     _install_fake_recorder(hass, monkeypatch, validation)
 
-    await SpookRepair(hass).async_inspect()
+    await SpookRepair(hass)._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
@@ -221,7 +222,7 @@ async def test_a_sensor_gone_for_a_moment_is_not_reported(
     _install_fake_recorder(hass, monkeypatch, validation)
     repair = SpookRepair(hass)
 
-    await repair.async_inspect()
+    await repair._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
@@ -229,7 +230,7 @@ async def test_a_sensor_gone_for_a_moment_is_not_reported(
     # like from here.
     freezer.tick(timedelta(minutes=1))
     validation.clear()
-    await repair.async_inspect()
+    await repair._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
@@ -254,11 +255,11 @@ async def test_a_sensor_that_comes_back_starts_the_wait_over(
     for _ in range(4):
         validation.clear()
         validation.update(gone)
-        await repair.async_inspect()
+        await repair._async_inspect_with_cleanup()
 
         freezer.tick(_LONG_ENOUGH)
         validation.clear()
-        await repair.async_inspect()
+        await repair._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
@@ -427,6 +428,13 @@ async def test_keeping_them_survives_a_restart(
     issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue, "the issue was cleared while everything was still waiting"
     assert issue.dismissed_version is not None
+
+    # Said for what it is: no look that found all was well.
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+    assert repair.last_look.detail == (
+        "The statistics are still settling after a start"
+    )
 
     freezer.tick(_LONG_ENOUGH)
     await repair._async_inspect_with_cleanup()

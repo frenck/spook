@@ -18,6 +18,7 @@ from homeassistant.util import dt as dt_util
 from custom_components.spook.ectoplasms.lovelace.repairs.unknown_theme_references import (
     SpookRepair,
 )
+from custom_components.spook.repairs import CouldNotLook
 import pytest
 from tests.repair_helpers import async_issue_about
 
@@ -756,9 +757,37 @@ async def test_without_the_frontend_nothing_is_judged(
     repair = SpookRepair(hass)
     repair._dashboards = {"lovelace": _dashboard(_with(card))}  # noqa: SLF001
 
-    # Called straight, so a look that trips over the missing list fails here
-    # instead of in the debouncer's log.
-    await repair.async_inspect()
+    # Called straight, so a look that trips over the missing list says so
+    # here, and fails on nothing else.
+    with pytest.raises(CouldNotLook):
+        await repair.async_inspect()
+
+    assert async_issue_about(issue_registry, _ISSUE) is None
+
+
+async def test_without_the_frontend_what_was_reported_stays(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a missing list of themes is no theme that came back.
+
+    The dashboard names the same theme as before. Without the list Spook
+    cannot tell, and taking the issue down would say it is fine.
+    """
+    card = {"type": "entities", "theme": "Gone", "entities": []}
+    repair = SpookRepair(hass)
+    repair._dashboards = {"lovelace": _dashboard(_with(card))}  # noqa: SLF001
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert async_issue_about(issue_registry, _ISSUE)
+
+    themes = hass.data.pop(DATA_THEMES)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert async_issue_about(issue_registry, _ISSUE)
+
+    # Back, with the theme in it this time, and judged as usual.
+    hass.data[DATA_THEMES] = {**themes, "Gone": {}}
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
 
     assert async_issue_about(issue_registry, _ISSUE) is None
 

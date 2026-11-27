@@ -150,6 +150,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)
 
+    # Kept on the entry for the diagnostics download, which tells from it
+    # how setting up the repairs went, and how each of them last looked.
+    entry.runtime_data = repairs
+
     # Starting the repairs takes a moment, and on a normal start that moment
     # comes after this setup is long done. Spook can be disabled or reloaded
     # in it, and the unload that runs then has not been told about repairs

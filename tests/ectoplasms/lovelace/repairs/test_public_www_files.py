@@ -20,6 +20,7 @@ from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.public_www_files import (
     SpookRepair,
 )
+from custom_components.spook.repairs import LookOutcome
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -302,11 +303,19 @@ async def test_an_unreadable_dashboard_skips_the_round(
 
     await hass.async_add_executor_job(_write, www, "camera/snapshot.jpg")
     _set_dashboards(hass, HomeAssistantError("Broken YAML"))
-    await _async_inspect(hass)
+    repair = await _async_inspect(hass)
 
     assert _issue(issue_registry, "printer")
     assert _issue(issue_registry, "camera") is None
     assert "Spook could not read dashboard dashboard-0" in caplog.text
+
+    # Said for what it is, in Spook's own words: what Home Assistant said
+    # about the dashboard can hold a path somebody chose.
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+    assert repair.last_look.detail == (
+        "A dashboard could not be read, so what it links to is not known"
+    )
 
 
 async def test_the_old_default_dashboard_is_passed_over(

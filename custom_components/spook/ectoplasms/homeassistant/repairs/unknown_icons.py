@@ -22,7 +22,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from ....const import LOGGER
 from ....customize_reloads import async_follow_customize_reloads
-from ....icon_checking import async_get_mdi_icons, async_suggest
+from ....icon_checking import async_require_mdi_icons, async_suggest
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
@@ -123,8 +123,7 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        if (icons := await async_get_mdi_icons(self.hass)) is None:
-            return
+        icons = await async_require_mdi_icons(self.hass)
 
         # In the order they are read, so each kind of setting stays together.
         found = [
