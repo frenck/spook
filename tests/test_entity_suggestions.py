@@ -388,3 +388,27 @@ async def test_a_deleted_registry_id_names_the_entity_it_was(
     assert remembered.startswith(f"- `{deleted.id}` (deleted on ")
     assert remembered.endswith(", was `sensor.gone`, provided by `spook_test`)")
     assert forgotten == f"- `{deleted.id}` (deleted)"
+
+
+async def test_a_forgotten_deleted_entity_gets_its_suggestion_ahead_of_time(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an entity Home Assistant forgot deleting is compared in the thread.
+
+    Home Assistant forgets a deleted entity after a month without telling
+    anybody, so Spook can still remember one. Its description then falls
+    back to a rename suggestion, and that comparison belongs in the thread
+    with the others, not on the event loop.
+    """
+    hass.states.async_set("sensor.temperature", "21")
+    async_delete_entity(hass, "sensor.temperatur")
+    remembered_before = set(entity_filtering.async_get_deleted_entities(hass))
+    async_forget_deleted_entities(hass, freezer)
+
+    await entity_suggestions.async_warm_rename_suggestions(hass, ["sensor.temperatur"])
+
+    assert remembered_before == {"sensor.temperatur"}
+    assert entity_filtering.async_get_rename_suggestion_cache(hass) == {
+        "sensor.temperatur": "sensor.temperature"
+    }

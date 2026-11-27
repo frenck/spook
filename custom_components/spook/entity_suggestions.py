@@ -14,7 +14,6 @@ from typing import TYPE_CHECKING
 
 from .entity_filtering import (
     async_get_all_entity_ids_by_domain,
-    async_get_deleted_entities,
     async_get_rename_suggestion_cache,
 )
 from .removal_evidence import (
@@ -212,15 +211,18 @@ async def async_warm_rename_suggestions(
     worked out where it always was, on the event loop. Which is the one
     outcome worth avoiding, so nothing here returns without filling the cache.
     """
-    deleted_by_entity_id = async_get_deleted_entities(hass)
     suggestions = async_get_rename_suggestion_cache(hass)
 
     # Deleted entities never reach the comparison: Spook has something better
-    # to say about those, and says it instead.
+    # to say about those, and says it instead. Asked the way the description
+    # asks, so that the two agree on which ones those are: one Home Assistant
+    # has forgotten deleting gets a suggestion, and needs it worked out here.
     missing = [
         entity_id
         for entity_id in entity_ids
-        if entity_id not in suggestions and entity_id not in deleted_by_entity_id
+        if entity_id not in suggestions
+        and not is_registry_id_shaped(entity_id)
+        and async_deleted_entry(hass, entity_id) is None
     ]
     if not missing:
         return
