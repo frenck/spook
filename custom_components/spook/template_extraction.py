@@ -2175,7 +2175,8 @@ def _negated(tokens: list[_Token], start: int, end: int) -> bool:
 
     Nor when it is turned around once more: by a second `not` in front,
     or by comparing the outcome, as in `not is_state(...) == false`. Then
-    it is taken as it is written, without the `not`.
+    it is taken as it is written, without the `not`. Parentheses around
+    all of it do not hide that: `(not is_state(...)) == false`.
     """
     if _is(tokens, start - 1, "name", "not"):
         before, after = start - 2, end
@@ -2188,16 +2189,26 @@ def _negated(tokens: list[_Token], start: int, end: int) -> bool:
     else:
         return False
 
-    if _is(tokens, before, "name", "not"):
-        return False
+    # Looked at once as it stands, and once more for each pair of
+    # parentheses around it.
+    while True:
+        if _is(tokens, before, "name", "not") or _compared_at(tokens, after):
+            return False
 
-    compared_again = (
-        _is(tokens, after, "name", "is")
-        or _is(tokens, after, "name", "in")
-        or _is(tokens, after, "name", "not")
-        or (after < len(tokens) and tokens[after][0] in _EQUALITY)
+        if not (_is(tokens, before, "lparen") and _is(tokens, after, "rparen")):
+            return True
+
+        before, after = before - 1, after + 1
+
+
+def _compared_at(tokens: list[_Token], index: int) -> bool:
+    """Return whether what ends before this index is compared with something."""
+    return (
+        _is(tokens, index, "name", "is")
+        or _is(tokens, index, "name", "in")
+        or _is(tokens, index, "name", "not")
+        or (index < len(tokens) and tokens[index][0] in _EQUALITY)
     )
-    return not compared_again
 
 
 def _compared_negatively(tokens: list[_Token], index: int) -> bool:
