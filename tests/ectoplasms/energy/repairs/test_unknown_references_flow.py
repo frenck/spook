@@ -4,19 +4,27 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+import copy
+import json
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.energy.data import async_get_manager
+import pytest
 
-from custom_components.spook import repairs
+from homeassistant.components.energy import const as energy_const
+from homeassistant.components.energy.data import async_get_manager
+from homeassistant.components.energy.validate import ValidationIssues
+
+from custom_components.spook import energy_preferences, repairs
+from custom_components.spook.energy_preferences import async_unknown_energy_entities
 from custom_components.spook.repairs import (
     EnergyUnknownReferencesFixFlow,
     async_create_fix_flow,
 )
 
 if TYPE_CHECKING:
+    from homeassistant.components.energy.data import EnergyManager
     from homeassistant.core import HomeAssistant
-    import pytest
 
 _ISSUE_ID = "energy_unknown_references_energy_unknown_references"
 
@@ -56,7 +64,9 @@ def _flow(hass: HomeAssistant, offered: str) -> EnergyUnknownReferencesFixFlow:
     """Return the fix flow for an issue that showed these entities."""
     flow = EnergyUnknownReferencesFixFlow()
     flow.hass = hass
-    flow.issue_id = _ISSUE_ID
+    # Through the context, the way the flow manager hands it over: Home
+    # Assistant 2026.12 turns away a flow that has it set directly.
+    flow.context = {"issue_id": _ISSUE_ID}
     flow.data = {"energy_unknown_entity_ids": offered, "entities": "- the list"}
     return flow
 
@@ -161,3 +171,126 @@ async def test_settings_changed_elsewhere_take_out_nothing(
     assert result["type"] == "abort"
     assert result["reason"] == "nothing_to_remove"
     assert manager.data["energy_sources"] == _PREFERENCES["energy_sources"]
+
+
+GONE = "sensor.gone"
+
+# A battery measured per direction, in the shape of Home Assistant 2026.12
+# (`BatterySourceType` in its energy data): a meter for each way the energy
+# goes, seen from the battery.
+_BATTERY_PER_DIRECTION: dict[str, Any] = {
+    "type": "battery",
+    "stat_energy_from_grid": "sensor.charged_from_grid",
+    "stat_energy_from_solar": "sensor.charged_from_solar",
+    "stat_energy_to_home": "sensor.discharged_to_home",
+    "stat_energy_to_grid": "sensor.discharged_to_grid",
+}
+
+
+def _settings_of_2026_12(**settings: Any) -> dict[str, Any]:
+    """Return energy settings in the shape of Home Assistant 2026.12.
+
+    That is `EnergyPreferences` in its energy data, which has gas devices.
+    """
+    return {
+        "energy_sources": [],
+        "device_consumption": [],
+        "device_consumption_water": [],
+        "device_consumption_gas": [],
+        **settings,
+    }
+
+
+def _battery(**changes: Any) -> dict[str, Any]:
+    """Return energy settings holding the battery, with these settings changed."""
+    return _settings_of_2026_12(energy_sources=[{**_BATTERY_PER_DIRECTION, **changes}])
+
+
+def _install_validation_of_2026_12(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    manager: EnergyManager,
+) -> None:
+    """Make Home Assistant report GONE wherever the energy settings name it.
+
+    Grouped the way Home Assistant 2026.12 groups it: one result per source
+    and per device, with the gas devices in a group of their own that older
+    versions do not have. It reports every meter and power sensor of a
+    battery measured per direction, and the meter of every gas device.
+    """
+
+    def _issues(setting: dict[str, Any]) -> ValidationIssues:
+        issues = ValidationIssues()
+        if GONE in json.dumps(setting):
+            issues.add_issue(hass, "entity_not_defined", GONE)
+        return issues
+
+    async def _async_validate(_hass: HomeAssistant) -> SimpleNamespace:
+        return SimpleNamespace(
+            **{
+                group: [_issues(setting) for setting in manager.data.get(group, [])]
+                for group in _settings_of_2026_12()
+            }
+        )
+
+    monkeypatch.setattr(energy_preferences, "async_validate", _async_validate)
+
+
+# Home Assistant takes gas devices into its energy settings from 2026.12,
+# and an older one drops them from an update. So that one only runs on a
+# Home Assistant that has them, like the daily run against its development
+# branch.
+_GAS_DEVICES_TAKEN = pytest.mark.skipif(
+    not hasattr(energy_const, "BATTERY_DIRECTIONS"),
+    reason="needs the energy settings of Home Assistant 2026.12 or later",
+)
+
+
+@pytest.mark.parametrize(
+    "preferences",
+    [
+        _battery(stat_energy_from_grid=GONE),
+        _battery(stat_energy_from_solar=GONE),
+        _battery(stat_energy_to_home=GONE),
+        _battery(stat_energy_to_grid=GONE),
+        _battery(power_config={"stat_rate_from_grid": GONE}),
+        _battery(power_config={"stat_rate_from_solar": GONE}),
+        _battery(power_config={"stat_rate_to_home": GONE}),
+        _battery(power_config={"stat_rate_to_grid": GONE}),
+        pytest.param(
+            _settings_of_2026_12(device_consumption_gas=[{"stat_consumption": GONE}]),
+            marks=_GAS_DEVICES_TAKEN,
+        ),
+    ],
+    ids=[
+        "battery meter from grid",
+        "battery meter from solar",
+        "battery meter to home",
+        "battery meter to grid",
+        "battery power from grid",
+        "battery power from solar",
+        "battery power to home",
+        "battery power to grid",
+        "gas device",
+    ],
+)
+async def test_what_was_taken_out_is_not_found_again(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    preferences: dict[str, Any],
+) -> None:
+    """Test a look after the button finds nothing left of what it took out.
+
+    A fix that leaves the entity somewhere in the settings leaves the issue
+    standing, and pressing the button again does the same thing again.
+    """
+    manager = await async_get_manager(hass)
+    manager.data = copy.deepcopy(preferences)
+    _install_validation_of_2026_12(hass, monkeypatch, manager)
+
+    assert await async_unknown_energy_entities(hass) == {GONE}
+
+    result = await _flow(hass, GONE).async_step_remove()
+
+    assert result["type"] == "create_entry"
+    assert await async_unknown_energy_entities(hass) == set()

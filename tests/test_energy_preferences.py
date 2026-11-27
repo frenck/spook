@@ -10,6 +10,14 @@ from __future__ import annotations
 import copy
 from typing import Any
 
+import pytest
+
+from homeassistant.components.energy import const as energy_const
+from homeassistant.components.energy.data import (
+    DEVICE_CONSUMPTION_SCHEMA,
+    ENERGY_SOURCE_SCHEMA,
+)
+
 from custom_components.spook.energy_preferences import energy_preferences_without
 
 GONE = "sensor.gone"
@@ -326,3 +334,210 @@ def test_water_devices_are_cleaned_too() -> None:
     assert energy_preferences_without(preferences, {GONE}) == {
         "device_consumption_water": [{"stat_consumption": "sensor.shower"}]
     }
+
+
+def test_gas_devices_are_cleaned_too() -> None:
+    """Test the gas devices get the same as the energy ones.
+
+    In the shape of Home Assistant 2026.12, the first to have them.
+    """
+    preferences = {
+        "device_consumption_gas": [
+            {"stat_consumption": GONE},
+            {"stat_consumption": "sensor.stove", "included_in_stat": GONE},
+        ]
+    }
+
+    assert energy_preferences_without(preferences, {GONE}) == {
+        "device_consumption_gas": [{"stat_consumption": "sensor.stove"}]
+    }
+
+
+def test_a_capacity_sensor_is_left_out() -> None:
+    """Test a battery stays when only the sensor for its capacity is unknown.
+
+    In the shape of Home Assistant 2026.12, the first to have it.
+    """
+    preferences = _sources(
+        {
+            "type": "battery",
+            "stat_energy_from": "sensor.out",
+            "stat_energy_to": "sensor.in",
+            "entity_capacity": GONE,
+        }
+    )
+
+    assert energy_preferences_without(preferences, {GONE}) == _sources(
+        {
+            "type": "battery",
+            "stat_energy_from": "sensor.out",
+            "stat_energy_to": "sensor.in",
+        }
+    )
+
+
+# A battery measured per direction, in the shape of Home Assistant 2026.12
+# (`BatterySourceType` and `PowerConfig` in its energy data): a meter for each
+# way the energy goes, and a power sensor for each of those ways.
+_PER_DIRECTION: dict[str, Any] = {
+    "type": "battery",
+    "stat_energy_from_grid": "sensor.charged_from_grid",
+    "stat_energy_from_solar": "sensor.charged_from_solar",
+    "stat_energy_to_home": "sensor.discharged_to_home",
+    "stat_energy_to_grid": "sensor.discharged_to_grid",
+    "stat_rate": "sensor.battery_power_generated",
+    "power_config": {
+        "stat_rate_from_grid": "sensor.charging_from_grid",
+        "stat_rate_from_solar": "sensor.charging_from_solar",
+        "stat_rate_to_home": "sensor.discharging_to_home",
+        "stat_rate_to_grid": "sensor.discharging_to_grid",
+    },
+}
+
+
+def _per_direction(**changes: Any) -> dict[str, Any]:
+    """Return the battery measured per direction, with these settings changed."""
+    return {**copy.deepcopy(_PER_DIRECTION), **changes}
+
+
+def test_a_battery_per_direction_loses_only_the_way_that_is_gone() -> None:
+    """Test a way's meter takes its power sensor along, and nothing else.
+
+    Home Assistant turns away a power sensor for a way that has no meter.
+    """
+    preferences = _sources(_per_direction(stat_energy_from_grid=GONE))
+
+    assert energy_preferences_without(preferences, {GONE}) == _sources(
+        {
+            "type": "battery",
+            "stat_energy_from_solar": "sensor.charged_from_solar",
+            "stat_energy_to_home": "sensor.discharged_to_home",
+            "stat_energy_to_grid": "sensor.discharged_to_grid",
+            "stat_rate": "sensor.battery_power_generated",
+            "power_config": {
+                "stat_rate_from_solar": "sensor.charging_from_solar",
+                "stat_rate_to_home": "sensor.discharging_to_home",
+                "stat_rate_to_grid": "sensor.discharging_to_grid",
+            },
+        }
+    )
+
+
+def test_a_power_sensor_for_one_way_is_left_out_alone() -> None:
+    """Test the power sensors of the other ways stay, and so does the meter."""
+    preferences = _sources(
+        _per_direction(
+            power_config={
+                **_PER_DIRECTION["power_config"],
+                "stat_rate_to_grid": GONE,
+            }
+        )
+    )
+
+    assert energy_preferences_without(preferences, {GONE}) == _sources(
+        _per_direction(
+            power_config={
+                "stat_rate_from_grid": "sensor.charging_from_grid",
+                "stat_rate_from_solar": "sensor.charging_from_solar",
+                "stat_rate_to_home": "sensor.discharging_to_home",
+            }
+        )
+    )
+
+
+def test_the_last_power_sensor_takes_the_rate_along() -> None:
+    """Test a battery with no power sensor left has no power setting left.
+
+    Home Assistant works the rate out of the power sensors, and turns away
+    a battery measured per direction with a rate but no power config.
+    """
+    preferences = _sources(
+        {
+            "type": "battery",
+            "stat_energy_from_grid": "sensor.charged_from_grid",
+            "stat_energy_to_home": "sensor.discharged_to_home",
+            "stat_rate": "sensor.battery_power_generated",
+            "power_config": {"stat_rate_to_home": GONE},
+        }
+    )
+
+    assert energy_preferences_without(preferences, {GONE}) == _sources(
+        {
+            "type": "battery",
+            "stat_energy_from_grid": "sensor.charged_from_grid",
+            "stat_energy_to_home": "sensor.discharged_to_home",
+        }
+    )
+
+
+@pytest.mark.parametrize(
+    "gone_way",
+    ["stat_energy_from_grid", "stat_energy_to_home"],
+)
+def test_a_battery_per_direction_without_a_way_in_or_out_goes(gone_way: str) -> None:
+    """Test a battery left without a way in, or a way out, is dropped.
+
+    The same as a battery measured in total that lost either of its meters:
+    Home Assistant needs one charging and one discharging way at least.
+    """
+    preferences = _sources(
+        {
+            "type": "battery",
+            "stat_energy_from_grid": "sensor.charged_from_grid",
+            "stat_energy_to_home": "sensor.discharged_to_home",
+            gone_way: GONE,
+        }
+    )
+
+    assert energy_preferences_without(preferences, {GONE}) == _sources()
+
+
+# What the cleaning leaves of energy settings in the shape of Home Assistant
+# 2026.12 has to be settings that Home Assistant takes. Checked with the
+# schemas the energy panel's save command checks with. For a battery measured
+# per direction, those only exist from 2026.12, so those checks only run on a
+# Home Assistant that has them, like the daily run against its development
+# branch.
+_SHAPE_OF_2026_12 = pytest.mark.skipif(
+    not hasattr(energy_const, "BATTERY_DIRECTIONS"),
+    reason="needs the energy settings of Home Assistant 2026.12 or later",
+)
+
+
+@_SHAPE_OF_2026_12
+@pytest.mark.parametrize(
+    "battery",
+    [
+        _per_direction(stat_energy_from_grid=GONE),
+        _per_direction(stat_energy_to_home=GONE),
+        _per_direction(
+            power_config={**_PER_DIRECTION["power_config"], "stat_rate_to_grid": GONE}
+        ),
+        _per_direction(power_config={"stat_rate_from_grid": GONE}),
+        _per_direction(entity_capacity=GONE),
+    ],
+)
+def test_what_is_left_of_a_battery_is_taken_by_home_assistant(
+    battery: dict[str, Any],
+) -> None:
+    """Test a battery that lost a meter or a sensor still validates."""
+    cleaned = energy_preferences_without(_sources(battery), {GONE})
+
+    assert ENERGY_SOURCE_SCHEMA(cleaned["energy_sources"])
+
+
+def test_what_is_left_of_the_gas_devices_is_taken_by_home_assistant() -> None:
+    """Test gas devices that lost a device, or a part of one, still validate."""
+    preferences = {
+        "device_consumption_gas": [
+            {"stat_consumption": GONE},
+            {"stat_consumption": "sensor.stove", "included_in_stat": GONE},
+        ]
+    }
+
+    cleaned = energy_preferences_without(preferences, {GONE})
+
+    assert [
+        DEVICE_CONSUMPTION_SCHEMA(device)
+        for device in cleaned["device_consumption_gas"]
+    ]

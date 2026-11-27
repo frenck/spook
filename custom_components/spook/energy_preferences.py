@@ -46,13 +46,25 @@ _CLEARABLE = (
     "entity_energy_price_export",
 )
 # Settings that can be left out altogether.
-_OPTIONAL = ("stat_rate", "stat_soc", "included_in_stat")
+_OPTIONAL = ("stat_rate", "stat_soc", "entity_capacity", "included_in_stat")
 # What a grid connection holds for each way the energy goes, in the unified
 # form. Without its meter, the price of that way means nothing either.
 _GRID_IMPORT = ("stat_energy_from", "stat_cost", "entity_energy_price")
 _GRID_IMPORT_NUMBER = "number_energy_price"
 _GRID_EXPORT = ("stat_energy_to", "stat_compensation", "entity_energy_price_export")
 _GRID_EXPORT_NUMBER = "number_energy_price_export"
+# What a battery measured per direction holds for each way the energy goes,
+# seen from the battery: the meter, and the power sensor in `power_config`
+# that goes with it. Home Assistant 2026.12 and later; before that a battery
+# is only ever measured in total, and none of these are in the settings.
+_BATTERY_CHARGING = (
+    ("stat_energy_from_grid", "stat_rate_from_grid"),
+    ("stat_energy_from_solar", "stat_rate_from_solar"),
+)
+_BATTERY_DISCHARGING = (
+    ("stat_energy_to_home", "stat_rate_to_home"),
+    ("stat_energy_to_grid", "stat_rate_to_grid"),
+)
 
 
 def _entity_settings_in(value: Any) -> set[str]:
@@ -120,6 +132,8 @@ async def async_unknown_energy_entities(hass: HomeAssistant) -> set[str]:
         validation.energy_sources,
         validation.device_consumption,
         validation.device_consumption_water,
+        # Gas devices only exist from Home Assistant 2026.12.
+        getattr(validation, "device_consumption_gas", []),
     ):
         for issues in issues_group:
             if (issue := issues.issues.get(_MISSING_ISSUE_TYPE)) is not None:
@@ -216,6 +230,46 @@ def _unified_grid(source: dict[str, Any], unknown: set[str]) -> dict[str, Any] |
     return source
 
 
+def _battery(source: dict[str, Any], unknown: set[str]) -> dict[str, Any] | None:
+    """Return a battery without what is unknown, or None to drop it.
+
+    Measured in total, a battery missing either of its two meters is no
+    battery the dashboard can draw. Measured per direction, it needs at least
+    one way in and one way out, and Home Assistant turns away a power sensor
+    for a way that has no meter.
+    """
+    if any(
+        source.get(meter) in unknown for meter in ("stat_energy_from", "stat_energy_to")
+    ):
+        return None
+
+    directions = (*_BATTERY_CHARGING, *_BATTERY_DISCHARGING)
+    measured_per_direction = any(meter in source for meter, _power in directions)
+
+    power_config = source.get("power_config") or {}
+    for meter, power in directions:
+        if source.get(meter) in unknown:
+            del source[meter]
+            power_config.pop(power, None)
+        if power_config.get(power) in unknown:
+            del power_config[power]
+
+    if measured_per_direction and not (
+        any(meter in source for meter, _power in _BATTERY_CHARGING)
+        and any(meter in source for meter, _power in _BATTERY_DISCHARGING)
+    ):
+        return None
+
+    # With every way gone from it, the power config is empty, and an empty one
+    # is no power setting. The rate worked out of it goes along.
+    if "power_config" in source and not power_config:
+        del source["power_config"]
+        source.pop("stat_rate", None)
+
+    _without_unknown(source, unknown)
+    return source
+
+
 def _source(source: dict[str, Any], unknown: set[str]) -> dict[str, Any] | None:
     """Return an energy source without what is unknown, or None to drop it."""
     if source.get("type") == "grid":
@@ -223,8 +277,10 @@ def _source(source: dict[str, Any], unknown: set[str]) -> dict[str, Any] | None:
             return _legacy_grid(source, unknown)
         return _unified_grid(source, unknown)
 
-    # Solar, battery, gas and water cannot do without their meters. A battery
-    # missing either of its two is no battery the dashboard can draw.
+    if source.get("type") == "battery":
+        return _battery(source, unknown)
+
+    # Solar, gas and water cannot do without their meters.
     if any(
         source.get(meter) in unknown for meter in ("stat_energy_from", "stat_energy_to")
     ):
@@ -272,7 +328,11 @@ def energy_preferences_without(
         )
         cleaned["energy_sources"] = [source for source in sources if source]
 
-    for key in ("device_consumption", "device_consumption_water"):
+    for key in (
+        "device_consumption",
+        "device_consumption_water",
+        "device_consumption_gas",
+    ):
         if key in preferences:
             cleaned[key] = _devices(copy.deepcopy(preferences[key]), unknown)
 
