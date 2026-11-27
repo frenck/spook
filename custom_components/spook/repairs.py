@@ -1583,14 +1583,32 @@ class SpookRepairManager:
         modules: list[ModuleType] = []
 
         def _load_all_repair_modules() -> None:
-            """Load all repair modules."""
+            """Load all repair modules, isolating failures.
+
+            A repair that fails to import, most likely because Home Assistant
+            moved or renamed something it uses, must not take the others
+            down with it.
+            """
             for module_file in Path(__file__).parent.rglob("ectoplasms/*/repairs/*.py"):
                 if module_file.name == "__init__.py":
                     continue
                 module_path = str(module_file.relative_to(Path(__file__).parent))[
                     :-3
                 ].replace("/", ".")
-                modules.append(importlib.import_module(f".{module_path}", __package__))
+
+                try:
+                    modules.append(
+                        importlib.import_module(f".{module_path}", __package__)
+                    )
+                # pylint: disable-next=broad-exception-caught
+                except Exception:  # noqa: BLE001
+                    LOGGER.exception(
+                        "Spook repair %s.%s failed to load and has been skipped; "
+                        "please report this issue at "
+                        "https://github.com/frenck/spook/issues",
+                        __package__,
+                        module_path,
+                    )
 
         await self.hass.async_add_import_executor_job(_load_all_repair_modules)
 

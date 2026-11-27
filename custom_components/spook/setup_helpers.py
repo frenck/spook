@@ -60,7 +60,23 @@ async def async_forward_setup_entry(
                 ".",
             )
             LOGGER.debug("Loading Spook ectoplasm: %s", module_path)
-            module = importlib.import_module(f".{module_path}", __package__)
+
+            # One that fails to import, most likely because Home Assistant
+            # moved or renamed something it uses, must not take the others
+            # down with it.
+            try:
+                module = importlib.import_module(f".{module_path}", __package__)
+            # pylint: disable-next=broad-exception-caught
+            except Exception:  # noqa: BLE001
+                LOGGER.exception(
+                    "Spook ectoplasm %s.%s failed to load and has been skipped; "
+                    "please report this issue at "
+                    "https://github.com/frenck/spook/issues",
+                    __package__,
+                    module_path,
+                )
+                continue
+
             if hasattr(module, "async_setup_entry"):
                 modules.append(module)
                 LOGGER.debug("Setting up Spook ectoplasm: %s", module_path)
