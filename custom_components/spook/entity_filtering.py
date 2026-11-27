@@ -100,6 +100,10 @@ class EntityIDsCache:
 
     entity_ids: set[str] | None = None
     entity_ids_by_domain: dict[str, list[str]] | None = None
+    # The scenes automations and scripts create, and the configurations that
+    # was read from: the answer holds for as long as those are the very same.
+    created_scene_ids: frozenset[str] = frozenset()
+    created_scenes_read_from: tuple[dict[str, Any], ...] | None = None
     rename_suggestions: dict[str, str | None] | None = None
     deleted_entities: dict[str, er.DeletedRegistryEntry] | None = None
     unsubscribe: Callable[[], None] | None = None
@@ -315,11 +319,15 @@ def async_get_created_scene_ids(hass: HomeAssistant) -> set[str]:
     is gone again until the action runs once more. Referencing one is not a
     broken reference, so collect them and treat them as known.
 
-    Asked anew every time, not cached with the entity IDs. A reload that adds
-    or removes a `scene.create` adds or removes no entity, so nothing would
-    tell that cache.
+    Not cached with the entity IDs. A reload that adds or removes a
+    `scene.create` adds or removes no entity, so nothing would tell that
+    cache. What tells is the configuration itself: Home Assistant keeps the
+    one of an automation that did not change, and hands a changed one a new
+    one. So the answer is kept for as long as every configuration is still
+    the very same, which is cheap to see, and this is asked a lot: once for
+    every issue that is written.
     """
-    scene_ids: set[str] = set()
+    configured: list[tuple[Any, dict[str, Any]]] = []
     instances = hass.data.get(DATA_INSTANCES, {})
 
     for domain in (automation.DOMAIN, script.DOMAIN):
@@ -333,13 +341,30 @@ def async_get_created_scene_ids(hass: HomeAssistant) -> set[str]:
                 continue
 
             raw_config = getattr(entity, "raw_config", None)
-            if not isinstance(raw_config, dict):
-                continue
+            if isinstance(raw_config, dict):
+                configured.append((entity, raw_config))
 
-            # Kept with the automation or script it was read from, so a
-            # reload that drops one drops what was read from it too.
-            with reading_for(entity):
-                scene_ids |= _scene_ids_created_by(raw_config)
+    cache = _async_get_cache(hass)
+    read_from = cache.created_scenes_read_from
+    if (
+        read_from is not None
+        and len(read_from) == len(configured)
+        and all(
+            raw_config is known
+            for (_, raw_config), known in zip(configured, read_from, strict=True)
+        )
+    ):
+        return set(cache.created_scene_ids)
+
+    scene_ids: set[str] = set()
+    for entity, raw_config in configured:
+        # Kept with the automation or script it was read from, so a
+        # reload that drops one drops what was read from it too.
+        with reading_for(entity):
+            scene_ids |= _scene_ids_created_by(raw_config)
+
+    cache.created_scene_ids = frozenset(scene_ids)
+    cache.created_scenes_read_from = tuple(raw_config for _, raw_config in configured)
 
     return scene_ids
 

@@ -550,3 +550,38 @@ async def test_scenes_read_are_not_kept_past_a_reload(
     gc.collect()
 
     assert [len(readings.get(reader, {})) for readings in owned.values()] == [1]
+
+
+async def test_asking_again_reads_nothing_until_a_configuration_changes(
+    hass: HomeAssistant,
+) -> None:
+    """Test the created scenes are read once, however often they are asked for.
+
+    Every issue that is written asks for them. As long as every automation
+    and script still has the very same configuration, nothing is read again.
+    A reload that changes one makes it read once more, and that is all.
+    """
+    hass.states.async_set("light.hall", "on")
+    assert await async_setup_component(
+        hass, automation.DOMAIN, _automation_config([_SNAPSHOT])
+    )
+    await hass.async_block_till_done()
+
+    with patch.object(
+        entity_filtering, "reading_for", wraps=entity_filtering.reading_for
+    ) as reading_for:
+        first = entity_filtering.async_get_created_scene_ids(hass)
+        read_at_first = reading_for.call_count
+        again = [entity_filtering.async_get_created_scene_ids(hass) for _ in range(5)]
+        read_when_asked_again = reading_for.call_count
+
+        await _reload(
+            hass, automation.DOMAIN, _automation_config([_SNAPSHOT, {"delay": 1}])
+        )
+        after_reload = entity_filtering.async_get_created_scene_ids(hass)
+        read_after_reload = reading_for.call_count
+
+    assert first == {"scene.before"}
+    assert again == [first] * 5
+    assert after_reload == first
+    assert (read_at_first, read_when_asked_again, read_after_reload) == (1, 1, 2)
