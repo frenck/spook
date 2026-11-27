@@ -8,6 +8,8 @@ import voluptuous as vol
 
 from homeassistant.helpers import config_validation as cv, issue_registry as ir
 
+from ...core_compat import async_is_issue_hidden
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
@@ -71,9 +73,18 @@ def is_ignored(issue: ir.IssueEntry) -> bool:
 
 
 def active_issues(hass: HomeAssistant) -> Iterable[ir.IssueEntry]:
-    """Yield the issues worth counting: present, active, and not ignored."""
-    for issue in ir.async_get(hass).issues.values():
-        if issue.active and not is_ignored(issue):
+    """Yield the issues worth counting: present, active, and not ignored.
+
+    Nor hidden: Home Assistant keeps the issues of a disabled config entry
+    off the Repairs dashboard until the entry is enabled again.
+    """
+    issue_registry = ir.async_get(hass)
+    for issue in issue_registry.issues.values():
+        if (
+            issue.active
+            and not is_ignored(issue)
+            and not async_is_issue_hidden(issue_registry, issue)
+        ):
             yield issue
 
 

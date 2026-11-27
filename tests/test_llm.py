@@ -30,6 +30,7 @@ from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels impo
 import probatio
 import pytest
 from tests.entity_objects import give_entity_objects
+from tests.repair_helpers import async_add_config_entry, async_disable_config_entry
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -247,6 +248,38 @@ async def test_list_ghosts_leaves_ignored_out_unless_asked(
         hass, "spook__list_ghosts", hass_admin_user, include_ignored=True
     )
     assert result.data["ghosts"][0]["ignored"] is True
+
+
+async def test_an_issue_of_a_disabled_entry_is_not_offered(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a hidden issue stays out of reach until its entry is enabled.
+
+    Home Assistant hides the issues of a disabled config entry from the
+    Repairs dashboard. An assistant gets to see what that dashboard shows.
+    """
+    entry = async_add_config_entry(hass, "hue")
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        _AUTOMATION_ISSUE,
+        config_entry_id=entry.entry_id,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="automation_unknown_entity_references",
+    )
+
+    await async_disable_config_entry(hass, entry)
+    result = await _call(hass, "spook__list_ghosts", hass_admin_user)
+    assert result.data["total"] == 0
+    result = await _call(
+        hass, "spook__explain_ghost", hass_admin_user, issue_id=_AUTOMATION_ISSUE
+    )
+    assert result.error
+
+    await async_disable_config_entry(hass, entry, disabled=False)
+    result = await _call(hass, "spook__list_ghosts", hass_admin_user)
+    assert result.data["total"] == 1
 
 
 @pytest.mark.usefixtures("repairs")

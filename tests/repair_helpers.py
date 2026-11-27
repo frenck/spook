@@ -6,7 +6,11 @@ from __future__ import annotations
 import re
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
+from unittest.mock import AsyncMock
 
+from pytest_homeassistant.common import MockConfigEntry, MockModule, mock_integration
+
+from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.setup import async_setup_component
 
@@ -159,3 +163,34 @@ async def async_removed_user_id(hass: HomeAssistant) -> str:
     user = await hass.auth.async_create_user("Casper")
     await hass.auth.async_remove_user(user)
     return user.id
+
+
+def async_add_config_entry(hass: HomeAssistant, domain: str) -> MockConfigEntry:
+    """Add a config entry of an integration that sets up and unloads fine.
+
+    Enough to disable it and enable it again, which reloads it.
+    """
+    mock_integration(
+        hass,
+        MockModule(
+            domain,
+            async_setup_entry=AsyncMock(return_value=True),
+            async_unload_entry=AsyncMock(return_value=True),
+        ),
+    )
+    entry = MockConfigEntry(domain=domain)
+    entry.add_to_hass(hass)
+    return entry
+
+
+async def async_disable_config_entry(
+    hass: HomeAssistant,
+    entry: MockConfigEntry,
+    *,
+    disabled: bool = True,
+) -> None:
+    """Disable a config entry the way the user does, or enable it again."""
+    await hass.config_entries.async_set_disabled_by(
+        entry.entry_id, ConfigEntryDisabler.USER if disabled else None
+    )
+    await hass.async_block_till_done()

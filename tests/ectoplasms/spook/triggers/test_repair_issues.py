@@ -23,6 +23,8 @@ from custom_components.spook.ectoplasms.spook.triggers.repair_issue_removed impo
 )
 from custom_components.spook.trigger import async_get_triggers
 
+from tests.repair_helpers import async_add_config_entry, async_disable_config_entry
+
 # Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
 # loader resolve the integration when it goes looking for the platforms.
 import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
@@ -308,6 +310,34 @@ async def test_the_condition_ignores_ignored_issues(hass: HomeAssistant) -> None
     await hass.async_block_till_done()
 
     assert condition.async_check() is False, "counted an issue somebody had ignored"
+
+
+async def test_the_condition_ignores_the_issues_of_a_disabled_entry(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant hides those until the entry is enabled again.
+
+    The Repairs dashboard is clean then, and the house is in order as far as
+    anybody can tell. Holding something back for an issue nobody can see
+    would leave them guessing why.
+    """
+    entry = async_add_config_entry(hass, "demo")
+    ir.async_create_issue(
+        hass,
+        "demo",
+        "boiler",
+        config_entry_id=entry.entry_id,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="boiler",
+    )
+    condition = await _condition(hass)
+
+    await async_disable_config_entry(hass, entry)
+    assert condition.async_check() is False, "counted an issue nobody can see"
+
+    await async_disable_config_entry(hass, entry, disabled=False)
+    assert condition.async_check() is True
 
 
 async def test_the_condition_ignores_an_issue_waiting_to_be_confirmed(

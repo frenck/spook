@@ -9,6 +9,7 @@ import voluptuous as vol
 from homeassistant.components.repairs import DOMAIN
 from homeassistant.helpers import config_validation as cv, issue_registry as ir
 
+from ....core_compat import async_is_issue_hidden
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -34,7 +35,13 @@ class SpookService(AbstractSpookAdminService):
         """Handle the service call."""
         domains = set(call.data.get("domain", []))
         issue_registry = ir.async_get(self.hass)
-        for domain, issue_id in issue_registry.issues:
+        for (domain, issue_id), issue in issue_registry.issues.items():
             if domains and domain not in domains:
                 continue
+
+            # Hidden while its config entry is disabled: nobody can see it to
+            # decide about it, so it comes back as it was left.
+            if async_is_issue_hidden(issue_registry, issue):
+                continue
+
             issue_registry.async_ignore(domain, issue_id, ignore=False)

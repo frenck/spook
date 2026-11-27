@@ -16,6 +16,7 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.ectoplasms.repairs.services import list as list_issues
+from tests.repair_helpers import async_add_config_entry, async_disable_config_entry
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -175,6 +176,31 @@ async def test_an_issue_no_longer_raised_is_left_out(
     issues = await _list(hass, hass_admin_user, include_ignored=True)
 
     assert "bridge_gone" not in [issue["issue_id"] for issue in issues]
+
+
+async def test_an_issue_of_a_disabled_entry_is_left_out(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+) -> None:
+    """Home Assistant hides it until the entry is enabled, and so does this."""
+    entry = async_add_config_entry(hass, "hue")
+    ir.async_create_issue(
+        hass,
+        "hue",
+        "light_gone",
+        config_entry_id=entry.entry_id,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="light_gone",
+    )
+
+    await async_disable_config_entry(hass, entry)
+    issues = await _list(hass, hass_admin_user, include_ignored=True)
+    assert "light_gone" not in [issue["issue_id"] for issue in issues]
+
+    await async_disable_config_entry(hass, entry, disabled=False)
+    issues = await _list(hass, hass_admin_user, include_ignored=True)
+    assert "light_gone" in [issue["issue_id"] for issue in issues]
 
 
 @pytest.mark.parametrize(
