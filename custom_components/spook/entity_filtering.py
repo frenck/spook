@@ -44,6 +44,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.template.helpers import resolve_area_id
 from homeassistant.util.hass_dict import HassKey
 
+from .configuration_cache import per_configuration, reading_for
 from .const import LOGGER
 from .core_compat import async_get_child_device_ids, async_get_device_entries
 from .listeners import async_listen_once_tracked
@@ -99,7 +100,10 @@ class EntityIDsCache:
 
     entity_ids: set[str] | None = None
     entity_ids_by_domain: dict[str, list[str]] | None = None
-    created_scene_ids: set[str] | None = None
+    # The scenes automations and scripts create, and the configurations that
+    # was read from: the answer holds for as long as those are the very same.
+    created_scene_ids: frozenset[str] = frozenset()
+    created_scenes_read_from: tuple[dict[str, Any], ...] | None = None
     rename_suggestions: dict[str, str | None] | None = None
     deleted_entities: dict[str, er.DeletedRegistryEntry] | None = None
     unsubscribe: Callable[[], None] | None = None
@@ -161,7 +165,6 @@ def async_setup_all_entity_ids_cache_invalidation(
         LOGGER.debug("Clearing all_entity_ids cache.")
         cache.entity_ids = None
         cache.entity_ids_by_domain = None
-        cache.created_scene_ids = None
 
     @callback
     def _clear_cache_and_suggestions(*_args: Any) -> None:
@@ -295,6 +298,18 @@ def _find_created_scene_ids(config: Any) -> set[str]:
     return scene_ids
 
 
+@per_configuration
+def _scene_ids_created_by(config: dict[str, Any]) -> frozenset[str]:
+    """Return the scene IDs one automation or script creates.
+
+    Remembered per configuration, so this follows a reload by itself: Home
+    Assistant keeps the configuration of an automation that did not change,
+    and hands a changed one a new one. Frozen, because what is remembered is
+    shared with whoever asks next.
+    """
+    return frozenset(_find_created_scene_ids(config))
+
+
 @callback
 def async_get_created_scene_ids(hass: HomeAssistant) -> set[str]:
     """Return scene entity IDs that configured actions create at runtime.
@@ -303,36 +318,64 @@ def async_get_created_scene_ids(hass: HomeAssistant) -> set[str]:
     nothing in the registry knows about it until then, and after a restart it
     is gone again until the action runs once more. Referencing one is not a
     broken reference, so collect them and treat them as known.
+
+    Not cached with the entity IDs. A reload that adds or removes a
+    `scene.create` adds or removes no entity, so nothing would tell that
+    cache. What tells is the configuration itself: Home Assistant keeps the
+    one of an automation that did not change, and hands a changed one a new
+    one. So the answer is kept for as long as every configuration is still
+    the very same, which is cheap to see, and this is asked a lot: once for
+    every issue that is written.
     """
-    cache = _async_get_cache(hass)
+    configured: list[tuple[Any, dict[str, Any]]] = []
+    instances = hass.data.get(DATA_INSTANCES, {})
 
-    if (scene_ids := cache.created_scene_ids) is None:
-        scene_ids = set()
-        instances = hass.data.get(DATA_INSTANCES, {})
-        for domain in (automation.DOMAIN, script.DOMAIN):
-            if (entity_component := instances.get(domain)) is None:
+    for domain in (automation.DOMAIN, script.DOMAIN):
+        if (entity_component := instances.get(domain)) is None:
+            continue
+
+        for entity in entity_component.entities:
+            if isinstance(entity, _UNAVAILABLE_ENTITY_CLASSES):
+                # Kept around for a configuration Home Assistant rejected.
+                # It cannot run, so it creates nothing.
                 continue
-            for entity in entity_component.entities:
-                if isinstance(entity, _UNAVAILABLE_ENTITY_CLASSES):
-                    # Kept around for a configuration Home Assistant rejected.
-                    # It cannot run, so it creates nothing.
-                    continue
 
-                if (raw_config := getattr(entity, "raw_config", None)) is not None:
-                    scene_ids |= _find_created_scene_ids(raw_config)
-        cache.created_scene_ids = scene_ids
-        LOGGER.debug(
-            "Spook found %s scenes created by configured actions", len(scene_ids)
+            raw_config = getattr(entity, "raw_config", None)
+            if isinstance(raw_config, dict):
+                configured.append((entity, raw_config))
+
+    cache = _async_get_cache(hass)
+    read_from = cache.created_scenes_read_from
+    if (
+        read_from is not None
+        and len(read_from) == len(configured)
+        and all(
+            raw_config is known
+            for (_, raw_config), known in zip(configured, read_from, strict=True)
         )
+    ):
+        return set(cache.created_scene_ids)
 
-    return scene_ids.copy()
+    scene_ids: set[str] = set()
+    for entity, raw_config in configured:
+        # Kept with the automation or script it was read from, so a
+        # reload that drops one drops what was read from it too.
+        with reading_for(entity):
+            scene_ids |= _scene_ids_created_by(raw_config)
+
+    cache.created_scene_ids = frozenset(scene_ids)
+    cache.created_scenes_read_from = tuple(raw_config for _, raw_config in configured)
+
+    return scene_ids
 
 
 @callback
-def async_get_all_entity_ids(
-    hass: HomeAssistant, *, include_all_none: bool = False
-) -> set[str]:
-    """Return entity IDs known to Home Assistant or treated as known by Spook."""
+def _async_get_existing_entity_ids(hass: HomeAssistant) -> set[str]:
+    """Return the cached entity IDs that exist, without the created scenes.
+
+    The cache itself, not a copy: whoever asks here reads it and never
+    changes it.
+    """
     cache = _async_get_cache(hass)
 
     if (entity_ids := cache.entity_ids) is None:
@@ -348,7 +391,6 @@ def async_get_all_entity_ids(
         combined_entity_ids = entity_ids_from_registry.union(
             entity_ids_from_states,
             KNOWN_TIME_DATE_ENTITY_IDS,
-            async_get_created_scene_ids(hass),
         )
 
         # Filter out ignored domains
@@ -363,10 +405,22 @@ def async_get_all_entity_ids(
             len(entity_ids),
         )
 
-    # Return a copy from the cache, optionally adding ALL/NONE
+    return entity_ids
+
+
+@callback
+def async_get_all_entity_ids(
+    hass: HomeAssistant, *, include_all_none: bool = False
+) -> set[str]:
+    """Return entity IDs known to Home Assistant or treated as known by Spook."""
+    # A copy from the cache, with the scenes created right now. Optionally
+    # adding ALL/NONE.
+    known_entity_ids = _async_get_existing_entity_ids(hass).union(
+        async_get_created_scene_ids(hass)
+    )
     if include_all_none:
-        return entity_ids.union({ENTITY_MATCH_ALL, ENTITY_MATCH_NONE})
-    return entity_ids.copy()
+        known_entity_ids |= {ENTITY_MATCH_ALL, ENTITY_MATCH_NONE}
+    return known_entity_ids
 
 
 @callback
@@ -381,11 +435,22 @@ def async_get_all_entity_ids_by_domain(hass: HomeAssistant) -> dict[str, list[st
 
     if (by_domain := cache.entity_ids_by_domain) is None:
         by_domain = {}
-        for entity_id in async_get_all_entity_ids(hass):
+        for entity_id in _async_get_existing_entity_ids(hass):
             by_domain.setdefault(entity_id.split(".", 1)[0], []).append(entity_id)
         cache.entity_ids_by_domain = by_domain
 
-    return by_domain
+    # The created scenes follow their configuration, not this cache, so they
+    # are added on the way out. Into a new mapping: the cached one is handed
+    # to a thread as it is, and is never changed in place.
+    existing_scene_ids = by_domain.get(Platform.SCENE, [])
+    created_scene_ids = async_get_created_scene_ids(hass).difference(existing_scene_ids)
+    if not created_scene_ids:
+        return by_domain
+
+    return {
+        **by_domain,
+        Platform.SCENE: [*existing_scene_ids, *sorted(created_scene_ids)],
+    }
 
 
 @callback
