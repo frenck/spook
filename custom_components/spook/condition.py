@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 
 from homeassistant.util.hass_dict import HassKey
 
+from .const import LOGGER
+
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.condition import Condition
@@ -32,14 +34,34 @@ async def async_get_conditions(
     conditions: dict[str, type[Condition]] = {}
 
     def _load_all_condition_modules() -> None:
-        """Load all condition modules and collect their conditions."""
+        """Load all condition modules and collect their conditions, isolating failures.
+
+        Home Assistant asks for these while it validates automations, where
+        it only expects an invalid configuration. A condition that fails to
+        import, most likely because Home Assistant moved or renamed something
+        it uses, would otherwise fail the validation of every automation.
+        Skipping it leaves only the automations that use it invalid.
+        """
         for module_file in Path(__file__).parent.rglob("ectoplasms/*/conditions/*.py"):
             if module_file.name == "__init__.py":
                 continue
             module_path = str(module_file.relative_to(Path(__file__).parent))[
                 :-3
             ].replace("/", ".")
-            module = importlib.import_module(f".{module_path}", __package__)
+
+            try:
+                module = importlib.import_module(f".{module_path}", __package__)
+            # pylint: disable-next=broad-exception-caught
+            except Exception:  # noqa: BLE001
+                LOGGER.exception(
+                    "Spook condition %s.%s failed to load and has been skipped; "
+                    "please report this issue at "
+                    "https://github.com/frenck/spook/issues",
+                    __package__,
+                    module_path,
+                )
+                continue
+
             conditions[module.SpookCondition.condition] = module.SpookCondition
 
     await hass.async_add_import_executor_job(_load_all_condition_modules)

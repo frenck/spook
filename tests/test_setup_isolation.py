@@ -8,12 +8,15 @@ prevent the rest of Spook from loading.
 
 from __future__ import annotations
 
+import importlib
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from pytest_homeassistant.common import async_mock_service
+import pytest
+from pytest_homeassistant.common import MockConfigEntry, async_mock_service
 
-from custom_components.spook import setup_helpers
+from custom_components.spook import condition, setup_helpers, trigger
+from custom_components.spook.const import DOMAIN, PLATFORMS
 from custom_components.spook.repairs import AbstractSpookRepair, SpookRepairManager
 from custom_components.spook.services import (
     ReplaceExistingService,
@@ -21,8 +24,10 @@ from custom_components.spook.services import (
 )
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
+    from homeassistant.const import Platform
     from homeassistant.core import HomeAssistant
-    import pytest
 
 
 class _WorkingRepair(AbstractSpookRepair):
@@ -159,3 +164,229 @@ async def test_failed_service_override_restores_original_service(
 
     assert hass.services.has_service("light", "turn_on")
     assert "mock.broken_override failed to set up" in caplog.text
+
+
+def _failing_to_import(
+    monkeypatch: pytest.MonkeyPatch,
+    module_name: str,
+    error: Exception,
+) -> None:
+    """Make importing one module raise, as if Home Assistant moved something.
+
+    Everything else imports as it always does. Modules imported before are
+    cached, so the one that fails is the only one doing anything different.
+    """
+    import_module = importlib.import_module
+
+    def _import_module(name: str, package: str | None = None) -> ModuleType:
+        if name.removeprefix(".").endswith(module_name):
+            raise error
+        return import_module(name, package)
+
+    monkeypatch.setattr(importlib, "import_module", _import_module)
+
+
+async def _async_set_up_repair_modules(hass: HomeAssistant) -> set[str]:
+    """Set up every Spook repair, and return the modules that made it."""
+    manager = SpookRepairManager(hass)
+    await manager.async_setup()
+    set_up = {type(repair).__module__ for repair in manager._repairs}
+    await manager.async_on_unload()
+    return set_up
+
+
+@pytest.mark.parametrize(
+    "error",
+    [
+        ImportError("cannot import name 'gone' from 'homeassistant.helpers'"),
+        AttributeError("module 'homeassistant.const' has no attribute 'GONE'"),
+    ],
+)
+async def test_repair_module_failing_to_import_does_not_abort_setup(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+    error: Exception,
+) -> None:
+    """Test a repair that fails to import is skipped, and the others set up.
+
+    The realistic cause is Home Assistant moving or renaming something a
+    repair imports. That is one repair broken, not all of them.
+    """
+    # The Lovelace repair needs the Lovelace data container to activate.
+    hass.data["lovelace"] = SimpleNamespace(dashboards={}, resources=None)
+
+    broken = (
+        "custom_components.spook.ectoplasms.scene.repairs.unknown_entity_references"
+    )
+    sibling = "custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references"
+
+    everything = await _async_set_up_repair_modules(hass)
+    assert {broken, sibling} <= everything
+
+    _failing_to_import(
+        monkeypatch, broken.removeprefix("custom_components.spook."), error
+    )
+    survivors = await _async_set_up_repair_modules(hass)
+
+    assert survivors == everything - {broken}
+    assert f"Spook repair {broken} failed to load and has been skipped" in caplog.text
+    assert str(error) in caplog.text
+
+
+async def _async_set_up_service_modules(hass: HomeAssistant) -> set[str]:
+    """Set up every Spook service, and return the modules that made it."""
+    manager = SpookServiceManager(hass)
+    await manager.async_setup()
+    set_up = {type(service).__module__ for service in manager._services}
+    manager.async_on_unload()
+    return set_up
+
+
+async def test_service_module_failing_to_import_does_not_abort_setup(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a service that fails to import is skipped, and the others set up.
+
+    Picked from the spook domain, as that one is always there to register on.
+    """
+    broken = "custom_components.spook.ectoplasms.spook.services.boo"
+    sibling = "custom_components.spook.ectoplasms.spook.services.random_fail"
+
+    everything = await _async_set_up_service_modules(hass)
+    assert {broken, sibling} <= everything
+
+    _failing_to_import(
+        monkeypatch,
+        broken.removeprefix("custom_components.spook."),
+        ImportError("cannot import name 'gone' from 'homeassistant.helpers'"),
+    )
+    manager = SpookServiceManager(hass)
+    await manager.async_setup()
+
+    survivors = {type(service).__module__ for service in manager._services}
+    assert survivors == everything - {broken}
+    assert not hass.services.has_service(DOMAIN, "boo")
+    assert hass.services.has_service(DOMAIN, "random_fail")
+    assert f"Spook service {broken} failed to load and has been skipped" in caplog.text
+
+    manager.async_on_unload()
+
+
+async def _async_forward_to_ectoplasms(
+    hass: HomeAssistant,
+) -> dict[Platform, list[str] | Exception]:
+    """Forward the setup to every ectoplasm, and return what each platform got."""
+    await setup_helpers.async_forward_setup_entry(hass, MockConfigEntry(domain=DOMAIN))
+    platform_modules = hass.data.pop(setup_helpers.DATA_ECTOPLASM_PLATFORMS)
+    return {
+        platform: (
+            modules
+            if isinstance(modules, Exception)
+            else [module.__name__ for module in modules]
+        )
+        for platform, modules in platform_modules.items()
+    }
+
+
+async def test_ectoplasm_failing_to_import_does_not_abort_setup(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an ectoplasm that fails to import is skipped, and the rest loads.
+
+    The zone ectoplasm brings no platform of its own, so every platform is
+    expected to get exactly what it gets without the failure.
+    """
+    broken = "custom_components.spook.ectoplasms.zone.__init__"
+
+    everything = await _async_forward_to_ectoplasms(hass)
+    assert set(everything) == set(PLATFORMS)
+    assert all(isinstance(modules, list) for modules in everything.values())
+
+    _failing_to_import(
+        monkeypatch,
+        broken.removeprefix("custom_components.spook."),
+        ImportError("cannot import name 'gone' from 'homeassistant.helpers'"),
+    )
+    survivors = await _async_forward_to_ectoplasms(hass)
+
+    assert survivors == everything
+    assert f"Spook ectoplasm {broken} failed to load and has been skipped" in (
+        caplog.text
+    )
+
+
+async def _async_get_trigger_modules(hass: HomeAssistant) -> set[str]:
+    """Ask for the Spook triggers afresh, and return the modules they came from."""
+    hass.data.pop(trigger.DATA_TRIGGERS, None)
+    triggers = await trigger.async_get_triggers(hass)
+    return {spook_trigger.__module__ for spook_trigger in triggers.values()}
+
+
+async def test_trigger_module_failing_to_import_leaves_the_others(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a trigger that fails to import is skipped, and the others are there.
+
+    Home Assistant asks for these while validating automations, and only
+    expects an invalid configuration there. Anything else raised takes down
+    the validation of every automation, not only the ones using this trigger.
+    """
+    broken = "custom_components.spook.ectoplasms.spook.triggers.cron"
+
+    everything = await _async_get_trigger_modules(hass)
+    assert broken in everything
+
+    _failing_to_import(
+        monkeypatch,
+        broken.removeprefix("custom_components.spook."),
+        ImportError("cannot import name 'gone' from 'homeassistant.helpers'"),
+    )
+    survivors = await _async_get_trigger_modules(hass)
+
+    assert survivors == everything - {broken}
+    assert f"Spook trigger {broken} failed to load and has been skipped" in (
+        caplog.text
+    )
+
+
+async def _async_get_condition_modules(hass: HomeAssistant) -> set[str]:
+    """Ask for the Spook conditions afresh, and return the modules they came from."""
+    hass.data.pop(condition.DATA_CONDITIONS, None)
+    conditions = await condition.async_get_conditions(hass)
+    return {spook_condition.__module__ for spook_condition in conditions.values()}
+
+
+async def test_condition_module_failing_to_import_leaves_the_others(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a condition that fails to import is skipped, and the others are there.
+
+    Home Assistant asks for these while validating automations, and only
+    expects an invalid configuration there. Anything else raised takes down
+    the validation of every automation, not only the ones using this condition.
+    """
+    broken = "custom_components.spook.ectoplasms.spook.conditions.chance"
+
+    everything = await _async_get_condition_modules(hass)
+    assert broken in everything
+
+    _failing_to_import(
+        monkeypatch,
+        broken.removeprefix("custom_components.spook."),
+        ImportError("cannot import name 'gone' from 'homeassistant.helpers'"),
+    )
+    survivors = await _async_get_condition_modules(hass)
+
+    assert survivors == everything - {broken}
+    assert f"Spook condition {broken} failed to load and has been skipped" in (
+        caplog.text
+    )
