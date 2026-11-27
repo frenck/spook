@@ -11,6 +11,7 @@ from homeassistant.components.blueprint import Blueprint
 from homeassistant.components.blueprint.errors import FailedToLoad
 from homeassistant.components.blueprint.schemas import BLUEPRINT_SCHEMA
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.setup import async_setup_component
 import pytest
 
 from custom_components.spook.const import DOMAIN
@@ -24,9 +25,17 @@ from custom_components.spook.repairs import (
 )
 from tests.repair_helpers import wire_fix_flow
 
+from tests.repair_helpers import (
+    async_reload_slower_than_the_repair_waits,
+    async_wait_out_the_repair,
+)
+
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
+
+    from custom_components.spook.repairs import AbstractSpookRepair
 
 _ISSUE_ID = "unused_blueprints_automation:motion.yaml"
 
@@ -214,3 +223,114 @@ async def test_fix_flow_ignore_option_dismisses_issue(
     issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
     assert issue is not None
     assert issue.dismissed_version is not None
+
+
+# One blueprint of each domain that uses them, and a configuration holding
+# one automation or script, on that blueprint or on nothing of the kind.
+# What the blueprint holds differs from the one on nothing: a reload leaves
+# alone what it reads back as it was, blueprint or not.
+_BLUEPRINT_FILES = {
+    "automation": """
+blueprint:
+  name: Spooky
+  domain: automation
+triggers:
+  - trigger: event
+    event_type: blueprinted
+actions: []
+""",
+    "script": """
+blueprint:
+  name: Spooky
+  domain: script
+sequence:
+  - delay: 1
+""",
+}
+_ON_THE_BLUEPRINT = {"use_blueprint": {"path": "frenck/spooky.yaml", "input": {}}}
+_CONFIGURATIONS = {
+    "automation": (
+        {
+            "automation": [
+                {
+                    "id": "lights",
+                    "alias": "Lights",
+                    "triggers": [{"trigger": "event", "event_type": "spook"}],
+                    "actions": [],
+                }
+            ]
+        },
+        {"automation": [{"id": "lights", "alias": "Lights", **_ON_THE_BLUEPRINT}]},
+    ),
+    "script": (
+        {"script": {"lights": {"sequence": []}}},
+        {"script": {"lights": _ON_THE_BLUEPRINT}},
+    ),
+}
+
+
+async def _set_up_on_a_blueprint_or_not(
+    hass: HomeAssistant, tmp_path: Path, configuration: dict[str, Any]
+) -> AbstractSpookRepair:
+    """Set up the Spooky blueprint and a configuration, and the repair on them.
+
+    In a config dir of its own, so the test writes no blueprint anywhere else.
+    """
+    (domain,) = configuration
+    hass.config.config_dir = str(tmp_path)
+    path = tmp_path / "blueprints" / domain / "frenck" / "spooky.yaml"
+    path.parent.mkdir(parents=True)
+    path.write_text(_BLUEPRINT_FILES[domain], encoding="utf-8")
+
+    assert await async_setup_component(hass, domain, configuration)
+    await hass.async_block_till_done()
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    return repair
+
+
+@pytest.mark.parametrize("domain", ["automation", "script"])
+async def test_a_reload_that_starts_using_it_takes_the_issue_away(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    issue_registry: ir.IssueRegistry,
+    tmp_path: Path,
+    domain: str,
+) -> None:
+    """Test an edited automation or script, once reloaded on it, clears the issue.
+
+    The look the reload call brought came while the YAML was still being
+    read, and nothing brought one once the reload was done. The issue stayed
+    up, with a button to remove a blueprint that is now used, for a day.
+    """
+    issue = (DOMAIN, f"unused_blueprints_{domain}:frenck/spooky.yaml")
+    without, on_it = _CONFIGURATIONS[domain]
+    repair = await _set_up_on_a_blueprint_or_not(hass, tmp_path, without)
+    await async_wait_out_the_repair(hass, freezer)
+    assert issue in issue_registry.issues
+
+    await async_reload_slower_than_the_repair_waits(hass, freezer, on_it)
+    await repair.async_deactivate()
+
+    assert issue not in issue_registry.issues
+
+
+@pytest.mark.parametrize("domain", ["automation", "script"])
+async def test_a_reload_that_stops_using_it_raises_the_issue(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    issue_registry: ir.IssueRegistry,
+    tmp_path: Path,
+    domain: str,
+) -> None:
+    """Test a reload taking the last use away reports the blueprint unused."""
+    issue = (DOMAIN, f"unused_blueprints_{domain}:frenck/spooky.yaml")
+    without, on_it = _CONFIGURATIONS[domain]
+    repair = await _set_up_on_a_blueprint_or_not(hass, tmp_path, on_it)
+    await async_wait_out_the_repair(hass, freezer)
+    assert issue not in issue_registry.issues
+
+    await async_reload_slower_than_the_repair_waits(hass, freezer, without)
+    await repair.async_deactivate()
+
+    assert issue in issue_registry.issues

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 
+from homeassistant.components import automation
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.helpers import (
     area_registry as ar,
@@ -32,14 +33,18 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = "homeassistant"
     repair = "unused_labels"
+    # An automation or script that starts or stops naming a label says so
+    # once its reload is done: automations with their reload event, scripts
+    # by going and coming back. Edited, it is no registry change at all.
     inspect_events = {
         EVENT_HOMEASSISTANT_STARTED,
+        automation.EVENT_AUTOMATION_RELOADED,
         lr.EVENT_LABEL_REGISTRY_UPDATED,
         ar.EVENT_AREA_REGISTRY_UPDATED,
         dr.EVENT_DEVICE_REGISTRY_UPDATED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
-    inspect_on_reload = True
+    inspect_on_entity_added_or_removed = "script"
     # Once a day: one younger than `_MINIMUM_AGE` is left alone, and nothing
     # that happens to the label says when it is old enough to look at.
     inspect_interval = timedelta(days=1)

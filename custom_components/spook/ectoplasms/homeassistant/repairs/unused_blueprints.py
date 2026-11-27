@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from homeassistant.components import blueprint
+from homeassistant.components import automation, blueprint
 from homeassistant.components.automation import automations_with_blueprint
 from homeassistant.components.script import scripts_with_blueprint
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
@@ -42,8 +42,14 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = "homeassistant"
     repair = "unused_blueprints"
-    inspect_events = {EVENT_HOMEASSISTANT_STARTED}
-    inspect_on_reload = True
+    # An automation or script that starts or stops using a blueprint says
+    # so once its reload is done: automations with their reload event,
+    # scripts by going and coming back.
+    inspect_events = {
+        EVENT_HOMEASSISTANT_STARTED,
+        automation.EVENT_AUTOMATION_RELOADED,
+    }
+    inspect_on_entity_added_or_removed = "script"
     inspect_interval = timedelta(days=1)
     automatically_clean_up_issues = True
 
