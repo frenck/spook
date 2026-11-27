@@ -17,9 +17,16 @@ from custom_components.spook.repairs import (
     AreaUnknownSensorsFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_issue_about
+from tests.repair_helpers import (
+    async_delete_entity,
+    async_forget_deleted_entities,
+    async_issue_about,
+    wire_fix_flow,
+)
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import (
         area_registry as ar,
@@ -187,7 +194,7 @@ async def test_fix_flow_clears_only_what_points_at_nothing(
         temperature="sensor.kitchen_temperature",
         humidity="sensor.kitchen_humidity",
     )
-    hass.states.async_remove("sensor.kitchen_temperature")
+    _gone(hass, "sensor.kitchen_temperature", deleted=True)
 
     flow = await async_create_fix_flow(
         hass, _issue_id(area), {"area_sensors_area_id": area.id, "area": "Kitchen"}
@@ -253,7 +260,7 @@ async def test_fix_flow_clears_only_the_settings_it_showed(
         temperature="sensor.kitchen_temperature",
         humidity="sensor.kitchen_humidity",
     )
-    hass.states.async_remove("sensor.kitchen_humidity")
+    _gone(hass, "sensor.kitchen_humidity", deleted=True)
 
     flow = AreaUnknownSensorsFixFlow()
     flow.hass = hass
@@ -313,7 +320,7 @@ async def test_a_setting_pointed_elsewhere_since_is_not_cleared(
     """
     async_setup_all_entity_ids_cache_invalidation(hass)
     area = _kitchen(hass, area_registry, temperature="sensor.kitchen_temperature")
-    hass.states.async_remove("sensor.kitchen_temperature")
+    _gone(hass, "sensor.kitchen_temperature", deleted=True)
     await SpookRepair(hass).async_inspect()
     issue = async_issue_about(issue_registry, _issue_id(area))
     assert issue
@@ -322,10 +329,10 @@ async def test_a_setting_pointed_elsewhere_since_is_not_cleared(
     flow.hass = hass
     flow.data = issue.data
     # Home Assistant only takes a sensor that exists, so it does, and then
-    # it goes missing as well.
+    # it is deleted as well.
     _sensor(hass, "sensor.new_one", "temperature")
     area_registry.async_update(area.id, temperature_entity_id="sensor.new_one")
-    hass.states.async_remove("sensor.new_one")
+    _gone(hass, "sensor.new_one", deleted=True)
     result = await flow.async_step_remove()
 
     assert result["type"] == FlowResultType.ABORT
@@ -333,3 +340,122 @@ async def test_a_setting_pointed_elsewhere_since_is_not_cleared(
     assert area_registry.async_get_area(area.id).temperature_entity_id == (
         "sensor.new_one"
     )
+
+
+_TEMPERATURE = "sensor.kitchen_temperature"
+_HUMIDITY = "sensor.kitchen_humidity"
+
+
+def _gone(hass: HomeAssistant, entity_id: str, *, deleted: bool) -> None:
+    """Take a sensor away, deleted from Home Assistant or just not there.
+
+    The state goes first: Home Assistant hands out no entity ID that a
+    state is still using.
+    """
+    hass.states.async_remove(entity_id)
+    if deleted:
+        async_delete_entity(hass, entity_id)
+
+
+async def _flow_for_the_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    area: ar.AreaEntry,
+) -> AreaUnknownSensorsFixFlow:
+    """Look, and return the fix flow of the issue raised about the area."""
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(area))
+    assert issue
+
+    flow = wire_fix_flow(hass, AreaUnknownSensorsFixFlow(), issue.issue_id)
+    flow.data = issue.data
+    return flow
+
+
+async def test_a_sensor_that_may_not_be_up_yet_gets_no_clear_button(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a sensor Home Assistant never deleted keeps its setting.
+
+    A YAML sensor without a unique ID whose platform is still retrying has
+    no state and no registry entry. So has one that is gone.
+    """
+    area = _kitchen(hass, area_registry, temperature=_TEMPERATURE)
+    _gone(hass, _TEMPERATURE, deleted=False)
+
+    flow = await _flow_for_the_issue(hass, issue_registry, area)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["manage", "ignore"]
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    updated = area_registry.async_get_area(area.id)
+    assert updated
+    assert updated.temperature_entity_id == _TEMPERATURE
+
+
+async def test_a_sensor_deleted_from_home_assistant_can_be_cleared(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a sensor the entity registry deleted keeps its clear button."""
+    area = _kitchen(hass, area_registry, temperature=_TEMPERATURE)
+    _gone(hass, _TEMPERATURE, deleted=True)
+
+    flow = await _flow_for_the_issue(hass, issue_registry, area)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    updated = area_registry.async_get_area(area.id)
+    assert updated
+    assert updated.temperature_entity_id is None
+
+
+async def test_only_the_deleted_sensor_is_cleared(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a deleted sensor is cleared, and one that may not be up yet stays."""
+    area = _kitchen(hass, area_registry, temperature=_TEMPERATURE, humidity=_HUMIDITY)
+    _gone(hass, _TEMPERATURE, deleted=False)
+    _gone(hass, _HUMIDITY, deleted=True)
+
+    flow = await _flow_for_the_issue(hass, issue_registry, area)
+    await flow.async_step_remove()
+
+    assert flow.data
+    lines = str(flow.data["entities"]).splitlines()
+    assert lines[0].startswith(f"- `{_HUMIDITY}` (deleted on ")
+    assert lines[1] == f"- `{_TEMPERATURE}`"
+    updated = area_registry.async_get_area(area.id)
+    assert updated
+    assert updated.temperature_entity_id == _TEMPERATURE
+    assert updated.humidity_entity_id is None
+
+
+async def test_a_sensor_home_assistant_forgot_deleting_stays(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the proof is asked for again when the button is pressed."""
+    area = _kitchen(hass, area_registry, temperature=_TEMPERATURE)
+    _gone(hass, _TEMPERATURE, deleted=True)
+    flow = await _flow_for_the_issue(hass, issue_registry, area)
+
+    async_forget_deleted_entities(hass, freezer)
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    updated = area_registry.async_get_area(area.id)
+    assert updated
+    assert updated.temperature_entity_id == _TEMPERATURE

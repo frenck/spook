@@ -9,21 +9,30 @@ from typing import TYPE_CHECKING, Any
 from pytest_homeassistant.common import MockConfigEntry
 
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.group.repairs import unknown_members
 from custom_components.spook.ectoplasms.group.repairs.unknown_members import SpookRepair
 from custom_components.spook.repairs import (
     GroupUnknownMembersFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_issue_about, wire_fix_flow
+from tests.repair_helpers import (
+    async_delete_entity,
+    async_forget_deleted_entities,
+    async_issue_about,
+    wire_fix_flow,
+)
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant
     import pytest
-    from homeassistant.helpers import entity_registry as er, issue_registry as ir
+    from homeassistant.helpers import entity_registry as er
 
 _ISSUE_ID = "group_unknown_members_light.living"
 
@@ -73,6 +82,7 @@ async def test_fix_flow_remove_prunes_ui_group(
     entity_registry: er.EntityRegistry,
 ) -> None:
     """Test the remove option drops missing members from a UI group."""
+    async_delete_entity(hass, "light.gone")
     hass.states.async_set("light.known", "on")
     entry = MockConfigEntry(
         domain="group",
@@ -139,6 +149,7 @@ async def test_remove_reloads_the_running_group(hass: HomeAssistant) -> None:
     the options and stopping there leaves the member in the group until a
     restart, while the button says it is done.
     """
+    async_delete_entity(hass, "light.gone")
     hass.states.async_set("light.real", "on")
     assert await async_setup_component(hass, "group", {})
 
@@ -188,6 +199,7 @@ async def test_only_the_members_the_issue_named_are_dropped(
     integration reloading say, is not one somebody agreed to drop, and
     dropping it would be for good.
     """
+    async_delete_entity(hass, "light.gone")
     hass.states.async_set("light.known", "on")
     entry = MockConfigEntry(
         domain="group",
@@ -209,7 +221,9 @@ async def test_only_the_members_the_issue_named_are_dropped(
     flow = GroupUnknownMembersFixFlow()
     flow.hass = hass
     flow.data = issue.data
+    # Deleted even, which makes it no less a member nobody was shown.
     hass.states.async_remove("light.away")
+    async_delete_entity(hass, "light.away")
     await flow.async_step_remove()
 
     assert entry.options["entities"] == ["light.known", "light.away"]
@@ -309,3 +323,161 @@ async def test_a_group_added_mid_round_does_not_end_it(
     await SpookRepair(hass).async_inspect()
 
     assert async_issue_about(issue_registry, _ISSUE_ID)
+
+
+def _ui_group_with(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    members: list[str],
+) -> tuple[MockConfigEntry, str]:
+    """Return a UI group with these members, and the entity ID of the group."""
+    entry = MockConfigEntry(
+        domain="group", options={"entities": members, "group_type": "light"}
+    )
+    entry.add_to_hass(hass)
+    group = entity_registry.async_get_or_create(
+        "light", "group", "living", config_entry=entry
+    )
+    _install_group(hass, group.entity_id, members)
+    return entry, group.entity_id
+
+
+async def _flow_for_the_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    group_entity_id: str,
+) -> GroupUnknownMembersFixFlow:
+    """Look, and return the fix flow of the issue raised about the group."""
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(
+        issue_registry, f"group_unknown_members_{group_entity_id}"
+    )
+    assert issue
+
+    flow = wire_fix_flow(hass, GroupUnknownMembersFixFlow(), issue.issue_id)
+    flow.data = issue.data
+    return flow
+
+
+async def test_a_member_that_may_not_be_up_yet_gets_no_remove_button(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a member Home Assistant never deleted is reported, and kept.
+
+    A YAML sensor without a unique ID whose platform is still retrying has
+    no state and no registry entry. So has one that is gone. Nothing tells
+    the two apart, and removing a member for good on that is a guess.
+    """
+    hass.states.async_set("light.known", "on")
+    entry, group = _ui_group_with(
+        hass, entity_registry, ["light.known", "light.not_up_yet"]
+    )
+
+    flow = await _flow_for_the_issue(hass, issue_registry, group)
+    menu = await flow.async_step_init()
+    # Pressed from a dialog that was opened before, or by hand.
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["manage", "ignore"]
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entities"] == ["light.known", "light.not_up_yet"]
+
+
+async def test_a_member_deleted_from_home_assistant_can_be_removed(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a member the entity registry deleted keeps its remove button."""
+    hass.states.async_set("light.known", "on")
+    async_delete_entity(hass, "light.gone")
+    entry, group = _ui_group_with(hass, entity_registry, ["light.known", "light.gone"])
+
+    flow = await _flow_for_the_issue(hass, issue_registry, group)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert entry.options["entities"] == ["light.known"]
+
+
+async def test_only_the_deleted_members_are_removed(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a deleted member goes, and one that may not be up yet stays.
+
+    The issue marks which is which: the deleted one says when it was.
+    """
+    async_delete_entity(hass, "light.gone")
+    entry, group = _ui_group_with(
+        hass, entity_registry, ["light.gone", "light.not_up_yet"]
+    )
+
+    flow = await _flow_for_the_issue(hass, issue_registry, group)
+    menu = await flow.async_step_init()
+    await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
+    assert flow.data
+    lines = str(flow.data["entities"]).splitlines()
+    assert lines[0].startswith("- `light.gone` (deleted on ")
+    assert lines[1] == "- `light.not_up_yet`"
+    assert entry.options["entities"] == ["light.not_up_yet"]
+
+
+async def test_a_member_home_assistant_forgot_deleting_stays(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the proof is asked for again when the button is pressed.
+
+    Home Assistant forgets a deleted entity after a month, without saying
+    so. Between the issue being raised and the button being pressed, the
+    one reason to remove the member can be gone.
+    """
+    async_delete_entity(hass, "light.gone")
+    entry, group = _ui_group_with(hass, entity_registry, ["light.known", "light.gone"])
+    hass.states.async_set("light.known", "on")
+    flow = await _flow_for_the_issue(hass, issue_registry, group)
+
+    async_forget_deleted_entities(hass, freezer)
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entities"] == ["light.known", "light.gone"]
+
+
+async def test_an_ignored_issue_stays_ignored_when_the_proof_goes(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test losing the remove button does not bring an ignored issue back.
+
+    The issue is filed under what it reports, and that stays the same
+    whether or not there is proof of it having been deleted.
+    """
+    async_delete_entity(hass, "light.gone")
+    _entry, group = _ui_group_with(hass, entity_registry, ["light.gone"])
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, f"group_unknown_members_{group}")
+    assert issue
+    ir.async_ignore_issue(hass, DOMAIN, issue.issue_id, ignore=True)
+
+    async_forget_deleted_entities(hass, freezer)
+    await SpookRepair(hass).async_inspect()
+
+    again = async_issue_about(issue_registry, f"group_unknown_members_{group}")
+    assert again
+    assert again.issue_id == issue.issue_id
+    assert again.dismissed_version is not None

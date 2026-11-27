@@ -19,6 +19,7 @@ from pytest_homeassistant.common import (
 
 from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
@@ -219,6 +220,38 @@ async def async_disable_config_entry(
         entry.entry_id, ConfigEntryDisabler.USER if disabled else None
     )
     await hass.async_block_till_done()
+
+
+def async_delete_entity(
+    hass: HomeAssistant, entity_id: str, *, platform: str = "spook_test"
+) -> er.RegistryEntry:
+    """Register an entity, and delete it again the way Home Assistant does.
+
+    Through the entity registry itself, so the record of having deleted it
+    is the one Home Assistant keeps, and not one a test made up. Returns the
+    entry as it was registered, for its entity registry ID.
+    """
+    registry = er.async_get(hass)
+    domain, object_id = entity_id.split(".", 1)
+    entry = registry.async_get_or_create(
+        domain, platform, object_id, suggested_object_id=object_id
+    )
+    assert entry.entity_id == entity_id
+
+    registry.async_remove(entity_id)
+    return entry
+
+
+def async_forget_deleted_entities(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Let Home Assistant forget the entities it deleted, the way it does.
+
+    It keeps a deleted entity nothing owns for 30 days, and purges it on its
+    own daily round after that. That round raises no event.
+    """
+    freezer.tick(timedelta(days=31))
+    er.async_get(hass).async_purge_expired_orphaned_entities()
 
 
 # Comfortably past the three seconds a repair waits before it looks.

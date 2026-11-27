@@ -29,6 +29,9 @@ class SpookRepair(AbstractSpookRepair):
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = "proximity"
+    # A zone from YAML has no unique ID: it arrives as a state, without
+    # the entity registry hearing.
+    inspect_on_entity_added_or_removed = "zone"
 
     automatically_clean_up_issues = True
 

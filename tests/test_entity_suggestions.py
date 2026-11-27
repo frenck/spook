@@ -9,8 +9,11 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 
 from custom_components.spook import entity_filtering, entity_suggestions
 from custom_components.spook.entity_suggestions import async_describe_unknown_entities
+from tests.repair_helpers import async_delete_entity, async_forget_deleted_entities
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er
     import pytest
@@ -364,3 +367,24 @@ async def test_a_suggestion_follows_a_rename(
         "- `sensor.living_room_temperatur`\n"
         "- `sensor.lounge_temperatur` (did you mean `sensor.lounge_temperature`?)"
     )
+
+
+async def test_a_deleted_registry_id_names_the_entity_it_was(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a registry ID says it was deleted, and what it was while known.
+
+    Nobody recognizes an entity by its registry ID. A fix removes one that
+    leads nowhere, so the description marks it as deleted, the way it marks
+    an entity ID with a record of being deleted.
+    """
+    deleted = async_delete_entity(hass, "sensor.gone")
+
+    remembered = await async_describe_unknown_entities(hass, [deleted.id])
+    async_forget_deleted_entities(hass, freezer)
+    forgotten = await async_describe_unknown_entities(hass, [deleted.id])
+
+    assert remembered.startswith(f"- `{deleted.id}` (deleted on ")
+    assert remembered.endswith(", was `sensor.gone`, provided by `spook_test`)")
+    assert forgotten == f"- `{deleted.id}` (deleted)"

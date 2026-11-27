@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from pytest_homeassistant.common import MockConfigEntry
+import pytest
 
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.setup import async_setup_component
@@ -20,9 +21,16 @@ from custom_components.spook.repairs import (
     MinMaxUnknownSourcesFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_issue_about, wire_fix_flow
+from tests.repair_helpers import (
+    async_delete_entity,
+    async_forget_deleted_entities,
+    async_issue_about,
+    wire_fix_flow,
+)
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
@@ -91,6 +99,7 @@ async def test_fix_flow_remove_prunes_members(
     hass: HomeAssistant,
 ) -> None:
     """Test the remove option drops the missing members from the helper."""
+    async_delete_entity(hass, "sensor.gone")
     hass.states.async_set("sensor.known", "1")
     hass.states.async_set("sensor.two", "2")
     entry = _entry(hass, ["sensor.known", "sensor.two", "sensor.gone"])
@@ -121,6 +130,7 @@ async def test_fix_flow_remove_keeps_minimum_members(
     hass: HomeAssistant,
 ) -> None:
     """Test pruning that would leave fewer than two members is refused."""
+    async_delete_entity(hass, "sensor.gone")
     hass.states.async_set("sensor.known", "1")
     entry = _entry(hass, ["sensor.known", "sensor.gone"])
 
@@ -147,6 +157,7 @@ async def test_remove_stops_the_helper_listening(hass: HomeAssistant) -> None:
     source returns it decides the value again while the configuration says it
     is gone.
     """
+    async_delete_entity(hass, "sensor.gone")
     hass.states.async_set("sensor.one", "10", {"unit_of_measurement": "W"})
     hass.states.async_set("sensor.two", "20", {"unit_of_measurement": "W"})
     assert await async_setup_component(hass, "min_max", {})
@@ -193,6 +204,7 @@ async def test_only_the_members_the_issue_named_are_pruned(
     issue_registry: ir.IssueRegistry,
 ) -> None:
     """Test a member missing for a moment when the button is pressed stays."""
+    async_delete_entity(hass, "sensor.gone")
     # Spook sets this up on start; without it a member going away is not seen.
     async_setup_all_entity_ids_cache_invalidation(hass)
     for entity_id in ("sensor.one", "sensor.two", "sensor.away"):
@@ -205,7 +217,9 @@ async def test_only_the_members_the_issue_named_are_pruned(
     flow = MinMaxUnknownSourcesFixFlow()
     flow.hass = hass
     flow.data = issue.data
+    # Deleted even, which makes it no less a member nobody was shown.
     hass.states.async_remove("sensor.away")
+    async_delete_entity(hass, "sensor.away")
     await flow.async_step_remove()
 
     assert entry.options["entity_ids"] == ["sensor.one", "sensor.two", "sensor.away"]
@@ -229,3 +243,109 @@ async def test_a_member_that_came_back_is_not_pruned(hass: HomeAssistant) -> Non
     assert result["type"] == FlowResultType.ABORT
     assert result["reason"] == "changed"
     assert entry.options["entity_ids"] == ["sensor.one", "sensor.two", "sensor.gone"]
+
+
+async def _flow_for_the_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    entry: MockConfigEntry,
+) -> MinMaxUnknownSourcesFixFlow:
+    """Look, and return the fix flow of the issue raised about the helper."""
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(entry))
+    assert issue
+
+    flow = wire_fix_flow(hass, MinMaxUnknownSourcesFixFlow(), issue.issue_id)
+    flow.data = issue.data
+    return flow
+
+
+def _known_members(hass: HomeAssistant) -> list[str]:
+    """Put two members in place that are there, so pruning leaves enough."""
+    hass.states.async_set("sensor.one", "1")
+    hass.states.async_set("sensor.two", "2")
+    return ["sensor.one", "sensor.two"]
+
+
+async def test_a_member_that_may_not_be_up_yet_gets_no_remove_button(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a member Home Assistant never deleted is reported, and kept."""
+    members = [*_known_members(hass), "sensor.not_up_yet"]
+    entry = _entry(hass, members)
+
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["manage", "ignore"]
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entity_ids"] == members
+
+
+@pytest.mark.parametrize("as_registry_id", [False, True])
+async def test_a_member_deleted_from_home_assistant_can_be_removed(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    as_registry_id: bool,  # noqa: FBT001
+) -> None:
+    """Test a deleted member keeps its remove button, however it is stored.
+
+    A registry ID that no longer resolves is proof on its own: only a
+    registered entity is ever handed one.
+    """
+    deleted = async_delete_entity(hass, "sensor.gone")
+    gone = [deleted.id] if as_registry_id else ["sensor.gone"]
+    entry = _entry(hass, [*_known_members(hass), *gone])
+
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
+    assert "(deleted on " in str(menu["description_placeholders"]["sources"])
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert entry.options["entity_ids"] == ["sensor.one", "sensor.two"]
+
+
+async def test_only_the_deleted_members_are_removed(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a deleted member goes, and one that may not be up yet stays."""
+    async_delete_entity(hass, "sensor.gone")
+    entry = _entry(hass, [*_known_members(hass), "sensor.gone", "sensor.not_up_yet"])
+
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+    await flow.async_step_remove()
+
+    assert flow.data
+    lines = str(flow.data["sources"]).splitlines()
+    assert lines[0].startswith("- `sensor.gone` (deleted on ")
+    assert lines[1] == "- `sensor.not_up_yet`"
+    assert entry.options["entity_ids"] == [
+        "sensor.one",
+        "sensor.two",
+        "sensor.not_up_yet",
+    ]
+
+
+async def test_a_member_home_assistant_forgot_deleting_stays(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the proof is asked for again when the button is pressed."""
+    async_delete_entity(hass, "sensor.gone")
+    members = [*_known_members(hass), "sensor.gone"]
+    entry = _entry(hass, members)
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+
+    async_forget_deleted_entities(hass, freezer)
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entity_ids"] == members

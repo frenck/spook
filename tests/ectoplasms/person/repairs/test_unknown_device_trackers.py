@@ -21,11 +21,15 @@ from custom_components.spook.repairs import (
 )
 from tests.repair_helpers import (
     async_count_scheduled_inspections,
+    async_delete_entity,
+    async_forget_deleted_entities,
     async_issue_about,
     wire_fix_flow,
 )
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant, ServiceCall
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
@@ -125,6 +129,7 @@ async def test_fix_flow_remove_calls_service(
     hass: HomeAssistant,
 ) -> None:
     """Test the remove option strips the still-unknown trackers."""
+    async_delete_entity(hass, "device_tracker.gone")
     calls: list[dict] = []
 
     async def _handler(call: ServiceCall) -> None:
@@ -162,7 +167,11 @@ async def test_fix_flow_remove_calls_service(
 async def test_fix_flow_remove_skips_now_known_tracker(
     hass: HomeAssistant,
 ) -> None:
-    """Test a tracker that came back is not removed."""
+    """Test a tracker that came back is not removed, and the flow says so.
+
+    Completing would close the issue on a change that never happened.
+    """
+    async_delete_entity(hass, "device_tracker.gone")
     hass.states.async_set("device_tracker.gone", "home")
     called = False
 
@@ -175,7 +184,8 @@ async def test_fix_flow_remove_skips_now_known_tracker(
     flow = _flow_for(hass, ["device_tracker.gone"])
     result = await flow.async_step_remove()
 
-    assert result["type"] == "create_entry"
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
     assert called is False
 
 
@@ -183,6 +193,7 @@ async def test_fix_flow_remove_yaml_person_aborts(
     hass: HomeAssistant,
 ) -> None:
     """Test a non-editable person reports it cannot be edited."""
+    async_delete_entity(hass, "device_tracker.gone")
 
     async def _handler(_call: ServiceCall) -> None:
         raise HomeAssistantError
@@ -314,3 +325,105 @@ async def test_other_domain_lifecycle_does_not_recheck(
         )
         == 0
     )
+
+
+def _removals(hass: HomeAssistant) -> list[list[str]]:
+    """Return the device trackers Spook asks to remove, as it asks."""
+    removals: list[list[str]] = []
+
+    async def _handler(call: ServiceCall) -> None:
+        removals.append(call.data["device_tracker"])
+
+    hass.services.async_register("person", "remove_device_tracker", _handler)
+    return removals
+
+
+async def _flow_for_the_issue(
+    hass: HomeAssistant, issue_registry: ir.IssueRegistry
+) -> PersonUnknownDeviceTrackerFixFlow:
+    """Look, and return the fix flow of the issue raised about the person."""
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue
+
+    flow = wire_fix_flow(hass, PersonUnknownDeviceTrackerFixFlow(), issue.issue_id)
+    flow.data = issue.data
+    return flow
+
+
+async def test_a_tracker_that_may_not_be_up_yet_gets_no_remove_button(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a device tracker Home Assistant never deleted is kept.
+
+    A tracker from `known_devices.yaml`, or one whose integration is still
+    starting, has no state and no registry entry. So has one that is gone.
+    """
+    removals = _removals(hass)
+    _install_person(hass, ["device_tracker.not_up_yet"])
+
+    flow = await _flow_for_the_issue(hass, issue_registry)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["manage", "ignore"]
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert not removals
+
+
+async def test_a_tracker_deleted_from_home_assistant_can_be_removed(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a device tracker the entity registry deleted keeps its button."""
+    removals = _removals(hass)
+    async_delete_entity(hass, "device_tracker.gone")
+    _install_person(hass, ["device_tracker.gone"])
+
+    flow = await _flow_for_the_issue(hass, issue_registry)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
+    assert result["type"] == "create_entry"
+    assert removals == [["device_tracker.gone"]]
+
+
+async def test_only_the_deleted_trackers_are_removed(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a deleted tracker goes, and one that may not be up yet stays."""
+    removals = _removals(hass)
+    async_delete_entity(hass, "device_tracker.gone")
+    _install_person(hass, ["device_tracker.gone", "device_tracker.not_up_yet"])
+
+    flow = await _flow_for_the_issue(hass, issue_registry)
+    await flow.async_step_remove()
+
+    assert flow.data
+    lines = str(flow.data["device_trackers"]).splitlines()
+    assert lines[0].startswith("- `device_tracker.gone` (deleted on ")
+    assert lines[1] == "- `device_tracker.not_up_yet`"
+    assert removals == [["device_tracker.gone"]]
+
+
+async def test_a_tracker_home_assistant_forgot_deleting_stays(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the proof is asked for again when the button is pressed."""
+    removals = _removals(hass)
+    async_delete_entity(hass, "device_tracker.gone")
+    _install_person(hass, ["device_tracker.gone"])
+    flow = await _flow_for_the_issue(hass, issue_registry)
+
+    async_forget_deleted_entities(hass, freezer)
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert not removals

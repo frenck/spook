@@ -19,9 +19,16 @@ from custom_components.spook.repairs import (
     HelperUnknownSourcesFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_issue_about
+from tests.repair_helpers import (
+    async_delete_entity,
+    async_forget_deleted_entities,
+    async_issue_about,
+    wire_fix_flow,
+)
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
@@ -204,6 +211,7 @@ async def test_fix_flow_remove_deletes_helper(
     hass: HomeAssistant,
 ) -> None:
     """Test the remove option removes the whole helper config entry."""
+    async_delete_entity(hass, "sensor.ghost")
     entry = MockConfigEntry(
         domain="derivative",
         title="Ghostly",
@@ -313,6 +321,7 @@ async def test_a_helper_still_broken_as_shown_is_removed(
     issue_registry: ir.IssueRegistry,
 ) -> None:
     """Test the issue carries what the fix checks, and the fix then acts."""
+    async_delete_entity(hass, "sensor.ghost")
     entry = MockConfigEntry(
         domain="derivative",
         title="Ghostly",
@@ -358,6 +367,131 @@ async def test_a_helper_given_another_source_since_is_kept(
     hass.config_entries.async_update_entry(
         entry, options={**entry.options, "heater": "sensor.heater"}
     )
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is not None
+
+
+def _thermostat(hass: HomeAssistant, **sources: str) -> MockConfigEntry:
+    """Add a thermostat helper with these sources."""
+    entry = MockConfigEntry(
+        domain="generic_thermostat",
+        title="Thermostat",
+        options={"name": "Thermostat", **sources},
+    )
+    entry.add_to_hass(hass)
+    return entry
+
+
+async def _flow_for_the_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    entry: MockConfigEntry,
+) -> HelperUnknownSourcesFixFlow:
+    """Look, and return the fix flow of the issue raised about the helper."""
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(entry))
+    assert issue
+
+    flow = wire_fix_flow(hass, HelperUnknownSourcesFixFlow(), issue.issue_id)
+    flow.data = issue.data
+    return flow
+
+
+async def test_a_source_that_may_not_be_up_yet_gets_no_remove_button(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a helper whose source Home Assistant never deleted is kept.
+
+    A YAML sensor without a unique ID whose platform is still retrying has
+    no state and no registry entry. So has one that is gone. Deleting a
+    working helper on that is a guess.
+    """
+    entry = MockConfigEntry(
+        domain="derivative",
+        title="Ghostly",
+        options={"name": "Ghostly", "source": "sensor.not_up_yet"},
+    )
+    entry.add_to_hass(hass)
+
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["manage", "ignore"]
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is not None
+
+
+@pytest.mark.parametrize("as_registry_id", [False, True])
+async def test_a_source_deleted_from_home_assistant_can_be_removed(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    as_registry_id: bool,  # noqa: FBT001
+) -> None:
+    """Test a helper whose source was deleted keeps its remove button.
+
+    A registry ID that no longer resolves is proof on its own: only a
+    registered entity is ever handed one.
+    """
+    deleted = async_delete_entity(hass, "sensor.gone")
+    entry = MockConfigEntry(
+        domain="derivative",
+        title="Ghostly",
+        options={
+            "name": "Ghostly",
+            "source": deleted.id if as_registry_id else "sensor.gone",
+        },
+    )
+    entry.add_to_hass(hass)
+
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
+    assert result["type"] == "create_entry"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is None
+
+
+async def test_a_helper_with_one_source_not_proven_gone_is_kept(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the helper goes only when every one of its missing sources went.
+
+    The button deletes the whole helper, not the one source. One source
+    deleted and one that may just not be up yet is a helper that may work
+    again in a minute.
+    """
+    async_delete_entity(hass, "switch.gone")
+    entry = _thermostat(hass, heater="switch.gone", target_sensor="sensor.not_up_yet")
+
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+    menu = await flow.async_step_init()
+    result = await flow.async_step_remove()
+
+    assert menu["menu_options"] == ["manage", "ignore"]
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is not None
+
+
+async def test_a_helper_whose_source_home_assistant_forgot_deleting_stays(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the proof is asked for again when the button is pressed."""
+    async_delete_entity(hass, "switch.gone")
+    entry = _thermostat(hass, heater="switch.gone")
+    flow = await _flow_for_the_issue(hass, issue_registry, entry)
+
+    async_forget_deleted_entities(hass, freezer)
     result = await flow.async_step_remove()
 
     assert result["type"] == "abort"
