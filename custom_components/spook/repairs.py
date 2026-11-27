@@ -144,6 +144,11 @@ _MIN_MAX_MINIMUM_MEMBERS = 2
 # the worst moment for it. #1898.
 FIRST_INSPECTIONS_SPREAD_OVER = timedelta(minutes=2)
 
+# How long a repair whose look failed waits before it looks once more. Long
+# enough for whatever it tripped over to settle, short enough that what it
+# reported before does not stay up wrong for long.
+LOOK_ONCE_MORE_AFTER = timedelta(minutes=1)
+
 # Whose turn it is to inspect: one repair at a time, for all of them. Each
 # round hands the loop back every few milliseconds, but the loop runs every
 # task that is ready before it gets back to Home Assistant's own I/O. With
@@ -469,7 +474,7 @@ class _InspectionDebouncer(Debouncer[Coroutine[Any, Any, None]]):
         super().async_schedule_call()
 
 
-class AbstractSpookRepair(AbstractSpookRepairBase):
+class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-instance-attributes
     """Abstract base class to hold a Spook repairs."""
 
     #: Re-run the inspection when one of these is fired. Entity registry
@@ -526,6 +531,8 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self._attributes_awaited = {}
         self._config_entry_fingerprints = {}
         self._asked_for_a_look = False
+        self._looked_once_more = False
+        self._cancel_look_once_more: Callable[[], None] | None = None
 
     @callback
     def _await_attributes(self, pairs: Iterable[tuple[str, str]]) -> None:
@@ -555,13 +562,91 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
             # Whatever was asked for until now, this round reads after it.
             self._asked_for_a_look = False
+
+            # Whatever asked for this round, it is the look once more a
+            # failed one was waiting for.
+            self._async_call_off_the_look_once_more()
+
             try:
                 await self._async_inspect_and_clean_up()
+            # pylint: disable-next=broad-exception-caught
+            except Exception as err:  # noqa: BLE001
+                # Logged here, and not left to the debouncer, which logs it
+                # without saying which repair it was.
+                self._async_look_once_more_after_failing(err)
+            else:
+                self._looked_once_more = False
             finally:
                 # Asked for a look while this one ran: what it was asked about
                 # may have changed after this round read it.
                 if self._asked_for_a_look:
                     self.inspect_debouncer.async_schedule_call()
+
+    @callback
+    def _async_look_once_more_after_failing(self, error: Exception) -> None:
+        """Log a round that failed, and look once more if it was the first.
+
+        Until the next look, what the repair reported before the failure stays
+        up, right or wrong, and for a repair that looks daily that is a day.
+        One look once more, not a loop: a repair that keeps failing would
+        otherwise keep failing every minute, for good.
+        """
+        # A repair on its way out has nothing to look once more for.
+        looks_once_more = not (
+            self._looked_once_more or self._deactivated or self.hass.is_stopping
+        )
+        what_comes_next = (
+            f"looks once more in {LOOK_ONCE_MORE_AFTER.total_seconds():.0f} seconds"
+            if looks_once_more
+            else "does not try again until something asks for a look"
+        )
+
+        if isinstance(error, HomeAssistantError):
+            # Home Assistant's way of saying what it was asked could not be
+            # done, like YAML that does not read. Some repairs give up a round
+            # on it on purpose, to keep what they reported. Nothing of Spook
+            # broke, so no traceback and nobody is asked to report it.
+            LOGGER.warning(
+                "Spook repair %s.%s could not look and %s: %s",
+                self.domain,
+                self.repair,
+                what_comes_next,
+                error,
+            )
+        else:
+            LOGGER.exception(
+                "Spook repair %s.%s failed to inspect and %s; "
+                "please report this issue at "
+                "https://github.com/frenck/spook/issues",
+                self.domain,
+                self.repair,
+                what_comes_next,
+            )
+
+        if not looks_once_more:
+            return
+
+        self._looked_once_more = True
+        self._cancel_look_once_more = async_call_later(
+            self.hass, LOOK_ONCE_MORE_AFTER, self._async_look_once_more
+        )
+
+    @callback
+    def _async_look_once_more(self, _: datetime) -> None:
+        """Ask for the look once more, through the debouncer like any other.
+
+        The round checks for Home Assistant stopping once its turn comes, the
+        same as for any look, and deactivating calls this off altogether.
+        """
+        self._cancel_look_once_more = None
+        self.inspect_debouncer.async_schedule_call()
+
+    @callback
+    def _async_call_off_the_look_once_more(self) -> None:
+        """Cancel a look once more that has not come yet."""
+        if self._cancel_look_once_more is not None:
+            self._cancel_look_once_more()
+            self._cancel_look_once_more = None
 
     @callback
     def _async_remember_a_look_was_asked_for(self) -> None:
@@ -859,6 +944,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         for sub in self._event_subs.copy():
             sub()
             self._event_subs.discard(sub)
+        self._async_call_off_the_look_once_more()
         self.inspect_debouncer.async_shutdown()
         await super().async_deactivate()
 

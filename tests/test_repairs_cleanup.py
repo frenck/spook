@@ -7,12 +7,14 @@ from __future__ import annotations
 import asyncio
 
 from datetime import timedelta
+import logging
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant.common import (
     MockConfigEntry,
     async_fire_time_changed,
+    get_scheduled_timer_handles,
 )
 
 from homeassistant.config_entries import (
@@ -21,6 +23,7 @@ from homeassistant.config_entries import (
     ConfigEntryDisabler,
     ConfigEntryState,
 )
+from homeassistant.core import HassJob
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import async_dispatcher_send
@@ -33,7 +36,6 @@ from custom_components.spook.repairs import (
     AbstractSpookRepair,
     AbstractSpookRepairBase,
 )
-import pytest
 
 EXPECTED_UNSUBSCRIBE_COUNT = 4
 EXPECTED_INTERVAL_INSPECTIONS = 2
@@ -43,11 +45,16 @@ EXPECTED_SUBENTRY_INSPECTIONS = 4
 EXPECTED_RENAMED_INSPECTIONS = 5
 EXPECTED_DISABLED_INSPECTIONS = 6
 EXPECTED_LOOKED_AGAIN_INSPECTIONS = 2
+ROUNDS_UP_TO_THE_FAILURE = 2
+ROUNDS_UP_TO_THE_LOOK_ONCE_MORE = 3
+ROUNDS_UP_TO_THE_NEXT_FAILURE = 4
+ROUNDS_UP_TO_THE_NEXT_LOOK_ONCE_MORE = 5
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from freezegun.api import FrozenDateTimeFactory
+    import pytest
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
@@ -611,6 +618,289 @@ async def test_config_entry_update_retries_after_failed_inspection(
     await repair.async_deactivate()
 
 
+class MockStumblingRepair(AbstractSpookRepair):
+    """Mock repair that nothing asks to look, whose next looks can fail."""
+
+    domain = "mock"
+    repair = "mock_repair"
+    automatically_clean_up_issues = True
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self.inspections = 0
+        self.failures_to_come = 0
+        self.fails_with: type[Exception] = RuntimeError
+        self.current_issue_ids = {"one"}
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair, failing if told to."""
+        self.inspections += 1
+        if self.failures_to_come:
+            self.failures_to_come -= 1
+            msg = "Inspection went bump in the night"
+            raise self.fails_with(msg)
+
+        for issue_id in self.current_issue_ids:
+            self.async_create_issue(issue_id=issue_id)
+
+
+async def _async_activate_and_look(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> MockStumblingRepair:
+    """Activate a stumbling repair, and let its first look find issue one."""
+    repair = MockStumblingRepair(hass)
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    return repair
+
+
+async def _async_a_round_that_fails(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    repair: MockStumblingRepair,
+    *,
+    failures: int = 1,
+) -> None:
+    """Ask for one look, and have it, and the ones after, fail."""
+    repair.failures_to_come = failures
+    repair.inspect_debouncer.async_schedule_call()
+    await _flush_debouncer(hass, freezer)
+
+
+def _timers_calling_back_into(
+    hass: HomeAssistant, repair: AbstractSpookRepair
+) -> list[asyncio.TimerHandle]:
+    """Return the timers still to go off that call one of a repair's methods."""
+    return [
+        handle
+        for handle in get_scheduled_timer_handles(hass.loop)
+        if not handle.cancelled()
+        and handle._args
+        and isinstance(job := handle._args[-1], HassJob)
+        and getattr(job.target, "__self__", None) is repair
+    ]
+
+
+async def _async_move_on(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    duration: timedelta,
+) -> None:
+    """Let time pass, and every look that comes due on the way run."""
+    freezer.tick(duration)
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    await _flush_debouncer(hass, freezer)
+
+
+async def test_a_failed_round_is_followed_by_one_more_look(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a round that fails looks once more, and that look puts it right.
+
+    Nothing else asked for a look, and for a repair that looks daily nothing
+    does for a day. The issue that went stale meanwhile stayed up all along.
+    """
+    repair = await _async_activate_and_look(hass, freezer)
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+
+    # Put right, but the round that would have seen it fails.
+    repair.current_issue_ids = set()
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert repair.inspections == ROUNDS_UP_TO_THE_FAILURE
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+
+    # Not before the time is up.
+    await _async_move_on(
+        hass, freezer, repairs.LOOK_ONCE_MORE_AFTER - timedelta(seconds=15)
+    )
+    assert repair.inspections == ROUNDS_UP_TO_THE_FAILURE
+
+    await _async_move_on(hass, freezer, timedelta(seconds=15))
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one") is None
+
+    # Once, and that is it.
+    await _async_move_on(hass, freezer, timedelta(hours=1))
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    await repair.async_deactivate()
+
+
+async def test_a_look_once_more_that_fails_as_well_is_the_last(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a failed look once more does not start a loop of looks."""
+    repair = await _async_activate_and_look(hass, freezer)
+
+    await _async_a_round_that_fails(hass, freezer, repair, failures=5)
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    for _ in range(10):
+        await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+    assert "does not try again until something asks for a look" in caplog.text
+
+    await repair.async_deactivate()
+
+
+async def test_a_round_that_lands_gives_the_next_failure_its_look_again(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the one look once more is per failure, not once a lifetime."""
+    repair = await _async_activate_and_look(hass, freezer)
+
+    await _async_a_round_that_fails(hass, freezer, repair)
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    # Days later, it fails again, and looks once more again.
+    await _async_move_on(hass, freezer, timedelta(days=2))
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert repair.inspections == ROUNDS_UP_TO_THE_NEXT_FAILURE
+
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_NEXT_LOOK_ONCE_MORE
+
+    await repair.async_deactivate()
+
+
+async def test_a_look_asked_for_meanwhile_is_the_look_once_more(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a look something else asks for before the time is up counts.
+
+    It looks the way it always does, and the one waiting is called off: one
+    look after a failure, whoever asked for it.
+    """
+    repair = await _async_activate_and_look(hass, freezer)
+    await _async_a_round_that_fails(hass, freezer, repair)
+
+    repair.inspect_debouncer.async_schedule_call()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    await repair.async_deactivate()
+
+
+async def test_deactivating_calls_off_the_look_once_more(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a repair deactivated after a failed round does not look again."""
+    repair = await _async_activate_and_look(hass, freezer)
+    await _async_a_round_that_fails(hass, freezer, repair)
+
+    await repair.async_deactivate()
+
+    # Called off, not left to find a debouncer that is shut down.
+    assert not _timers_calling_back_into(hass, repair)
+
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_FAILURE
+
+
+async def test_a_round_failing_after_deactivating_does_not_look_once_more(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a round that outlives its repair, and fails, leaves no timer."""
+    halfway = asyncio.Event()
+    carry_on = asyncio.Event()
+
+    class _SlowStumblingRepair(MockStumblingRepair):
+        async def async_inspect(self) -> None:
+            halfway.set()
+            await carry_on.wait()
+            await super().async_inspect()
+
+    repair = _SlowStumblingRepair(hass)
+    repair.failures_to_come = 1
+    await repair.async_activate()
+
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await halfway.wait()
+    await repair.async_deactivate()
+    carry_on.set()
+    await hass.async_block_till_done()
+
+    assert repair.inspections == 1
+    assert not _timers_calling_back_into(hass, repair)
+
+
+async def test_a_failed_round_names_the_repair(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test the log says which repair failed, and where to report it."""
+    repair = await _async_activate_and_look(hass, freezer)
+    caplog.clear()
+
+    await _async_a_round_that_fails(hass, freezer, repair)
+
+    (record,) = [record for record in caplog.records if record.levelno >= logging.ERROR]
+    assert record.name == "custom_components.spook"
+    assert "Spook repair mock.mock_repair failed" in record.getMessage()
+    assert "looks once more" in record.getMessage()
+    assert "https://github.com/frenck/spook/issues" in record.getMessage()
+    assert record.exc_info
+    assert "Inspection went bump in the night" in caplog.text
+
+    await repair.async_deactivate()
+
+
+async def test_a_round_home_assistant_could_not_do_is_not_reported_as_broken(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a Home Assistant error is a warning, and still looked at once more.
+
+    YAML that does not read is for its owner to fix, not something to report
+    to Spook. The look once more is there all the same: fixed a minute later,
+    it is seen a minute later.
+    """
+    repair = await _async_activate_and_look(hass, freezer)
+    repair.fails_with = HomeAssistantError
+    caplog.clear()
+
+    await _async_a_round_that_fails(hass, freezer, repair)
+
+    (record,) = [
+        record
+        for record in caplog.records
+        if record.name == "custom_components.spook"
+        and record.levelno >= logging.WARNING
+    ]
+    assert record.levelno == logging.WARNING
+    assert record.getMessage() == (
+        "Spook repair mock.mock_repair could not look and looks once more in "
+        "60 seconds: Inspection went bump in the night"
+    )
+    assert not record.exc_info
+
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    await repair.async_deactivate()
+
+
 async def test_unloading_leaves_the_issue_registry_alone(
     hass: HomeAssistant,
 ) -> None:
@@ -785,9 +1075,9 @@ async def test_cleanup_survives_failing_inspection(
     await repair._async_inspect_with_cleanup()
     assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
 
+    # Logged by the repair itself, so it no longer raises.
     repair.raise_on_inspect = True
-    with pytest.raises(HomeAssistantError):
-        await repair._async_inspect_with_cleanup()
+    await repair._async_inspect_with_cleanup()
 
     assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
     assert repair.issue_ids == {"one"}
