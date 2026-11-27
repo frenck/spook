@@ -301,6 +301,9 @@ async def test_a_lost_question_failing_later_leaves_nothing_behind(
 
     assert not _unanswered(hass)
     assert "never retrieved" not in caplog.text
+    # Nor by any other name: some Python versions report a failure behind a
+    # wait that was given up on through the loop's own error handler.
+    assert not [record for record in caplog.records if record.levelno >= logging.ERROR]
     # Said, but only for whoever turned on debug logging: nobody waits for
     # this answer any more.
     (answered,) = (
@@ -311,6 +314,76 @@ async def test_a_lost_question_failing_later_leaves_nothing_behind(
     assert answered.levelno == logging.DEBUG
     assert answered.exc_info
     assert answered.exc_info[1] is failure
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_questions_asked_at_the_same_time_take_turns(
+    hass: HomeAssistant, held_back: _HeldBack
+) -> None:
+    """Test two callers at once never have two questions in the recorder.
+
+    Repairs take turns looking, but a fix flow asks whenever somebody
+    presses its button, and after a reload a round of the setup before can
+    still be waiting. Each one at once would be another read thread taken.
+    """
+    asked: list[str] = []
+
+    def _second_job() -> str:
+        asked.append("second")
+        return "second answer"
+
+    first = hass.async_create_task(
+        async_ask_in_time(hass, held_back.wrap(_answer), "first"), eager_start=False
+    )
+    await held_back.async_started(hass)
+
+    second = hass.async_create_task(
+        async_ask_in_time(hass, _second_job), eager_start=False
+    )
+    for _ in range(5):
+        await asyncio.sleep(0)
+
+    # Waiting its turn, and not in the recorder yet.
+    assert not second.done()
+    assert not asked
+
+    held_back.let_go.set()
+    assert await first == ("first",)
+    assert await second == "second answer"
+    assert asked == ["second"]
+    assert not _unanswered(hass)
+
+
+@pytest.mark.usefixtures("recorder_mock", "answers_soon")
+async def test_a_question_waiting_behind_one_given_up_on_is_not_asked(
+    hass: HomeAssistant, held_back: _HeldBack
+) -> None:
+    """Test a caller waiting its turn does not ask once the one ahead is lost.
+
+    Two callers at the same moment, and a recorder that answers neither:
+    the one waiting must not take a second thread when its turn comes.
+    """
+    asked: list[str] = []
+
+    def _second_job() -> None:
+        asked.append("second")
+
+    first = hass.async_create_task(
+        async_ask_in_time(hass, held_back.wrap(_answer)), eager_start=False
+    )
+    await held_back.async_started(hass)
+    second = hass.async_create_task(
+        async_ask_in_time(hass, _second_job), eager_start=False
+    )
+
+    with pytest.raises(RecorderDidNotAnswer):
+        await first
+    with pytest.raises(RecorderDidNotAnswer):
+        await second
+
+    assert held_back.calls == 1
+    assert not asked
+    assert len(_unanswered(hass)) == 1
 
 
 @pytest.mark.usefixtures("recorder_mock")
