@@ -34,6 +34,7 @@ from .reference_extraction import (
     _is_literal_attribute,
     _state_reference,
 )
+from .template_extraction import ComparedState
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
@@ -170,7 +171,11 @@ def _leaf_names(
     if kind != "state" or (reference := _state_reference(as_core)) is None:
         return
 
-    for state in reference[1]:
+    # Taken as plain states, each on its own. A `state_not` is handed over
+    # as a `state` above, so how the automation readers say a state was
+    # compared would be wrong here.
+    for compared in reference[1]:
+        state = compared.state if isinstance(compared, ComparedState) else compared
         if _name(state) and not _compared_with_an_entity(state):
             yield _STATES, state
 

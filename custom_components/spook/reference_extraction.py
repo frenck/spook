@@ -41,6 +41,8 @@ from .entity_filtering import (
 )
 from .template_extraction import (
     KNOWN_DOMAINS,
+    ComparedState,
+    compared_states,
     extract_attribute_pairs_from_template,
     extract_registry_lookups_from_config,
     extract_state_pairs_from_template,
@@ -734,13 +736,14 @@ class NamedReferences:
     """The attributes, or states, a configuration names, and of which entities."""
 
     # Written out: the entity, or a registry ID, and the attribute or state.
-    # For states, that can also be a value of one of the entity's attributes.
-    pairs: frozenset[tuple[str, str | AttributeValue]]
+    # For states, that can also be a value of one of the entity's attributes,
+    # and a state held to be one of a list, or to not be it, says so.
+    pairs: frozenset[tuple[str, str | ComparedState | AttributeValue]]
     # Spook's own state triggers, and the attribute, state or attribute
     # value each names. Which entities that is depends on the house as it is
     # right now, so it is left to the caller to resolve, the way the trigger
     # does.
-    followed: tuple[tuple[dict[str, Any], str | AttributeValue], ...]
+    followed: tuple[tuple[dict[str, Any], str | ComparedState | AttributeValue], ...]
 
 
 def _attribute_reference(config: dict[str, Any]) -> tuple[Any, Any] | None:
@@ -963,6 +966,9 @@ def extract_attribute_references_from_config(config: Any) -> NamedReferences:
 # Where a state trigger, and Spook's own, names the states it waits for.
 _STATE_TRIGGER_KEYS = ("from", "not_from", "to", "not_to")
 
+# The keys of those that name what the state must not be.
+_NEGATIVE_STATE_KEYS = frozenset({"not_from", "not_to"})
+
 
 def _literal_states(value: Any, *, in_condition: bool = False) -> list[str]:
     """Return the states written out in a config value, one or a list.
@@ -1003,17 +1009,22 @@ def _literal_attribute_values(
 
 def _state_values(
     config: dict[str, Any], keys: tuple[str, ...], *, in_condition: bool = False
-) -> list[str | AttributeValue]:
+) -> list[str | ComparedState | AttributeValue]:
     """Return what a state trigger or condition waits for under these keys.
 
     States, or with an `attribute:` written out, values of that attribute.
-    One worked out by a template names nothing to check.
+    One worked out by a template names nothing to check. Each key is a
+    comparison of its own: a list under it is one of those states, and
+    `not_from` and `not_to` name what the state must not be.
     """
     if "attribute" not in config:
         return [
             state
             for key in keys
-            for state in _literal_states(config.get(key), in_condition=in_condition)
+            for state in compared_states(
+                _literal_states(config.get(key), in_condition=in_condition),
+                negative=key in _NEGATIVE_STATE_KEYS,
+            )
         ]
 
     attribute = config["attribute"]
@@ -1030,7 +1041,7 @@ def _state_values(
 
 def _state_reference(
     config: dict[str, Any],
-) -> tuple[Any, list[str | AttributeValue]] | None:
+) -> tuple[Any, list[str | ComparedState | AttributeValue]] | None:
     """Return the entity IDs and states a state trigger or condition names."""
     if config.get("condition") == "state":
         return config.get("entity_id"), _state_values(
@@ -1044,7 +1055,9 @@ def _state_reference(
     return None
 
 
-def _followed_states(config: dict[str, Any]) -> list[str | AttributeValue]:
+def _followed_states(
+    config: dict[str, Any],
+) -> list[str | ComparedState | AttributeValue]:
     """Return the states a Spook state trigger names, if it is one.
 
     Following an attribute, its `to` and `from` are that attribute's values.
@@ -1064,7 +1077,10 @@ def _followed_states(config: dict[str, Any]) -> list[str | AttributeValue]:
         return [
             state
             for key in _STATE_TRIGGER_KEYS
-            for state in _literal_states(options.get(key))
+            for state in compared_states(
+                _literal_states(options.get(key)),
+                negative=key in _NEGATIVE_STATE_KEYS,
+            )
         ]
 
     attribute = options["attribute"]
@@ -1079,8 +1095,8 @@ def _followed_states(config: dict[str, Any]) -> list[str | AttributeValue]:
 
 def _walk_state_references(
     config: Any,
-    found: set[tuple[str, str | AttributeValue]],
-    followed: list[tuple[dict[str, Any], str | AttributeValue]],
+    found: set[tuple[str, str | ComparedState | AttributeValue]],
+    followed: list[tuple[dict[str, Any], str | ComparedState | AttributeValue]],
 ) -> None:
     """Recursively collect the states triggers and conditions wait for."""
     if isinstance(config, list):
@@ -1124,8 +1140,8 @@ def extract_state_references_from_config(config: Any) -> NamedReferences:
     pruned = without_disabled_steps(config)
     shadowed = names_given_to_templates(config)
 
-    found: set[tuple[str, str | AttributeValue]] = set()
-    followed: list[tuple[dict[str, Any], str | AttributeValue]] = []
+    found: set[tuple[str, str | ComparedState | AttributeValue]] = set()
+    followed: list[tuple[dict[str, Any], str | ComparedState | AttributeValue]] = []
     _walk_state_references(pruned, found, followed)
 
     for template in extract_template_strings_from_config(

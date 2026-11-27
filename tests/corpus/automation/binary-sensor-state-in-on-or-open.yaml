@@ -1,0 +1,22 @@
+source: https://github.com/geison20/homeassistant-casa/blob/dbce9bb3bdc7246285471f1a8a27d77efb559ab7/automations.yaml#L170-L171
+note: >-
+  A contact sensor checked against a list that mixes the state of a binary
+  sensor with that of a cover: on or open. A binary sensor is never open, but
+  the list matches on on, so it works. Read as one of a list, not one by one.
+expect:
+  states:
+    find:
+      - binary_sensor.kids_room_window: on (one of "on", "open")
+      - binary_sensor.kids_room_window: open (one of "on", "open")
+---
+alias: Tell which window is open when it starts to rain
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.rain
+    to: "on"
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        {% set open = states('binary_sensor.kids_room_window') in ['on', 'open'] %}
+        {{ 'The kids room window is open.' if open else 'All windows are closed.' }}

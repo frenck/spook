@@ -1,0 +1,22 @@
+source: https://github.com/DrBlokmeister/HASS_NUC/blob/467a4b999cbcdfe6706c4d15a0009ee326464a2f/packages/home/occupancy.yaml#L91-L96
+note: >-
+  The guard with the Jinja none next to the text "none". A list with anything
+  but text in it is no list of literals, so none of its states are read.
+out_of_scope: >-
+  Only lists of text literals are read as states compared to; a bare none in
+  the list makes it something worked out while running.
+expect:
+  states:
+    not_find:
+      - person.alex: none (not one of "none", "unavailable", "unknown")
+      - person.alex: none
+---
+alias: Someone is known to be somewhere
+triggers:
+  - trigger: time_pattern
+    minutes: /5
+conditions:
+  - condition: template
+    value_template: >-
+      {{ states('person.alex') not in ['unavailable', 'unknown', 'none', None] }}
+actions: []

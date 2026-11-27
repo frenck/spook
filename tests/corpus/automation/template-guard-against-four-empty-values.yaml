@@ -1,0 +1,26 @@
+source: https://github.com/CCOSTAN/Home-AssistantConfig/blob/4e3ac46cbdba998764976524da73a241d3217b1a/config/packages/infrastructure.yaml#L351-L352
+note: >-
+  The guard everybody writes: a state that is not unknown, unavailable, the
+  text "none" or empty. Neither "none" nor "" is a state the media player can
+  be in, and that is fine: all four are read as what the state must not be.
+expect:
+  states:
+    find:
+      - media_player.living_room: none (not one of "", "none", "unavailable", "unknown")
+      - 'media_player.living_room:  (not one of "", "none", "unavailable", "unknown")'
+---
+alias: Announce when the living room speaker is reachable
+triggers:
+  - trigger: time_pattern
+    minutes: /15
+conditions:
+  - condition: template
+    value_template: >-
+      {{ states('media_player.living_room') not in ['unknown', 'unavailable', 'none', ''] }}
+actions:
+  - action: tts.speak
+    target:
+      entity_id: tts.home_assistant_cloud
+    data:
+      media_player_entity_id: media_player.living_room
+      message: The speaker is back.

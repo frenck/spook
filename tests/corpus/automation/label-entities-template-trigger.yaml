@@ -9,10 +9,10 @@ expect:
     find: [sensor.freezer_temperature, switch.aquarium_pump]
   states:
     find:
-      - sensor.freezer_temperature: unavailable
-      - sensor.freezer_temperature: unknown
-      - switch.aquarium_pump: unavailable
-      - switch.aquarium_pump: unknown
+      - sensor.freezer_temperature: unavailable (one of "unavailable", "unknown")
+      - sensor.freezer_temperature: unknown (one of "unavailable", "unknown")
+      - switch.aquarium_pump: unavailable (one of "unavailable", "unknown")
+      - switch.aquarium_pump: unknown (one of "unavailable", "unknown")
   labels:
     find: [critical]
 ---

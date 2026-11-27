@@ -12,7 +12,7 @@ expect:
   states:
     find:
       - person.alex: home
-      - input_select.house_mode: Away
+      - input_select.house_mode: Away (not one of "Away")
   entities:
     find: [climate.living_room, person.alex, input_select.house_mode]
 ---

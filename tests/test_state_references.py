@@ -11,6 +11,7 @@ from custom_components.spook.reference_extraction import (
     extract_state_references_from_config,
 )
 from custom_components.spook.template_extraction import (
+    ComparedState,
     extract_state_pairs_from_template,
 )
 from tests.template_configs import shadowing_configs
@@ -31,8 +32,19 @@ def _trigger(**extra: Any) -> dict[str, Any]:
     return {"trigger": "state", "entity_id": "light.kitchen", **extra}
 
 
+def _compared(*states: str, negative: bool = False) -> set[tuple[str, ComparedState]]:
+    """Return states of the kitchen light, named together in one comparison."""
+    listed = frozenset(states)
+    return {
+        ("light.kitchen", ComparedState(state, negative=negative, listed=listed))
+        for state in states
+    }
+
+
 PAIR = {("light.kitchen", "On")}
-ON_AND_DIMMED = {("light.kitchen", "On"), ("light.kitchen", "Dimmed")}
+NOT_ON = _compared("On", negative=True)
+ON_AND_DIMMED = _compared("On", "Dimmed")
+NOT_ON_AND_DIMMED = _compared("On", "Dimmed", negative=True)
 
 
 @pytest.mark.parametrize(
@@ -40,8 +52,6 @@ ON_AND_DIMMED = {("light.kitchen", "On"), ("light.kitchen", "Dimmed")}
     [
         pytest.param({"triggers": [_trigger(to="On")]}, id="to"),
         pytest.param({"triggers": [_trigger(**{"from": "On"})]}, id="from"),
-        pytest.param({"triggers": [_trigger(not_to="On")]}, id="not to"),
-        pytest.param({"triggers": [_trigger(not_from="On")]}, id="not from"),
         pytest.param({"triggers": [_trigger(to=["On"])]}, id="list"),
         pytest.param(
             {
@@ -112,6 +122,41 @@ def test_state_references_are_found(config: dict[str, Any]) -> None:
     assert extract_state_references_from_config(config).pairs == PAIR
 
 
+@pytest.mark.parametrize(
+    ("config", "expected"),
+    [
+        pytest.param({"triggers": [_trigger(not_to="On")]}, NOT_ON, id="not to"),
+        pytest.param({"triggers": [_trigger(not_from="On")]}, NOT_ON, id="not from"),
+        pytest.param(
+            {"triggers": [_trigger(not_to=["On", "Dimmed"])]},
+            NOT_ON_AND_DIMMED,
+            id="not to a list",
+        ),
+        pytest.param(
+            {"triggers": [_trigger(to=["On", "Dimmed"])]}, ON_AND_DIMMED, id="to a list"
+        ),
+        pytest.param(
+            {"triggers": [_trigger(**{"from": ["On", "Dimmed"]})]},
+            ON_AND_DIMMED,
+            id="from a list",
+        ),
+        pytest.param(
+            {"conditions": [_condition(state=["On", "Dimmed"])]},
+            ON_AND_DIMMED,
+            id="condition list",
+        ),
+    ],
+)
+def test_state_references_say_how_they_compare(
+    config: dict[str, Any], expected: set[tuple[str, ComparedState]]
+) -> None:
+    """Test a state named as one of a list, or as what it must not be, says so.
+
+    Each key is a comparison of its own.
+    """
+    assert extract_state_references_from_config(config).pairs == expected
+
+
 def test_every_entity_and_state_makes_a_pair() -> None:
     """Test several entities and several states make a pair each."""
     config = {
@@ -124,14 +169,16 @@ def test_every_entity_and_state_makes_a_pair() -> None:
             }
         ]
     }
+    off = ComparedState("Off", negative=False, listed=frozenset({"Off", "off"}))
+    lower_off = ComparedState("off", negative=False, listed=frozenset({"Off", "off"}))
 
     assert extract_state_references_from_config(config).pairs == {
         ("light.kitchen", "On"),
-        ("light.kitchen", "Off"),
-        ("light.kitchen", "off"),
+        ("light.kitchen", off),
+        ("light.kitchen", lower_off),
         ("light.hall", "On"),
-        ("light.hall", "Off"),
-        ("light.hall", "off"),
+        ("light.hall", off),
+        ("light.hall", lower_off),
     }
 
 
@@ -298,7 +345,10 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
 
     references = extract_state_references_from_config({"triggers": [named, not_text]})
 
-    assert sorted(state for _config, state in references.followed) == ["On", "off"]
+    assert {state for _config, state in references.followed} == {
+        "On",
+        ComparedState("off", negative=True, listed=frozenset({"off"})),
+    }
     assert all(config == named for config, _state in references.followed)
     assert not references.pairs
 
@@ -368,15 +418,15 @@ def test_as_text_tells_values_apart() -> None:
         ("{{ is_state('light.kitchen', 'On') }}", PAIR),
         ('{{ is_state("light.kitchen","On") }}', PAIR),
         ("{% if is_state('light.kitchen', 'On') %}{% endif %}", PAIR),
-        ("{{ not is_state('light.kitchen', 'On') }}", PAIR),
+        ("{{ not is_state('light.kitchen', 'On') }}", NOT_ON),
         # The test form, which is what Home Assistant offers besides the call.
         ("{{ 'light.kitchen' is is_state('On') }}", PAIR),
-        ("{{ 'light.kitchen' is not is_state('On') }}", PAIR),
+        ("{{ 'light.kitchen' is not is_state('On') }}", NOT_ON),
         # A list of states, which core's `is_state` takes as well.
         ("{{ is_state('light.kitchen', ['On', 'Dimmed']) }}", ON_AND_DIMMED),
         ("{{ is_state('light.kitchen', ['On',]) }}", PAIR),
         ("{{ 'light.kitchen' is is_state(['On', 'Dimmed']) }}", ON_AND_DIMMED),
-        ("{{ 'light.kitchen' is not is_state(['On']) }}", PAIR),
+        ("{{ 'light.kitchen' is not is_state(['On']) }}", NOT_ON),
         # Parentheses around one thing only group it.
         ("{{ is_state('light.kitchen', (['On', 'Dimmed'])) }}", ON_AND_DIMMED),
         ("{{ is_state('light.kitchen', ((['On']))) }}", PAIR),
@@ -447,19 +497,19 @@ def test_state_pairs_in_templates(
     ("template", "expected"),
     [
         ("{{ states('light.kitchen') == 'On' }}", PAIR),
-        ("{{ states('light.kitchen') != 'On' }}", PAIR),
+        ("{{ states('light.kitchen') != 'On' }}", NOT_ON),
         ("{{ 'On' == states('light.kitchen') }}", PAIR),
-        ("{{ 'On' != states('light.kitchen') }}", PAIR),
+        ("{{ 'On' != states('light.kitchen') }}", NOT_ON),
         ("{{ states.light.kitchen.state == 'On' }}", PAIR),
-        ("{{ 'On' != states.light.kitchen.state }}", PAIR),
+        ("{{ 'On' != states.light.kitchen.state }}", NOT_ON),
         ("{{ states('light.kitchen') in ['On', 'Dimmed'] }}", ON_AND_DIMMED),
-        ("{{ states('light.kitchen') not in ('On', 'Dimmed',) }}", ON_AND_DIMMED),
+        ("{{ states('light.kitchen') not in ('On', 'Dimmed',) }}", NOT_ON_AND_DIMMED),
         ("{{ states.light.kitchen.state in ('On',) }}", PAIR),
         # Around it: what is looser than a comparison, or opens and closes.
         ("{% if states('light.kitchen') == 'On' %}{% endif %}", PAIR),
         ("{% if x %}{% elif states('light.kitchen') == 'On' %}{% endif %}", PAIR),
         ("{% set on = states('light.kitchen') == 'On' %}", PAIR),
-        ("{{ not states('light.kitchen') == 'On' }}", PAIR),
+        ("{{ not states('light.kitchen') == 'On' }}", NOT_ON),
         ("{{ a and states('light.kitchen') == 'On' or b }}", PAIR),
         ("{{ 1 if states('light.kitchen') == 'On' else 2 }}", PAIR),
         ("{{ (states('light.kitchen') == 'On') }}", PAIR),
@@ -526,6 +576,33 @@ def test_state_comparisons_in_templates(
     template: str, expected: set[tuple[str, str]]
 ) -> None:
     """Test a state compared to literals is read only when nothing else takes part."""
+    assert extract_state_pairs_from_template(template) == expected
+
+
+@pytest.mark.parametrize(
+    ("template", "expected"),
+    [
+        # A `not` right before it, or before parentheses around just it.
+        ("{{ not (states('light.kitchen') == 'On') }}", NOT_ON),
+        ("{{ not 'On' == states('light.kitchen') }}", NOT_ON),
+        ("{{ not (is_state('light.kitchen', 'On')) }}", NOT_ON),
+        ("{{ not 'light.kitchen' is is_state('On') }}", NOT_ON),
+        ("{% if not is_state('light.kitchen', 'On') %}{% endif %}", NOT_ON),
+        # Twice turned around is back where it started.
+        ("{{ not states('light.kitchen') != 'On' }}", PAIR),
+        ("{{ not 'light.kitchen' is not is_state('On') }}", PAIR),
+        # A `not` that belongs to something else.
+        ("{{ not x or states('light.kitchen') == 'On' }}", PAIR),
+        ("{{ iif(states('light.kitchen') == 'On', 1, 2) }}", PAIR),
+        # Further away than this reader looks: taken as it is written.
+        ("{{ not (x and states('light.kitchen') == 'On') }}", PAIR),
+        ("{{ not (states('light.kitchen') == 'On' and x) }}", PAIR),
+    ],
+)
+def test_a_not_next_to_a_comparison_turns_it_around(
+    template: str, expected: set[tuple[str, str | ComparedState]]
+) -> None:
+    """Test only a `not` right next to a comparison makes it negative."""
     assert extract_state_pairs_from_template(template) == expected
 
 

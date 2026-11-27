@@ -1966,6 +1966,40 @@ def extract_attribute_pairs_from_template(
     return frozenset(pairs)
 
 
+@dataclass(frozen=True, slots=True)
+class ComparedState:
+    """A state named in a comparison that says more than the state alone.
+
+    Held to be one of a list, `in ['on', 'home']`, or held to not be it,
+    `!= 'none'`, `not in [...]` or `not_to: unavailable`. Both work fine
+    while naming a state the entity is never in: the list as long as one of
+    its other states can happen, the negative one always. That is how a
+    guard is written. So the state checker judges these by rules of their
+    own, and needs to know how the state was named.
+
+    A state held to be that one state is no `ComparedState`, only the text.
+    """
+
+    state: str
+    # Named as what the state must not be.
+    negative: bool
+    # Every state the comparison names, this one too.
+    listed: frozenset[str]
+
+
+def compared_states(
+    states: Iterable[str], *, negative: bool = False
+) -> list[str | ComparedState]:
+    """Return the states one comparison names, each with how it was named.
+
+    One state, held to be just that, is only the text.
+    """
+    listed = frozenset(states)
+    if not negative and len(listed) == 1:
+        return [*listed]
+    return [ComparedState(state, negative=negative, listed=listed) for state in listed]
+
+
 # The function, and test, that compare the state of one entity.
 _STATE_FUNCTION = "is_state"
 
@@ -1991,10 +2025,13 @@ def _states_argument(tokens: list[_Token], index: int) -> tuple[list[str], int] 
     return None
 
 
-def _function_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
+def _function_pairs(
+    tokens: list[_Token], index: int
+) -> set[tuple[str, str | ComparedState]]:
     """Read `is_state('light.x', 'on')` starting at its name.
 
-    Also with a list of states, `is_state('light.x', ['on', 'off'])`.
+    Also with a list of states, `is_state('light.x', ['on', 'off'])`, and
+    turned around, `not is_state('light.x', 'on')`.
     """
     if (
         _is(tokens, index - 1, "dot")
@@ -2007,10 +2044,18 @@ def _function_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     literals, end = states
     if not _ends_argument(tokens, end):
         return set()
-    return {(tokens[index + 2][1], literal) for literal in literals}
+
+    # With nothing after the states, the call closes at `end`.
+    negative = _negated(tokens, index, end + 1)
+    return {
+        (tokens[index + 2][1], state)
+        for state in compared_states(literals, negative=negative)
+    }
 
 
-def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
+def _test_pairs(
+    tokens: list[_Token], index: int
+) -> set[tuple[str, str | ComparedState]]:
     """Read `'light.x' is is_state('on')` starting at its name.
 
     Also as `is not`, and with a list of states. Only with the states in
@@ -2027,7 +2072,16 @@ def _test_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     literals, end = states
     if not _is(tokens, end, "rparen"):
         return set()
-    return {(tokens[subject][1], literal) for literal in literals}
+
+    # `is not` turns the test around, and so does a `not` before all of it.
+    # Both together turn it back.
+    negative = _is(tokens, index - 1, "name", "not") != _negated(
+        tokens, subject, end + 1
+    )
+    return {
+        (tokens[subject][1], state)
+        for state in compared_states(literals, negative=negative)
+    }
 
 
 def _tested_literal(tokens: list[_Token], index: int) -> int | None:
@@ -2107,6 +2161,28 @@ def _side_ends(tokens: list[_Token], index: int) -> bool:
     )
 
 
+def _negated(tokens: list[_Token], start: int, end: int) -> bool:
+    """Return whether a `not` turns around what runs from start to end.
+
+    Only a `not` right before it, or right before parentheses around just
+    it: `not states('light.x') == 'on'`, `not (states('light.x') == 'on')`.
+    What a `not` further away applies to takes reading all of the
+    expression, which this reader does not do.
+    """
+    if _is(tokens, start - 1, "name", "not"):
+        return True
+    return (
+        _is(tokens, start - 2, "name", "not")
+        and _is(tokens, start - 1, "lparen")
+        and _is(tokens, end, "rparen")
+    )
+
+
+def _compared_negatively(tokens: list[_Token], index: int) -> bool:
+    """Return whether the comparison at this index is `!=` or `not in`."""
+    return _is(tokens, index, "ne") or _is(tokens, index, "name", "not")
+
+
 def _state_lookup(tokens: list[_Token], index: int) -> tuple[str, int] | None:
     """Read `states('light.x')` or `states.light.x.state` starting at `states`.
 
@@ -2168,7 +2244,9 @@ def _compared_after(tokens: list[_Token], index: int) -> tuple[list[str], int] |
     return _literals_listed(tokens, index + 1)
 
 
-def _comparison_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
+def _comparison_pairs(
+    tokens: list[_Token], index: int
+) -> set[tuple[str, str | ComparedState]]:
     """Read a state compared to literals, the lookup starting at `states`.
 
     The lookup first, `states('light.x') == 'on'`, or the literal first,
@@ -2185,7 +2263,14 @@ def _comparison_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
     ):
         literals, end = compared
         if _side_ends(tokens, end):
-            return {(entity_id, literal) for literal in literals}
+            # A `not` before a negative comparison turns it back.
+            negative = _compared_negatively(tokens, after) != _negated(
+                tokens, index, end
+            )
+            return {
+                (entity_id, state)
+                for state in compared_states(literals, negative=negative)
+            }
 
     literal = index - 2
     if (
@@ -2195,7 +2280,13 @@ def _comparison_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
         and _side_starts(tokens, literal)
         and _side_ends(tokens, after)
     ):
-        return {(entity_id, tokens[literal][1])}
+        negative = _compared_negatively(tokens, index - 1) != _negated(
+            tokens, literal, after
+        )
+        return {
+            (entity_id, state)
+            for state in compared_states([tokens[literal][1]], negative=negative)
+        }
 
     return set()
 
@@ -2204,7 +2295,7 @@ def _comparison_pairs(tokens: list[_Token], index: int) -> set[tuple[str, str]]:
 def extract_state_pairs_from_template(
     template_str: str,
     shadowed: frozenset[str] = frozenset(),
-) -> frozenset[tuple[str, str]]:
+) -> frozenset[tuple[str, str | ComparedState]]:
     """Return the (entity ID, state) pairs a template compares literally.
 
     `is_state('light.x', 'on')`, and the same as a test, `'light.x' is
@@ -2212,6 +2303,10 @@ def extract_state_pairs_from_template(
     list of states, `is_state('light.x', ['on', 'off'])`. And a state
     compared to literals: `states('light.x') == 'on'`, `!=`, the other way
     around, or `in` a list of them, also as `states.light.x.state`.
+
+    A state held to be one of a list, or held to not be it, comes as a
+    `ComparedState`, which says so. Only a `not` right next to the
+    comparison counts for that, see `_negated`.
 
     Read like the attribute pairs: whole string literals, inside an
     expression, and not called in a template that defines its own
@@ -2228,7 +2323,7 @@ def extract_state_pairs_from_template(
     expressions = _expressions(template_str)
     named_locally = _named_locally(expressions) | shadowed
 
-    pairs: set[tuple[str, str]] = set()
+    pairs: set[tuple[str, str | ComparedState]] = set()
     for tokens in expressions:
         for index, (kind, value) in enumerate(tokens):
             if kind != "name":
@@ -2236,7 +2331,7 @@ def extract_state_pairs_from_template(
 
             # Tests are Jinja's own registry: a name the template, or the
             # configuration, defines does not hide one, it only hides a function.
-            found: set[tuple[str, str]] = set()
+            found: set[tuple[str, str | ComparedState]] = set()
             if value == _STATE_FUNCTION and _is_test(tokens, index):
                 found = _test_pairs(tokens, index)
             elif value in named_locally:

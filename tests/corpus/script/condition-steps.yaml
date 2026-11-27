@@ -5,10 +5,10 @@ note: >-
 expect:
   states:
     find:
-      - lock.front_door: locked
-      - lock.back_door: locked
-      - lock.front_door: Locked
-      - lock.back_door: Locked
+      - lock.front_door: locked (one of "Locked", "locked")
+      - lock.back_door: locked (one of "Locked", "locked")
+      - lock.front_door: Locked (one of "Locked", "locked")
+      - lock.back_door: Locked (one of "Locked", "locked")
       - vacuum.downstairs: docked
   conditions:
     find: [state, template]

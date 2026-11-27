@@ -84,7 +84,12 @@ reference it reads. Three types are taken one step earlier:
   waited for in place of a state, is written the way the issue writes it:
   `climate.hall[hvac_action]: "heating"`, quotes and all, since `0` and `"0"`
   are not the same value to an attribute. In an `expect` rule that is
-  `climate.hall[hvac_action]: '"heating"'`.
+  `climate.hall[hvac_action]: '"heating"'`. A state compared as one of a
+  list, or as what it must not be, says so, with every state of that
+  comparison: `light.kitchen: home (one of "home", "on")`, or
+  `light.kitchen: none (not one of "none", "unknown")`. A guard like that,
+  or a list with a state that can happen, is fine in a house. The corpus
+  shows how a state was read, not whether a house would report it.
 
 Two say what their repair judges from the text alone, the same in any house:
 
