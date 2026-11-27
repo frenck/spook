@@ -3,20 +3,30 @@
 # pylint: disable=protected-access
 from __future__ import annotations
 
+import asyncio
+from datetime import timedelta
 import re
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
-from unittest.mock import AsyncMock
+from unittest.mock import AsyncMock, patch
 
-from pytest_homeassistant.common import MockConfigEntry, MockModule, mock_integration
+from pytest_homeassistant.common import (
+    MockConfigEntry,
+    MockModule,
+    async_fire_time_changed,
+    mock_integration,
+)
 
 from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.repairs import _INSPECTION_TURN
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.components.repairs import RepairsFlow
     from homeassistant.core import HomeAssistant, State
     from homeassistant.helpers import issue_registry as ir
@@ -209,3 +219,56 @@ async def async_disable_config_entry(
         entry.entry_id, ConfigEntryDisabler.USER if disabled else None
     )
     await hass.async_block_till_done()
+
+
+# Comfortably past the three seconds a repair waits before it looks.
+_PAST_THE_WAIT = timedelta(seconds=5)
+
+
+async def async_wait_out_the_repair(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Let the time pass a repair waits before it looks, and the look run.
+
+    Waits for its turn to look, not for Home Assistant to be done: a reload
+    is a task of Home Assistant's, and the slow one below is not done while
+    this waits. A look takes its turn the moment it starts, so having the
+    turn means the look that was due is over, or that none was.
+    """
+    freezer.tick(_PAST_THE_WAIT)
+    async_fire_time_changed(hass)
+    async with hass.data[_INSPECTION_TURN]:
+        pass
+
+
+async def async_reload_slower_than_the_repair_waits(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    configuration: dict[str, Any],
+) -> None:
+    """Reload the one domain in ``configuration``, reading it back slowly.
+
+    A reload reads all the YAML before it changes anything. On a large
+    configuration that takes longer than a repair waits after the reload is
+    called, so the wait runs out here while the YAML is still being read.
+    """
+    (domain,) = configuration
+    reading = asyncio.Event()
+    read = asyncio.Event()
+
+    async def _slow_yaml(_hass: HomeAssistant) -> dict[str, Any]:
+        reading.set()
+        await read.wait()
+        return configuration
+
+    with patch("homeassistant.config.async_hass_config_yaml", _slow_yaml):
+        reload = asyncio.create_task(
+            hass.services.async_call(domain, "reload", blocking=True)
+        )
+        await reading.wait()
+        await async_wait_out_the_repair(hass, freezer)
+
+        read.set()
+        await reload
+
+    await async_wait_out_the_repair(hass, freezer)
