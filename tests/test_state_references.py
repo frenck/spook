@@ -597,6 +597,11 @@ def test_state_comparisons_in_templates(
         # Further away than this reader looks: taken as it is written.
         ("{{ not (x and states('light.kitchen') == 'On') }}", PAIR),
         ("{{ not (states('light.kitchen') == 'On' and x) }}", PAIR),
+        # Turned around once more, by a second `not` or by what it is then
+        # compared with: taken as it is written too.
+        ("{{ not not is_state('light.kitchen', 'On') }}", PAIR),
+        ("{{ not is_state('light.kitchen', 'On') == false }}", PAIR),
+        ("{{ not (states('light.kitchen') == 'On') is false }}", PAIR),
     ],
 )
 def test_a_not_next_to_a_comparison_turns_it_around(

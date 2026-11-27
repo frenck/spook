@@ -2168,14 +2168,29 @@ def _negated(tokens: list[_Token], start: int, end: int) -> bool:
     it: `not states('light.x') == 'on'`, `not (states('light.x') == 'on')`.
     What a `not` further away applies to takes reading all of the
     expression, which this reader does not do.
+
+    Nor when it is turned around once more: by a second `not` in front,
+    or by comparing the outcome, as in `not is_state(...) == false`. Then
+    it is taken as it is written, without the `not`.
     """
     if _is(tokens, start - 1, "name", "not"):
-        return True
-    return (
+        before, after = start - 2, end
+    elif (
         _is(tokens, start - 2, "name", "not")
         and _is(tokens, start - 1, "lparen")
         and _is(tokens, end, "rparen")
+    ):
+        before, after = start - 3, end + 1
+    else:
+        return False
+
+    if _is(tokens, before, "name", "not"):
+        return False
+
+    compared_again = _is(tokens, after, "name", "is") or (
+        after < len(tokens) and tokens[after][0] in _EQUALITY
     )
+    return not compared_again
 
 
 def _compared_negatively(tokens: list[_Token], index: int) -> bool:
