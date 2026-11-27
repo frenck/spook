@@ -107,6 +107,13 @@ async def async_ask_in_time[AnswerT](
             # question holds its thread all the same.
             if not question.done():
                 _async_leave_unanswered(hass, question)
+
+            # Done the moment the wait was called off, and nobody is left to
+            # hear how it went. Its failure is taken, or it would be logged
+            # as an error that was never retrieved.
+            elif not question.cancelled():
+                question.exception()
+
             raise
 
         if question.done():

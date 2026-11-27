@@ -316,6 +316,46 @@ async def test_a_lost_question_failing_later_leaves_nothing_behind(
     assert answered.exc_info[1] is failure
 
 
+async def test_a_question_failing_as_the_wait_is_called_off_leaves_nothing_behind(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a failure that lands the moment the round is called off is taken.
+
+    The question is done by then, so nothing waits for it and nothing counts
+    it as still running. Its failure has nobody left to hear it either.
+    """
+    failure = OperationalError("SELECT", {}, Exception("database is locked"))
+    # Held in a list, so the test can let go of the last reference to it.
+    # An exception nobody took is only reported once its future is collected.
+    questions: list[asyncio.Future[None]] = [hass.loop.create_future()]
+    questions[0].set_exception(failure)
+
+    monkeypatch.setattr(
+        recorder_questions,
+        "get_instance",
+        lambda _hass: SimpleNamespace(async_add_executor_job=lambda *_: questions[0]),
+    )
+
+    async def _called_off(*_: Any, **__: Any) -> None:
+        raise asyncio.CancelledError
+
+    monkeypatch.setattr(recorder_questions.asyncio, "wait", _called_off)
+
+    with pytest.raises(asyncio.CancelledError):
+        await async_ask_in_time(hass, _answer)
+
+    monkeypatch.undo()
+    questions.clear()
+    gc.collect()
+    await asyncio.sleep(0)
+
+    assert not _unanswered(hass)
+    assert "never retrieved" not in caplog.text
+    assert not [record for record in caplog.records if record.levelno >= logging.ERROR]
+
+
 @pytest.mark.usefixtures("recorder_mock")
 async def test_questions_asked_at_the_same_time_take_turns(
     hass: HomeAssistant, held_back: _HeldBack
