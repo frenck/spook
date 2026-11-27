@@ -63,21 +63,16 @@ def _repair_setup(entry: ConfigEntry) -> dict[str, Any]:
     """Return how setting up the repairs went, and how each last looked.
 
     Spook sets its repairs up once Home Assistant has started, so until then
-    there is nothing to tell. A repair is named by Spook's own name for it.
+    there is nothing to tell. While it is at it, what is known so far is
+    told: a repair that takes its time setting up is worth seeing. A repair
+    is named by Spook's own name for it.
     """
     manager = getattr(entry, "runtime_data", None)
     if not isinstance(manager, SpookRepairManager):
         return {"state": "not_set_up", "modules": {}, "last_looks": {}}
 
-    if not manager.set_up:
-        return {
-            "state": "waiting_for_home_assistant_to_start",
-            "modules": {},
-            "last_looks": {},
-        }
-
     return {
-        "state": "set_up",
+        "state": manager.setup_state.value,
         "modules": {
             module: state.value
             for module, state in sorted(manager.module_states.items())

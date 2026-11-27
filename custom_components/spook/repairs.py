@@ -1722,6 +1722,14 @@ class RepairModuleState(StrEnum):
     FAILED_TO_SET_UP = "failed_to_set_up"
 
 
+class RepairSetupState(StrEnum):
+    """How far setting up the repairs is."""
+
+    WAITING_FOR_HOME_ASSISTANT_TO_START = "waiting_for_home_assistant_to_start"
+    SETTING_UP = "setting_up"
+    SET_UP = "set_up"
+
+
 @dataclass
 class SpookRepairManager:
     """Class to manage Spook repairs."""
@@ -1734,8 +1742,9 @@ class SpookRepairManager:
     #: diagnostics download, nothing decides anything on it.
     module_states: dict[str, RepairModuleState] = field(default_factory=dict)
 
-    #: Whether the repairs are set up. Not until Home Assistant has started.
-    set_up: bool = False
+    #: How far setting up the repairs is. It does not begin until Home
+    #: Assistant has started, and takes a moment once it does.
+    setup_state: RepairSetupState = RepairSetupState.WAITING_FOR_HOME_ASSISTANT_TO_START
 
     def __post_init__(self) -> None:
         """Post initialization."""
@@ -1757,6 +1766,7 @@ class SpookRepairManager:
         house is quiet and everything looks straight away, like it always did.
         """
         LOGGER.debug("Setting up Spook repairs")
+        self.setup_state = RepairSetupState.SETTING_UP
 
         modules: list[ModuleType] = []
         failed_to_load: list[str] = []
@@ -1811,7 +1821,7 @@ class SpookRepairManager:
             )
         )
 
-        self.set_up = True
+        self.setup_state = RepairSetupState.SET_UP
 
     async def _async_setup_repair_module(
         self, module: ModuleType, first_inspection_delay: timedelta | None = None

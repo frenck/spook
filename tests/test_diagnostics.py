@@ -5,7 +5,8 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from types import SimpleNamespace
+from typing import TYPE_CHECKING, Any
 import json
 
 from pytest_homeassistant.common import MockConfigEntry, async_fire_time_changed
@@ -21,6 +22,7 @@ from custom_components.spook.repairs import (
     LastLook,
     LookOutcome,
     RepairModuleState,
+    RepairSetupState,
     SpookRepairManager,
 )
 
@@ -152,7 +154,15 @@ async def test_how_the_repairs_did(hass: HomeAssistant) -> None:
             ),
         }
     )
-    manager.set_up = True
+    # Setting up takes a moment, and one repair can hold it up. What is known
+    # by then is told already, and not as still waiting for a start.
+    manager.setup_state = RepairSetupState.SETTING_UP
+    result = await diagnostics.async_get_config_entry_diagnostics(hass, entry)
+    assert result["repair_setup"]["state"] == "setting_up"
+    assert len(result["repair_setup"]["modules"]) == len(manager.module_states)
+    assert len(result["repair_setup"]["last_looks"]) == len(looks)
+
+    manager.setup_state = RepairSetupState.SET_UP
 
     result = await diagnostics.async_get_config_entry_diagnostics(hass, entry)
 
@@ -203,7 +213,7 @@ async def test_a_failure_is_told_by_its_type_alone(
     freezer.tick(timedelta(seconds=5))
     async_fire_time_changed(hass)
     await hass.async_block_till_done()
-    manager.set_up = True
+    manager.setup_state = RepairSetupState.SET_UP
     entry = MockConfigEntry(domain=DOMAIN)
     entry.runtime_data = manager
 
@@ -213,6 +223,32 @@ async def test_a_failure_is_told_by_its_type_alone(
     dumped = json.dumps(result)
     assert "grandma" not in dumped
     assert "light." not in dumped
+
+    await manager.async_on_unload()
+
+
+async def test_setting_up_the_repairs_says_how_far_it_is(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test the manager says it is setting up while it is, and set up after."""
+    # The Lovelace repairs need the Lovelace data container to activate.
+    hass.data["lovelace"] = SimpleNamespace(dashboards={}, resources=None)
+
+    manager = SpookRepairManager(hass)
+    assert manager.setup_state is (RepairSetupState.WAITING_FOR_HOME_ASSISTANT_TO_START)
+
+    seen_while_setting_up: set[RepairSetupState] = set()
+    set_up_one_module = SpookRepairManager._async_setup_repair_module
+
+    async def _watching(self: SpookRepairManager, *args: Any, **kwargs: Any) -> None:
+        seen_while_setting_up.add(self.setup_state)
+        await set_up_one_module(self, *args, **kwargs)
+
+    monkeypatch.setattr(SpookRepairManager, "_async_setup_repair_module", _watching)
+    await manager.async_setup()
+
+    assert seen_while_setting_up == {RepairSetupState.SETTING_UP}
+    assert manager.setup_state is RepairSetupState.SET_UP
 
     await manager.async_on_unload()
 
