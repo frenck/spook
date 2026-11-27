@@ -104,9 +104,23 @@ def async_group_members(hass: HomeAssistant) -> Iterator[tuple[Any, list[str]]]:
             yield entity, members
 
 
-def async_unknown_helper_sources(hass: HomeAssistant, entry: ConfigEntry) -> set[str]:
-    """Return the raw source references of a helper that are gone."""
-    return _async_unknown(hass, _source_values(entry), as_written=False)
+def async_unknown_helper_sources(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    *,
+    known_entity_ids: set[str] | None = None,
+) -> set[str]:
+    """Return the raw source references of a helper that are gone.
+
+    Whoever asks about many helpers in a row hands over the entity IDs that
+    are known, so they are worked out once and not once per helper.
+    """
+    return _async_unknown(
+        hass,
+        _source_values(entry),
+        as_written=False,
+        known_entity_ids=known_entity_ids,
+    )
 
 
 def min_max_members(entry: ConfigEntry) -> set[str]:
@@ -118,9 +132,23 @@ def min_max_members(entry: ConfigEntry) -> set[str]:
     }
 
 
-def async_unknown_min_max_members(hass: HomeAssistant, entry: ConfigEntry) -> set[str]:
-    """Return the raw member references of a min/max helper that are gone."""
-    return _async_unknown(hass, min_max_members(entry), as_written=True)
+def async_unknown_min_max_members(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    *,
+    known_entity_ids: set[str] | None = None,
+) -> set[str]:
+    """Return the raw member references of a min/max helper that are gone.
+
+    Whoever asks about many helpers in a row hands over the entity IDs that
+    are known, so they are worked out once and not once per helper.
+    """
+    return _async_unknown(
+        hass,
+        min_max_members(entry),
+        as_written=True,
+        known_entity_ids=known_entity_ids,
+    )
 
 
 def _async_unknown(
@@ -128,6 +156,7 @@ def _async_unknown(
     values: Iterable[str],
     *,
     as_written: bool,
+    known_entity_ids: set[str] | None,
 ) -> set[str]:
     """Return which of these references point at nothing.
 
@@ -138,7 +167,8 @@ def _async_unknown(
     issue somebody had already dealt with.
     """
     entity_registry = er.async_get(hass)
-    known_entity_ids = async_get_all_entity_ids(hass)
+    if known_entity_ids is None:
+        known_entity_ids = async_get_all_entity_ids(hass)
 
     unknown: set[str] = set()
     for value in values:

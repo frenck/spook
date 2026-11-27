@@ -5,6 +5,7 @@ from __future__ import annotations
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
+from ....entity_filtering import async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
 from ....helper_sources import async_unknown_min_max_members
 from ....repairs import AbstractSpookRepair
@@ -31,10 +32,16 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         self.possible_issue_ids.clear()
 
+        # Worked out once for the round, not once per helper.
+        known_entity_ids = async_get_all_entity_ids(self.hass)
+
         for entry in self.hass.config_entries.async_entries("min_max"):
             self.possible_issue_ids.add(entry.entry_id)
 
-            if not (unknown := async_unknown_min_max_members(self.hass, entry)):
+            unknown = async_unknown_min_max_members(
+                self.hass, entry, known_entity_ids=known_entity_ids
+            )
+            if not unknown:
                 continue
 
             sources = await async_describe_unknown_entities(

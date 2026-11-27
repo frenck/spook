@@ -10,18 +10,31 @@ missing scene is reported.
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import gc
+from typing import TYPE_CHECKING, Any
+from unittest.mock import patch
+from weakref import WeakKeyDictionary
 
 from homeassistant.components import automation, script
+from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.core import callback
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook import configuration_cache, entity_filtering
 from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references import (
     SpookRepair,
+)
+from custom_components.spook.ectoplasms.script.repairs.unknown_entity_references import (
+    SpookRepair as ScriptSpookRepair,
 )
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
-    from homeassistant.core import HomeAssistant
+    from collections.abc import Callable
+
+    import pytest
+
+    from homeassistant.core import Event, EventStateChangedData, HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
 
@@ -307,3 +320,233 @@ async def test_scene_created_by_a_broken_automation_is_still_reported(
     await SpookRepair(hass)._async_inspect_with_cleanup()
 
     assert "scene.never_made" in (_reported(issue_registry) or "")
+
+
+# A scene the automation below creates, and turns back on.
+_SNAPSHOT = {
+    "action": "scene.create",
+    "data": {"scene_id": "before", "snapshot_entities": ["light.hall"]},
+}
+_RESTORE = {"action": "scene.turn_on", "target": {"entity_id": "scene.before"}}
+
+
+def _automation_config(actions: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return a configuration with one automation that has an `id`.
+
+    The `id` is the point: an automation with one is registered, and a reload
+    takes it to a restored, unavailable state and back, never to no state.
+    """
+    return {
+        "automation": [
+            {
+                "id": "scene_test",
+                "alias": "Scene test",
+                "triggers": [{"trigger": "event", "event_type": "poke"}],
+                "actions": actions,
+            },
+        ],
+    }
+
+
+def _script_config(sequence: list[dict[str, Any]]) -> dict[str, Any]:
+    """Return a configuration with one script."""
+    return {"script": {"snapshotter": {"sequence": sequence}}}
+
+
+def _states_coming_or_going(hass: HomeAssistant) -> tuple[list[str], Callable]:
+    """Record every entity that gets a first state or loses its last one."""
+    came_or_went: list[str] = []
+
+    @callback
+    def _came_or_went(data: EventStateChangedData) -> bool:
+        return data["old_state"] is None or data["new_state"] is None
+
+    @callback
+    def _record(event: Event[EventStateChangedData]) -> None:
+        came_or_went.append(event.data["entity_id"])
+
+    unsubscribe = hass.bus.async_listen(
+        EVENT_STATE_CHANGED, _record, event_filter=_came_or_went
+    )
+    return came_or_went, unsubscribe
+
+
+async def _reload(hass: HomeAssistant, domain: str, config: dict[str, Any]) -> None:
+    """Reload ``domain`` the way saving it in the UI does, with ``config``."""
+    with patch("homeassistant.config.load_yaml_config_file", return_value=config):
+        await hass.services.async_call(domain, "reload", blocking=True)
+    await hass.async_block_till_done()
+
+
+def _script_reported(issue_registry: ir.IssueRegistry) -> str | None:
+    """Return the reported entities for the test script, if any."""
+    issue = async_issue_about(
+        issue_registry, "script_unknown_entity_references_script.snapshotter"
+    )
+    return issue.translation_placeholders["entities"] if issue else None
+
+
+async def test_scene_created_after_a_reload_is_not_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a `scene.create` an automation gains in a reload counts right away.
+
+    Editing an automation in the UI and saving it is a reload. Nothing comes
+    or goes in the registry or the state machine for that, which is all the
+    entity IDs cache listens to. The scenes created were cached alongside, so
+    the freshly created scene was reported as unknown.
+    """
+    hass.states.async_set("light.hall", "on")
+    unsubscribe_cache = entity_filtering.async_setup_all_entity_ids_cache_invalidation(
+        hass
+    )
+    assert await async_setup_component(hass, automation.DOMAIN, _automation_config([]))
+    await hass.async_block_till_done()
+    repair = SpookRepair(hass)
+    await repair._async_inspect_with_cleanup()
+
+    came_or_went, unsubscribe_states = _states_coming_or_going(hass)
+    await _reload(hass, automation.DOMAIN, _automation_config([_SNAPSHOT, _RESTORE]))
+    unsubscribe_states()
+    await repair._async_inspect_with_cleanup()
+    unsubscribe_cache()
+
+    assert not came_or_went
+    assert _reported(issue_registry) is None
+
+
+async def test_scene_no_longer_created_after_a_reload_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a `scene.create` an automation loses in a reload stops counting."""
+    hass.states.async_set("light.hall", "on")
+    unsubscribe_cache = entity_filtering.async_setup_all_entity_ids_cache_invalidation(
+        hass
+    )
+    assert await async_setup_component(
+        hass, automation.DOMAIN, _automation_config([_SNAPSHOT, _RESTORE])
+    )
+    await hass.async_block_till_done()
+    repair = SpookRepair(hass)
+    await repair._async_inspect_with_cleanup()
+    assert _reported(issue_registry) is None
+
+    came_or_went, unsubscribe_states = _states_coming_or_going(hass)
+    await _reload(hass, automation.DOMAIN, _automation_config([_RESTORE]))
+    unsubscribe_states()
+    await repair._async_inspect_with_cleanup()
+    unsubscribe_cache()
+
+    assert not came_or_went
+    assert "scene.before" in (_reported(issue_registry) or "")
+
+
+async def test_scene_created_after_a_script_reload_is_not_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a `scene.create` a script gains in a reload counts right away."""
+    hass.states.async_set("light.hall", "on")
+    unsubscribe_cache = entity_filtering.async_setup_all_entity_ids_cache_invalidation(
+        hass
+    )
+    assert await async_setup_component(hass, script.DOMAIN, _script_config([]))
+    await hass.async_block_till_done()
+    repair = ScriptSpookRepair(hass)
+    await repair._async_inspect_with_cleanup()
+
+    came_or_went, unsubscribe_states = _states_coming_or_going(hass)
+    await _reload(hass, script.DOMAIN, _script_config([_SNAPSHOT, _RESTORE]))
+    unsubscribe_states()
+    await repair._async_inspect_with_cleanup()
+    unsubscribe_cache()
+
+    assert not came_or_went
+    assert _script_reported(issue_registry) is None
+
+
+async def test_scene_no_longer_created_after_a_script_reload_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a `scene.create` a script loses in a reload stops counting."""
+    hass.states.async_set("light.hall", "on")
+    unsubscribe_cache = entity_filtering.async_setup_all_entity_ids_cache_invalidation(
+        hass
+    )
+    assert await async_setup_component(
+        hass, script.DOMAIN, _script_config([_SNAPSHOT, _RESTORE])
+    )
+    await hass.async_block_till_done()
+    repair = ScriptSpookRepair(hass)
+    await repair._async_inspect_with_cleanup()
+    assert _script_reported(issue_registry) is None
+
+    came_or_went, unsubscribe_states = _states_coming_or_going(hass)
+    await _reload(hass, script.DOMAIN, _script_config([_RESTORE]))
+    unsubscribe_states()
+    await repair._async_inspect_with_cleanup()
+    unsubscribe_cache()
+
+    assert not came_or_went
+    assert "scene.before" in (_script_reported(issue_registry) or "")
+
+
+async def test_every_caller_sees_a_scene_created_after_a_reload(
+    hass: HomeAssistant,
+) -> None:
+    """Test the repairs that do not walk automations see the scene too.
+
+    Dashboards, scenes, templates and the rest ask for the known entity IDs,
+    and the rename suggestions ask for them per domain. Both are cached, and
+    both have to know a scene an automation started creating in a reload.
+    """
+    hass.states.async_set("light.hall", "on")
+    unsubscribe_cache = entity_filtering.async_setup_all_entity_ids_cache_invalidation(
+        hass
+    )
+    assert await async_setup_component(hass, automation.DOMAIN, _automation_config([]))
+    await hass.async_block_till_done()
+    entity_filtering.async_get_all_entity_ids(hass)
+    entity_filtering.async_get_all_entity_ids_by_domain(hass)
+
+    await _reload(hass, automation.DOMAIN, _automation_config([_SNAPSHOT]))
+    known_entity_ids = entity_filtering.async_get_all_entity_ids(hass)
+    known_by_domain = entity_filtering.async_get_all_entity_ids_by_domain(hass)
+    unsubscribe_cache()
+
+    assert "scene.before" in known_entity_ids
+    assert "scene.before" in known_by_domain["scene"]
+
+
+async def test_scenes_read_are_not_kept_past_a_reload(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test what was read from an old configuration goes with it.
+
+    The scenes are read per configuration and kept with the automation they
+    were read from. Ten reloads later, only the one configuration still in
+    use is remembered.
+    """
+    owned: WeakKeyDictionary[Any, Any] = WeakKeyDictionary()
+    monkeypatch.setattr(configuration_cache, "_READINGS", owned)
+    reader = entity_filtering._scene_ids_created_by.__wrapped__  # type: ignore[attr-defined]
+    hass.states.async_set("light.hall", "on")
+    assert await async_setup_component(
+        hass, automation.DOMAIN, _automation_config([_SNAPSHOT])
+    )
+    await hass.async_block_till_done()
+
+    for round_number in range(10):
+        await _reload(
+            hass,
+            automation.DOMAIN,
+            _automation_config([_SNAPSHOT, {"delay": round_number}]),
+        )
+        entity_filtering.async_get_all_entity_ids(hass)
+    gc.collect()
+
+    assert [len(readings.get(reader, {})) for readings in owned.values()] == [1]
