@@ -2045,8 +2045,12 @@ def _function_pairs(
     if not _ends_argument(tokens, end):
         return set()
 
-    # With nothing after the states, the call closes at `end`.
-    negative = _negated(tokens, index, end + 1)
+    # The call closes at `end`, or one further with a comma left behind the
+    # states: `is_state('light.x', 'on',)`.
+    closes_at = end + 1 if _is(tokens, end, "comma") else end
+    negative = _is(tokens, closes_at, "rparen") and _negated(
+        tokens, index, closes_at + 1
+    )
     return {
         (tokens[index + 2][1], state)
         for state in compared_states(literals, negative=negative)
@@ -2187,8 +2191,11 @@ def _negated(tokens: list[_Token], start: int, end: int) -> bool:
     if _is(tokens, before, "name", "not"):
         return False
 
-    compared_again = _is(tokens, after, "name", "is") or (
-        after < len(tokens) and tokens[after][0] in _EQUALITY
+    compared_again = (
+        _is(tokens, after, "name", "is")
+        or _is(tokens, after, "name", "in")
+        or _is(tokens, after, "name", "not")
+        or (after < len(tokens) and tokens[after][0] in _EQUALITY)
     )
     return not compared_again
 
