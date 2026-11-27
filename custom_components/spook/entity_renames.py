@@ -267,8 +267,14 @@ class EntityRenames:
         on the way down. Removing through the same store calls that off.
         """
         store, self._store = self._store, None
-        if store is not None:
-            await store.async_remove()
+        if store is None:
+            return
+
+        # Saving waits for a write that is under way, and leaves none behind.
+        # Not every Home Assistant that Spook runs on waits for one before it
+        # removes the file, and a write landing after would put the file back.
+        await store.async_save(self._data_to_save())
+        await store.async_remove()
 
     @callback
     def _async_schedule_save(self) -> None:
