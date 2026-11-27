@@ -42,11 +42,15 @@ from .attribute_checking import (
     NEWS_OVERLAP,
     HistoryAnswer,
     answers_to_continue,
-    recorder_can_answer,
     recorder_metadata_ids,
     suggest_name,
 )
 from .const import LOGGER
+from .recorder_questions import (
+    RecorderDidNotAnswer,
+    async_ask_in_time,
+    recorder_can_answer,
+)
 from .template_extraction import ComparedState
 
 if TYPE_CHECKING:
@@ -436,12 +440,13 @@ async def _async_ask_the_recorder(
         for entity_id, previous in previous_answers.items()
     }
     try:
-        recorded = await get_instance(hass).async_add_executor_job(
-            _read_recorded_states, hass, since_by_entity
+        recorded = await async_ask_in_time(
+            hass, _read_recorded_states, hass, since_by_entity
         )
-    # A database error is logged by the recorder already. Without an answer
-    # only what is certain without history gets reported.
-    except SQLAlchemyError:
+    # A database error is logged by the recorder already, and a recorder that
+    # did not answer in time says so itself. Without an answer only what is
+    # certain without history gets reported, and nothing is remembered as read.
+    except SQLAlchemyError, RecorderDidNotAnswer:
         LOGGER.debug(
             "Spook could not read state history for %s",
             ", ".join(previous_answers),

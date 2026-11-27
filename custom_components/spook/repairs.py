@@ -90,6 +90,7 @@ from .helper_sources import (
     async_unknown_helper_sources,
     async_unknown_min_max_members,
 )
+from .recorder_questions import RecorderDidNotAnswer
 from .reference_extraction import (
     AttributeValue,
     NamedReferences,
@@ -2791,7 +2792,13 @@ class OrphanedStatisticsFixFlow(_RemoveOrIgnoreFixFlow):
         if not offered:
             return self.async_abort(reason="nothing_to_clear")
 
-        still_gone = await async_settled_orphaned_statistic_ids(self.hass)
+        try:
+            still_gone = await async_settled_orphaned_statistic_ids(self.hass)
+        except RecorderDidNotAnswer:
+            # Without the look again, clearing would delete history on the
+            # strength of what the issue said days ago.
+            return self.async_abort(reason="recorder_did_not_answer")
+
         clearing = sorted(offered & still_gone)
         if not clearing:
             # Nothing on the list still needs clearing. They may have an
@@ -2856,6 +2863,16 @@ class EnergyUnknownReferencesFixFlow(_RemoveOrIgnoreFixFlow):
         """List the entities the way the issue listed them."""
         return {"entities": str((self.data or {}).get("entities", ""))}
 
+    async def async_step_init(
+        self,
+        user_input: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Offer the choices, once the recorder said what it holds."""
+        try:
+            return await super().async_step_init(user_input)
+        except RecorderDidNotAnswer:
+            return self.async_abort(reason="recorder_did_not_answer")
+
     async def _async_can_remove(self) -> bool:
         """Return whether an entity the issue showed can be taken out."""
         return bool(await self._async_removing())
@@ -2872,7 +2889,14 @@ class EnergyUnknownReferencesFixFlow(_RemoveOrIgnoreFixFlow):
         _: dict[str, str] | None = None,
     ) -> FlowResult:
         """Take the entities out of the energy settings, after looking again."""
-        if not (removing := await self._async_removing()):
+        try:
+            removing = await self._async_removing()
+        except RecorderDidNotAnswer:
+            # Without the statistics, an imported source looks unknown, and
+            # taking it out would break a working energy dashboard.
+            return self.async_abort(reason="recorder_did_not_answer")
+
+        if not removing:
             return self.async_abort(reason="nothing_to_remove")
 
         manager = await async_get_energy_manager(self.hass)

@@ -52,10 +52,14 @@ from .attribute_checking import (
     answers_to_continue,
     history_can_tell,
     newest_attribute_sets,
-    recorder_can_answer,
     recorder_metadata_ids,
 )
 from .const import LOGGER
+from .recorder_questions import (
+    RecorderDidNotAnswer,
+    async_ask_in_time,
+    recorder_can_answer,
+)
 from .state_checking import entity_object
 
 if TYPE_CHECKING:
@@ -400,13 +404,14 @@ async def _async_ask_the_recorder(
         for entity_id in previous_answers
     }
     try:
-        recorded = await get_instance(hass).async_add_executor_job(
-            _read_recorded_values, hass, since_by_entity, checked_by_entity
+        recorded = await async_ask_in_time(
+            hass, _read_recorded_values, hass, since_by_entity, checked_by_entity
         )
     # A database error is logged by the recorder already; a damaged attribute
-    # set is not, and fails to parse. Either way, without an answer nothing
-    # gets reported: every finding here needs the whole history.
-    except SQLAlchemyError, ValueError:
+    # set is not, and fails to parse; a recorder that did not answer in time
+    # says so itself. Either way, without an answer nothing gets reported:
+    # every finding here needs the whole history.
+    except SQLAlchemyError, ValueError, RecorderDidNotAnswer:
         LOGGER.debug(
             "Spook could not read attribute value history for %s",
             ", ".join(previous_answers),
