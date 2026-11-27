@@ -318,6 +318,40 @@ async def test_an_unreadable_dashboard_skips_the_round(
     )
 
 
+async def test_an_unreadable_dashboard_is_warned_about_once(
+    hass: HomeAssistant,
+    www: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a dashboard that stays broken is not warned about every hour.
+
+    The warning names the dashboard, which the reason of the round cannot.
+    Once it reads again, the next time it breaks is news again.
+    """
+    warning = "Spook could not read dashboard dashboard-0"
+    await hass.async_add_executor_job(_write, www, "printer/cover.png")
+
+    _set_dashboards(hass, HomeAssistantError("Broken YAML"))
+    repair = await _async_inspect(hass)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert caplog.text.count(warning) == 1
+
+    # Still said to be a round that could not look, each time.
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+
+    _set_dashboards(hass, {})
+    repair._dashboards = hass.data["lovelace"].dashboards  # noqa: SLF001
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert repair.last_look.outcome is LookOutcome.FINE
+
+    _set_dashboards(hass, HomeAssistantError("Broken YAML"))
+    repair._dashboards = hass.data["lovelace"].dashboards  # noqa: SLF001
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert caplog.text.count(warning) == 1 + 1
+
+
 async def test_the_old_default_dashboard_is_passed_over(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
