@@ -70,6 +70,11 @@ def async_lights_that_are_on(hass: HomeAssistant, entity_id: str) -> list[State]
     return found
 
 
+def async_is_light_group(state: State) -> bool:
+    """Return whether a light stands for other lights rather than itself."""
+    return _async_members(state) is not None
+
+
 def _async_members(state: State) -> list[str] | None:
     """Return the lights a group holds, or `None` if it is not a group.
 
