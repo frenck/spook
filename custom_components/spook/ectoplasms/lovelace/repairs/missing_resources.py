@@ -3,14 +3,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.lovelace import DOMAIN
-from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
-
-from ....const import LOGGER
-from ....dashboard_resources import async_watch_resources, is_yaml_managed
-from ....repairs import AbstractSpookRepair
+from ....dashboard_resources import is_yaml_managed
+from ..resource_repairs import AbstractSpookDashboardResourcesRepair
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -32,7 +28,7 @@ def _local_path(hass: HomeAssistant, url: str) -> Path | None:
     return None
 
 
-class SpookRepair(AbstractSpookRepair):
+class SpookRepair(AbstractSpookDashboardResourcesRepair):
     """Spook repair finds dashboard resources pointing at missing files.
 
     A dashboard resource served from ``/local/`` or ``/hacsfiles/`` whose
@@ -40,57 +36,10 @@ class SpookRepair(AbstractSpookRepair):
     fails to load in the browser.
     """
 
-    domain = DOMAIN
     repair = "lovelace_missing_resources"
-    inspect_events = {
-        EVENT_COMPONENT_LOADED,
-        EVENT_LOVELACE_UPDATED,
-    }
-    automatically_clean_up_issues = True
 
-    async def async_activate(self) -> None:
-        """Activate, and also watch the resource list itself.
-
-        `inspect_events` covers component loads and dashboard saves. Neither
-        fires when somebody adds or removes a resource, so without this the
-        next look at them is a restart away.
-        """
-        await super().async_activate()
-
-        if (
-            unsub := async_watch_resources(self.hass, self._async_resources_changed)
-        ) is not None:
-            self._event_subs.add(unsub)
-
-    async def _async_resources_changed(  # pylint: disable=unused-argument
-        self,
-        change_type: str,  # noqa: ARG002
-        item_id: str,  # noqa: ARG002
-        config: dict,  # noqa: ARG002
-    ) -> None:
-        """Look again, once the changes stop arriving."""
-        await self.inspect_debouncer.async_call()
-
-    async def async_inspect(self) -> None:
-        """Trigger an inspection."""
-        LOGGER.debug("Spook is inspecting: %s", self.repair)
-
-        # Reached straight rather than guarded: Lovelace is a hard dependency
-        # in the manifest, so Home Assistant has set it up before Spook. A
-        # guard here would be worse than none, because returning early counts
-        # as a clean inspection and cleanup would then delete every issue this
-        # repair has, ignored ones included. If that invariant ever breaks, a
-        # KeyError is what should happen: it leaves the bookkeeping intact.
-        if (resources := self.hass.data[DOMAIN].resources) is None:
-            return
-
-        # Storage-mode resources are loaded the first time somebody asks for
-        # them, which is normally the dashboard, and Spook inspects long
-        # before that. Reading them straight would see an empty collection and
-        # report nothing at all. In YAML mode this is already loaded and the
-        # call costs nothing.
-        await resources.async_get_info()
-
+    async def _async_inspect_resources(self, resources: Any) -> None:
+        """Report the local resources whose file is not there."""
         to_check: dict[str, Path] = {}
         for item in resources.async_items() or []:
             if (url := item.get("url")) and (
