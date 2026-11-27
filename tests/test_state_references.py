@@ -608,10 +608,15 @@ def test_state_comparisons_in_templates(
         ("{{ (not is_state('light.kitchen', 'On')) == false }}", PAIR),
         ("{{ not (not is_state('light.kitchen', 'On')) }}", PAIR),
         ("{{ ((not is_state('light.kitchen', 'On'))) is false }}", PAIR),
+        ("{{ not ((not is_state('light.kitchen', 'On'))) }}", PAIR),
         # And they do not make a guard any less of one.
+        ("{{ not ((is_state('light.kitchen', 'On'))) }}", NOT_ON),
+        ("{{ not ((states('light.kitchen') == 'On')) }}", NOT_ON),
         ("{{ (not is_state('light.kitchen', 'On')) }}", NOT_ON),
         ("{{ x and (not is_state('light.kitchen', 'On')) }}", NOT_ON),
         ("{{ iif(not is_state('light.kitchen', 'On'), 1, 2) }}", NOT_ON),
+        # Parentheses that belong to a call are no parentheses around it.
+        ("{{ not foo(is_state('light.kitchen', 'On')) }}", PAIR),
         # A comma left behind the states does not move where the call ends.
         ("{{ not is_state('light.kitchen', 'On',) }}", NOT_ON),
         ("{{ not (is_state('light.kitchen', 'On',) and x) }}", PAIR),

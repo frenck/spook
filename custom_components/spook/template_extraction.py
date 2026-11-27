@@ -2169,28 +2169,22 @@ def _negated(tokens: list[_Token], start: int, end: int) -> bool:
     """Return whether a `not` turns around what runs from start to end.
 
     Only a `not` right before it, or right before parentheses around just
-    it: `not states('light.x') == 'on'`, `not (states('light.x') == 'on')`.
-    What a `not` further away applies to takes reading all of the
-    expression, which this reader does not do.
+    it, however many: `not states('light.x') == 'on'`,
+    `not (states('light.x') == 'on')`. What a `not` further away applies to
+    takes reading all of the expression, which this reader does not do.
 
     Nor when it is turned around once more: by a second `not` in front,
     or by comparing the outcome, as in `not is_state(...) == false`. Then
     it is taken as it is written, without the `not`. Parentheses around
     all of it do not hide that: `(not is_state(...)) == false`.
     """
-    if _is(tokens, start - 1, "name", "not"):
-        before, after = start - 2, end
-    elif (
-        _is(tokens, start - 2, "name", "not")
-        and _is(tokens, start - 1, "lparen")
-        and _is(tokens, end, "rparen")
-    ):
-        before, after = start - 3, end + 1
-    else:
+    before, after = _outside_parentheses(tokens, start - 1, end)
+    if not _is(tokens, before, "name", "not"):
         return False
 
     # Looked at once as it stands, and once more for each pair of
     # parentheses around it.
+    before -= 1
     while True:
         if _is(tokens, before, "name", "not") or _compared_at(tokens, after):
             return False
@@ -2199,6 +2193,16 @@ def _negated(tokens: list[_Token], start: int, end: int) -> bool:
             return True
 
         before, after = before - 1, after + 1
+
+
+def _outside_parentheses(
+    tokens: list[_Token], before: int, after: int
+) -> tuple[int, int]:
+    """Return what is right before and after, past parentheses around just it."""
+    while _is(tokens, before, "lparen") and _is(tokens, after, "rparen"):
+        before, after = before - 1, after + 1
+
+    return before, after
 
 
 def _compared_at(tokens: list[_Token], index: int) -> bool:
