@@ -26,6 +26,7 @@ from custom_components.spook.repairs import (
     OrphanedStatisticsFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -115,9 +116,7 @@ def _install_fake_recorder(
 
 def _flow(hass: HomeAssistant, offered: str) -> OrphanedStatisticsFixFlow:
     """Return the flow, wired the way the repairs component wires it."""
-    flow = OrphanedStatisticsFixFlow()
-    flow.hass = hass
-    flow.issue_id = _ISSUE_ID
+    flow = wire_fix_flow(hass, OrphanedStatisticsFixFlow(), _ISSUE_ID)
     flow.data = {"orphaned_statistic_ids": offered}
     return flow
 

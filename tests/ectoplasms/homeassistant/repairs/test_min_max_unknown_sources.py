@@ -20,7 +20,7 @@ from custom_components.spook.repairs import (
     MinMaxUnknownSourcesFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_issue_about
+from tests.repair_helpers import async_issue_about, wire_fix_flow
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -124,9 +124,7 @@ async def test_fix_flow_remove_keeps_minimum_members(
     hass.states.async_set("sensor.known", "1")
     entry = _entry(hass, ["sensor.known", "sensor.gone"])
 
-    flow = MinMaxUnknownSourcesFixFlow()
-    flow.hass = hass
-    flow.issue_id = _issue_id(entry)
+    flow = wire_fix_flow(hass, MinMaxUnknownSourcesFixFlow(), _issue_id(entry))
     flow.data = {
         "min_max_config_entry_id": entry.entry_id,
         "min_max_unknown_sources": "sensor.gone",

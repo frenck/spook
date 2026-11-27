@@ -18,7 +18,7 @@ from custom_components.spook.repairs import (
     GroupUnknownMembersFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_issue_about
+from tests.repair_helpers import async_issue_about, wire_fix_flow
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -115,9 +115,9 @@ async def test_fix_flow_remove_yaml_group_aborts(
     hass: HomeAssistant,
 ) -> None:
     """Test a YAML group (no config entry) reports it cannot be edited."""
-    flow = GroupUnknownMembersFixFlow()
-    flow.hass = hass
-    flow.issue_id = "group_unknown_members_light.yaml_group"
+    flow = wire_fix_flow(
+        hass, GroupUnknownMembersFixFlow(), "group_unknown_members_light.yaml_group"
+    )
     flow.data = {
         "group_entity_id": "light.yaml_group",
         "group": "YAML",

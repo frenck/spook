@@ -21,6 +21,7 @@ from custom_components.spook.repairs import (
     EnergyUnknownReferencesFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from homeassistant.components.energy.data import EnergyManager
@@ -62,11 +63,7 @@ async def _energy_settings(
 
 def _flow(hass: HomeAssistant, offered: str) -> EnergyUnknownReferencesFixFlow:
     """Return the fix flow for an issue that showed these entities."""
-    flow = EnergyUnknownReferencesFixFlow()
-    flow.hass = hass
-    # Through the context, the way the flow manager hands it over: Home
-    # Assistant 2026.12 turns away a flow that has it set directly.
-    flow.context = {"issue_id": _ISSUE_ID}
+    flow = wire_fix_flow(hass, EnergyUnknownReferencesFixFlow(), _ISSUE_ID)
     flow.data = {"energy_unknown_entity_ids": offered, "entities": "- the list"}
     return flow
 

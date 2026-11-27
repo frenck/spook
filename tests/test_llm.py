@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Any
 from pytest_homeassistant.common import MockConfigEntry, MockUser
 
 from homeassistant.components.light import LightEntity
+from homeassistant.components.repairs import repairs_flow_manager
 from homeassistant.core import Context, ServiceCall
 from homeassistant.helpers import (
     entity_registry as er,
@@ -380,7 +381,7 @@ async def test_explain_ghost_offers_what_the_menu_offers(
         {"option": "ignore", "label": "Keep it, stop telling me"},
     ]
     assert "fix_unavailable" not in result.data
-    assert not hass.data["repairs"]["flow_manager"].async_progress()
+    assert not repairs_flow_manager(hass).async_progress()
 
 
 @pytest.mark.usefixtures("repairs")
@@ -550,7 +551,7 @@ async def test_fix_ghost_refuses_what_the_flow_does_not_offer(
     assert result.error
     assert "remove" in result.data["error"]
     assert lr.async_get(hass).async_get_label(unused_label.label_id) is not None
-    assert not hass.data["repairs"]["flow_manager"].async_progress()
+    assert not repairs_flow_manager(hass).async_progress()
 
 
 @pytest.mark.usefixtures("repairs")
@@ -577,7 +578,7 @@ async def test_fix_ghost_leaves_a_form_to_a_person(
 
     assert result.error
     assert "Repairs dashboard" in result.data["error"]
-    assert not hass.data["repairs"]["flow_manager"].async_progress()
+    assert not repairs_flow_manager(hass).async_progress()
 
 
 @pytest.mark.usefixtures("automation_issue")

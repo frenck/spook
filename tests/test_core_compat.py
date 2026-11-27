@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import device_registry as dr
+    from homeassistant.helpers import device_registry as dr, label_registry as lr
 
 
 class MockDeviceContainerView:
@@ -191,6 +191,7 @@ def test_an_unknown_device_is_left_to_the_registry(
 def test_a_registered_device_is_updated(
     hass: HomeAssistant,
     device_registry: dr.DeviceRegistry,
+    label_registry: lr.LabelRegistry,
 ) -> None:
     """Test a device in the registry is updated for real."""
     entry = MockConfigEntry(domain="test", title="Test")
@@ -200,9 +201,12 @@ def test_a_registered_device_is_updated(
         identifiers={("test", "device")},
     )
 
-    async_update_any_device(device_registry, device.id, labels={"a-label"})
+    # Home Assistant 2026.12 refuses a label that is not in the registry.
+    label_id = label_registry.async_create("A label").label_id
 
-    assert device_registry.async_get(device.id).labels == {"a-label"}
+    async_update_any_device(device_registry, device.id, labels={label_id})
+
+    assert device_registry.async_get(device.id).labels == {label_id}
 
 
 async def test_every_target_survives_being_registered(

@@ -658,7 +658,13 @@ async def _release_notes(
     result = await client.receive_json()
     assert result["success"], result
 
-    return result["result"]
+    # Home Assistant 2026.12 answers with the notes and their messages side
+    # by side. Before that, the answer was the notes alone.
+    notes = result["result"]
+    if isinstance(notes, dict):
+        return notes["release_notes"]
+
+    return notes
 
 
 async def test_the_notes_always_say_where_the_blueprint_came_from(

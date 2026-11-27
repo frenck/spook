@@ -19,7 +19,11 @@ from custom_components.spook.repairs import (
     PersonUnknownDeviceTrackerFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_issue_about, async_count_scheduled_inspections
+from tests.repair_helpers import (
+    async_count_scheduled_inspections,
+    async_issue_about,
+    wire_fix_flow,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant, ServiceCall
@@ -44,9 +48,7 @@ def _flow_for(
     hass: HomeAssistant, unknown: list[str]
 ) -> PersonUnknownDeviceTrackerFixFlow:
     """Build a person fix flow as the framework would wire it up."""
-    flow = PersonUnknownDeviceTrackerFixFlow()
-    flow.hass = hass
-    flow.issue_id = _ISSUE_ID
+    flow = wire_fix_flow(hass, PersonUnknownDeviceTrackerFixFlow(), _ISSUE_ID)
     flow.data = {
         "person_entity_id": "person.frenck",
         "person": "Frenck",
