@@ -14,6 +14,7 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, EntityCategory
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import issue_registry as ir
 
+from ...core_compat import async_is_issue_hidden
 from ...entity import SpookEntityDescription
 from ...listeners import async_listen_once_tracked
 from .entity import RepairsSpookEntity
@@ -112,7 +113,17 @@ class HomeAssistantSpookSensorEntity(RepairsSpookEntity, SensorEntity):
 
     @property
     def native_value(self) -> int:
-        """Return the sensor value."""
+        """Return the sensor value.
+
+        Counted the way the Repairs dashboard shows them. Hiding or showing
+        an issue, as its config entry is disabled or enabled again, fires the
+        same registry event an update does, so the count follows.
+        """
+        issue_registry = ir.async_get(self.hass)
         return self.entity_description.value_fn(
-            list(ir.async_get(self.hass).issues.values()),
+            [
+                issue
+                for issue in issue_registry.issues.values()
+                if not async_is_issue_hidden(issue_registry, issue)
+            ],
         )

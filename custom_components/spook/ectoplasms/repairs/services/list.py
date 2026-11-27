@@ -11,6 +11,7 @@ from homeassistant.core import SupportsResponse
 from homeassistant.helpers import config_validation as cv, issue_registry as ir
 from homeassistant.helpers.translation import async_get_translations
 
+from ....core_compat import async_is_issue_hidden
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -71,11 +72,14 @@ class SpookService(AbstractSpookAdminService):
         severities = set(call.data.get("severity", []))
 
         # An issue that is no longer raised can stay in the registry, to
-        # remember it was ignored. The Repairs dashboard leaves those out.
+        # remember it was ignored. The Repairs dashboard leaves those out,
+        # and the ones Home Assistant hides as their config entry is disabled.
+        issue_registry = ir.async_get(self.hass)
         issues = [
             issue
-            for issue in ir.async_get(self.hass).issues.values()
+            for issue in issue_registry.issues.values()
             if issue.active
+            and not async_is_issue_hidden(issue_registry, issue)
             and (call.data["include_ignored"] or issue.dismissed_version is None)
             and (not domains or issue.domain in domains)
             and (not severities or issue.severity in severities)

@@ -17,6 +17,7 @@ from custom_components.spook.ectoplasms.repairs.services import (
     ignore_all,
     unignore_all,
 )
+from tests.repair_helpers import async_add_config_entry, async_disable_config_entry
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -131,6 +132,50 @@ async def test_a_domain_narrows_both_down(
         context=context,
     )
     assert _ignored(hass) == {"first", "second"}
+
+
+async def test_both_leave_the_issues_of_a_disabled_entry_alone(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+) -> None:
+    """All means all that the Repairs dashboard shows.
+
+    Home Assistant hides the issues of a disabled config entry. Ignoring one
+    nobody could see would keep it out of sight once the entry is enabled
+    again, without anybody having looked at it.
+    """
+    entry = async_add_config_entry(hass, "hue")
+    ir.async_create_issue(
+        hass,
+        "hue",
+        "hidden",
+        config_entry_id=entry.entry_id,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="hidden",
+    )
+    ir.async_create_issue(
+        hass,
+        "hue",
+        "hidden_and_ignored",
+        config_entry_id=entry.entry_id,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="hidden_and_ignored",
+    )
+    ir.async_ignore_issue(hass, "hue", "hidden_and_ignored", ignore=True)
+    await async_disable_config_entry(hass, entry)
+    context = Context(user_id=hass_admin_user.id)
+
+    await hass.services.async_call(
+        DOMAIN, "ignore_all", {}, blocking=True, context=context
+    )
+    assert _ignored(hass) == {"first", "second", "hidden_and_ignored"}
+
+    await hass.services.async_call(
+        DOMAIN, "unignore_all", {}, blocking=True, context=context
+    )
+    assert _ignored(hass) == {"hidden_and_ignored"}
 
 
 @pytest.mark.parametrize("action", ["ignore_all", "unignore_all"])

@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pytest_homeassistant.common import MockConfigEntry
 
+from homeassistant.config_entries import ConfigEntryDisabler
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.service import (
     async_get_cached_service_description,
     async_set_service_schema,
@@ -22,6 +24,7 @@ from custom_components.spook.core_compat import (
     async_get_child_devices_for_parent,
     async_get_device_entries,
     async_is_child_device,
+    async_is_issue_hidden,
     async_update_any_device,
     load_service_descriptions,
 )
@@ -326,3 +329,39 @@ async def test_custom_components_cache_cleared_before_core_could(
     async_clear_custom_components_cache(hass)
 
     assert loader.DATA_CUSTOM_COMPONENTS not in hass.data
+
+
+def _issue_of(hass: HomeAssistant, entry: MockConfigEntry) -> ir.IssueEntry:
+    """Raise an issue that belongs to the config entry, and return it."""
+    ir.async_create_issue(
+        hass,
+        entry.domain,
+        "bridge_gone",
+        config_entry_id=entry.entry_id,
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="bridge_gone",
+    )
+    issue = ir.async_get(hass).async_get_issue(entry.domain, "bridge_gone")
+    assert issue is not None
+    return issue
+
+
+async def test_issue_hidden_the_way_core_hides_it(hass: HomeAssistant) -> None:
+    """Test the issue of a disabled config entry is hidden on Core 2026.11."""
+    entry = MockConfigEntry(domain="hue", disabled_by=ConfigEntryDisabler.USER)
+    entry.add_to_hass(hass)
+
+    assert async_is_issue_hidden(ir.async_get(hass), _issue_of(hass, entry))
+
+
+async def test_issue_never_hidden_before_core_could(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test nothing is hidden on Core 2026.10 and older, which hid nothing."""
+    monkeypatch.delattr(ir.IssueRegistry, "async_is_hidden", raising=False)
+    entry = MockConfigEntry(domain="hue", disabled_by=ConfigEntryDisabler.USER)
+    entry.add_to_hass(hass)
+
+    assert not async_is_issue_hidden(ir.async_get(hass), _issue_of(hass, entry))

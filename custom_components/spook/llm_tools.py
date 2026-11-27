@@ -26,6 +26,7 @@ from homeassistant.helpers.translation import async_get_translations
 
 from .condition import async_get_conditions
 from .const import DOMAIN
+from .core_compat import async_is_issue_hidden
 from .draft_checking import (
     DRAFT_KINDS,
     DraftError,
@@ -241,12 +242,17 @@ def _async_ghosts(hass: HomeAssistant) -> list[ir.IssueEntry]:
     """Return Spook's issues that are actually up, newest first.
 
     An issue that is not active is the empty record Home Assistant keeps to
-    remember an ignore over a restart. Nobody can see it, so neither can this.
+    remember an ignore over a restart. One of a disabled config entry is
+    hidden by Home Assistant until the entry is enabled again. Nobody can see
+    either, so neither can this.
     """
+    issue_registry = ir.async_get(hass)
     ghosts = [
         issue
-        for (domain, _), issue in ir.async_get(hass).issues.items()
-        if domain == DOMAIN and issue.active
+        for (domain, _), issue in issue_registry.issues.items()
+        if domain == DOMAIN
+        and issue.active
+        and not async_is_issue_hidden(issue_registry, issue)
     ]
     return sorted(ghosts, key=lambda issue: issue.created, reverse=True)
 
@@ -254,8 +260,13 @@ def _async_ghosts(hass: HomeAssistant) -> list[ir.IssueEntry]:
 @callback
 def _async_ghost(hass: HomeAssistant, issue_id: str) -> ir.IssueEntry | None:
     """Return one of Spook's issues that is up, by ID."""
-    issue = ir.async_get(hass).async_get_issue(DOMAIN, issue_id)
-    if issue is None or not issue.active:
+    issue_registry = ir.async_get(hass)
+    issue = issue_registry.async_get_issue(DOMAIN, issue_id)
+    if (
+        issue is None
+        or not issue.active
+        or async_is_issue_hidden(issue_registry, issue)
+    ):
         return None
     return issue
 

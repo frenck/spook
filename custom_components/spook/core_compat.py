@@ -13,7 +13,7 @@ from homeassistant.util.yaml import load_yaml_dict
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import device_registry as dr
+    from homeassistant.helpers import device_registry as dr, issue_registry as ir
     from homeassistant.loader import Integration
 
 # From here, a service description registered in code has its target validated
@@ -156,3 +156,26 @@ def async_clear_custom_components_cache(hass: HomeAssistant) -> None:
         return
 
     hass.data.pop(loader.DATA_CUSTOM_COMPONENTS, None)
+
+
+@callback
+def async_is_issue_hidden(
+    issue_registry: ir.IssueRegistry,
+    issue: ir.IssueEntry,
+) -> bool:
+    """Return if Home Assistant keeps an issue out of sight.
+
+    Home Assistant Core 2026.11 hides the issues of a disabled config entry:
+    the Repairs dashboard and the issue templates leave them out, until the
+    entry is enabled again. Spook shows and counts what that dashboard shows,
+    so it asks Core the same question. Before 2026.11 nothing is hidden.
+    Can be replaced with `issue_registry.async_is_hidden` once Spook requires
+    Core 2026.11 or later.
+    """
+    is_hidden: Callable[[ir.IssueEntry], bool] | None = getattr(
+        issue_registry, "async_is_hidden", None
+    )
+    if is_hidden is None:
+        return False
+
+    return is_hidden(issue)

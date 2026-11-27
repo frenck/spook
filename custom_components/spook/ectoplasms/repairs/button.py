@@ -9,6 +9,7 @@ from homeassistant.components.button import ButtonEntity, ButtonEntityDescriptio
 from homeassistant.const import EntityCategory
 from homeassistant.helpers import issue_registry as ir
 
+from ...core_compat import async_is_issue_hidden
 from ...entity import SpookEntityDescription
 from .entity import RepairsSpookEntity
 
@@ -65,7 +66,12 @@ class RepairsSpookButtonEntity(RepairsSpookEntity, ButtonEntity):
     async def async_press(self) -> None:
         """Press the button."""
         issue_registry = ir.async_get(self.hass)
-        for domain, issue_id in issue_registry.issues:
+        for (domain, issue_id), issue in issue_registry.issues.items():
+            # Hidden while its config entry is disabled: nobody can see it to
+            # decide about it, so it comes back as it was left.
+            if async_is_issue_hidden(issue_registry, issue):
+                continue
+
             issue_registry.async_ignore(
                 domain,
                 issue_id,
