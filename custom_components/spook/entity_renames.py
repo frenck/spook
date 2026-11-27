@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, TypedDict
@@ -12,11 +13,9 @@ from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
 
-from .const import DOMAIN
+from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
 
 STORAGE_KEY = f"{DOMAIN}.entity_renames"
@@ -59,6 +58,42 @@ class EntityRename:
     renamed_at: datetime
 
 
+def _read_stored_rename(stored: object) -> EntityRename | None:
+    """Return a rename read back from disk, or None if it makes no sense."""
+    if not isinstance(stored, Mapping):
+        return None
+
+    entity_id = stored.get("entity_id")
+    registry_id = stored.get("registry_id")
+    renamed_at = stored.get("renamed_at")
+    if not (
+        isinstance(entity_id, str)
+        and entity_id
+        and isinstance(registry_id, str)
+        and registry_id
+        and isinstance(renamed_at, str)
+    ):
+        return None
+
+    # Text that is no time at all comes back as nothing. A time that cannot
+    # be, like the thirtieth of February, raises instead.
+    try:
+        when = dt_util.parse_datetime(renamed_at)
+    except ValueError:
+        return None
+
+    if when is None:
+        return None
+
+    # Spook writes UTC, so that is the best guess for a time that lost its
+    # zone. A few hours off at worst, on a window of half a year, where
+    # dropping it would lose the lead altogether.
+    if when.tzinfo is None:
+        when = when.replace(tzinfo=dt_util.UTC)
+
+    return EntityRename(entity_id, registry_id, when)
+
+
 class EntityRenames:
     """The entity IDs renamed in the entity registry, by the ID they had.
 
@@ -81,16 +116,23 @@ class EntityRenames:
         self._store = store
         self._renames: dict[str, EntityRename] = {}
 
-        for old_entity_id, rename in (stored or {}).items():
-            renamed_at = dt_util.parse_datetime(rename.get("renamed_at", ""))
-            new_entity_id = rename.get("entity_id")
-            registry_id = rename.get("registry_id")
-            if renamed_at is None or not new_entity_id or not registry_id:
-                continue
+        # The file can be edited by hand, or come back from an old backup.
+        # Whatever is in it, Spook sets up: what makes no sense goes, the
+        # rest is kept.
+        if stored is None:
+            stored = {}
+        elif not isinstance(stored, Mapping):
+            LOGGER.debug("Spook could not read its entity renames, starting over")
+            stored = {}
 
-            self._renames[old_entity_id] = EntityRename(
-                new_entity_id, registry_id, renamed_at
-            )
+        for old_entity_id, stored_rename in stored.items():
+            if isinstance(old_entity_id, str) and old_entity_id:
+                rename = _read_stored_rename(stored_rename)
+                if rename is not None:
+                    self._renames[old_entity_id] = rename
+
+        if dropped := len(stored) - len(self._renames):
+            LOGGER.debug("Spook dropped %s entity renames it could not read", dropped)
 
         if self._async_forget_old():
             self._async_schedule_save()
@@ -145,6 +187,8 @@ class EntityRenames:
         self, old_entity_id: str, new_entity_id: str, registry_id: str
     ) -> None:
         """Write down that one entity ID became another."""
+        # Renamed back to what it once was ends up here too: nothing to point
+        # at any more, the old references work again.
         self._async_taken(new_entity_id)
 
         # When it was renamed is when the references to it broke, and that is
@@ -158,14 +202,9 @@ class EntityRenames:
             if earlier.registry_id != registry_id:
                 continue
 
-            # Renamed back to what it once was: nothing to point at any more,
-            # the old references work again.
-            if earlier_id == new_entity_id:
-                del self._renames[earlier_id]
-            else:
-                self._renames[earlier_id] = EntityRename(
-                    new_entity_id, registry_id, earlier.renamed_at
-                )
+            self._renames[earlier_id] = EntityRename(
+                new_entity_id, registry_id, earlier.renamed_at
+            )
 
         self._renames[old_entity_id] = EntityRename(
             new_entity_id, registry_id, dt_util.utcnow()
@@ -220,6 +259,22 @@ class EntityRenames:
             del self._renames[old_entity_id]
 
         return bool(too_old)
+
+    async def async_remove(self) -> None:
+        """Remove what is on disk, and never write it again.
+
+        A save still waiting would put the file back, a few seconds later or
+        on the way down. Removing through the same store calls that off.
+        """
+        store, self._store = self._store, None
+        if store is None:
+            return
+
+        # Saving waits for a write that is under way, and leaves none behind.
+        # Not every Home Assistant that Spook runs on waits for one before it
+        # removes the file, and a write landing after would put the file back.
+        await store.async_save(self._data_to_save())
+        await store.async_remove()
 
     @callback
     def _async_schedule_save(self) -> None:
@@ -278,3 +333,19 @@ async def async_setup_entity_renames(hass: HomeAssistant) -> CALLBACK_TYPE:
         er.EVENT_ENTITY_REGISTRY_UPDATED,
         renames.async_entity_registry_updated,
     )
+
+
+async def async_remove_entity_renames(hass: HomeAssistant) -> None:
+    """Remove the renames, on disk too, for Spook being removed.
+
+    Out of `hass.data` as well, so Spook added again in the same run starts
+    from nothing rather than from what was kept across reloads.
+    """
+    renames = hass.data.pop(DATA_ENTITY_RENAMES, None)
+    if renames is not None and renames.is_written_down:
+        await renames.async_remove()
+        return
+
+    # Not loaded in this run, like Spook disabled before the restart. The
+    # file is still there.
+    await Store(hass, STORAGE_VERSION, STORAGE_KEY).async_remove()
