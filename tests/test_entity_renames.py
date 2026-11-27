@@ -2,24 +2,31 @@
 
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING, Any
+import logging
+
+import pytest
 
 from homeassistant.const import EVENT_HOMEASSISTANT_FINAL_WRITE
+from homeassistant.core import callback
+from homeassistant.helpers import entity_registry as er
 
 from custom_components.spook.entity_renames import (
     DATA_ENTITY_RENAMES,
     KEEP_RENAMES_FOR,
     STORAGE_KEY,
+    EntityRenames,
     async_get_entity_renames,
     async_setup_entity_renames,
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from freezegun.api import FrozenDateTimeFactory
 
-    from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import entity_registry as er
+    from homeassistant.core import Event, HomeAssistant
 
 
 def _create(
@@ -369,3 +376,288 @@ async def test_unloaded_sees_no_renames(
     await hass.async_block_till_done()
 
     assert _renamed_to(hass, "light.a") is None
+
+
+def _stored_rename(registry_id: str, entity_id: str = "light.b") -> dict[str, str]:
+    """Return a rename the way Spook writes one down."""
+    return {
+        "entity_id": entity_id,
+        "registry_id": registry_id,
+        "renamed_at": "2026-11-01T00:00:00+00:00",
+    }
+
+
+@pytest.mark.parametrize(
+    "stored",
+    [
+        ["light.a", "light.b"],
+        "light.a",
+        42,
+    ],
+)
+async def test_a_store_that_is_not_a_mapping_starts_empty(
+    hass: HomeAssistant,
+    stored: Any,
+) -> None:
+    """Test a store holding something else entirely is let go."""
+    renames = EntityRenames(hass, None, stored)
+
+    assert renames.async_renamed_to("light.a") is None
+
+
+@pytest.mark.parametrize(
+    "broken",
+    [
+        "light.b",
+        ["light.b"],
+        None,
+        {"entity_id": 5, "registry_id": "abc", "renamed_at": "2026-11-01T00:00:00Z"},
+        {"entity_id": "light.b", "registry_id": ["abc"]},
+        {"entity_id": "light.b", "registry_id": "abc", "renamed_at": 1764000000},
+        {"entity_id": "light.b", "registry_id": "abc", "renamed_at": None},
+        {"entity_id": "light.b", "registry_id": "abc", "renamed_at": "yesterday"},
+        {"entity_id": "", "registry_id": "abc", "renamed_at": "2026-11-01T00:00:00Z"},
+    ],
+)
+async def test_a_row_that_makes_no_sense_is_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    freezer: FrozenDateTimeFactory,
+    caplog: pytest.LogCaptureFixture,
+    broken: Any,
+) -> None:
+    """Test a damaged row goes, and the rest is kept.
+
+    The file can be edited by hand or come back from an old backup. Whatever
+    is in it, Spook has to set up.
+    """
+    freezer.move_to("2026-11-26 12:00:00+00:00")
+    caplog.set_level(logging.DEBUG, logger="custom_components.spook")
+    entry = entity_registry.async_get(_create(entity_registry, "c"))
+
+    renames = EntityRenames(
+        hass,
+        None,
+        {"light.broken": broken, "light.a": _stored_rename(entry.id, "light.c")},
+    )
+
+    assert renames.async_renamed_to("light.broken") is None
+    assert renames.async_renamed_to("light.a").entity_id == "light.c"
+
+    # How many, not which: entity IDs are the user's.
+    assert "dropped 1 entity renames" in caplog.text
+    assert "light.broken" not in caplog.text
+
+
+async def test_a_key_that_is_not_an_entity_id_is_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a row filed under something other than a string goes.
+
+    JSON only has strings for keys, but what comes in is not always JSON,
+    and the next save sorts by the key.
+    """
+    freezer.move_to("2026-11-26 12:00:00+00:00")
+    entry = entity_registry.async_get(_create(entity_registry, "c"))
+
+    renames = EntityRenames(
+        hass,
+        None,
+        {5: _stored_rename(entry.id, "light.c"), "light.a": _stored_rename(entry.id)},
+    )
+
+    assert renames.async_renamed_to(5) is None  # type: ignore[arg-type]
+    assert renames._data_to_save().keys() == {"light.a"}  # noqa: SLF001  # pylint: disable=protected-access
+
+
+async def test_a_time_without_a_zone_is_read_as_utc(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a rename written down without a time zone is kept, in UTC.
+
+    Spook writes UTC, so that is the closest guess at one with the zone lost.
+    Wrong by a few hours at worst, on a window of half a year, where dropping
+    it would lose the lead altogether.
+    """
+    freezer.move_to("2026-11-26 12:00:00+00:00")
+    entry = entity_registry.async_get(_create(entity_registry, "c"))
+    recent = _stored_rename(entry.id, "light.c") | {"renamed_at": "2026-11-01T00:00:00"}
+    too_old = _stored_rename(entry.id, "light.c") | {
+        "renamed_at": "2026-01-01T00:00:00"
+    }
+
+    renames = EntityRenames(hass, None, {"light.a": recent, "light.old": too_old})
+
+    rename = renames.async_renamed_to("light.a")
+    assert rename is not None
+    assert rename.renamed_at == datetime(2026, 11, 1, tzinfo=UTC)
+    assert renames.async_renamed_to("light.old") is None
+
+
+async def test_a_damaged_store_does_not_stop_setting_up(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the rename log sets up from a damaged file, keeping what is sound."""
+    freezer.move_to("2026-11-26 12:00:00+00:00")
+    entry = entity_registry.async_get(_create(entity_registry, "c"))
+    hass_storage[STORAGE_KEY] = {
+        "version": 1,
+        "key": STORAGE_KEY,
+        "data": {
+            "light.a": _stored_rename(entry.id, "light.c"),
+            "light.string": "light.c",
+            "light.nothing": None,
+            "light.naive": _stored_rename(entry.id, "light.c")
+            | {"renamed_at": "2026-11-02T00:00:00"},
+            "light.number": _stored_rename(entry.id, "light.c")
+            | {"renamed_at": 1764000000},
+        },
+    }
+
+    await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "x"), "light.y")
+    await hass.async_block_till_done()
+
+    assert _renamed_to(hass, "light.a") == "light.c"
+    assert _renamed_to(hass, "light.naive") == "light.c"
+    assert set(await _written_down(hass, hass_storage)) == {
+        "light.a",
+        "light.naive",
+        "light.x",
+    }
+
+
+async def test_a_store_holding_a_list_does_not_stop_setting_up(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test the rename log sets up from a file that holds a list."""
+    hass_storage[STORAGE_KEY] = {
+        "version": 1,
+        "key": STORAGE_KEY,
+        "data": ["light.a", "light.b"],
+    }
+
+    await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    await hass.async_block_till_done()
+
+    assert _renamed_to(hass, "light.a") == "light.b"
+    assert set(await _written_down(hass, hass_storage)) == {"light.a"}
+
+
+async def _restart(
+    hass: HomeAssistant, unload: Callable[[], None]
+) -> Callable[[], None]:
+    """Stop following renames and start again from what is on disk."""
+    unload()
+    hass.data.pop(DATA_ENTITY_RENAMES)
+    return await async_setup_entity_renames(hass)
+
+
+async def test_an_old_id_taken_again_is_forgotten_after_a_restart(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test a newcomer under the old ID ends the rename on disk too.
+
+    Gone again before the restart, nothing at setup can tell it was ever
+    there. Only what was written when it arrived can.
+    """
+    unload = await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    await hass.async_block_till_done()
+    await _written_down(hass, hass_storage)
+
+    newcomer = _create(entity_registry, "a", unique_id="newcomer")
+    await hass.async_block_till_done()
+    await _written_down(hass, hass_storage)
+    entity_registry.async_remove(newcomer)
+    await hass.async_block_till_done()
+
+    await _restart(hass, unload)
+
+    assert _renamed_to(hass, "light.a") is None
+
+
+async def test_an_old_id_taken_while_unloaded_is_forgotten_on_disk_too(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test catching up at setup is written down, not only done in memory.
+
+    The newcomer gone again before the next restart, that setup has nothing
+    left to catch up on.
+    """
+    unload = await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    await hass.async_block_till_done()
+    await _written_down(hass, hass_storage)
+
+    unload()
+    hass.data.pop(DATA_ENTITY_RENAMES)
+    newcomer = _create(entity_registry, "a", unique_id="newcomer")
+    unload = await async_setup_entity_renames(hass)
+    await _written_down(hass, hass_storage)
+    entity_registry.async_remove(newcomer)
+    await hass.async_block_till_done()
+
+    await _restart(hass, unload)
+
+    assert _renamed_to(hass, "light.a") is None
+
+
+async def test_a_rename_of_an_entity_already_gone_is_let_go(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a rename whose entity left before Spook heard of it is let go.
+
+    Another listener can remove it the moment it is renamed. Spook hears of
+    the rename after that, with nothing left to point at.
+    """
+
+    @callback
+    def _remove_on_rename(event: Event[er.EventEntityRegistryUpdatedData]) -> None:
+        """Remove the entity as soon as it is renamed."""
+        if "old_entity_id" in event.data:
+            entity_registry.async_remove(event.data["entity_id"])
+
+    hass.bus.async_listen(er.EVENT_ENTITY_REGISTRY_UPDATED, _remove_on_rename)
+    await async_setup_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    await hass.async_block_till_done()
+
+    assert entity_registry.async_get("light.b") is None
+    assert _renamed_to(hass, "light.a") is None
+
+
+async def test_without_spook_set_up_nothing_is_written_down(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test a repair looking without Spook set up gets an empty set.
+
+    One that follows nothing and never goes to disk.
+    """
+    renames = async_get_entity_renames(hass)
+    _rename(entity_registry, _create(entity_registry, "a"), "light.b")
+    await hass.async_block_till_done()
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_FINAL_WRITE)
+    await hass.async_block_till_done()
+
+    assert not renames.is_written_down
+    assert async_get_entity_renames(hass) is renames
+    assert _renamed_to(hass, "light.a") is None
+    assert STORAGE_KEY not in hass_storage

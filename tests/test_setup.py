@@ -8,14 +8,14 @@ from datetime import timedelta
 from pathlib import Path
 from textwrap import dedent
 from types import SimpleNamespace
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock
 import json
 import logging
 import sys
 
 import pytest
-from pytest_homeassistant.common import MockConfigEntry
+from pytest_homeassistant.common import MockConfigEntry, async_fire_time_changed
 
 from homeassistant.config_entries import (
     SOURCE_USER,
@@ -23,6 +23,7 @@ from homeassistant.config_entries import (
     ConfigEntryState,
 )
 from homeassistant.const import (
+    EVENT_HOMEASSISTANT_FINAL_WRITE,
     EVENT_HOMEASSISTANT_START,
     EVENT_HOMEASSISTANT_STARTED,
     RESTART_EXIT_CODE,
@@ -30,7 +31,8 @@ from homeassistant.const import (
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.core import Context, CoreState
 from homeassistant.data_entry_flow import FlowResultType
-from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers import entity_registry as er, issue_registry as ir
+from homeassistant.util import dt as dt_util
 from homeassistant.loader import (
     IntegrationNotFound,
     async_get_custom_components,
@@ -41,8 +43,21 @@ import custom_components
 from custom_components import spook
 from custom_components.spook.automation_runs import async_get_automation_runs
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.dismissals import (
+    DATA_DISMISSALS,
+    STORAGE_KEY as DISMISSALS_KEY,
+    async_get_dismissals,
+)
+from custom_components.spook.entity_renames import (
+    DATA_ENTITY_RENAMES,
+    STORAGE_KEY as RENAMES_KEY,
+    async_get_entity_renames,
+)
 from custom_components.spook.run_history import async_get_run_history
-from custom_components.spook.timed_states import DATA_TIMED_STATES
+from custom_components.spook.timed_states import (
+    DATA_TIMED_STATES,
+    STORAGE_KEY as TIMED_STATES_KEY,
+)
 from custom_components.spook.integration_linking import (
     link_sub_integrations,
     unlink_sub_integrations,
@@ -435,16 +450,17 @@ def test_link_sub_integrations_creates_links_idempotently_and_unlinks(
         assert not (tmp_path / "custom_components" / name).exists()
 
 
-async def test_remove_entry_unlinks_sub_integrations(tmp_path: Path) -> None:
+async def test_remove_entry_unlinks_sub_integrations(
+    hass: HomeAssistant,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     """Test removing Spook unlinks the sub-integrations."""
-    fake_hass = SimpleNamespace(
-        config=SimpleNamespace(config_dir=tmp_path),
-        async_add_executor_job=AsyncMock(side_effect=lambda func, *args: func(*args)),
-    )
+    monkeypatch.setattr(hass.config, "config_dir", str(tmp_path))
     _create_sub_integration_sources(tmp_path)
-    assert link_sub_integrations(fake_hass)
+    assert link_sub_integrations(hass)
 
-    await spook.async_remove_entry(fake_hass, MockConfigEntry(domain=DOMAIN, data={}))
+    await spook.async_remove_entry(hass, MockConfigEntry(domain=DOMAIN, data={}))
 
     for name in _sub_integration_names():
         assert not (tmp_path / "custom_components" / name).exists()
@@ -863,3 +879,150 @@ async def test_repairs_still_starting_when_spook_unloads_are_torn_down(
     await hass.async_block_till_done()
 
     assert torn_down == [True]
+
+
+@pytest.fixture(name="spook_without_the_rest")
+def fixture_spook_without_the_rest(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Set Spook up with its stores, and without platforms, actions or repairs."""
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "unlink_sub_integrations", lambda _hass: None)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
+
+
+async def _rename_and_ignore(
+    hass: HomeAssistant, entity_registry: er.EntityRegistry, name: str
+) -> None:
+    """Rename an entity and ignore a finding, so both stores have a save waiting."""
+    entity_id = entity_registry.async_get_or_create(
+        "light", "hue", name, suggested_object_id=name
+    ).entity_id
+    entity_registry.async_update_entity(entity_id, new_entity_id=f"{entity_id}_new")
+    async_get_dismissals(hass).async_dismiss("mock_repair", "script.x", {entity_id})
+    await hass.async_block_till_done()
+
+
+@pytest.mark.usefixtures("spook_without_the_rest")
+async def test_spook_writes_down_renames_and_ignores(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test the config entry is what sets the rename log and the dismissals up."""
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    await _rename_and_ignore(hass, entity_registry, "a")
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_FINAL_WRITE)
+    await hass.async_block_till_done()
+
+    assert set(hass_storage[RENAMES_KEY]["data"]) == {"light.a"}
+    assert hass_storage[DISMISSALS_KEY]["data"] == {
+        "mock_repair": {"script.x": ["light.a"]}
+    }
+
+
+@pytest.mark.usefixtures("spook_without_the_rest")
+async def test_removing_spook_removes_what_it_wrote_down(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test removing Spook takes its renames and dismissals with it.
+
+    For good: a save still waiting, or the final write on the way down, does
+    not put them back. Spook added again in the same run starts from nothing.
+    """
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    # On disk, and another save on its way.
+    await _rename_and_ignore(hass, entity_registry, "a")
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=1))
+    await hass.async_block_till_done()
+    assert RENAMES_KEY in hass_storage
+    assert DISMISSALS_KEY in hass_storage
+    await _rename_and_ignore(hass, entity_registry, "b")
+
+    await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert RENAMES_KEY not in hass_storage
+    assert DISMISSALS_KEY not in hass_storage
+    assert DATA_ENTITY_RENAMES not in hass.data
+    assert DATA_DISMISSALS not in hass.data
+
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=1))
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_FINAL_WRITE)
+    await hass.async_block_till_done()
+
+    assert RENAMES_KEY not in hass_storage
+    assert DISMISSALS_KEY not in hass_storage
+
+    # Added again, from nothing, and writing to a store of its own.
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert async_get_entity_renames(hass).async_renamed_to("light.a") is None
+    assert async_get_dismissals(hass).async_dismissed("mock_repair", "script.x") == (
+        set()
+    )
+
+    await _rename_and_ignore(hass, entity_registry, "c")
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_FINAL_WRITE)
+    await hass.async_block_till_done()
+
+    assert set(hass_storage[RENAMES_KEY]["data"]) == {"light.c"}
+    assert hass_storage[DISMISSALS_KEY]["data"] == {
+        "mock_repair": {"script.x": ["light.c"]}
+    }
+
+
+@pytest.mark.usefixtures("spook_without_the_rest")
+async def test_removing_spook_that_never_loaded_removes_what_it_wrote_down(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test the files go too when Spook was not set up in this run.
+
+    Like Spook disabled before the restart, and removed after. Held
+    automations stay: that is somebody's snooze, not Spook's memory.
+    """
+    for key, data in (
+        (RENAMES_KEY, {"light.a": {"entity_id": "light.b"}}),
+        (DISMISSALS_KEY, {"mock_repair": {"script.x": ["light.a"]}}),
+        ("spook.kept_statistics", {"statistic_ids": ["sensor.ghost"]}),
+        (TIMED_STATES_KEY, {"automation.a": {"until": "2026-12-01", "state": "off"}}),
+    ):
+        hass_storage[key] = {"version": 1, "key": key, "data": data}
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Your homie",
+        data={},
+        disabled_by=ConfigEntryDisabler.USER,
+    )
+    entry.add_to_hass(hass)
+
+    await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert RENAMES_KEY not in hass_storage
+    assert DISMISSALS_KEY not in hass_storage
+    assert "spook.kept_statistics" not in hass_storage
+    assert TIMED_STATES_KEY in hass_storage

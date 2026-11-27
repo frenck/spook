@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
@@ -10,7 +11,7 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.storage import Store
 from homeassistant.util.hass_dict import HassKey
 
-from .const import DOMAIN
+from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -42,6 +43,41 @@ class _Offered:
     references: frozenset[str]
 
 
+def _read_dismissed(stored: object) -> dict[str, dict[str, set[str]]]:
+    """Return what was ignored, read back from disk, minus what makes no sense.
+
+    The file can be edited by hand, or come back from an old backup. Whatever
+    is in it, Spook sets up.
+    """
+    if not isinstance(stored, Mapping):
+        if stored is not None:
+            LOGGER.debug("Spook could not read its dismissals, starting over")
+        return {}
+
+    dismissed: dict[str, dict[str, set[str]]] = {}
+    dropped = 0
+    for repair, owners in stored.items():
+        if not isinstance(repair, str) or not isinstance(owners, Mapping):
+            dropped += 1
+            continue
+
+        dismissed[repair] = {}
+        for owner, references in owners.items():
+            # A string would pass for a list of its letters.
+            if not isinstance(owner, str) or not isinstance(references, list):
+                dropped += 1
+                continue
+
+            dismissed[repair][owner] = {
+                reference for reference in references if isinstance(reference, str)
+            }
+
+    if dropped:
+        LOGGER.debug("Spook dropped %s dismissals it could not read", dropped)
+
+    return dismissed
+
+
 class Dismissals:
     """The findings somebody ignored, per repair and per thing they were in.
 
@@ -66,10 +102,7 @@ class Dismissals:
         """Hold what was loaded."""
         self._hass = hass
         self._store = store
-        self._dismissed: dict[str, dict[str, set[str]]] = {
-            repair: {owner: set(references) for owner, references in owners.items()}
-            for repair, owners in (dismissed or {}).items()
-        }
+        self._dismissed = _read_dismissed(dismissed)
         self._offered: dict[str, _Offered] = {}
 
         # Which issues are ignored right now, so that a change can be told
@@ -191,6 +224,16 @@ class Dismissals:
         else:
             self._taken_back.add(issue_id)
 
+    async def async_remove(self) -> None:
+        """Remove what is on disk, and never write it again.
+
+        A save still waiting would put the file back, a few seconds later or
+        on the way down. Removing through the same store calls that off.
+        """
+        store, self._store = self._store, None
+        if store is not None:
+            await store.async_remove()
+
     async def async_write_now(self) -> None:
         """Write it down without waiting."""
         if self._store is not None:
@@ -240,7 +283,15 @@ async def _async_take_over_kept_statistics(
     if (stored := await legacy.async_load()) is None:
         return
 
-    if statistic_ids := set(stored.get("statistic_ids") or ()):
+    # Damaged, it holds nothing to carry over, and goes like an empty one.
+    listed = stored.get("statistic_ids") if isinstance(stored, Mapping) else None
+    if not isinstance(listed, list):
+        listed = []
+
+    statistic_ids = {
+        statistic_id for statistic_id in listed if isinstance(statistic_id, str)
+    }
+    if statistic_ids:
         dismissals.async_dismiss(
             _ORPHANED_STATISTICS, _ORPHANED_STATISTICS, statistic_ids
         )
@@ -253,8 +304,8 @@ async def _async_take_over_kept_statistics(
         written = await Store[dict[str, dict[str, list[str]]]](
             hass, STORAGE_VERSION, STORAGE_KEY
         ).async_load()
-        landed = (written or {}).get(_ORPHANED_STATISTICS, {})
-        if not statistic_ids <= set(landed.get(_ORPHANED_STATISTICS, ())):
+        landed = _read_dismissed(written).get(_ORPHANED_STATISTICS, {})
+        if not statistic_ids <= landed.get(_ORPHANED_STATISTICS, set()):
             return
 
     await legacy.async_remove()
@@ -286,3 +337,24 @@ async def async_setup_dismissals(hass: HomeAssistant) -> CALLBACK_TYPE:
         ir.EVENT_REPAIRS_ISSUE_REGISTRY_UPDATED,
         dismissals.async_issue_registry_updated,
     )
+
+
+async def async_remove_dismissals(hass: HomeAssistant) -> None:
+    """Remove what was ignored, on disk too, for Spook being removed.
+
+    Out of `hass.data` as well, so Spook added again in the same run starts
+    from nothing rather than from what was kept across reloads.
+    """
+    # Carried over at the next setup otherwise, Spook added again or not.
+    await Store(
+        hass, _LEGACY_KEPT_STATISTICS_VERSION, _LEGACY_KEPT_STATISTICS_KEY
+    ).async_remove()
+
+    dismissals = hass.data.pop(DATA_DISMISSALS, None)
+    if dismissals is not None and dismissals.is_written_down:
+        await dismissals.async_remove()
+        return
+
+    # Not loaded in this run, like Spook disabled before the restart. The
+    # file is still there.
+    await Store(hass, STORAGE_VERSION, STORAGE_KEY).async_remove()

@@ -20,9 +20,9 @@ from homeassistant.helpers import issue_registry as ir
 from .automation_runs import async_setup_automation_runs
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .core_compat import async_clear_custom_components_cache
-from .dismissals import async_setup_dismissals
+from .dismissals import async_remove_dismissals, async_setup_dismissals
 from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
-from .entity_renames import async_setup_entity_renames
+from .entity_renames import async_remove_entity_renames, async_setup_entity_renames
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
 from .listeners import async_listen_once_tracked
 from .repairs import SpookRepairManager
@@ -221,5 +221,11 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def async_remove_entry(hass: HomeAssistant, _: ConfigEntry) -> None:
-    """Remove a config entry."""
+    """Remove a config entry, and what Spook wrote down for itself.
+
+    Not the automations held in a state: that is somebody's snooze, and
+    added again, Spook puts them back when their time is up.
+    """
     await hass.async_add_executor_job(unlink_sub_integrations, hass)
+    await async_remove_dismissals(hass)
+    await async_remove_entity_renames(hass)

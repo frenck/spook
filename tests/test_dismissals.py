@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+import pytest
 from pytest_homeassistant.common import async_fire_time_changed
 
 from homeassistant.helpers import issue_registry as ir
@@ -28,7 +29,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from homeassistant.core import HomeAssistant
-    import pytest
 
 
 class HauntedScriptRepair(AbstractSpookRepair):
@@ -385,3 +385,71 @@ async def test_the_old_store_stays_until_the_new_one_is_written(
     await _set_up(hass)
 
     assert "spook.kept_statistics" in hass_storage
+
+
+@pytest.mark.parametrize(
+    "stored",
+    [
+        ["mock_repair"],
+        "mock_repair",
+        {"mock_repair": "script.haunted"},
+        {"mock_repair": None},
+        {"mock_repair": {"script.haunted": 5}},
+        {"mock_repair": {"script.haunted": None}},
+        {"mock_repair": {"script.haunted": [["light.a"]]}},
+        {"mock_repair": {"script.haunted": "light.a"}},
+    ],
+)
+async def test_a_damaged_store_does_not_stop_setting_up(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+    stored: Any,
+) -> None:
+    """Test dismissals set up from a damaged file, keeping what is sound.
+
+    The file can be edited by hand or come back from an old backup. Whatever
+    is in it, Spook has to set up.
+    """
+    sound = {"other_repair": {"script.other": ["light.kept"]}}
+    if isinstance(stored, dict):
+        stored = stored | sound
+    hass_storage[STORAGE_KEY] = {"version": 1, "key": STORAGE_KEY, "data": stored}
+
+    await _set_up(hass)
+    dismissals = hass.data[DATA_DISMISSALS]
+
+    # A string is a list of letters to Python, not a list of entity IDs.
+    assert dismissals.async_dismissed("mock_repair", "script.haunted") == set()
+    if isinstance(stored, dict):
+        assert dismissals.async_dismissed("other_repair", "script.other") == {
+            "light.kept"
+        }
+
+
+@pytest.mark.parametrize(
+    "stored",
+    [["sensor.ghost"], "sensor.ghost", {"statistic_ids": 5}, {"statistic_ids": "x"}],
+)
+async def test_a_damaged_old_store_does_not_stop_setting_up(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+    stored: Any,
+) -> None:
+    """Test the old store of kept statistics, damaged, is let go."""
+    hass_storage["spook.kept_statistics"] = {
+        "version": 1,
+        "minor_version": 1,
+        "key": "spook.kept_statistics",
+        "data": stored,
+    }
+
+    await _set_up(hass)
+
+    assert (
+        hass.data[DATA_DISMISSALS].async_dismissed(
+            "orphaned_statistics", "orphaned_statistics"
+        )
+        == set()
+    )
+    # Nothing in it to carry over, so it goes like an empty one.
+    assert "spook.kept_statistics" not in hass_storage
