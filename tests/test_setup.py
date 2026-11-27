@@ -957,6 +957,18 @@ async def test_removing_spook_removes_what_it_wrote_down(
     assert DISMISSALS_KEY in hass_storage
     await _rename_and_ignore(hass, entity_registry, "b")
 
+    # An issue of Spook that somebody ignored, and one that is not Spook's.
+    for domain in (DOMAIN, "light"):
+        ir.async_create_issue(
+            hass,
+            domain,
+            "mock_repair_ignored",
+            is_fixable=False,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="mock_repair",
+        )
+        ir.async_ignore_issue(hass, domain, "mock_repair_ignored", ignore=True)
+
     await hass.config_entries.async_remove(entry.entry_id)
     await hass.async_block_till_done()
 
@@ -964,6 +976,12 @@ async def test_removing_spook_removes_what_it_wrote_down(
     assert DISMISSALS_KEY not in hass_storage
     assert DATA_ENTITY_RENAMES not in hass.data
     assert DATA_DISMISSALS not in hass.data
+
+    # Its issues are gone with it, and the ignore each one held. Left in the
+    # registry, Spook added again would find the ignore and keep it.
+    issue_registry = ir.async_get(hass)
+    assert not [domain for domain, _ in issue_registry.issues if domain == DOMAIN]
+    assert issue_registry.async_get_issue("light", "mock_repair_ignored")
 
     async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=1))
     hass.bus.async_fire(EVENT_HOMEASSISTANT_FINAL_WRITE)

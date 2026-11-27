@@ -75,7 +75,14 @@ def _read_stored_rename(stored: object) -> EntityRename | None:
     ):
         return None
 
-    if (when := dt_util.parse_datetime(renamed_at)) is None:
+    # Text that is no time at all comes back as nothing. A time that cannot
+    # be, like the thirtieth of February, raises instead.
+    try:
+        when = dt_util.parse_datetime(renamed_at)
+    except ValueError:
+        return None
+
+    if when is None:
         return None
 
     # Spook writes UTC, so that is the best guess for a time that lost its

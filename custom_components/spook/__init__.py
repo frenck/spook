@@ -229,3 +229,12 @@ async def async_remove_entry(hass: HomeAssistant, _: ConfigEntry) -> None:
     await hass.async_add_executor_job(unlink_sub_integrations, hass)
     await async_remove_dismissals(hass)
     await async_remove_entity_renames(hass)
+
+    # Its issues go too, here and not when Spook unloads: a reload keeps
+    # them, so that what was ignored stays ignored. Left behind, they would
+    # stay up with nobody to take them down, and each holds its ignore, which
+    # Spook added again would read back as if nothing was removed.
+    issue_registry = ir.async_get(hass)
+    for domain, issue_id in list(issue_registry.issues):
+        if domain == DOMAIN:
+            ir.async_delete_issue(hass, DOMAIN, issue_id)

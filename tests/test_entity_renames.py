@@ -416,6 +416,16 @@ async def test_a_store_that_is_not_a_mapping_starts_empty(
         {"entity_id": "light.b", "registry_id": "abc", "renamed_at": 1764000000},
         {"entity_id": "light.b", "registry_id": "abc", "renamed_at": None},
         {"entity_id": "light.b", "registry_id": "abc", "renamed_at": "yesterday"},
+        {
+            "entity_id": "light.b",
+            "registry_id": "abc",
+            "renamed_at": "2026-02-30T00:00:00+00:00",
+        },
+        {
+            "entity_id": "light.b",
+            "registry_id": "abc",
+            "renamed_at": "2026-11-01T25:00:00+00:00",
+        },
         {"entity_id": "", "registry_id": "abc", "renamed_at": "2026-11-01T00:00:00Z"},
     ],
 )
