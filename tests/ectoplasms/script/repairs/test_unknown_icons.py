@@ -7,12 +7,13 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook import draft_checking
+from custom_components.spook import draft_checking, icon_checking
 from custom_components.spook.ectoplasms.script.repairs.unknown_icons import (
     SpookRepair,
 )
+from custom_components.spook.repairs import CouldNotLook
 import pytest
-from tests.icon_helpers import install_frontend, uninstall_frontend
+from tests.icon_helpers import ICON_NAMES, install_frontend, uninstall_frontend
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
@@ -97,7 +98,40 @@ async def test_no_frontend_means_nothing_is_judged(
     """Without the frontend's list there is nothing to tell icons apart by."""
     uninstall_frontend(monkeypatch)
 
-    assert await _async_reported(hass, issue_registry, icon="mdi:ghost") is None
+    with pytest.raises(CouldNotLook, match="The icons of the frontend"):
+        await _async_reported(hass, issue_registry, icon="mdi:ghost")
+
+    assert async_issue_about(issue_registry, _ISSUE) is None
+
+
+async def test_icons_that_cannot_be_read_keep_what_was_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    """Test no list to judge by is no icon that is fine now.
+
+    The icon is the same as before. A start with a frontend built for
+    development has no list, and finds the issue from before up. Clearing it
+    would say the icon is drawn.
+    """
+    assert await _async_reported(hass, issue_registry, icon="mdi:ghost")
+    repair = SpookRepair(hass)
+
+    # The list is read once per run, so it is gone the way a start finds it.
+    uninstall_frontend(monkeypatch)
+    hass.data.pop(icon_checking.DATA_MDI_ICONS)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert async_issue_about(issue_registry, _ISSUE)
+
+    # Readable again, and judged as usual: the icon is in this list.
+    install_frontend(monkeypatch, tmp_path / "fixed", (*ICON_NAMES, "ghost"))
+    hass.data.pop(icon_checking.DATA_MDI_ICONS)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert async_issue_about(issue_registry, _ISSUE) is None
 
 
 async def test_a_draft_is_checked_for_unknown_icons(hass: HomeAssistant) -> None:

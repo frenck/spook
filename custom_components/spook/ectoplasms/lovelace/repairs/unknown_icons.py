@@ -11,7 +11,7 @@ from homeassistant.core import callback
 
 from ....const import LOGGER
 from ....dashboard_extraction import extract_icons_from_dashboard_node
-from ....icon_checking import async_get_mdi_icons, async_suggest
+from ....icon_checking import async_require_mdi_icons, async_suggest
 from ....repairs import AbstractSpookRepair
 from ..dashboards import async_dashboard_configs
 
@@ -54,14 +54,11 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        icons = await async_get_mdi_icons(self.hass)
+        icons = await async_require_mdi_icons(self.hass)
 
         async for dashboard, url_path, config in async_dashboard_configs(
             self._dashboards
         ):
-            if icons is None:
-                continue
-
             # The icon in the sidebar is set with the dashboard, not in it.
             sidebar_icon = (dashboard.config or {}).get("icon")
             if icons.unknown_name(sidebar_icon) is None:

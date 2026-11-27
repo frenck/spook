@@ -20,6 +20,7 @@ from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.public_www_files import (
     SpookRepair,
 )
+from custom_components.spook.repairs import LookOutcome
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -302,11 +303,53 @@ async def test_an_unreadable_dashboard_skips_the_round(
 
     await hass.async_add_executor_job(_write, www, "camera/snapshot.jpg")
     _set_dashboards(hass, HomeAssistantError("Broken YAML"))
-    await _async_inspect(hass)
+    repair = await _async_inspect(hass)
 
     assert _issue(issue_registry, "printer")
     assert _issue(issue_registry, "camera") is None
     assert "Spook could not read dashboard dashboard-0" in caplog.text
+
+    # Said for what it is, in Spook's own words: what Home Assistant said
+    # about the dashboard can hold a path somebody chose.
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+    assert repair.last_look.detail == (
+        "A dashboard could not be read, so what it links to is not known"
+    )
+
+
+async def test_an_unreadable_dashboard_is_warned_about_once(
+    hass: HomeAssistant,
+    www: Path,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a dashboard that stays broken is not warned about every hour.
+
+    The warning names the dashboard, which the reason of the round cannot.
+    Once it reads again, the next time it breaks is news again.
+    """
+    warning = "Spook could not read dashboard dashboard-0"
+    await hass.async_add_executor_job(_write, www, "printer/cover.png")
+
+    _set_dashboards(hass, HomeAssistantError("Broken YAML"))
+    repair = await _async_inspect(hass)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert caplog.text.count(warning) == 1
+
+    # Still said to be a round that could not look, each time.
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+
+    _set_dashboards(hass, {})
+    repair._dashboards = hass.data["lovelace"].dashboards  # noqa: SLF001
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert repair.last_look.outcome is LookOutcome.FINE
+
+    _set_dashboards(hass, HomeAssistantError("Broken YAML"))
+    repair._dashboards = hass.data["lovelace"].dashboards  # noqa: SLF001
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert caplog.text.count(warning) == 1 + 1
 
 
 async def test_the_old_default_dashboard_is_passed_over(

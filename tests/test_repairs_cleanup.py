@@ -28,6 +28,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.util import dt as dt_util
 
 from custom_components.spook import repairs
 from custom_components.spook.const import DOMAIN
@@ -897,6 +898,126 @@ async def test_a_round_home_assistant_could_not_do_is_not_reported_as_broken(
 
     await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
     assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    await repair.async_deactivate()
+
+
+async def test_a_round_that_could_not_look_keeps_what_it_reported(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    issue_registry: ir.IssueRegistry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a repair that cannot judge anything is no repair that found it fine.
+
+    Put right or not, it cannot tell, so what it reported stays up. Said at
+    debug and no louder: some of these last as long as the installation does.
+    And no look once more, which would only find the same.
+    """
+    repair = await _async_activate_and_look(hass, freezer)
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+    caplog.clear()
+    caplog.set_level(logging.DEBUG, logger="custom_components.spook")
+
+    repair.current_issue_ids = set()
+    repair.fails_with = repairs.CouldNotLook
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert repair.inspections == ROUNDS_UP_TO_THE_FAILURE
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+
+    (record,) = [
+        record
+        for record in caplog.records
+        if record.name == "custom_components.spook"
+        and "could not look" in record.getMessage()
+    ]
+    assert record.levelno == logging.DEBUG
+    assert record.getMessage() == (
+        "Spook repair mock.mock_repair could not look, and keeps what it "
+        "reported before: Inspection went bump in the night"
+    )
+    assert not [
+        record
+        for record in caplog.records
+        if record.name == "custom_components.spook"
+        and record.levelno >= logging.WARNING
+    ]
+
+    assert not _timers_calling_back_into(hass, repair)
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_FAILURE
+
+    # The next look that can judge cleans up as usual.
+    repair.inspect_debouncer.async_schedule_call()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one") is None
+
+    await repair.async_deactivate()
+
+
+async def test_a_round_that_could_not_look_is_the_look_once_more(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a round that could not look, after one that failed, calls it off.
+
+    It is the look the failure was waiting for, whoever asked for it. It did
+    not land either, so a failure after it is the last word until a look
+    does: no loop of looks once more.
+    """
+    repair = await _async_activate_and_look(hass, freezer)
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert _timers_calling_back_into(hass, repair)
+
+    repair.fails_with = repairs.CouldNotLook
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert repair.inspections == ROUNDS_UP_TO_THE_LOOK_ONCE_MORE
+    assert not _timers_calling_back_into(hass, repair)
+
+    repair.fails_with = RuntimeError
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert repair.inspections == ROUNDS_UP_TO_THE_NEXT_FAILURE
+    assert not _timers_calling_back_into(hass, repair)
+
+    await _async_move_on(hass, freezer, repairs.LOOK_ONCE_MORE_AFTER)
+    assert repair.inspections == ROUNDS_UP_TO_THE_NEXT_FAILURE
+
+    await repair.async_deactivate()
+
+
+async def test_how_each_look_went_is_written_down(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the last look is written down, for the diagnostics download.
+
+    When it finished, and how it went. For a failure the type of the error
+    and not its message, which can name an entity or a path.
+    """
+    repair = MockStumblingRepair(hass)
+    assert repair.last_look is None
+
+    await repair.async_activate()
+    await _flush_debouncer(hass, freezer)
+    assert repair.last_look == repairs.LastLook(
+        dt_util.utcnow(), repairs.LookOutcome.FINE
+    )
+
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert repair.last_look == repairs.LastLook(
+        dt_util.utcnow(), repairs.LookOutcome.FAILED, "RuntimeError"
+    )
+
+    repair.fails_with = repairs.CouldNotLook
+    await _async_a_round_that_fails(hass, freezer, repair)
+    assert repair.last_look == repairs.LastLook(
+        dt_util.utcnow(),
+        repairs.LookOutcome.COULD_NOT_LOOK,
+        "Inspection went bump in the night",
+    )
 
     await repair.async_deactivate()
 

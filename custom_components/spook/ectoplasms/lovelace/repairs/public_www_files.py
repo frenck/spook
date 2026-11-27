@@ -17,12 +17,11 @@ from homeassistant.components.frontend import DATA_THEMES
 from homeassistant.components.lovelace import DOMAIN
 from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import EVENT_LOVELACE_UPDATED, EVENT_THEMES_UPDATED
-from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
-from ....const import DOMAIN as SPOOK_DOMAIN, LOGGER, YIELD_AFTER
-from ....repairs import AbstractSpookRepair
+from ....const import LOGGER, YIELD_AFTER
+from ....repairs import AbstractSpookRepair, CouldNotLook
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
@@ -31,6 +30,7 @@ if TYPE_CHECKING:
         LovelaceStorage,
         LovelaceYAML,
     )
+    from homeassistant.core import HomeAssistant
 
 _LOCAL_PREFIX = "/local/"
 
@@ -209,6 +209,15 @@ class SpookRepair(AbstractSpookRepair):
 
     _dashboards: dict[str | None, LovelaceStorage | LovelaceYAML]
 
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+
+        # The dashboards somebody was already told could not be read. A
+        # broken one stays broken until it is fixed, and this looks every
+        # hour.
+        self._unreadable_dashboards: set[str] = set()
+
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
         self._dashboards = self.hass.data[DOMAIN].dashboards
@@ -225,20 +234,29 @@ class SpookRepair(AbstractSpookRepair):
             # The old default dashboard, a leftover nobody can open. #1593.
             if key is None and "lovelace" in self._dashboards:
                 continue
+            url_path = dashboard.url_path or "lovelace"
             try:
                 config = await dashboard.async_load(force=False)
             except ConfigNotFound:
                 # Made up on the fly, so it links to nothing in `www`.
                 continue
-            except HomeAssistantError:
+            except HomeAssistantError as err:
                 # Without its links, files it shows would be reported wrongly.
-                LOGGER.warning(
-                    "Spook could not read dashboard %s, so it skipped looking "
-                    "for public files in www",
-                    dashboard.url_path or "lovelace",
-                )
-                self._async_keep_issues()
-                return
+                # Said once per dashboard, with its name, which the reason
+                # below cannot hold. After that the round could not look,
+                # quietly, until the dashboard reads again.
+                if url_path not in self._unreadable_dashboards:
+                    self._unreadable_dashboards.add(url_path)
+                    LOGGER.warning(
+                        "Spook could not read dashboard %s, so it skips looking "
+                        "for public files in www until it can",
+                        url_path,
+                    )
+
+                msg = "A dashboard could not be read, so what it links to is not known"
+                raise CouldNotLook(msg) from err
+
+            self._unreadable_dashboards.discard(url_path)
             _collect_local_links(config, in_use)
         _collect_local_links(self.hass.data.get(DATA_THEMES, {}), in_use)
         await self._async_collect_running_links(in_use)
@@ -308,13 +326,3 @@ class SpookRepair(AbstractSpookRepair):
         for entry in self.hass.config_entries.async_entries():
             yield entry.data
             yield entry.options
-
-    @callback
-    def _async_keep_issues(self) -> None:
-        """Keep every issue raised before, which the cleanup would remove."""
-        prefix = f"{self.repair}_"
-        self.issue_ids.update(
-            issue_id.removeprefix(prefix)
-            for domain, issue_id in self.issue_registry.issues
-            if domain == SPOOK_DOMAIN and issue_id.startswith(prefix)
-        )

@@ -9,15 +9,18 @@ from homeassistant.helpers import issue_registry as ir
 from .const import DOMAIN
 from .ectoplasms.spook.repair_issues import is_ignored
 from .integration_linking import sub_integration_links
+from .repairs import LookOutcome, SpookRepairManager
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
+    from .repairs import LastLook
+
 
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant,
-    _entry: ConfigEntry,
+    entry: ConfigEntry,
 ) -> dict[str, Any]:
     """Return what helps tracking down a Spook issue.
 
@@ -33,8 +36,11 @@ async def async_get_config_entry_diagnostics(
             domain: {
                 "linked": linked,
                 "entries": [
-                    {"state": entry.state.value, "disabled_by": entry.disabled_by}
-                    for entry in hass.config_entries.async_entries(domain)
+                    {
+                        "state": helper_entry.state.value,
+                        "disabled_by": helper_entry.disabled_by,
+                    }
+                    for helper_entry in hass.config_entries.async_entries(domain)
                 ],
             }
             for domain, linked in links.items()
@@ -49,4 +55,53 @@ async def async_get_config_entry_diagnostics(
             for issue in ir.async_get(hass).issues.values()
             if issue.domain == DOMAIN
         ],
+        "repair_setup": _repair_setup(entry),
     }
+
+
+def _repair_setup(entry: ConfigEntry) -> dict[str, Any]:
+    """Return how setting up the repairs went, and how each last looked.
+
+    Spook sets its repairs up once Home Assistant has started, so until then
+    there is nothing to tell. While it is at it, what is known so far is
+    told: a repair that takes its time setting up is worth seeing. A repair
+    is named by Spook's own name for it.
+    """
+    manager = getattr(entry, "runtime_data", None)
+    if not isinstance(manager, SpookRepairManager):
+        return {"state": "not_set_up", "modules": {}, "last_looks": {}}
+
+    return {
+        "state": manager.setup_state.value,
+        "modules": {
+            module: state.value
+            for module, state in sorted(manager.module_states.items())
+        },
+        "last_looks": {
+            f"{repair.domain}.{repair.repair}": _look(repair.last_look)
+            for repair in sorted(
+                manager.repairs, key=lambda repair: (repair.domain, repair.repair)
+            )
+        },
+    }
+
+
+def _look(look: LastLook | None) -> dict[str, Any] | None:
+    """Return a look, without anything a person chose.
+
+    A failure is told by the type of its error alone. Its message can name an
+    entity, a path or a URL. The reason a repair could not look is written by
+    Spook, so that one is told as it is.
+    """
+    if look is None:
+        return None
+
+    described: dict[str, Any] = {
+        "finished": look.finished.isoformat(),
+        "outcome": look.outcome.value,
+    }
+    if look.outcome is LookOutcome.FAILED:
+        described["error"] = look.detail
+    elif look.outcome is LookOutcome.COULD_NOT_LOOK:
+        described["reason"] = look.detail
+    return described

@@ -12,8 +12,8 @@ from homeassistant.const import (
 )
 
 from ....icon_checking import (
-    async_get_mdi_icons,
     async_icon_fields,
+    async_require_mdi_icons,
     async_suggest,
     icons_in_actions,
 )
@@ -48,22 +48,20 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     reference_label = "icons"
     edit_url_pattern = "/config/automation/edit/{unique_id}"
 
-    _icons: MdiIcons | None
+    _icons: MdiIcons
     _icon_fields: dict[str, frozenset[str]]
 
     async def _async_setup_inspection(self) -> None:
         """Read the icons and the actions taking one, for this round."""
-        self._icons = await async_get_mdi_icons(self.hass)
-        self._icon_fields = {}
-        if self._icons is not None:
-            self._icon_fields = await async_icon_fields(self.hass)
+        self._icons = await async_require_mdi_icons(self.hass)
+        self._icon_fields = await async_icon_fields(self.hass)
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return the unknown icons the actions of ``entity`` hand out."""
-        if (icons := self._icons) is None or not isinstance(
-            config := entity.raw_config, dict
-        ):
+        if not isinstance(config := entity.raw_config, dict):
             return set()
+
+        icons = self._icons
 
         actions = config.get("actions", config.get("action"))
         unknown = {
@@ -76,6 +74,4 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
 
     def _format_references(self, references: list[str]) -> str:
         """Return the unknown icons, each with its likely meaning."""
-        if (icons := self._icons) is None:
-            return super()._format_references(references)
-        return "\n".join(f"- {icons.describe(icon)}" for icon in references)
+        return "\n".join(f"- {self._icons.describe(icon)}" for icon in references)

@@ -71,7 +71,7 @@ from .entity_filtering import (
     is_not_an_entity_id,
 )
 from .entity_suggestions import async_warm_rename_suggestions
-from .repairs import AbstractSpookUnknownEntityNamesRepair
+from .repairs import AbstractSpookUnknownEntityNamesRepair, CouldNotLook
 from .user_references import (
     async_get_user_ids,
     extract_user_ids_from_dashboard_node,
@@ -228,6 +228,11 @@ async def _async_check_with_repairs(
             await repair._async_setup_inspection()  # noqa: SLF001
         except ActionDescriptionsUnavailableError as exc:
             LOGGER.debug("Skipped %s on a draft: %s", repair.repair, exc.__cause__)
+            continue
+        except CouldNotLook as reason:
+            # What it judges by is not there, like the icons of a frontend
+            # built for development. Nothing to say about the draft either.
+            LOGGER.debug("Skipped %s on a draft: %s", repair.repair, reason)
             continue
 
         # pylint: disable-next=protected-access

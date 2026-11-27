@@ -1,6 +1,6 @@
 """Tests for the Lovelace duplicate resources repair."""
 
-# pylint: disable=wrong-import-order
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 import json
@@ -215,14 +215,27 @@ async def test_resources_that_differ_create_no_issue(
     assert _reported(issue_registry) is None
 
 
-async def test_no_resource_collection_is_a_no_op(
+async def test_no_resource_collection_keeps_what_was_reported(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
 ) -> None:
-    """Test a missing resource collection does not error."""
-    hass.data["lovelace"] = SimpleNamespace(resources=None)
+    """Test resources that cannot be read are no resources that are fine.
 
-    await SpookRepair(hass).async_inspect()
+    The copies are still there, Spook just cannot see them.
+    """
+    _set_resources(hass, ["/local/card.js", "/local/card.js"])
+    repair = SpookRepair(hass)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert _reported(issue_registry)
+
+    hass.data["lovelace"] = SimpleNamespace(resources=None)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert _reported(issue_registry)
+
+    # Readable again, and judged as usual.
+    _set_resources(hass, ["/local/card.js"])
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
 
     assert _reported(issue_registry) is None
 

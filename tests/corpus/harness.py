@@ -58,7 +58,10 @@ from custom_components.spook.ectoplasms.lovelace.repairs import (
 )
 from custom_components.spook.entity_filtering import is_not_an_entity_id
 from custom_components.spook.reference_extraction import AttributeValue
-from custom_components.spook.repairs import AbstractSpookUnknownEntityNamesRepair
+from custom_components.spook.repairs import (
+    AbstractSpookUnknownEntityNamesRepair,
+    CouldNotLook,
+)
 from custom_components.spook.template_extraction import ComparedState
 
 if TYPE_CHECKING:
@@ -196,6 +199,10 @@ async def _async_round_findings(
             check.start()
         try:
             await repair.async_inspect()
+        except CouldNotLook:
+            # The corpus has no frontend, so the icon repairs cannot look,
+            # and a round that cannot look raises no issue either.
+            pass
         finally:
             for check in platform_checks.values():
                 check.stop()

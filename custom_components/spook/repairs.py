@@ -9,6 +9,7 @@ from collections.abc import Coroutine
 from contextlib import suppress
 from dataclasses import dataclass, field
 from datetime import timedelta
+from enum import StrEnum
 import hashlib
 import importlib
 import json
@@ -52,6 +53,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later, async_track_time_interval
 from homeassistant.helpers.recorder import get_instance
+from homeassistant.util import dt as dt_util
 from homeassistant.util.async_ import create_eager_task
 from homeassistant.util.hass_dict import HassKey
 
@@ -440,6 +442,43 @@ class AbstractSpookRepairBase(ABC):
         self._deactivated = True
 
 
+class CouldNotLook(Exception):  # noqa: N818
+    """Raised by a repair that cannot judge anything this round.
+
+    Something it needs to tell right from wrong is not there or cannot be
+    read, while what it reported before may well still be true. A round that
+    ends early without it counts as a clean one, and the cleanup then takes
+    down every issue the repair had, as if all was well. So this keeps them,
+    the way a round that failed does.
+
+    Not a `HomeAssistantError`: nothing failed, and it must not end up in a
+    handler meant for one. The reason is Spook's own words, and ends up in
+    the diagnostics download, so it never names anything a person chose.
+    """
+
+
+class LookOutcome(StrEnum):
+    """How a look of a repair went."""
+
+    FINE = "fine"
+    FAILED = "failed"
+    COULD_NOT_LOOK = "could_not_look"
+
+
+@dataclass(frozen=True, slots=True)
+class LastLook:
+    """How the last look of a repair went, for the diagnostics download.
+
+    Nothing decides anything on it. `detail` is the type of the error for a
+    look that failed, never its message, which can name an entity or a path.
+    For a look that could not be done it is the reason the repair gave.
+    """
+
+    finished: datetime
+    outcome: LookOutcome
+    detail: str | None = None
+
+
 class _InspectionDebouncer(Debouncer[Coroutine[Any, Any, None]]):
     """A debouncer that tells its repair every time it is asked for a look.
 
@@ -533,6 +572,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
         self._asked_for_a_look = False
         self._looked_once_more = False
         self._cancel_look_once_more: Callable[[], None] | None = None
+        self.last_look: LastLook | None = None
 
     @callback
     def _await_attributes(self, pairs: Iterable[tuple[str, str]]) -> None:
@@ -564,18 +604,36 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
             self._asked_for_a_look = False
 
             # Whatever asked for this round, it is the look once more a
-            # failed one was waiting for.
+            # failed one was waiting for. Also when it turns out it could not
+            # look: no failure, but no look that landed either, so the one
+            # look once more of that failure stays used up.
             self._async_call_off_the_look_once_more()
 
             try:
                 await self._async_inspect_and_clean_up()
+            except CouldNotLook as reason:
+                # Debug, not a warning: some of these last as long as the
+                # installation does, like a frontend built for development
+                # that never has the icon list, and would warn every look.
+                # No look once more either: it would find the same, and
+                # whatever asks for a look next gets one as usual.
+                LOGGER.debug(
+                    "Spook repair %s.%s could not look, and keeps what it "
+                    "reported before: %s",
+                    self.domain,
+                    self.repair,
+                    reason,
+                )
+                self._async_note_the_look(LookOutcome.COULD_NOT_LOOK, str(reason))
             # pylint: disable-next=broad-exception-caught
             except Exception as err:  # noqa: BLE001
                 # Logged here, and not left to the debouncer, which logs it
                 # without saying which repair it was.
                 self._async_look_once_more_after_failing(err)
+                self._async_note_the_look(LookOutcome.FAILED, type(err).__name__)
             else:
                 self._looked_once_more = False
+                self._async_note_the_look(LookOutcome.FINE)
             finally:
                 # Asked for a look while this one ran: what it was asked about
                 # may have changed after this round read it.
@@ -630,6 +688,13 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
         self._cancel_look_once_more = async_call_later(
             self.hass, LOOK_ONCE_MORE_AFTER, self._async_look_once_more
         )
+
+    @callback
+    def _async_note_the_look(
+        self, outcome: LookOutcome, detail: str | None = None
+    ) -> None:
+        """Write down how the look that just finished went."""
+        self.last_look = LastLook(dt_util.utcnow(), outcome, detail)
 
     @callback
     def _async_look_once_more(self, _: datetime) -> None:
@@ -688,7 +753,9 @@ class AbstractSpookRepair(AbstractSpookRepairBase):  # pylint: disable=too-many-
             await self.async_inspect()
         except Exception:
             # Restore the bookkeeping so the next successful inspection can
-            # still clean up issues from before the failure.
+            # still clean up issues from before the failure. A round that
+            # could not look comes through here too: it judged nothing, so
+            # it keeps everything, and what it did find stays up as well.
             self.issue_ids.update(previous_issue_ids)
             # A look that failed keeps the next identical UPDATED a reason
             # to look again, so drop the fingerprints too.
@@ -1647,6 +1714,22 @@ class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):
         await super().async_deactivate()
 
 
+class RepairModuleState(StrEnum):
+    """How setting up a repair module went."""
+
+    SET_UP = "set_up"
+    FAILED_TO_LOAD = "failed_to_load"
+    FAILED_TO_SET_UP = "failed_to_set_up"
+
+
+class RepairSetupState(StrEnum):
+    """How far setting up the repairs is."""
+
+    WAITING_FOR_HOME_ASSISTANT_TO_START = "waiting_for_home_assistant_to_start"
+    SETTING_UP = "setting_up"
+    SET_UP = "set_up"
+
+
 @dataclass
 class SpookRepairManager:
     """Class to manage Spook repairs."""
@@ -1655,10 +1738,23 @@ class SpookRepairManager:
 
     _repairs: set[AbstractSpookRepair] = field(default_factory=set)
 
+    #: How setting up each repair module went, by module name. For the
+    #: diagnostics download, nothing decides anything on it.
+    module_states: dict[str, RepairModuleState] = field(default_factory=dict)
+
+    #: How far setting up the repairs is. It does not begin until Home
+    #: Assistant has started, and takes a moment once it does.
+    setup_state: RepairSetupState = RepairSetupState.WAITING_FOR_HOME_ASSISTANT_TO_START
+
     def __post_init__(self) -> None:
         """Post initialization."""
         self.issue_registry = ir.async_get(self.hass)
         LOGGER.debug("Spook repair manager initialized")
+
+    @property
+    def repairs(self) -> frozenset[AbstractSpookRepair]:
+        """Return the repairs that are set up."""
+        return frozenset(self._repairs)
 
     async def async_setup(self, *, spread_first_inspections: bool = False) -> None:
         """Set up the Spook repairs.
@@ -1670,8 +1766,10 @@ class SpookRepairManager:
         house is quiet and everything looks straight away, like it always did.
         """
         LOGGER.debug("Setting up Spook repairs")
+        self.setup_state = RepairSetupState.SETTING_UP
 
         modules: list[ModuleType] = []
+        failed_to_load: list[str] = []
 
         def _load_all_repair_modules() -> None:
             """Load all repair modules, isolating failures.
@@ -1700,8 +1798,13 @@ class SpookRepairManager:
                         __package__,
                         module_path,
                     )
+                    failed_to_load.append(f"{__package__}.{module_path}")
 
         await self.hass.async_add_import_executor_job(_load_all_repair_modules)
+
+        # Written down here, back on the event loop, not from the executor.
+        for module_name in failed_to_load:
+            self.module_states[module_name] = RepairModuleState.FAILED_TO_LOAD
 
         first_inspection_delays = (
             _first_inspection_delays(modules) if spread_first_inspections else {}
@@ -1717,6 +1820,8 @@ class SpookRepairManager:
                 for module in modules
             )
         )
+
+        self.setup_state = RepairSetupState.SET_UP
 
     async def _async_setup_repair_module(
         self, module: ModuleType, first_inspection_delay: timedelta | None = None
@@ -1747,9 +1852,12 @@ class SpookRepairManager:
                 "https://github.com/frenck/spook/issues",
                 module.__name__,
             )
+            self.module_states[module.__name__] = RepairModuleState.FAILED_TO_SET_UP
 
             if repair is not None:
                 await self._async_take_down_skipped_repair(module, repair)
+        else:
+            self.module_states[module.__name__] = RepairModuleState.SET_UP
 
     async def _async_take_down_skipped_repair(
         self, module: ModuleType, repair: AbstractSpookRepair
