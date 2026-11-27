@@ -1044,3 +1044,41 @@ async def test_removing_spook_that_never_loaded_removes_what_it_wrote_down(
     assert DISMISSALS_KEY not in hass_storage
     assert "spook.kept_statistics" not in hass_storage
     assert TIMED_STATES_KEY in hass_storage
+
+
+@pytest.mark.usefixtures("spook_without_the_rest")
+@pytest.mark.parametrize(
+    "stored",
+    [
+        ["automation.a"],
+        {"automation.a": "2026-12-01T00:00:00+00:00"},
+        {"automation.a": {"until": "2026-02-30T00:00:00+00:00", "state": "off"}},
+        {"automation.a": {"until": "2099-12-01T00:00:00", "state": "off"}},
+        {5: {"until": "2026-12-01T00:00:00+00:00", "state": "off"}},
+    ],
+)
+async def test_damaged_timed_states_do_not_stop_spook_setting_up(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+    stored: Any,
+) -> None:
+    """Test a damaged file of held automations leaves the rest of Spook alone.
+
+    It is read at setup, so anything in it that raised took all of Spook down.
+    """
+    # Held off and still there, so a record gets as far as its time.
+    hass.states.async_set("automation.a", "off")
+    hass_storage[TIMED_STATES_KEY] = {
+        "version": 1,
+        "key": TIMED_STATES_KEY,
+        "data": stored,
+    }
+    hass.set_state(CoreState.running)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert entry.state is ConfigEntryState.LOADED
+    assert DATA_TIMED_STATES in hass.data
