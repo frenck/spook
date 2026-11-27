@@ -9,11 +9,12 @@ from __future__ import annotations
 from datetime import timedelta
 import asyncio
 import contextlib
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from homeassistant.components.automation import AutomationEntity
 from homeassistant.const import (
+    EVENT_CALL_SERVICE,
     EVENT_HOMEASSISTANT_STARTED,
     STATE_OFF,
     STATE_ON,
@@ -29,6 +30,7 @@ from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 import pytest
 from pytest_homeassistant.common import (
+    async_capture_events,
     async_fire_time_changed,
     mock_restore_cache,
 )
@@ -2281,5 +2283,485 @@ async def test_snoozing_lets_the_running_actions_finish(
     await hass.async_block_till_done()
 
     assert got_to_the_end
+
+    timed_states.async_stop()
+
+
+# What Spook says when a record it cannot act on is let go.
+_COULD_NOT_READ = "could not read what it wrote down about holding"
+
+
+def _on_disk(hass_storage: dict, key: str, data: Any) -> None:
+    """Put a store on disk, the way Home Assistant would find it."""
+    hass_storage[key] = {"version": STORAGE_VERSION, "key": key, "data": data}
+
+
+@pytest.mark.parametrize("stored", [[SLEEPER], SLEEPER, 5, []])
+async def test_a_store_that_is_not_records_at_all_does_not_stop_setting_up(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    caplog: pytest.LogCaptureFixture,
+    stored: Any,
+) -> None:
+    """Test a file holding something other than records starts over, out loud.
+
+    Every snooze in it is lost, and the automations it held stay where they
+    are with nothing to put them back. That is worth more than a debug line.
+    """
+    _on_disk(hass_storage, STORAGE_KEY, stored)
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) is None
+    assert hass.states.get(SLEEPER).state == "off"
+    assert "could not read what it wrote down about held automations at all" in (
+        caplog.text
+    )
+
+    # Written over with what is left, so the next start does not say it again.
+    assert hass_storage[STORAGE_KEY]["data"] == {}
+
+    timed_states.async_stop()
+
+
+@pytest.mark.parametrize(
+    "until",
+    [
+        pytest.param(None, id="nothing"),
+        pytest.param(1764000000, id="a-number"),
+        pytest.param(["2026-11-27T00:00:00+00:00"], id="a-list"),
+        pytest.param("2026-02-30T00:00:00+00:00", id="the-thirtieth-of-february"),
+        pytest.param("2026-02-01T25:00:00+00:00", id="hour-twenty-five"),
+        pytest.param("nonsense", id="no-time-at-all"),
+        pytest.param("9999-12-31T23:59:59-01:00", id="past-the-end-in-utc"),
+    ],
+)
+async def test_a_time_that_cannot_be_read_puts_it_back_now(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    caplog: pytest.LogCaptureFixture,
+    until: Any,
+) -> None:
+    """Test a record with an unreadable time is treated as one whose time is up.
+
+    Dropped, it would be an automation snoozed for good with nothing left
+    anywhere to say so. Put back early, it is an automation that runs again a
+    bit sooner than asked, which somebody notices and can snooze again.
+    """
+    _on_disk(hass_storage, STORAGE_KEY, {SLEEPER: {"until": until, "state": "off"}})
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", "it was left snoozed for good"
+    assert timed_states.async_until(SLEEPER) is None
+    assert hass_storage[STORAGE_KEY]["data"] == {}
+    assert _COULD_NOT_READ not in caplog.text
+
+    timed_states.async_stop()
+
+
+async def test_a_record_without_a_time_puts_it_back_now(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Test a record that lost its time altogether is put back, too."""
+    _on_disk(hass_storage, STORAGE_KEY, {SLEEPER: {"state": "off"}})
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", "it was left snoozed for good"
+
+    timed_states.async_stop()
+
+
+async def test_a_time_that_cannot_be_read_puts_a_run_back_off(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Test the time being up goes the other way for an automation held on."""
+    _on_disk(hass_storage, STORAGE_KEY, {SLEEPER: {"until": "nonsense", "state": "on"}})
+    await _automations(hass)
+    assert hass.states.get(SLEEPER).state == "on"
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "off", "it was left running for good"
+
+    timed_states.async_stop()
+
+
+async def test_a_time_that_cannot_be_read_waits_for_the_start(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Test a record with an unreadable time is put back once Home Assistant runs.
+
+    Read at setup, put back once the automations are there: the same path as
+    a snooze that ran out while Home Assistant was down.
+    """
+    _on_disk(hass_storage, STORAGE_KEY, {SLEEPER: {"until": 5, "state": "off"}})
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    hass.set_state(CoreState.not_running)
+    timed_states = TimedStates(hass)
+    await timed_states.async_start()
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "off", "it did not wait for the start"
+
+    hass.set_state(CoreState.running)
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", "it was left snoozed for good"
+    assert hass_storage[STORAGE_KEY]["data"] == {}
+
+    timed_states.async_stop()
+
+
+async def test_a_time_without_a_zone_is_read_as_utc(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a time that lost its zone is kept, in UTC.
+
+    Spook writes UTC, so that is the closest guess. Read as local time it
+    would be eight hours off here, the tests running in US/Pacific.
+    """
+    freezer.move_to("2026-11-27 12:00:00+00:00")
+    until = dt_util.utcnow() + AN_HOUR
+    _on_disk(
+        hass_storage,
+        STORAGE_KEY,
+        {SLEEPER: {"until": until.replace(tzinfo=None).isoformat(), "state": "off"}},
+    )
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) == until
+    assert hass.states.get(SLEEPER).state == "off"
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "on", "it never woke up"
+
+    timed_states.async_stop()
+
+
+async def test_a_time_without_a_zone_that_passed_puts_it_back_now(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Test a zoneless time already gone by is put back, not tripped over."""
+    until = dt_util.utcnow() - AN_HOUR
+    _on_disk(
+        hass_storage,
+        STORAGE_KEY,
+        {SLEEPER: {"until": until.replace(tzinfo=None).isoformat(), "state": "off"}},
+    )
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", "it slept through its alarm"
+
+    timed_states.async_stop()
+
+
+@pytest.mark.parametrize(
+    "record",
+    [
+        pytest.param({"state": "unavailable"}, id="unavailable"),
+        pytest.param({"state": 5}, id="a-number"),
+        pytest.param({"state": None}, id="nothing"),
+        pytest.param({}, id="no-state"),
+        pytest.param("2026-11-27T00:00:00+00:00", id="a-string"),
+        pytest.param(["2026-11-27T00:00:00+00:00", "off"], id="a-list"),
+        pytest.param(None, id="no-record"),
+    ],
+)
+async def test_a_record_that_makes_no_sense_is_dropped_out_loud(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    caplog: pytest.LogCaptureFixture,
+    record: Any,
+) -> None:
+    """Test a record that does not say which way to go is dropped, by name.
+
+    Spook cannot tell which way to move the automation, so it moves it
+    neither way. Anything but "on" used to read as held off, and turned the
+    automation on. Dropping it quietly would leave a snoozed automation off
+    for good, so the person is told which one to look at.
+    """
+    if isinstance(record, dict):
+        record = {"until": (dt_util.utcnow() - AN_HOUR).isoformat()} | record
+    _on_disk(hass_storage, STORAGE_KEY, {SLEEPER: record})
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "off", "it guessed a direction"
+    assert timed_states.async_until(SLEEPER) is None
+    assert hass_storage[STORAGE_KEY]["data"] == {}
+
+    warnings = [
+        entry
+        for entry in caplog.records
+        if entry.levelname == "WARNING" and _COULD_NOT_READ in entry.getMessage()
+    ]
+    assert len(warnings) == 1
+    assert SLEEPER in warnings[0].getMessage()
+
+    timed_states.async_stop()
+
+
+async def test_the_warning_names_each_one_once_and_not_again(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test the damage is reported in one line, and only the first time.
+
+    The cleaned up records are written back, so the next start finds nothing
+    left to complain about.
+    """
+    until = (dt_util.utcnow() + AN_HOUR).isoformat()
+    _on_disk(
+        hass_storage,
+        STORAGE_KEY,
+        {
+            SLEEPER: {"until": until, "state": "sideways"},
+            OTHER: "off",
+            5: {"until": until, "state": "off"},
+        },
+    )
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    warnings = [
+        entry.getMessage()
+        for entry in caplog.records
+        if _COULD_NOT_READ in entry.getMessage()
+    ]
+    assert len(warnings) == 1
+    assert SLEEPER in warnings[0]
+    assert OTHER in warnings[0]
+    assert "1 more" in warnings[0], "the one it cannot name went unmentioned"
+
+    timed_states.async_stop()
+    hass.data.pop("spook_timed_states")
+    caplog.clear()
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert _COULD_NOT_READ not in caplog.text, "it complained about it again"
+
+    timed_states.async_stop()
+
+
+async def test_the_warning_stays_a_reasonable_length(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a file full of damage names a handful and counts the rest."""
+    _on_disk(
+        hass_storage,
+        STORAGE_KEY,
+        {f"automation.broken_{number:03}": None for number in range(100)},
+    )
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    (warning,) = [
+        entry.getMessage()
+        for entry in caplog.records
+        if _COULD_NOT_READ in entry.getMessage()
+    ]
+    assert "automation.broken_000" in warning
+    assert "automation.broken_099" not in warning
+    assert "90 more" in warning
+
+    timed_states.async_stop()
+
+
+@pytest.mark.parametrize(
+    "until",
+    [
+        pytest.param((dt_util.utcnow() - AN_HOUR).isoformat(), id="time-up"),
+        pytest.param("nonsense", id="unreadable"),
+    ],
+)
+@pytest.mark.parametrize(
+    ("entity_id", "light_state"),
+    [
+        pytest.param("light.kitchen", "off", id="a-light"),
+        pytest.param("light.kitchen", "on", id="a-light-that-is-on"),
+        pytest.param("automation.does_not_exist", None, id="a-missing-automation"),
+        pytest.param("Automation.Sleeper", None, id="not-an-entity-id"),
+    ],
+)
+async def test_a_record_for_something_that_is_not_an_automation_moves_nothing(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    entity_id: str,
+    light_state: str | None,
+    until: str,
+) -> None:
+    """Test a record naming anything but an automation calls no action.
+
+    A damaged file can name anything, and `automation.turn_on` with a light
+    in it is not something Spook gets to call.
+    """
+    _on_disk(hass_storage, STORAGE_KEY, {entity_id: {"until": until, "state": "off"}})
+    if light_state is not None:
+        hass.states.async_set("light.kitchen", light_state)
+    await _automations(hass)
+    calls = async_capture_events(hass, EVENT_CALL_SERVICE)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert not [call for call in calls if call.data["domain"] == "automation"]
+    assert timed_states.async_until(entity_id) is None
+    assert hass_storage[STORAGE_KEY]["data"] == {}
+    if light_state is not None:
+        assert hass.states.get("light.kitchen").state == light_state
+
+    timed_states.async_stop()
+
+
+async def test_a_name_that_is_not_an_entity_id_is_not_printed(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test only a real automation entity ID ends up in the warning.
+
+    A key read from a damaged file can be anything, a line break and a log
+    line of its own included.
+    """
+    forged = "automation.sleeper\nSpook says all is well"
+    _on_disk(hass_storage, STORAGE_KEY, {forged: None})
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert "all is well" not in caplog.text
+
+    timed_states.async_stop()
+
+
+async def test_one_damaged_record_leaves_the_others_alone(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the sound records keep their times, next to a damaged one."""
+    until = dt_util.utcnow() + AN_HOUR
+    _on_disk(
+        hass_storage,
+        STORAGE_KEY,
+        {
+            SLEEPER: _record(until),
+            OTHER: {"until": "2026-02-30T00:00:00+00:00", "state": "off"},
+            "automation.third": {"until": until.isoformat(), "state": "sideways"},
+        },
+    )
+    mock_restore_cache(hass, (State(SLEEPER, "off"), State(OTHER, "off")))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(OTHER).state == "on", "the damaged one stayed off"
+    assert hass.states.get(SLEEPER).state == "off", "the sound one was woken early"
+    assert timed_states.async_until(SLEEPER) == until
+    assert hass_storage[STORAGE_KEY]["data"] == {SLEEPER: _record(until)}
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "on", "the sound one never woke up"
+
+    timed_states.async_stop()
+
+
+@pytest.mark.parametrize("stored", [[SLEEPER], SLEEPER, 5])
+async def test_an_old_store_that_is_not_snoozes_at_all_does_not_stop_setting_up(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    caplog: pytest.LogCaptureFixture,
+    stored: Any,
+) -> None:
+    """Test the snooze-only file, damaged, is let go out loud."""
+    _on_disk(hass_storage, LEGACY_STORAGE_KEY, stored)
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) is None
+    assert "could not read what it wrote down about held automations at all" in (
+        caplog.text
+    )
+    assert LEGACY_STORAGE_KEY not in hass_storage, "it would complain every start"
+
+    timed_states.async_stop()
+
+
+@pytest.mark.parametrize(
+    "until",
+    [
+        pytest.param(None, id="nothing"),
+        pytest.param(1764000000, id="a-number"),
+        pytest.param({"until": "2026-11-27T00:00:00+00:00"}, id="a-mapping"),
+        pytest.param("2026-02-30T00:00:00+00:00", id="the-thirtieth-of-february"),
+    ],
+)
+async def test_an_old_snooze_with_a_time_that_cannot_be_read_wakes_now(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    until: Any,
+) -> None:
+    """Test a snooze in the old file with an unreadable time is woken at once.
+
+    Everything in there was a snooze, so the direction is known. Only the
+    time is not, and a time that cannot be read is one that is up.
+    """
+    _on_disk(hass_storage, LEGACY_STORAGE_KEY, {SLEEPER: until})
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", "it was left snoozed for good"
+    assert hass_storage[STORAGE_KEY]["data"] == {}
+    assert LEGACY_STORAGE_KEY not in hass_storage
 
     timed_states.async_stop()

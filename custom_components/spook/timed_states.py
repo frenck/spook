@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Mapping
 import contextlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
@@ -19,7 +20,7 @@ from homeassistant.const import (
     STATE_ON,
     STATE_UNAVAILABLE,
 )
-from homeassistant.core import CoreState, callback
+from homeassistant.core import CoreState, callback, valid_entity_id
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import config_validation as cv, entity_registry as er
 from homeassistant.helpers.event import (
@@ -58,6 +59,22 @@ LEGACY_STORAGE_KEY = f"{DOMAIN}.snoozing"
 # record has to be sorted out either way before the caller hears about it.
 _MOVE_INTERRUPTED = (HomeAssistantError, asyncio.CancelledError)
 
+# A record whose time cannot be read is treated as one whose time is up, and
+# the start of Unix time is about as up as a time gets. It goes down the same
+# path as a snooze that ran out while Home Assistant was down: put back right
+# away, and cleared the ordinary way once it is.
+_TIME_UP = dt_util.utc_from_timestamp(0)
+
+# The automations named when records are let go. A damaged file can hold any
+# number of them, and a log line that runs for pages helps nobody.
+_NAMED_AT_MOST = 10
+
+_COULD_NOT_READ_ANY = (
+    "Spook could not read what it wrote down about held automations at all, "
+    "so it cannot put any of them back; check whether your automations are "
+    "on or off as you want them"
+)
+
 
 def a_stretch_of_time(value: Any) -> timedelta:
     """Validate a duration that is actually a duration.
@@ -90,6 +107,126 @@ class _Held:
         two it is not being held in.
         """
         return STATE_OFF if self.state == STATE_ON else STATE_ON
+
+
+def _read_until(stored: object) -> datetime:
+    """Return when a record comes due, read back from disk.
+
+    A time that cannot be read is one that is up. Forgetting the record
+    instead would leave the automation held for good, with nothing left to
+    say so, and that is the one thing this register is here to prevent. Put
+    back early, it runs again a bit sooner than asked, which somebody notices.
+    """
+    if not isinstance(stored, str):
+        return _TIME_UP
+
+    # Text that is no time at all comes back as nothing. A time that cannot
+    # be, like the thirtieth of February, raises instead.
+    try:
+        until = dt_util.parse_datetime(stored)
+    except ValueError:
+        return _TIME_UP
+
+    if until is None:
+        return _TIME_UP
+
+    # Spook writes UTC, so that is the best guess for a time that lost its
+    # zone. Not `as_utc`: that reads a time without a zone as local time.
+    if until.tzinfo is None:
+        return until.replace(tzinfo=dt_util.UTC)
+
+    # Waiting is done in UTC, and a time at the very edge of the calendar can
+    # land past it once moved there.
+    try:
+        return dt_util.as_utc(until)
+    except OverflowError:
+        return _TIME_UP
+
+
+def _read_held(stored: object) -> _Held | None:
+    """Return a record read back from disk, or None if it makes no sense.
+
+    Only one that does not say which way the automation is held makes no
+    sense. Guessing a direction would move an automation the wrong way half
+    the time, and anything other than "on" used to read as held off.
+    """
+    if not isinstance(stored, Mapping):
+        return None
+
+    state = stored.get("state")
+    if state not in (STATE_ON, STATE_OFF):
+        return None
+
+    return _Held(until=_read_until(stored.get("until")), state=state)
+
+
+def _read_records(stored: object) -> dict[str, _Held]:
+    """Return what was being held, read back from disk.
+
+    The file can be edited by hand, come back from an old backup, or have
+    been written by a version with a bug. Whatever is in it, Spook sets up.
+    What makes no sense goes, but out loud: a record let go is an automation
+    nothing will put back, and the person has to know which ones to check.
+    """
+    if not isinstance(stored, Mapping):
+        LOGGER.warning(_COULD_NOT_READ_ANY)
+        return {}
+
+    held: dict[str, _Held] = {}
+    unreadable: list[str] = []
+    unnamed = 0
+    not_automations = 0
+
+    for entity_id, record in stored.items():
+        if not isinstance(entity_id, str):
+            # Could have been anything, so it is counted, never printed.
+            unnamed += 1
+            continue
+
+        if not (
+            valid_entity_id(entity_id) and entity_id.startswith(f"{AUTOMATION_DOMAIN}.")
+        ):
+            # Spook only ever holds automations, so this names nothing it
+            # could put back. Calling an automation action on a light, say,
+            # is not something to do on the word of a damaged file.
+            not_automations += 1
+            continue
+
+        if (reading := _read_held(record)) is None:
+            unreadable.append(entity_id)
+            continue
+
+        held[entity_id] = reading
+
+    if not_automations:
+        LOGGER.debug(
+            "Spook dropped %s timed states for something other than an automation",
+            not_automations,
+        )
+
+    if unreadable or unnamed:
+        LOGGER.warning(
+            "Spook could not read what it wrote down about holding %s, so it "
+            "cannot put them back; check whether they are on or off as you "
+            "want them",
+            _describe_unreadable(unreadable, unnamed),
+        )
+
+    return held
+
+
+def _describe_unreadable(entity_ids: list[str], unnamed: int) -> str:
+    """Return the automations whose records were let go, for the log."""
+    named = sorted(entity_ids)[:_NAMED_AT_MOST]
+    not_named = len(entity_ids) - len(named) + unnamed
+
+    if not named:
+        return f"{not_named} automations it cannot name"
+
+    if not_named:
+        return f"{', '.join(named)} and {not_named} more"
+
+    return ", ".join(named)
 
 
 # Three of the attributes below are subscriptions, each cancelled in its own
@@ -130,11 +267,9 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
             # own.
             return self.async_stop
 
-        self._held = {
-            entity_id: _Held(until=parsed, state=record["state"])
-            for entity_id, record in stored.items()
-            if (parsed := dt_util.parse_datetime(record["until"])) is not None
-        }
+        # Whatever was let go here is written over by the save at the end of
+        # catching up, so a damaged file is complained about once.
+        self._held = _read_records(stored)
 
         # Records are filed under an entity ID, so the register has to hear
         # about the ones that change or go away.
@@ -154,7 +289,7 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
 
         return self.async_stop
 
-    async def _async_load(self) -> dict[str, dict[str, str]]:
+    async def _async_load(self) -> object:
         """Read the records, taking over from the snooze-only store if need be.
 
         A store migration only runs for the file being loaded, and this one is
@@ -174,9 +309,18 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         if (snoozes := await legacy.async_load()) is None:
             return {}
 
+        if not isinstance(snoozes, Mapping):
+            # Nothing in there to take over. Taken over as nothing, the old
+            # file goes the ordinary way below, rather than being read and
+            # complained about again on every start.
+            LOGGER.warning(_COULD_NOT_READ_ANY)
+            snoozes = {}
+
         LOGGER.debug("Spook took over %s snoozes written down before", len(snoozes))
 
         # Everything in there was a snooze, so an automation being held off.
+        # The time goes over as it was, readable or not: reading it back makes
+        # one that cannot be read a snooze whose time is up.
         taken_over = {
             entity_id: {"until": until, "state": STATE_OFF}
             for entity_id, until in snoozes.items()
