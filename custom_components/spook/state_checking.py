@@ -47,6 +47,7 @@ from .attribute_checking import (
     suggest_name,
 )
 from .const import LOGGER
+from .template_extraction import ComparedState
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping
@@ -189,7 +190,8 @@ class UnknownState:
     """A state somebody named that its entity is never in."""
 
     entity_id: str
-    state: str
+    # As it was handed in: with how it was compared, where that was said.
+    state: str | ComparedState
     suggestion: str | None
 
 
@@ -518,7 +520,7 @@ async def _async_look(
 
 async def async_unknown_states(
     hass: HomeAssistant,
-    pairs: Iterable[tuple[str, str]],
+    pairs: Iterable[tuple[str, str | ComparedState]],
 ) -> set[UnknownState]:
     """Return the (entity ID, state) pairs whose entity is never in that state.
 
@@ -532,10 +534,17 @@ async def async_unknown_states(
     reads core wrong. Where core does not keep it, only the case slip, and
     only with the whole history: such an entity can be in anything, and the
     history is all there is to say what it has been.
+
+    A state compared as what it must not be, or as one of a list, can be
+    one the entity is never in, and work fine all the same: see
+    `_works_anyway`. Those only get the case slip reported, or, for a
+    list, everything when nothing in it can ever be.
     """
     states_by_entity: dict[str, set[str]] = defaultdict(set)
-    for entity_id, state in pairs:
-        states_by_entity[entity_id].add(state)
+    named_by_entity: dict[str, set[str | ComparedState]] = defaultdict(set)
+    for entity_id, named in pairs:
+        states_by_entity[entity_id].add(_state_of(named))
+        named_by_entity[entity_id].add(named)
 
     # Worked out from memory first: the fixed states, the options, and every
     # state ever seen. In a normal house that settles all of it.
@@ -560,12 +569,48 @@ async def async_unknown_states(
         await _async_ask_the_recorder(hass, to_ask)
         now = dt_util.utcnow()
 
-    return await _async_findings(hass, suspects, with_history, now)
+    return await _async_findings(hass, suspects, named_by_entity, with_history, now)
+
+
+def _state_of(named: str | ComparedState) -> str:
+    """Return the state itself, however it was compared."""
+    return named.state if isinstance(named, ComparedState) else named
+
+
+def _works_anyway(named: str | ComparedState, known: set[str]) -> bool:
+    """Return whether a comparison works, while naming a state never there.
+
+    A state held to not be one the entity is never in always holds: that
+    is how a guard is written, `not in ['unavailable', 'unknown', 'none']`.
+    And a list matches as long as any state in it can happen. A case slip
+    is not asked about here: that one never works the way it reads.
+    """
+    if not isinstance(named, ComparedState):
+        return False
+    return named.negative or not named.listed.isdisjoint(known)
+
+
+def _is_reported(
+    named: str | ComparedState, look: _Look, folded: set[str], *, whole: bool
+) -> bool:
+    """Return whether a state named, outside of what is known, is reported.
+
+    ``folded`` is what is known, case folded, and ``whole`` says whether
+    Spook has the whole history of the entity.
+    """
+    case_slip = _state_of(named).casefold() in folded
+    if not case_slip and _works_anyway(named, look.known):
+        return False
+
+    if look.kept:
+        return case_slip or whole
+    return case_slip and whole
 
 
 async def _async_findings(
     hass: HomeAssistant,
     suspects: dict[str, _Look],
+    named_by_entity: Mapping[str, set[str | ComparedState]],
     with_history: set[str],
     now: datetime,
 ) -> set[UnknownState]:
@@ -591,18 +636,15 @@ async def _async_findings(
             and look.state.last_updated == before.state.last_updated
         )
         folded = {candidate.casefold() for candidate in look.known}
-        for state in look.unknown:
-            case_slip = state.casefold() in folded
-            if look.kept:
-                reported = case_slip or history_is_whole
-            else:
-                reported = case_slip and history_is_whole
-
-            if reported:
+        for named in named_by_entity[entity_id]:
+            state = _state_of(named)
+            if state in look.unknown and _is_reported(
+                named, look, folded, whole=history_is_whole
+            ):
                 found.add(
                     UnknownState(
                         entity_id=entity_id,
-                        state=state,
+                        state=named,
                         suggestion=suggest_name(state, look.known),
                     )
                 )

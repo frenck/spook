@@ -127,6 +127,50 @@
     ]),
   })
 # ---
+# name: test_automation_case[binary-sensor-state-in-on-or-open]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'binary_sensor.kids_room_window',
+      'binary_sensor.rain',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'notify.notify',
+    ]),
+    'states': list([
+      'binary_sensor.kids_room_window: on (one of "on", "open")',
+      'binary_sensor.kids_room_window: open (one of "on", "open")',
+      'binary_sensor.rain: on',
+    ]),
+    'templates': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'state',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
 # name: test_automation_case[blueprint-boolean-input-as-entity]
   dict({
     'areas': list([
@@ -453,8 +497,8 @@
       'notify.notify',
     ]),
     'states': list([
-      'alarm_control_panel.house: armed_away',
-      'alarm_control_panel.house: armed_night',
+      'alarm_control_panel.house: armed_away (one of "armed_away", "armed_night")',
+      'alarm_control_panel.house: armed_night (one of "armed_away", "armed_night")',
       'person.alex: not_home',
       'person.sam: Home',
     ]),
@@ -957,7 +1001,7 @@
       'light.toggle',
     ]),
     'states': list([
-      'event.hallway_button: unavailable',
+      'event.hallway_button: unavailable (not one of "unavailable")',
     ]),
     'templates': list([
     ]),
@@ -1768,10 +1812,10 @@
       'notify.notify',
     ]),
     'states': list([
-      'sensor.freezer_temperature: unavailable',
-      'sensor.freezer_temperature: unknown',
-      'switch.aquarium_pump: unavailable',
-      'switch.aquarium_pump: unknown',
+      'sensor.freezer_temperature: unavailable (one of "unavailable", "unknown")',
+      'sensor.freezer_temperature: unknown (one of "unavailable", "unknown")',
+      'switch.aquarium_pump: unavailable (one of "unavailable", "unknown")',
+      'switch.aquarium_pump: unknown (one of "unavailable", "unknown")',
     ]),
     'templates': list([
     ]),
@@ -2495,9 +2539,9 @@
       'input_number.set_value',
     ]),
     'states': list([
-      'sensor.power_meter_current: none',
-      'sensor.power_meter_current: unavailable',
-      'sensor.power_meter_current: unknown',
+      'sensor.power_meter_current: none (not one of "none", "unavailable", "unknown")',
+      'sensor.power_meter_current: unavailable (not one of "none", "unavailable", "unknown")',
+      'sensor.power_meter_current: unknown (not one of "none", "unavailable", "unknown")',
     ]),
     'templates': list([
     ]),
@@ -3947,8 +3991,8 @@
       'notify.notify',
     ]),
     'states': list([
-      'alarm_control_panel.home: armed_away',
-      'alarm_control_panel.home: armed_night',
+      'alarm_control_panel.home: armed_away (one of "armed_away", "armed_night")',
+      'alarm_control_panel.home: armed_night (one of "armed_away", "armed_night")',
       'cover.garage_door: open',
     ]),
     'templates': list([
@@ -4787,6 +4831,92 @@
     ]),
   })
 # ---
+# name: test_automation_case[template-guard-against-four-empty-values]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'media_player.living_room',
+      'tts.home_assistant_cloud',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+      'tts.speak',
+    ]),
+    'states': list([
+      'media_player.living_room:  (not one of "", "none", "unavailable", "unknown")',
+      'media_player.living_room: none (not one of "", "none", "unavailable", "unknown")',
+      'media_player.living_room: unavailable (not one of "", "none", "unavailable", "unknown")',
+      'media_player.living_room: unknown (not one of "", "none", "unavailable", "unknown")',
+    ]),
+    'templates': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'time_pattern',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
+# name: test_automation_case[template-guard-with-a-bare-none]
+  dict({
+    'areas': list([
+    ]),
+    'attributes': list([
+    ]),
+    'conditions': list([
+      'template',
+    ]),
+    'config_entries': list([
+    ]),
+    'devices': list([
+    ]),
+    'entities': list([
+      'person.alex',
+    ]),
+    'floors': list([
+    ]),
+    'icons': list([
+    ]),
+    'labels': list([
+    ]),
+    'loaded': True,
+    'not_entity_ids': list([
+    ]),
+    'services': list([
+    ]),
+    'states': list([
+    ]),
+    'templates': list([
+    ]),
+    'trigger_ids': list([
+    ]),
+    'triggers': list([
+      'time_pattern',
+    ]),
+    'users': list([
+    ]),
+  })
+# ---
 # name: test_automation_case[template-lookup-shapes]
   dict({
     'areas': list([
@@ -4823,7 +4953,7 @@
       'notify.notify',
     ]),
     'states': list([
-      'input_select.house_mode: Away',
+      'input_select.house_mode: Away (not one of "Away")',
       'person.alex: home',
     ]),
     'templates': list([
@@ -8954,10 +9084,10 @@
       'vacuum.start',
     ]),
     'states': list([
-      'lock.back_door: Locked',
-      'lock.back_door: locked',
-      'lock.front_door: Locked',
-      'lock.front_door: locked',
+      'lock.back_door: Locked (one of "Locked", "locked")',
+      'lock.back_door: locked (one of "Locked", "locked")',
+      'lock.front_door: Locked (one of "Locked", "locked")',
+      'lock.front_door: locked (one of "Locked", "locked")',
       'vacuum.downstairs: docked',
     ]),
     'templates': list([

@@ -22,7 +22,9 @@ one. Three types cannot be asked that way, and are taken one step earlier:
   recorder about. A value of an attribute, waited for in place of a state,
   is written the way the issue writes it, `climate.hall[hvac_action]:
   "heating"`, since a number and the same digits as text are not the same
-  value to an attribute.
+  value to an attribute. A state compared as one of a list, or as what it
+  must not be, says so: `light.kitchen: none (not one of "none")`. Whether
+  that is reported in a house is the state checker's call, not shown here.
 
 The entity repairs report what is no entity ID at all, like
 `cover.blind.current_position`, together with the entities that do not
@@ -57,6 +59,7 @@ from custom_components.spook.ectoplasms.lovelace.repairs import (
 from custom_components.spook.entity_filtering import is_not_an_entity_id
 from custom_components.spook.reference_extraction import AttributeValue
 from custom_components.spook.repairs import AbstractSpookUnknownEntityNamesRepair
+from custom_components.spook.template_extraction import ComparedState
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
@@ -134,10 +137,20 @@ def _say_apart(result: dict[str, Any], is_no_entity_id: Callable[[str], bool]) -
     result[NOT_ENTITY_IDS] = [value for value in reported if is_no_entity_id(value)]
 
 
-def _named(entity_id: str, name: str | AttributeValue) -> str:
-    """Return one attribute or state an entity is named with, as a line."""
+def _named(entity_id: str, name: str | ComparedState | AttributeValue) -> str:
+    """Return one attribute or state an entity is named with, as a line.
+
+    A state compared as one of a list, or as what it must not be, says so,
+    with every state of the comparison: `light.kitchen: none (not one of
+    "none", "unknown")`. The state checker judges those by rules of their
+    own, so how a state was compared is part of what is read.
+    """
     if isinstance(name, AttributeValue):
         return f"{entity_id}[{name.attribute}]: {json.dumps(name.value)}"
+    if isinstance(name, ComparedState):
+        how = "not one of" if name.negative else "one of"
+        listed = ", ".join(json.dumps(state) for state in sorted(name.listed))
+        return f"{entity_id}: {name.state} ({how} {listed})"
     return f"{entity_id}: {name}"
 
 
@@ -233,7 +246,7 @@ async def async_component_references(
         # These work out a whole round up front, asking the recorder. Their
         # reading is one step before that, and asked of this entity alone.
         if isinstance(repair, AbstractSpookUnknownEntityNamesRepair):
-            named: set[tuple[str, str]] = set()
+            named: set[tuple[str, str | ComparedState | AttributeValue]] = set()
             raw_config = getattr(entity, "raw_config", None)
             # pylint: disable-next=protected-access
             if isinstance(raw_config, dict) and repair._is_inspected(entity):  # noqa: SLF001

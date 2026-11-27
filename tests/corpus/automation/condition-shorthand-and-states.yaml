@@ -9,8 +9,8 @@ expect:
   states:
     find:
       - person.alex: not_home
-      - alarm_control_panel.house: armed_away
-      - alarm_control_panel.house: armed_night
+      - alarm_control_panel.house: armed_away (one of "armed_away", "armed_night")
+      - alarm_control_panel.house: armed_night (one of "armed_away", "armed_night")
       - person.sam: Home
   attributes:
     find:

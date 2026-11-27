@@ -7,8 +7,8 @@ expect:
   states:
     find:
       - cover.garage_door: open
-      - alarm_control_panel.home: armed_away
-      - alarm_control_panel.home: armed_night
+      - alarm_control_panel.home: armed_away (one of "armed_away", "armed_night")
+      - alarm_control_panel.home: armed_night (one of "armed_away", "armed_night")
 ---
 alias: Garage open while armed
 triggers:

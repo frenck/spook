@@ -101,6 +101,7 @@ from .registry_usage import async_area_in_use, async_floor_in_use, async_label_i
 from .repair_documentation import repair_documentation_url
 from .state_checking import async_listen_for_awaited_states, async_unknown_states
 from .statistics_sources import async_settled_orphaned_statistic_ids
+from .template_extraction import ComparedState
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Mapping, Sized
@@ -1141,23 +1142,32 @@ class DeviceReferencesRepairMixin:  # pylint: disable=too-few-public-methods
         return False
 
 
-def _as_written(name: str | AttributeValue) -> Any:
+def _as_written(name: str | ComparedState | AttributeValue) -> Any:
     """Return the attribute, state or attribute value somebody wrote."""
-    return name.value if isinstance(name, AttributeValue) else name
+    if isinstance(name, AttributeValue):
+        return name.value
+    if isinstance(name, ComparedState):
+        return name.state
+    return name
 
 
-def _finding_reference(entity_id: str, name: str | AttributeValue) -> str:
+def _finding_reference(
+    entity_id: str, name: str | ComparedState | AttributeValue
+) -> str:
     """Return how an unknown attribute or state is written down in an issue.
 
     A value of an attribute keeps its type: `2` and `"2"` are not the same
     thing to an attribute. One compared as text, like Spook's own trigger
     does, is kept apart too: it can have another best guess than the same
     value compared the way core does, and both belong in the issue.
+
+    A state is the state, however it was compared: the same state named in
+    a list and on its own is one finding, with one best guess.
     """
     if isinstance(name, AttributeValue):
         reference = f"{entity_id}[{name.attribute}]:{json.dumps(name.value)}"
         return f"{reference}:as-text" if name.as_text else reference
-    return f"{entity_id}:{name}"
+    return f"{entity_id}:{_as_written(name)}"
 
 
 @dataclass(frozen=True, slots=True)
@@ -1165,7 +1175,7 @@ class _UnknownName:
     """Something an entity never has, named in an automation or script."""
 
     entity_id: str
-    name: str | AttributeValue
+    name: str | ComparedState | AttributeValue
     suggestion: str | None
 
 
@@ -1214,12 +1224,12 @@ class AbstractSpookUnknownEntityNamesRepair(
 
     @abstractmethod
     async def _async_unknown(
-        self, pairs: set[tuple[str, str | AttributeValue]]
+        self, pairs: set[tuple[str, str | ComparedState | AttributeValue]]
     ) -> set[_UnknownName]:
         """Return the (entity ID, name) pairs the entity never has."""
 
     async def _async_unknown_this_round(
-        self, pairs: set[tuple[str, str | AttributeValue]]
+        self, pairs: set[tuple[str, str | ComparedState | AttributeValue]]
     ) -> set[_UnknownName]:
         """Return the pairs never there, for the round itself.
 
@@ -1251,7 +1261,7 @@ class AbstractSpookUnknownEntityNamesRepair(
 
     def _named_in(
         self, entity: Any, config: dict[str, Any]
-    ) -> set[tuple[str, str | AttributeValue]]:
+    ) -> set[tuple[str, str | ComparedState | AttributeValue]]:
         """Return the (entity ID, name) pairs a configuration names.
 
         Read once per configuration, remembered against the configuration
@@ -1294,7 +1304,7 @@ class AbstractSpookUnknownEntityNamesRepair(
         entities = list(self.hass.data[DATA_INSTANCES][self.domain].entities)
 
         configs: dict[str, Any] = {}
-        named: dict[str, set[tuple[str, str | AttributeValue]]] = {}
+        named: dict[str, set[tuple[str, str | ComparedState | AttributeValue]]] = {}
         for entity in entities:
             # Reading a configuration is CPU-bound, and one can be big: the
             # event loop gets a turn after each.
@@ -1363,7 +1373,9 @@ class AbstractSpookUnknownEntityNamesRepair(
         """
         unknown = await self._async_unknown(self._named_in(draft, draft.raw_config))
 
-        found = []
+        # A set: the same state, compared in two ways, is two findings that
+        # read the same.
+        found = set()
         for finding in unknown:
             if isinstance(name := finding.name, AttributeValue):
                 line = f"{name.attribute} of {finding.entity_id}: {as_yaml(name.value)}"
@@ -1373,7 +1385,7 @@ class AbstractSpookUnknownEntityNamesRepair(
                 line += did_you_mean(
                     _as_written(name), finding.suggestion, as_code=False
                 )
-            found.append(line)
+            found.add(line)
         return sorted(found)
 
     def _format_references(self, references: list[str]) -> str:
@@ -1387,7 +1399,9 @@ class AbstractSpookUnknownEntityNamesRepair(
                     f"`{as_yaml(name.value)}`"
                 )
             else:
-                line = self.finding_line.format(name=name, entity_id=finding.entity_id)
+                line = self.finding_line.format(
+                    name=_as_written(name), entity_id=finding.entity_id
+                )
             if finding.suggestion is not None:
                 line += did_you_mean(_as_written(name), finding.suggestion)
             elif (
@@ -1413,7 +1427,7 @@ class AbstractSpookUnknownAttributesRepair(AbstractSpookUnknownEntityNamesRepair
         return extract_attribute_references_from_config(config)
 
     async def _async_unknown(
-        self, pairs: set[tuple[str, str | AttributeValue]]
+        self, pairs: set[tuple[str, str | ComparedState | AttributeValue]]
     ) -> set[_UnknownName]:
         """Return the (entity ID, attribute) pairs the entity never had."""
         attributes = {
@@ -1463,13 +1477,13 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         return extract_state_references_from_config(config)
 
     async def _async_unknown(
-        self, pairs: set[tuple[str, str | AttributeValue]]
+        self, pairs: set[tuple[str, str | ComparedState | AttributeValue]]
     ) -> set[_UnknownName]:
         """Return the (entity ID, state or attribute value) pairs never there."""
         return await self._async_find_unknown(pairs, found_states=None)
 
     async def _async_unknown_this_round(
-        self, pairs: set[tuple[str, str | AttributeValue]]
+        self, pairs: set[tuple[str, str | ComparedState | AttributeValue]]
     ) -> set[_UnknownName]:
         """Return the pairs never there, and wait on the states among them."""
         return await self._async_find_unknown(pairs, found_states=self._await_states)
@@ -1482,15 +1496,15 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         """
         awaited: dict[str, set[str]] = defaultdict(set)
         for finding in unknown:
-            if isinstance(finding.name, str):
-                awaited[finding.entity_id].add(finding.name)
+            if not isinstance(finding.name, AttributeValue):
+                awaited[finding.entity_id].add(_as_written(finding.name))
         self._states_awaited = {
             entity_id: frozenset(states) for entity_id, states in awaited.items()
         }
 
     async def _async_find_unknown(
         self,
-        pairs: set[tuple[str, str | AttributeValue]],
+        pairs: set[tuple[str, str | ComparedState | AttributeValue]],
         *,
         found_states: Callable[[set[_UnknownName]], None] | None,
     ) -> set[_UnknownName]:
@@ -1499,7 +1513,7 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         ``found_states`` hears the states first, before the attribute values
         are asked about: one that becomes possible meanwhile is heard then.
         """
-        states: set[tuple[str, str]] = set()
+        states: set[tuple[str, str | ComparedState]] = set()
         values: set[tuple[str, AttributeValue]] = set()
         for entity_id, name in pairs:
             if isinstance(name, AttributeValue):
