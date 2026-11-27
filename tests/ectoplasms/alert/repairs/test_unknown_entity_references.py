@@ -161,10 +161,8 @@ async def test_unreadable_configuration_keeps_existing_issues(
     )
     repair = SpookRepair(hass)
 
-    with (
-        patch(_YAML_CONFIG, side_effect=HomeAssistantError("broken")),
-        pytest.raises(HomeAssistantError),
-    ):
+    # The round aborts, and the repair logs it rather than raising.
+    with patch(_YAML_CONFIG, side_effect=HomeAssistantError("broken")):
         await repair._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _ISSUE_ID)

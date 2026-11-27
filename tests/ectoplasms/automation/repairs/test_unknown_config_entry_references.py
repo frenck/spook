@@ -12,9 +12,6 @@ from homeassistant.helpers.service import async_set_service_schema
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant.common import MockConfigEntry
 
-from custom_components.spook.action_extraction import (
-    ActionDescriptionsUnavailableError,
-)
 from custom_components.spook.draft_checking import async_check_draft
 from custom_components.spook.ectoplasms.automation.repairs.unknown_config_entry_references import (
     SpookRepair as AutomationSpookRepair,
@@ -398,7 +395,9 @@ async def test_the_issue_goes_once_the_entry_exists(hass: HomeAssistant) -> None
 
 @pytest.mark.usefixtures("entries")
 async def test_an_issue_stays_when_the_actions_cannot_be_read(
-    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
 ) -> None:
     """Not knowing what the actions take is no reason to drop an issue."""
     await _async_set_up(hass, "automation", [_set_txt(_GHOST)])
@@ -416,9 +415,14 @@ async def test_an_issue_stays_when_the_actions_cannot_be_read(
         "custom_components.spook.action_extraction.async_get_all_descriptions",
         _broken,
     )
-    with pytest.raises(ActionDescriptionsUnavailableError):
-        await repair._async_inspect_with_cleanup()
+    # The round aborts, and the repair logs it rather than raising.
+    await repair._async_inspect_with_cleanup()
+    assert "could not look" in caplog.text
+    assert "Failed to read what the actions take" in caplog.text
     assert async_issue_about(ir.async_get(hass), issue_id) is not None
+
+    # Never activated, so nothing else calls off the look once more.
+    repair._async_call_off_the_look_once_more()
 
 
 @pytest.mark.parametrize("repair_class", [AutomationSpookRepair, ScriptSpookRepair])

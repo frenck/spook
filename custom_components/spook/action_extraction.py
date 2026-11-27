@@ -13,6 +13,7 @@ from homeassistant.const import (
     EVENT_SERVICE_REMOVED,
 )
 from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.service import async_get_all_descriptions
 
@@ -681,8 +682,13 @@ _CONFIG_ENTRY_SELECTOR = "config_entry"
 type ConfigEntryFields = dict[str, dict[str, str | None]]
 
 
-class ActionDescriptionsUnavailableError(Exception):
-    """What the actions take could not be read, so nothing can be judged."""
+class ActionDescriptionsUnavailableError(HomeAssistantError):
+    """What the actions take could not be read, so nothing can be judged.
+
+    A Home Assistant error, as it is Home Assistant that could not read them,
+    most likely over what one integration says about its actions. A repair
+    that gives up its round on this logs it as that, not as Spook failing.
+    """
 
 
 def _collect_config_entry_fields(fields: Any, found: dict[str, str | None]) -> None:
@@ -729,7 +735,7 @@ async def async_get_config_entry_fields(hass: HomeAssistant) -> ConfigEntryField
     try:
         descriptions = await async_get_all_descriptions(hass)
     except Exception as exc:
-        message = "Failed to read what the actions take"
+        message = f"Failed to read what the actions take: {exc!r}"
         raise ActionDescriptionsUnavailableError(message) from exc
 
     fields: ConfigEntryFields = {}
