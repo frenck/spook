@@ -62,6 +62,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.util import dt as dt_util, yaml as yaml_util
 
 from ...const import DOMAIN, LOGGER, SCREENSHOT_HOME
+from ...core_compat import async_get_raw_blueprint_inputs
 from ...entity import SpookEntity, SpookEntityDescription
 from ...listeners import async_listen_once_tracked
 
@@ -2166,10 +2167,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
             # Not `raw_config`, which is the automation after the blueprint has
             # been substituted into it and no longer says which inputs went in.
-            # Reached for by name rather than as an attribute so that a rename
-            # upstream reads as "cannot tell", which blocks the install rather
-            # than going ahead on a guess.
-            supplied = getattr(entity, "_blueprint_inputs", None)
+            # Should Home Assistant rename this again, it reads as "cannot
+            # tell", which blocks the install rather than going ahead on a
+            # guess.
+            supplied = async_get_raw_blueprint_inputs(entity)
             if supplied is None:
                 unknown.append(entity_id)
                 continue

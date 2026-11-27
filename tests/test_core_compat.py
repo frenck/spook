@@ -26,6 +26,7 @@ from custom_components.spook.core_compat import (
     async_get_child_device_ids,
     async_get_child_devices_for_parent,
     async_get_device_entries,
+    async_get_raw_blueprint_inputs,
     async_is_child_device,
     async_is_issue_hidden,
     async_update_any_device,
@@ -402,3 +403,38 @@ async def test_nothing_is_excluded_before_core_could(
     )
 
     assert async_extract_excluded_entity_ids(call) == set()
+
+
+_INPUTS = {"use_blueprint": {"path": "motion.yaml", "input": {"light": "light.hall"}}}
+
+
+def test_blueprint_inputs_read_where_core_made_them_public() -> None:
+    """Test Core 2026.12 and later hand the inputs over in the open."""
+    entity = SimpleNamespace(raw_blueprint_inputs=_INPUTS)
+
+    assert async_get_raw_blueprint_inputs(entity) is _INPUTS
+
+
+def test_blueprint_inputs_none_in_the_open_is_the_answer() -> None:
+    """Test an entity not made from a blueprint is not read any further."""
+    entity = SimpleNamespace(raw_blueprint_inputs=None, _blueprint_inputs=_INPUTS)
+
+    assert async_get_raw_blueprint_inputs(entity) is None
+
+
+@pytest.mark.parametrize("private_name", ["_blueprint_inputs", "_raw_blueprint_inputs"])
+def test_blueprint_inputs_read_before_core_made_them_public(
+    private_name: str,
+) -> None:
+    """Test Core 2026.11 and older, which kept them under two private names.
+
+    One for an automation or script that loaded, one for one that did not.
+    """
+    entity = SimpleNamespace(**{private_name: _INPUTS})
+
+    assert async_get_raw_blueprint_inputs(entity) is _INPUTS
+
+
+def test_blueprint_inputs_nowhere_to_be_found() -> None:
+    """Test an entity with none of them reads as not knowing."""
+    assert async_get_raw_blueprint_inputs(SimpleNamespace()) is None
