@@ -15,6 +15,7 @@ from custom_components.spook.repairs import (
 )
 
 from .test_duplicate_resources import _FakeStorageResources, _key
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -22,9 +23,9 @@ if TYPE_CHECKING:
 
 def _flow(hass: HomeAssistant, key: str) -> DuplicateResourceFixFlow:
     """Return the flow, wired the way the repairs component wires it."""
-    flow = DuplicateResourceFixFlow()
-    flow.hass = hass
-    flow.issue_id = f"lovelace_duplicate_resources_{key}"
+    flow = wire_fix_flow(
+        hass, DuplicateResourceFixFlow(), f"lovelace_duplicate_resources_{key}"
+    )
     flow.data = {"duplicate_resource_url": key, "resource": key.split("|", 1)[-1]}
     return flow
 

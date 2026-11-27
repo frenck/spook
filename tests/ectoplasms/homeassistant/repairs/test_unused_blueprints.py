@@ -22,6 +22,7 @@ from custom_components.spook.repairs import (
     UnusedBlueprintFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -199,9 +200,7 @@ async def test_fix_flow_ignore_option_dismisses_issue(
     await SpookRepair(hass).async_inspect()
     assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
 
-    flow = UnusedBlueprintFixFlow()
-    flow.hass = hass
-    flow.issue_id = _ISSUE_ID
+    flow = wire_fix_flow(hass, UnusedBlueprintFixFlow(), _ISSUE_ID)
     flow.data = {
         "unused_blueprint_domain": "automation",
         "unused_blueprint_path": "motion.yaml",

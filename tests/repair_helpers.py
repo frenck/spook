@@ -17,6 +17,7 @@ from homeassistant.setup import async_setup_component
 from custom_components.spook.const import DOMAIN
 
 if TYPE_CHECKING:
+    from homeassistant.components.repairs import RepairsFlow
     from homeassistant.core import HomeAssistant, State
     from homeassistant.helpers import issue_registry as ir
 
@@ -52,6 +53,20 @@ def async_issue_about(
         raise AssertionError(message)
 
     return found[0]
+
+
+def wire_fix_flow[FlowT: RepairsFlow](
+    hass: HomeAssistant, flow: FlowT, issue_id: str
+) -> FlowT:
+    """Wire a fix flow up for an issue, the way the flow manager does.
+
+    The flow manager hands a flow its issue ID through the context. Setting
+    `issue_id` on the flow directly is deprecated since Home Assistant
+    2026.12, and a test that does so fails on it.
+    """
+    flow.hass = hass
+    flow.context = {"issue_id": issue_id}
+    return flow
 
 
 async def async_count_scheduled_inspections(

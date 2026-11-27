@@ -22,6 +22,7 @@ from custom_components.spook.dismissals import (
     async_setup_dismissals,
 )
 from custom_components.spook.repairs import AbstractSpookRepair, _RemoveOrIgnoreFixFlow
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -320,9 +321,9 @@ async def test_ignoring_an_issue_that_just_went_still_counts(
     repair = HauntedScriptRepair(hass)
     await _look(repair, {"light.a"})
 
-    flow = _RemoveOrIgnoreFixFlow()
-    flow.hass = hass
-    flow.issue_id = _the_one_issue(issue_registry).issue_id
+    flow = wire_fix_flow(
+        hass, _RemoveOrIgnoreFixFlow(), _the_one_issue(issue_registry).issue_id
+    )
 
     await _look(repair, set())
     result = await flow.async_step_ignore()

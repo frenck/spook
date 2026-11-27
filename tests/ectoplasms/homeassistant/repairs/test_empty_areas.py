@@ -18,6 +18,7 @@ from custom_components.spook.ectoplasms.homeassistant.repairs.empty_areas import
     SpookRepair,
 )
 from custom_components.spook.repairs import EmptyAreaFixFlow, async_create_fix_flow
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -189,9 +190,7 @@ async def test_a_vacuum_cleaning_elsewhere_does_not_count(
 
 def _flow_for(hass: HomeAssistant, area_id: str, area_name: str) -> EmptyAreaFixFlow:
     """Build an empty-area fix flow as the framework would wire it up."""
-    flow = EmptyAreaFixFlow()
-    flow.hass = hass
-    flow.issue_id = _issue_id(area_id)
+    flow = wire_fix_flow(hass, EmptyAreaFixFlow(), _issue_id(area_id))
     flow.data = {"empty_area_id": area_id, "area": area_name}
     return flow
 

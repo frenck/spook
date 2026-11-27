@@ -16,6 +16,7 @@ from custom_components.spook.ectoplasms.homeassistant.repairs.empty_floors impor
     SpookRepair,
 )
 from custom_components.spook.repairs import EmptyFloorFixFlow, async_create_fix_flow
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -34,9 +35,7 @@ def _issue_id(floor_id: str) -> str:
 
 def _flow_for(hass: HomeAssistant, floor_id: str, floor_name: str) -> EmptyFloorFixFlow:
     """Build an empty-floor fix flow as the framework would wire it up."""
-    flow = EmptyFloorFixFlow()
-    flow.hass = hass
-    flow.issue_id = _issue_id(floor_id)
+    flow = wire_fix_flow(hass, EmptyFloorFixFlow(), _issue_id(floor_id))
     flow.data = {"empty_floor_id": floor_id, "floor": floor_name}
     return flow
 

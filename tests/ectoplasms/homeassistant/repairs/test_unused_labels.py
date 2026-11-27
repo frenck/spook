@@ -20,6 +20,7 @@ from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels impo
     SpookRepair,
 )
 from custom_components.spook.repairs import UnusedLabelFixFlow, async_create_fix_flow
+from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -40,9 +41,7 @@ def _flow_for(
     hass: HomeAssistant, label_id: str, label_name: str
 ) -> UnusedLabelFixFlow:
     """Build an unused-label fix flow as the framework would wire it up."""
-    flow = UnusedLabelFixFlow()
-    flow.hass = hass
-    flow.issue_id = _issue_id(label_id)
+    flow = wire_fix_flow(hass, UnusedLabelFixFlow(), _issue_id(label_id))
     flow.data = {"unused_label_id": label_id, "label": label_name}
     return flow
 
