@@ -49,8 +49,6 @@ class SpookRepair(AbstractSpookRepair):
         for entry in self.hass.config_entries.async_entries(
             self.domain, include_ignore=False, include_disabled=False
         ):
-            self.possible_issue_ids.add(entry.entry_id)
-
             entity_filter = entry.options.get(_FILTER)
             if not isinstance(entity_filter, dict):
                 continue

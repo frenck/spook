@@ -96,8 +96,6 @@ class SpookRepair(AbstractSpookRepair):
         }
 
         for alert in alerts:
-            self.possible_issue_ids.add(alert.entity_id)
-
             watched = alert.watched_entity_id
             if not watched:
                 continue

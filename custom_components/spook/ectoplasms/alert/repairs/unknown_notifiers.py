@@ -50,8 +50,6 @@ class SpookRepair(AbstractSpookRepair):
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         for alert in await async_get_alert_configurations(self.hass):
-            self.possible_issue_ids.add(alert.entity_id)
-
             # A notifier is the name of a legacy notify action, so `my_phone`
             # in the configuration means the `notify.my_phone` action.
             unknown = sorted(

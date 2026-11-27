@@ -129,8 +129,6 @@ class SpookRepair(AbstractSpookRepair):
         # loop a turn, and a change to the live collection during it ends the
         # inspection in a `RuntimeError`. #1558.
         for person_entity in list(component.entities):
-            self.possible_issue_ids.add(person_entity.entity_id)
-
             unknown = [
                 device_tracker
                 for device_tracker in person_entity.device_trackers

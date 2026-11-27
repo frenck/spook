@@ -60,7 +60,6 @@ class SpookRepair(AbstractSpookRepair):
         # loop a turn, and a change to the live collection during it ends the
         # inspection in a `RuntimeError`. #1558.
         for entity in list(scenes):
-            self.possible_issue_ids.add(entity.entity_id)
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,
                 entity_ids=entity.scene_config.states,

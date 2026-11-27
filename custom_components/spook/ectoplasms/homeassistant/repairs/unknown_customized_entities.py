@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from homeassistant.const import EVENT_CORE_CONFIG_UPDATE, EVENT_HOMEASSISTANT_STARTED
+from homeassistant.const import EVENT_CORE_CONFIG_UPDATE
 from homeassistant.core_config import DATA_CUSTOMIZE
 from homeassistant.helpers import entity_registry as er
 
@@ -25,7 +25,6 @@ class SpookRepair(AbstractSpookRepair):
     domain = "homeassistant"
     repair = "unknown_customized_entities"
     inspect_events = {
-        EVENT_HOMEASSISTANT_STARTED,
         EVENT_CORE_CONFIG_UPDATE,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
@@ -47,8 +46,6 @@ class SpookRepair(AbstractSpookRepair):
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
-
-        self.possible_issue_ids.add(self.repair)
 
         if not (customize := self.hass.data.get(DATA_CUSTOMIZE)):
             return  # No customizations at all.

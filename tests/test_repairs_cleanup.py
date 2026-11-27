@@ -1241,6 +1241,44 @@ async def test_findings_in_a_different_order_are_the_same_findings(
     assert _the_one_issue(issue_registry).issue_id == first
 
 
+async def test_findings_from_before_a_restart_are_cleaned_up_from_the_registry(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an issue keyed to its findings goes without `possible_issue_ids`.
+
+    Its ID is the owner with a fingerprint on the end, so the bare owner a
+    repair used to put in `possible_issue_ids` never named it. A repair
+    starting after a restart remembers nothing of its own, and what the
+    earlier one left is found in the issue registry: gone when the finding
+    is, and replaced when it changed.
+    """
+    before_the_restart = MockFindingsRepair(hass)
+    before_the_restart.findings = {"light.ghost"}
+    await before_the_restart._async_inspect_with_cleanup()
+    left_behind = _the_one_issue(issue_registry).issue_id
+
+    changed = MockFindingsRepair(hass)
+    changed.findings = {"light.another_ghost"}
+    await changed._async_inspect_with_cleanup()
+
+    assert not changed.possible_issue_ids
+    assert _the_one_issue(issue_registry).issue_id != left_behind
+    left_behind = _the_one_issue(issue_registry).issue_id
+
+    gone = MockFindingsRepair(hass)
+    gone.findings = set()
+    await gone._async_inspect_with_cleanup()
+
+    assert not gone.possible_issue_ids
+    assert issue_registry.async_get_issue(DOMAIN, left_behind) is None
+    assert not [
+        entry
+        for (domain, _issue_id), entry in issue_registry.issues.items()
+        if domain == DOMAIN
+    ]
+
+
 class MockComponentRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     """Mock repair over an entity component, the way the real ones work."""
 

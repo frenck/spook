@@ -59,7 +59,6 @@ class SpookRepair(AbstractSpookRepair):
                 # action it registered.
                 # pylint: disable-next=protected-access
                 name = service._service_name  # noqa: SLF001
-                self.possible_issue_ids.add(name)
 
                 # A member is a bare action slug, so `phone` in the
                 # configuration means the `notify.phone` action.

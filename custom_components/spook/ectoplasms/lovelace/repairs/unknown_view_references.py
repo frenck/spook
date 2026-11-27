@@ -153,7 +153,6 @@ class SpookRepair(AbstractSpookRepair):
         views_by_dashboard = self.__async_views_by_dashboard(dashboards)
 
         for dashboard, url_path, config in dashboards:
-            self.possible_issue_ids.add(url_path)
             if config is None:
                 continue
 

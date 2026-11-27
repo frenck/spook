@@ -77,8 +77,6 @@ class SpookRepair(AbstractSpookRepair):
         known_services = async_get_all_services(self.hass)
 
         for entry in self.hass.config_entries.async_entries(self.domain):
-            self.possible_issue_ids.add(entry.entry_id)
-
             services = find_services_in_helper_options(entry.options)
 
             unknown_services = async_filter_known_services(
@@ -106,7 +104,6 @@ class SpookRepair(AbstractSpookRepair):
             # Validating actions is CPU-bound, and there can be many template
             # entities: the event loop gets a turn before each.
             await asyncio.sleep(0)
-            self.possible_issue_ids.add(template_entity.entity_id)
 
             # A template entity reloaded during that turn may say something
             # else entirely, and the reload starts another round that looks

@@ -52,8 +52,6 @@ class SpookRepair(AbstractSpookRepair):
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        self.possible_issue_ids.add(self.repair)
-
         settled = await async_settled_orphaned_statistic_ids(self.hass)
 
         if not settled and async_statistics_still_settling(self.hass):

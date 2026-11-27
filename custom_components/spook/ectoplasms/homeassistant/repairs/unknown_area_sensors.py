@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.helpers import area_registry as ar, entity_registry as er
 
 from ....const import LOGGER
@@ -36,7 +35,6 @@ class SpookRepair(AbstractSpookRepair):
     domain = "homeassistant"
     repair = "unknown_area_sensors"
     inspect_events = {
-        EVENT_HOMEASSISTANT_STARTED,
         ar.EVENT_AREA_REGISTRY_UPDATED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
@@ -56,8 +54,6 @@ class SpookRepair(AbstractSpookRepair):
         # loop a turn, and a change to the live collection during it ends the
         # inspection in a `RuntimeError`. #1558.
         for area in list(ar.async_get(self.hass).async_list_areas()):
-            self.possible_issue_ids.add(area.id)
-
             unknown = {
                 field: entity_id
                 for field in AREA_SENSOR_FIELDS

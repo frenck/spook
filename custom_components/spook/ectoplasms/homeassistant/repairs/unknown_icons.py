@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_CORE_CONFIG_UPDATE,
-    EVENT_HOMEASSISTANT_STARTED,
     EVENT_STATE_CHANGED,
 )
 from homeassistant.core import callback
@@ -68,7 +67,6 @@ class SpookRepair(AbstractSpookRepair):
     domain = "homeassistant"
     repair = "unknown_icons"
     inspect_events = {
-        EVENT_HOMEASSISTANT_STARTED,
         EVENT_COMPONENT_LOADED,
         EVENT_CORE_CONFIG_UPDATE,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
@@ -124,8 +122,6 @@ class SpookRepair(AbstractSpookRepair):
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
-
-        self.possible_issue_ids.add(self.repair)
 
         if (icons := await async_get_mdi_icons(self.hass)) is None:
             return

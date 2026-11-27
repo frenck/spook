@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.core import callback, split_entity_id, valid_entity_id
 from homeassistant.helpers import entity_registry as er
 
@@ -79,7 +78,6 @@ class SpookRepair(AbstractSpookRepair):
     domain = "assist_pipeline"
     repair = "unknown_engines"
     inspect_events = {
-        EVENT_HOMEASSISTANT_STARTED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     automatically_clean_up_issues = True
@@ -98,8 +96,6 @@ class SpookRepair(AbstractSpookRepair):
         known_entity_ids = async_get_all_entity_ids(self.hass)
 
         for pipeline in _async_get_pipelines(self.hass):
-            self.possible_issue_ids.add(pipeline.id)
-
             unknown = {
                 step: engine
                 for field, (domain, step) in PIPELINE_ENGINES.items()
