@@ -44,7 +44,13 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
 
     from homeassistant.config_entries import ConfigEntry
-    from homeassistant.core import HomeAssistant
+
+
+# The copy of each helper's options that is read, by config entry ID. Kept
+# here and not with the repair: a reload of Spook makes a new repair, and new
+# copies would be new configurations to the readers that remember, read all
+# over again and kept next to the old ones. The options did not change.
+_OPTIONS_TO_READ: dict[str, tuple[Mapping[str, Any], dict[str, Any]]] = {}
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -69,13 +75,6 @@ class SpookRepair(AbstractSpookRepair):
     inspect_on_reload = "template"
     automatically_clean_up_issues = True
 
-    _options: dict[str, tuple[Mapping[str, Any], dict[str, Any]]]
-
-    def __init__(self, hass: HomeAssistant) -> None:
-        """Initialize the repair."""
-        super().__init__(hass)
-        self._options = {}
-
     def _options_of(self, entry: ConfigEntry) -> dict[str, Any]:
         """Return the options of a helper as a mapping to read.
 
@@ -84,10 +83,10 @@ class SpookRepair(AbstractSpookRepair):
         about again, kept by every reader that remembers what it read.
         """
         options = entry.options
-        copied = self._options.get(entry.entry_id)
+        copied = _OPTIONS_TO_READ.get(entry.entry_id)
         if copied is None or copied[0] is not options:
             copied = (options, dict(options))
-            self._options[entry.entry_id] = copied
+            _OPTIONS_TO_READ[entry.entry_id] = copied
         return copied[1]
 
     async def async_activate(self) -> None:
@@ -124,11 +123,9 @@ class SpookRepair(AbstractSpookRepair):
 
         entries = self.hass.config_entries.async_entries(self.domain)
         # Whatever is gone is forgotten.
-        self._options = {
-            entry.entry_id: self._options[entry.entry_id]
-            for entry in entries
-            if entry.entry_id in self._options
-        }
+        current = {entry.entry_id for entry in entries}
+        for entry_id in _OPTIONS_TO_READ.keys() - current:
+            del _OPTIONS_TO_READ[entry_id]
         for entry in entries:
             options = self._options_of(entry)
             shadowed = names_given_to_templates(options)

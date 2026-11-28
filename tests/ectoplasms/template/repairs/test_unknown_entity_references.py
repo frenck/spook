@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 from pytest_homeassistant.common import MockConfigEntry
 
 from custom_components.spook.ectoplasms.template.repairs.unknown_entity_references import (
+    _OPTIONS_TO_READ,
     SpookRepair,
 )
 from tests.repair_helpers import async_issue_about
@@ -627,9 +628,9 @@ async def test_the_options_of_a_removed_helper_are_forgotten(
     entry.add_to_hass(hass)
     repair = SpookRepair(hass)
     await repair.async_inspect()
-    assert entry.entry_id in repair._options
+    assert entry.entry_id in _OPTIONS_TO_READ
 
     await hass.config_entries.async_remove(entry.entry_id)
     await repair.async_inspect()
 
-    assert entry.entry_id not in repair._options
+    assert entry.entry_id not in _OPTIONS_TO_READ

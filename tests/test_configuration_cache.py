@@ -3,15 +3,23 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import timedelta
 import gc
+from importlib import import_module
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 from weakref import WeakKeyDictionary
 
 import pytest
+from pytest_homeassistant.common import MockConfigEntry, async_fire_time_changed
 
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import EVENT_SERVICE_REGISTERED, EVENT_SERVICE_REMOVED
+from homeassistant.core import CoreState
+from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.setup import async_setup_component
 
+from custom_components import spook
 from custom_components.spook import configuration_cache
 from custom_components.spook.action_extraction import RememberedNames
 from custom_components.spook.configuration_cache import (
@@ -21,17 +29,22 @@ from custom_components.spook.configuration_cache import (
     read_once,
     reading_for,
 )
+from custom_components.spook.const import DOMAIN
 from custom_components.spook.never_true_templates import never_true_templates
 from custom_components.spook.reference_extraction import (
     config_to_judge,
     without_disabled_steps,
 )
+from custom_components.spook.repairs import SpookRepairManager
 from custom_components.spook.template_extraction import (
     extract_template_strings_from_config,
 )
 from custom_components.spook.trigger_ids import unknown_trigger_ids
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
+    from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
 
@@ -567,3 +580,189 @@ async def test_named_in_hands_out_a_copy(hass: HomeAssistant) -> None:
             "light.kitchen"
         }
     _ = hass
+
+
+# The repairs that read the automations, scripts and template helpers of the
+# house below, and nothing else, so a reload of Spook stays quick.
+_REPAIRS_READING_THE_HOUSE = (
+    "automation.repairs.unknown_entity_references",
+    "script.repairs.unknown_entity_references",
+    "template.repairs.unknown_entity_references",
+)
+
+
+class _HouseReadingRepairManager(SpookRepairManager):
+    """Repair manager setting up only the repairs that read the house."""
+
+    async def async_setup(self, *, spread_first_inspections: bool = False) -> None:
+        """Set up the repairs reading the house, and none of the others."""
+        del spread_first_inspections
+        for module in _REPAIRS_READING_THE_HOUSE:
+            await self._async_setup_repair_module(
+                import_module(f"custom_components.spook.ectoplasms.{module}")
+            )
+
+
+async def _async_set_up_the_house(hass: HomeAssistant) -> tuple[Any, Any]:
+    """Set up an automation, a script and a template helper, all three named."""
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": {
+                "id": "evening",
+                "alias": "Evening",
+                "triggers": [{"trigger": "event", "event_type": "dusk"}],
+                "actions": [
+                    {"action": "light.turn_on", "target": {"entity_id": "light.gone"}}
+                ],
+            }
+        },
+    )
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "evening": {
+                    "sequence": [
+                        {
+                            "action": "light.turn_on",
+                            "target": {"entity_id": "light.gone"},
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    MockConfigEntry(
+        domain="template",
+        title="Gone",
+        options={
+            "name": "Gone",
+            "template_type": "sensor",
+            "state": "{{ states('sensor.gone') }}",
+        },
+    ).add_to_hass(hass)
+    await hass.async_block_till_done()
+
+    instances = hass.data[DATA_INSTANCES]
+    return (
+        instances["automation"].get_entity("automation.evening"),
+        instances["script"].get_entity("script.evening"),
+    )
+
+
+async def _async_let_the_repairs_look(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Let the time pass a repair waits before it looks, and the look end."""
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+class _NoServices:
+    """Service manager setting up no actions."""
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        self.hass = hass
+
+    async def async_setup(self) -> None:
+        """Set up no services."""
+
+    def async_on_unload(self) -> None:
+        """Unload no services."""
+
+
+async def _async_forward_no_platforms(
+    _hass: HomeAssistant, _entry: ConfigEntry
+) -> None:
+    """Forward no ectoplasm setup."""
+
+
+def _set_up_spook_with_only_the_repairs_reading_the_house(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Have Spook set up the repairs reading the house, and nothing else."""
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", lambda _hass: set())
+    monkeypatch.setattr(spook, "async_forward_setup_entry", _async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoServices)
+    monkeypatch.setattr(spook, "SpookRepairManager", _HouseReadingRepairManager)
+
+
+@pytest.mark.usefixtures("skip_dependency_setup")
+async def test_reloading_spook_keeps_no_more_with_an_automation(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test a reload of Spook over an unchanged house keeps nothing new.
+
+    The repairs about entity references kept what an automation or script
+    names with that automation or script, but under the repair that read it.
+    A reload sets up new repairs, and the automations stay. So every reload
+    kept another set of readings with every automation and every script, for
+    repairs that were long gone, until the automations themselves reloaded.
+
+    The template helper repair made its own copy of every helper's options
+    to read, and a new repair made new copies. Every reload of Spook left
+    another set of readings of those in the caches, pushing out what was
+    still asked for.
+    """
+    _set_up_spook_with_only_the_repairs_reading_the_house(monkeypatch)
+    hass.set_state(CoreState.running)
+
+    # What the template helper repair hands over to read, every time.
+    template_repair = import_module(
+        "custom_components.spook.ectoplasms.template.repairs.unknown_entity_references"
+    )
+    names_given_to_templates = template_repair.names_given_to_templates
+    helper_options_read: list[Any] = []
+
+    def _names_given_to_templates(config: Any) -> frozenset[str]:
+        if "template_type" in config:
+            helper_options_read.append(config)
+        return names_given_to_templates(config)
+
+    monkeypatch.setattr(
+        template_repair, "names_given_to_templates", _names_given_to_templates
+    )
+
+    automation, script = await _async_set_up_the_house(hass)
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await _async_let_the_repairs_look(hass, freezer)
+
+    def _kept(owner: Any) -> int:
+        return sum(len(readings) for readings in owned[owner].values())
+
+    # The premise: the repairs did read the house, and kept what they read.
+    kept_with_the_automation = _kept(automation)
+    kept_with_the_script = _kept(script)
+    assert kept_with_the_automation
+    assert kept_with_the_script
+    assert helper_options_read
+
+    for _ in range(3):
+        assert await hass.config_entries.async_reload(entry.entry_id)
+        await _async_let_the_repairs_look(hass, freezer)
+
+    # Every reload looked again, at the very same automation and script.
+    assert entry.state is ConfigEntryState.LOADED
+    assert len(helper_options_read) == 4  # noqa: PLR2004
+    assert (
+        hass.data[DATA_INSTANCES]["automation"].get_entity("automation.evening")
+        is automation
+    )
+
+    assert _kept(automation) == kept_with_the_automation
+    assert _kept(script) == kept_with_the_script
+
+    # And read the same copy of the helper's options every time.
+    assert len({id(options) for options in helper_options_read}) == 1
+
+    assert await hass.config_entries.async_unload(entry.entry_id)

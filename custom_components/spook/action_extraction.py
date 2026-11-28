@@ -17,7 +17,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.service import async_get_all_descriptions
 
-from .configuration_cache import owned_readings
+from .configuration_cache import forget_reader, owned_readings
 from .const import LOGGER
 from .entity_filtering import (
     NEVER_AN_ENTITY_PREFIXES,
@@ -850,7 +850,8 @@ class RememberedNames:
     different at the start of a round. #2005.
 
     Kept with the automation or script being read, see `reading_for`, so it
-    goes when Home Assistant drops that one. Keyed by the configuration
+    goes when Home Assistant drops that one, or when this stops following
+    the actions, whichever comes first. Keyed by the configuration
     itself, which is kept along so no other can take its key, and by the
     names it gives its templates. Without an automation or script to keep it
     with, like for a draft, nothing is kept.
@@ -866,7 +867,12 @@ class RememberedNames:
 
     @callback
     def async_follow_actions(self, hass: HomeAssistant) -> Callable[[], None]:
-        """Forget everything whenever an action comes or goes."""
+        """Forget everything whenever an action comes or goes, and once stopped.
+
+        Stopped is when the repair it belongs to goes. The automations and
+        scripts stay, and so would everything read for them, under a reader
+        no one asks again.
+        """
 
         @callback
         def _forget(_: Event) -> None:
@@ -881,6 +887,8 @@ class RememberedNames:
         def _stop() -> None:
             for stop in stops:
                 stop()
+
+            forget_reader(self)
 
         return _stop
 
