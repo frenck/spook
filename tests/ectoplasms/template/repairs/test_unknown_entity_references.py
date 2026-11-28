@@ -6,6 +6,7 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+import gc
 from typing import TYPE_CHECKING
 
 from pytest_homeassistant.common import MockConfigEntry
@@ -628,9 +629,39 @@ async def test_the_options_of_a_removed_helper_are_forgotten(
     entry.add_to_hass(hass)
     repair = SpookRepair(hass)
     await repair.async_inspect()
-    assert entry.entry_id in _OPTIONS_TO_READ
+    assert entry in _OPTIONS_TO_READ
 
     await hass.config_entries.async_remove(entry.entry_id)
     await repair.async_inspect()
 
-    assert entry.entry_id not in _OPTIONS_TO_READ
+    assert entry not in _OPTIONS_TO_READ
+
+
+async def test_the_options_of_a_removed_helper_go_without_a_look(
+    hass: HomeAssistant,
+) -> None:
+    """Test the copy goes with its helper, also when nothing looks any more.
+
+    Spook disabled or removed looks at nothing, so nothing would ever get to
+    forgetting a helper removed after that.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Ghostly sensor",
+        options={
+            "name": "Ghostly sensor",
+            "template_type": "sensor",
+            "state": "{{ states('sensor.ghost') }}",
+        },
+    )
+    entry.add_to_hass(hass)
+    await SpookRepair(hass).async_inspect()
+    kept = len(_OPTIONS_TO_READ)
+    assert entry in _OPTIONS_TO_READ
+
+    await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+    del entry
+    gc.collect()
+
+    assert len(_OPTIONS_TO_READ) == kept - 1

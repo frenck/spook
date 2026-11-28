@@ -865,6 +865,10 @@ class RememberedNames:
         # earlier one is read again, and takes the place of the old one.
         self._actions_seen = object()
 
+        # Set once stopped. A round can be halfway through the automations
+        # when its repair goes, and what it reads after that is kept nowhere.
+        self._stopped = False
+
     @callback
     def async_follow_actions(self, hass: HomeAssistant) -> Callable[[], None]:
         """Forget everything whenever an action comes or goes, and once stopped.
@@ -873,6 +877,7 @@ class RememberedNames:
         scripts stay, and so would everything read for them, under a reader
         no one asks again.
         """
+        self._stopped = False
 
         @callback
         def _forget(_: Event) -> None:
@@ -888,6 +893,7 @@ class RememberedNames:
             for stop in stops:
                 stop()
 
+            self._stopped = True
             forget_reader(self)
 
         return _stop
@@ -902,7 +908,7 @@ class RememberedNames:
         self, config: dict[str, Any], shadowed: frozenset[str], read: NamedReader
     ) -> set[str]:
         """Return what ``read`` finds in ``config``, read once."""
-        if (readings := owned_readings(self)) is None:
+        if self._stopped or (readings := owned_readings(self)) is None:
             return await read(config, shadowed)
 
         key = (id(config), shadowed)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from typing import TYPE_CHECKING, Any
+from weakref import WeakKeyDictionary
 
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
 from homeassistant.core import Event, callback
@@ -46,11 +47,17 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
 
 
-# The copy of each helper's options that is read, by config entry ID. Kept
-# here and not with the repair: a reload of Spook makes a new repair, and new
-# copies would be new configurations to the readers that remember, read all
-# over again and kept next to the old ones. The options did not change.
-_OPTIONS_TO_READ: dict[str, tuple[Mapping[str, Any], dict[str, Any]]] = {}
+# The copy of each helper's options that is read, by the helper's config
+# entry. Kept here and not with the repair: a reload of Spook makes a new
+# repair, and new copies would be new configurations to the readers that
+# remember, read all over again and kept next to the old ones. The options
+# did not change.
+#
+# Held weakly, so a copy goes with its helper also when Spook is not around
+# to look any more.
+_OPTIONS_TO_READ: WeakKeyDictionary[
+    ConfigEntry, tuple[Mapping[str, Any], dict[str, Any]]
+] = WeakKeyDictionary()
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -83,10 +90,10 @@ class SpookRepair(AbstractSpookRepair):
         about again, kept by every reader that remembers what it read.
         """
         options = entry.options
-        copied = _OPTIONS_TO_READ.get(entry.entry_id)
+        copied = _OPTIONS_TO_READ.get(entry)
         if copied is None or copied[0] is not options:
             copied = (options, dict(options))
-            _OPTIONS_TO_READ[entry.entry_id] = copied
+            _OPTIONS_TO_READ[entry] = copied
         return copied[1]
 
     async def async_activate(self) -> None:
@@ -123,9 +130,8 @@ class SpookRepair(AbstractSpookRepair):
 
         entries = self.hass.config_entries.async_entries(self.domain)
         # Whatever is gone is forgotten.
-        current = {entry.entry_id for entry in entries}
-        for entry_id in _OPTIONS_TO_READ.keys() - current:
-            del _OPTIONS_TO_READ[entry_id]
+        for gone in set(_OPTIONS_TO_READ) - set(entries):
+            del _OPTIONS_TO_READ[gone]
         for entry in entries:
             options = self._options_of(entry)
             shadowed = names_given_to_templates(options)

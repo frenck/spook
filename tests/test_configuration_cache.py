@@ -545,6 +545,42 @@ async def test_named_in_goes_with_its_owner(
     assert len(owned) == 0
 
 
+async def test_a_stopped_reader_keeps_nothing_it_reads_after(
+    hass: HomeAssistant,
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test a round still going when its repair went leaves nothing behind.
+
+    A round hands the loop back between automations. Its repair can go in
+    one of those gaps, and the round then reads on for a reader no one will
+    ever ask again, or forget.
+    """
+    remembered = RememberedNames()
+    stop = remembered.async_follow_actions(hass)
+    remembered.start_round(set())
+    owner = _Owner()
+    read: list[dict[str, Any]] = []
+
+    async def _read(config: dict[str, Any], _shadowed: frozenset[str]) -> set[str]:
+        read.append(config)
+        return {"light.kitchen"}
+
+    with reading_for(owner):
+        await remembered.async_named_in({"actions": []}, frozenset(), _read)
+    assert remembered in owned[owner]
+
+    stop()
+    assert remembered not in owned[owner]
+
+    with reading_for(owner):
+        assert await remembered.async_named_in({"actions": []}, frozenset(), _read) == {
+            "light.kitchen"
+        }
+
+    assert remembered not in owned[owner]
+    assert len(read) == 2  # noqa: PLR2004
+
+
 async def test_named_in_is_always_read_without_an_owner() -> None:
     """Test nothing is kept when there is no one to keep it with, like a draft."""
     remembered = RememberedNames()
