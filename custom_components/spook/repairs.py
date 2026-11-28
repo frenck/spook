@@ -332,13 +332,20 @@ class AbstractSpookRepairBase(ABC):
         script keeps its dismissal while its text is quietly rewritten
         underneath, and the next genuinely broken thing in that script is
         hidden by a decision somebody made about something else. #1395.
+
+        Without it the issue is about the one thing it is filed under, like
+        an empty area or a folder in `www`, and that thing is its finding.
+        The ID stays as it always was, so an ignore made before Spook wrote
+        these down is still on the issue, and gets written down from there.
         """
         if self._deactivated:
             return
 
         owner = issue_id
-        findings = None if references is None else list(references)
-        if findings is not None:
+        if references is None:
+            findings = [owner]
+        else:
+            findings = list(references)
             issue_id = f"{issue_id}_{_fingerprint(findings)}"
 
         self.issue_ids.add(issue_id)
@@ -357,10 +364,7 @@ class AbstractSpookRepairBase(ABC):
             translation_placeholders=translation_placeholders,
         )
 
-        if findings is not None:
-            self._async_carry_over_dismissal(
-                f"{self.repair}_{issue_id}", owner, findings
-            )
+        self._async_carry_over_dismissal(f"{self.repair}_{issue_id}", owner, findings)
 
     @final
     @callback
@@ -372,13 +376,15 @@ class AbstractSpookRepairBase(ABC):
     ) -> None:
         """Keep an issue ignored when what it reports was ignored already.
 
-        An issue filed under its findings is a new issue whenever they change,
-        and Home Assistant only remembers an ignore on the issue it was
-        pressed on. So a list that got shorter, or one that came back after
-        an automation reloaded, arrived as something nobody had ever seen.
-        Spook writes the decision down itself, and anything it reports that
-        was all ignored before is ignored again from the start. Anything new
-        on the list makes it news, and it comes up as usual.
+        Home Assistant only remembers an ignore on the issue it was pressed
+        on, and only while that issue exists. An issue filed under its
+        findings is a new issue whenever they change, and any issue is gone
+        once its finding is, if only for a moment. So a list that got
+        shorter, an automation that reloaded, or an empty area that briefly
+        held a lamp, came back as something nobody had ever seen. Spook
+        writes the decision down itself, and anything it reports that was all
+        ignored before is ignored again from the start. Anything new on the
+        list makes it news, and it comes up as usual.
         """
         dismissals = async_get_dismissals(self.hass)
         dismissals.async_offer(issue_id, self.repair, owner, findings)
