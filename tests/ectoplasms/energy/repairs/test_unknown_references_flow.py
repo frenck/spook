@@ -20,6 +20,7 @@ from homeassistant.components.energy.validate import ValidationIssues
 
 from custom_components.spook import energy_preferences, repairs
 from custom_components.spook.energy_preferences import async_unknown_energy_entities
+from custom_components.spook.recorder_questions import RecorderDidNotAnswer
 from custom_components.spook.repairs import (
     EnergyUnknownReferencesFixFlow,
     async_create_fix_flow,
@@ -439,3 +440,32 @@ async def test_a_battery_keeping_a_meter_not_proven_gone_is_still_taken(
         "stat_rate_to_home": "sensor.discharging_to_home"
     }
     assert ENERGY_SOURCE_SCHEMA(manager.data["energy_sources"])
+
+
+async def test_a_recorder_too_slow_to_look_again_takes_out_nothing(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the fix stops when the recorder does not answer its look again.
+
+    Without the statistics, an imported source looks unknown, and taking it
+    out would break a working energy dashboard. Not a traceback either: the
+    dialog says what happened, opening it or pressing the button.
+    """
+    async_delete_entity(hass, "sensor.gone_solar")
+    manager = await _energy_settings(hass, monkeypatch, set())
+    before = copy.deepcopy(manager.data)
+
+    async def _async_not_answered(_hass: HomeAssistant) -> set[str]:
+        msg = "The recorder did not answer within 60 seconds"
+        raise RecorderDidNotAnswer(msg)
+
+    monkeypatch.setattr(repairs, "async_unknown_energy_entities", _async_not_answered)
+    flow = _flow(hass, "sensor.gone_solar")
+
+    for step in (flow.async_step_init, flow.async_step_remove):
+        result = await step()
+        assert result["type"] == "abort"
+        assert result["reason"] == "recorder_did_not_answer"
+
+    assert manager.data == before

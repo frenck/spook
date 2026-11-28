@@ -6,6 +6,7 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
@@ -15,7 +16,7 @@ from pytest_homeassistant.common import async_fire_time_changed
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
-from custom_components.spook import statistics_sources
+from custom_components.spook import recorder_questions, statistics_sources
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.dismissals import async_setup_dismissals
 from custom_components.spook.ectoplasms.recorder.repairs.orphaned_statistics import (
@@ -98,7 +99,7 @@ def _install_fake_recorder(
         migration_in_progress=False,
     )
     hass.data[DATA_INSTANCE] = instance
-    monkeypatch.setattr(statistics_sources, "get_instance", lambda _hass: instance)
+    monkeypatch.setattr(recorder_questions, "get_instance", lambda _hass: instance)
     return instance
 
 
@@ -510,5 +511,55 @@ async def test_a_recorder_migrating_its_database_is_not_asked(
     await repair._async_inspect_with_cleanup()
 
     assert asked
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+    assert repair.last_look.outcome is LookOutcome.FINE
+
+
+async def test_a_recorder_too_slow_to_answer_could_not_look(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a question the recorder does not answer in time keeps what is up.
+
+    Not knowing is not the same as nothing being left behind, and a clean
+    round would take the issue down. Once the recorder answers again, the
+    statistics are judged as usual.
+    """
+    validation = {"sensor.ghost": [SimpleNamespace(type="no_state")]}
+    recorder = _install_fake_recorder(hass, monkeypatch, validation)
+    repair = SpookRepair(hass)
+    await _inspect_until_settled(repair, freezer)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    answers_normally = recorder.async_add_executor_job
+    never_answered: asyncio.Future[Any] = hass.loop.create_future()
+    recorder.async_add_executor_job = lambda *_: never_answered
+    validation.clear()
+
+    looking = hass.async_create_task(repair._async_inspect_with_cleanup())
+    for _ in range(10):
+        await asyncio.sleep(0)
+    # Past the limit, not on it: a frozen clock moved exactly to a deadline
+    # does not fire it.
+    freezer.tick(timedelta(seconds=recorder_questions.RECORDER_ANSWERS_WITHIN + 1))
+    await looking
+
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+    assert repair.last_look.detail == (
+        "The recorder did not answer within "
+        f"{recorder_questions.RECORDER_ANSWERS_WITHIN} seconds"
+    )
+
+    # The question it gave up on comes back at last, and the next one is
+    # answered in time: the statistics have something behind them again.
+    never_answered.set_result({})
+    await asyncio.sleep(0)
+    recorder.async_add_executor_job = answers_normally
+    await repair._async_inspect_with_cleanup()
+
     assert async_issue_about(issue_registry, _ISSUE_ID) is None
     assert repair.last_look.outcome is LookOutcome.FINE

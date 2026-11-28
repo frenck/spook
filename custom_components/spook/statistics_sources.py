@@ -13,11 +13,12 @@ from homeassistant.components.recorder.statistics import (
 from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
+from homeassistant.helpers.recorder import DATA_INSTANCE
 from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
 
 from .const import SCREENSHOT_HOME
+from .recorder_questions import async_ask_in_time
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -135,6 +136,9 @@ async def async_settled_orphaned_statistic_ids(hass: HomeAssistant) -> set[str]:
     A fix satisfied by one glance would delete the history of a sensor that
     came back days ago and happened to be between two of those windows when
     somebody pressed the button, which is the very thing the wait is for.
+
+    Raises `RecorderDidNotAnswer` when the recorder does not answer in time,
+    and then leaves what is being waited on as it was.
     """
     abandoned = await async_abandoned_statistic_ids(hass)
 
@@ -177,14 +181,13 @@ async def async_abandoned_statistic_ids(hass: HomeAssistant) -> set[str]:
 
     This is a snapshot of one moment and says nothing about how long it has
     looked this way, which is a judgement its callers make for themselves.
+
+    Raises `RecorderDidNotAnswer` when the recorder does not answer in time.
     """
     if DATA_INSTANCE not in hass.data:
         return set()  # Recorder is not set up.
 
-    validation = await get_instance(hass).async_add_executor_job(
-        validate_statistics,
-        hass,
-    )
+    validation = await async_ask_in_time(hass, validate_statistics, hass)
     candidates = {
         statistic_id
         for statistic_id, issues in validation.items()
@@ -233,6 +236,8 @@ async def async_known_to_home_assistant(
     YAML template that never had one and a sensor removed last year. Reading
     that as "never was an entity" would quietly drop the reference this repair
     exists to point out.
+
+    Raises `RecorderDidNotAnswer` when the recorder does not answer in time.
     """
     if not entity_ids:
         return set()
@@ -243,8 +248,8 @@ async def async_known_to_home_assistant(
     if not (rest := entity_ids - known) or DATA_INSTANCE not in hass.data:
         return known
 
-    metadata = await get_instance(hass).async_add_executor_job(
-        functools.partial(get_metadata, hass, statistic_ids=rest),
+    metadata = await async_ask_in_time(
+        hass, functools.partial(get_metadata, hass, statistic_ids=rest)
     )
 
     return known | {

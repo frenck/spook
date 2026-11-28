@@ -17,13 +17,20 @@ from homeassistant.components.energy.validate import (
 )
 from homeassistant.exceptions import HomeAssistantError
 
-from custom_components.spook import energy_preferences, statistics_sources
+from custom_components.spook import (
+    energy_preferences,
+    recorder_questions,
+    statistics_sources,
+)
 from custom_components.spook.ectoplasms.energy.repairs.unknown_references import (
     SpookRepair,
 )
+from custom_components.spook.repairs import LookOutcome
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
+    import asyncio
+
     from freezegun.api import FrozenDateTimeFactory
 
     from homeassistant.core import HomeAssistant
@@ -125,7 +132,7 @@ def _install_statistics(
         }
 
     monkeypatch.setattr(
-        statistics_sources,
+        recorder_questions,
         "get_instance",
         lambda hass: SimpleNamespace(  # noqa: ARG005
             async_add_executor_job=_async_add_executor_job,
@@ -495,3 +502,45 @@ async def test_following_the_energy_settings_is_tried_again_after_a_failure(
     await energy_preferences.async_follow_energy_settings(hass)
 
     assert len(listening) == 1
+
+
+async def test_a_recorder_too_slow_to_answer_could_not_look(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a recorder that does not answer in time keeps what is up.
+
+    Without the statistics, a source imported by an integration looks
+    unknown. Judged on half the answer, the round would report it, or a
+    clean one would take down what is up.
+    """
+    result = EnergyPreferencesValidation()
+    source_issues = ValidationIssues()
+    source_issues.add_issue(hass, "entity_not_defined", "sensor.ghost_meter")
+    result.energy_sources.append(source_issues)
+    _install_validation(hass, monkeypatch, result)
+    marker = _install_statistics(monkeypatch, {})
+    hass.data[marker] = object()
+
+    repair = SpookRepair(hass)
+    # pylint: disable-next=protected-access
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    never_answered: asyncio.Future[Any] = hass.loop.create_future()
+    monkeypatch.setattr(
+        recorder_questions,
+        "get_instance",
+        lambda _hass: SimpleNamespace(async_add_executor_job=lambda *_: never_answered),
+    )
+    monkeypatch.setattr(recorder_questions, "RECORDER_ANSWERS_WITHIN", 0.01)
+
+    # pylint: disable-next=protected-access
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+
+    never_answered.set_result({})

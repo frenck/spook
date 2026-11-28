@@ -15,7 +15,8 @@ from ....energy_preferences import (
     async_unknown_energy_entities,
 )
 from ....entity_suggestions import async_describe_unknown_entities
-from ....repairs import AbstractSpookRepair
+from ....recorder_questions import RecorderDidNotAnswer
+from ....repairs import AbstractSpookRepair, CouldNotLook
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -72,7 +73,14 @@ class SpookRepair(AbstractSpookRepair):
         # load after Spook, and this is where it is known to be there.
         await async_follow_energy_settings(self.hass)
 
-        if unknown := await async_unknown_energy_entities(self.hass):
+        try:
+            unknown = await async_unknown_energy_entities(self.hass)
+        except RecorderDidNotAnswer as reason:
+            # Without the statistics, an imported source looks unknown. What
+            # is up stays up rather than getting judged on half the answer.
+            raise CouldNotLook(str(reason)) from reason
+
+        if unknown:
             entities = await async_describe_unknown_entities(self.hass, sorted(unknown))
             self.async_create_issue(
                 issue_id=self.repair,

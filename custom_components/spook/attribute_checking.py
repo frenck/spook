@@ -44,18 +44,18 @@ from homeassistant.const import (
     EntityStateAttribute,
 )
 from homeassistant.core import callback, split_entity_id
-from homeassistant.helpers.recorder import (
-    DATA_INSTANCE,
-    async_migration_in_progress,
-    get_instance,
-    session_scope,
-)
+from homeassistant.helpers.recorder import get_instance, session_scope
 from homeassistant.util import dt as dt_util
 from homeassistant.util.collection import chunked_or_all
 from homeassistant.util.hass_dict import HassKey
 from homeassistant.util.json import json_loads_object
 
 from .const import LOGGER
+from .recorder_questions import (
+    RecorderDidNotAnswer,
+    async_ask_in_time,
+    recorder_can_answer,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator, Mapping
@@ -561,11 +561,14 @@ def async_note_attributes(
 
 async def _async_ask_the_recorder(
     hass: HomeAssistant, previous_answers: dict[str, HistoryAnswer | None]
-) -> None:
+) -> bool:
     """Ask the recorder about these entities, in one go, and remember it.
 
     An entity without a previous answer has its whole history read. One
     with an answer has only what was written since, which is added to it.
+
+    Returns whether it answered. Without an answer, what it said before is
+    no longer the whole history: what was written since has not been read.
     """
     started = dt_util.utcnow()
     since_by_entity = {
@@ -577,19 +580,20 @@ async def _async_ask_the_recorder(
         for entity_id, previous in previous_answers.items()
     }
     try:
-        recorded = await get_instance(hass).async_add_executor_job(
-            _read_recorded_attribute_keys, hass, since_by_entity
+        recorded = await async_ask_in_time(
+            hass, _read_recorded_attribute_keys, hass, since_by_entity
         )
     # A database error is logged by the recorder already; a damaged attribute
-    # set is not, and fails to parse. Either way, without an answer only what
-    # is certain without history gets reported.
-    except SQLAlchemyError, ValueError:
+    # set is not, and fails to parse; a recorder that did not answer in time
+    # says so itself. Either way, without an answer only what is certain
+    # without history gets reported, and nothing is remembered as read.
+    except SQLAlchemyError, ValueError, RecorderDidNotAnswer:
         LOGGER.debug(
             "Spook could not read attribute history for %s",
             ", ".join(previous_answers),
             exc_info=True,
         )
-        return
+        return False
 
     for entity_id, previous in previous_answers.items():
         keys, complete, inactive_only = recorded.get(entity_id, (set(), False, False))
@@ -611,6 +615,8 @@ async def _async_ask_the_recorder(
                 previous, complete=previous.complete and complete, read_until=started
             )
 
+    return True
+
 
 def answers_to_continue(
     answers: Mapping[str, HistoryAnswer | None], now: datetime
@@ -624,11 +630,6 @@ def answers_to_continue(
         entity_id: answer if answer is not None and answer.holds(now) else None
         for entity_id, answer in sorted(answers.items())
     }
-
-
-def recorder_can_answer(hass: HomeAssistant) -> bool:
-    """Return whether there is a recorder to ask, and it is not busy migrating."""
-    return DATA_INSTANCE in hass.data and not async_migration_in_progress(hass)
 
 
 def history_can_tell(state: State, attribute: str) -> bool:
@@ -717,7 +718,12 @@ async def async_unknown_attributes(
         {entity_id: _knowledge(hass, entity_id).answer for entity_id in with_history},
         now,
     ):
-        await _async_ask_the_recorder(hass, to_ask)
+        if not await _async_ask_the_recorder(hass, to_ask):
+            # What it said before stops where it was read, and what the
+            # entity went through since is unread. Going by it as the whole
+            # history would report something the entity may well have had.
+            with_history = set()
+
         now = dt_util.utcnow()
 
     return await _async_findings(hass, suspects, with_history, now)

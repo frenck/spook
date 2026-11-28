@@ -8,9 +8,9 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
-from ....attribute_checking import recorder_can_answer
 from ....const import LOGGER
 from ....dismissals import async_get_dismissals
+from ....recorder_questions import RecorderDidNotAnswer, recorder_can_answer
 from ....repairs import AbstractSpookRepair, CouldNotLook
 from ....statistics_sources import (
     async_settled_orphaned_statistic_ids,
@@ -61,7 +61,12 @@ class SpookRepair(AbstractSpookRepair):
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        settled = await async_settled_orphaned_statistic_ids(self.hass)
+        try:
+            settled = await async_settled_orphaned_statistic_ids(self.hass)
+        except RecorderDidNotAnswer as reason:
+            # Not knowing is not the same as nothing being abandoned, and a
+            # clean round would take down what is up.
+            raise CouldNotLook(str(reason)) from reason
 
         if not settled and async_statistics_still_settling(self.hass):
             # Right after a start everything is still being waited on, so

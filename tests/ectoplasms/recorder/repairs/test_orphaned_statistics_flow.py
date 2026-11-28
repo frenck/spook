@@ -16,7 +16,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
-from custom_components.spook import repairs, statistics_sources
+from custom_components.spook import recorder_questions, repairs, statistics_sources
 from custom_components.spook.statistics_sources import (
     DATA_ABANDONED_SINCE,
     async_settled_orphaned_statistic_ids,
@@ -29,6 +29,8 @@ from custom_components.spook.repairs import (
 from tests.repair_helpers import wire_fix_flow
 
 if TYPE_CHECKING:
+    import asyncio
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er
     import pytest
@@ -106,7 +108,7 @@ def _install_fake_recorder(
         async_clear_statistics=_async_clear_statistics,
     )
     hass.data[DATA_INSTANCE] = instance
-    monkeypatch.setattr(statistics_sources, "get_instance", lambda _hass: instance)
+    monkeypatch.setattr(recorder_questions, "get_instance", lambda _hass: instance)
     monkeypatch.setattr(
         "custom_components.spook.repairs.get_instance", lambda _hass: instance
     )
@@ -348,3 +350,28 @@ async def test_a_registry_entry_arriving_starts_the_wait_over(
     await _flow(hass, "sensor.ghost,sensor.returning").async_step_remove()
 
     assert cleared == [["sensor.ghost"]]
+
+
+async def test_a_recorder_too_slow_to_look_again_deletes_nothing(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the fix stops when the recorder does not answer its look again.
+
+    Clearing without it would delete history on the strength of what the
+    issue said, maybe days ago.
+    """
+    cleared = _install_fake_recorder(hass, monkeypatch, {"sensor.ghost"})
+    await _settle(hass)
+
+    never_answered: asyncio.Future[Any] = hass.loop.create_future()
+    hass.data[DATA_INSTANCE].async_add_executor_job = lambda *_: never_answered
+    monkeypatch.setattr(recorder_questions, "RECORDER_ANSWERS_WITHIN", 0.01)
+
+    result = await _flow(hass, "sensor.ghost").async_step_remove()
+
+    assert not cleared
+    assert result["type"] == "abort"
+    assert result["reason"] == "recorder_did_not_answer"
+
+    never_answered.set_result({})

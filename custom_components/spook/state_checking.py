@@ -42,11 +42,15 @@ from .attribute_checking import (
     NEWS_OVERLAP,
     HistoryAnswer,
     answers_to_continue,
-    recorder_can_answer,
     recorder_metadata_ids,
     suggest_name,
 )
 from .const import LOGGER
+from .recorder_questions import (
+    RecorderDidNotAnswer,
+    async_ask_in_time,
+    recorder_can_answer,
+)
 from .template_extraction import ComparedState
 
 if TYPE_CHECKING:
@@ -420,11 +424,14 @@ def _read_recorded_states(
 
 async def _async_ask_the_recorder(
     hass: HomeAssistant, previous_answers: dict[str, HistoryAnswer | None]
-) -> None:
+) -> bool:
     """Ask the recorder about these entities, in one go, and remember it.
 
     An entity without a previous answer has its whole history read. One
     with an answer has only what was written since, which is added to it.
+
+    Returns whether it answered. Without an answer, what it said before is
+    no longer the whole history: what was written since has not been read.
     """
     started = dt_util.utcnow()
     since_by_entity = {
@@ -436,18 +443,19 @@ async def _async_ask_the_recorder(
         for entity_id, previous in previous_answers.items()
     }
     try:
-        recorded = await get_instance(hass).async_add_executor_job(
-            _read_recorded_states, hass, since_by_entity
+        recorded = await async_ask_in_time(
+            hass, _read_recorded_states, hass, since_by_entity
         )
-    # A database error is logged by the recorder already. Without an answer
-    # only what is certain without history gets reported.
-    except SQLAlchemyError:
+    # A database error is logged by the recorder already, and a recorder that
+    # did not answer in time says so itself. Without an answer only what is
+    # certain without history gets reported, and nothing is remembered as read.
+    except SQLAlchemyError, RecorderDidNotAnswer:
         LOGGER.debug(
             "Spook could not read state history for %s",
             ", ".join(previous_answers),
             exc_info=True,
         )
-        return
+        return False
 
     for entity_id, previous in previous_answers.items():
         states, complete = recorded.get(entity_id, (set(), False))
@@ -465,6 +473,8 @@ async def _async_ask_the_recorder(
             knowledge.answer = replace(
                 previous, complete=previous.complete and complete, read_until=started
             )
+
+    return True
 
 
 @dataclass(slots=True)
@@ -566,7 +576,12 @@ async def async_unknown_states(
         {entity_id: _knowledge(hass, entity_id).answer for entity_id in with_history},
         now,
     ):
-        await _async_ask_the_recorder(hass, to_ask)
+        if not await _async_ask_the_recorder(hass, to_ask):
+            # What it said before stops where it was read, and what the
+            # entity went through since is unread. Going by it as the whole
+            # history would report something the entity may well have had.
+            with_history = set()
+
         now = dt_util.utcnow()
 
     return await _async_findings(hass, suspects, named_by_entity, with_history, now)
