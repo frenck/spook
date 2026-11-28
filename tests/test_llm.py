@@ -5,7 +5,10 @@ from __future__ import annotations
 
 from datetime import timedelta
 import json
+import logging
 from pathlib import Path
+import subprocess
+import sys
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
@@ -22,7 +25,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.llm import LLMContext, ToolInput
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook import draft_checking, llm as spook_llm
+from custom_components.spook import draft_checking, llm as spook_llm, llm_tools
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.repairs import UnusedLabelFixFlow
 from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels import (
@@ -79,6 +82,19 @@ async def _call(
     return await _tools(hass)[name].async_call(
         hass, ToolInput(tool_name=name, tool_args=tool_args), _context(user, language)
     )
+
+
+@pytest.fixture(autouse=True)
+async def spook_tools(hass: HomeAssistant) -> None:
+    """Find Spook's tools, the way setting Spook up does.
+
+    With what is always loaded next to Spook: Home Assistant itself and its
+    repairs, which Spook depends on, and Spook.
+    """
+    assert await async_setup_component(hass, "homeassistant", {})
+    assert await async_setup_component(hass, "repairs", {})
+    hass.config.components.add(DOMAIN)
+    await llm_tools.async_setup_spook_tools(hass)
 
 
 @pytest.fixture
@@ -149,6 +165,188 @@ def test_no_tools_where_core_cannot_hold_them(
         )
         is None
     )
+
+
+async def test_no_tools_are_set_up_where_core_cannot_hold_them(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test setting Spook up on a Home Assistant without the tool parts is quiet."""
+    hass.data.pop(llm_tools.DATA_TOOLS)
+    monkeypatch.setattr(spook_llm, "async_setup_spook_tools", None)
+    monkeypatch.setattr(spook_llm, "async_get_spook_tools", None)
+    entry = MockConfigEntry(domain=DOMAIN)
+
+    with caplog.at_level(logging.DEBUG, logger="custom_components.spook"):
+        await spook_llm.async_setup_tools(hass, entry)
+
+    assert llm_tools.DATA_TOOLS not in hass.data
+    assert not caplog.records
+    assert (
+        spook_llm.async_get_tools(
+            hass, _context(None), spook_llm.LLM_API_HOME_ASSISTANT
+        )
+        is None
+    )
+
+
+def test_nothing_of_the_tools_is_imported_where_core_cannot_hold_them() -> None:
+    """Test Spook imports no tool at all on a Home Assistant before 2026.10.
+
+    In a process of its own, because the modules this one imported already
+    cannot be taken back.
+    """
+    check = (
+        "import sys\n"
+        "from homeassistant.helpers import llm\n"
+        "del llm.ToolResult\n"
+        "import custom_components.spook\n"
+        "import custom_components.spook.llm\n"
+        "print(sorted(name for name in sys.modules\n"
+        "    if name == 'custom_components.spook.llm_tools'\n"
+        "    or name == 'custom_components.spook.issue_tools'\n"
+        "    or '.tools.' in name and name.startswith('custom_components.spook.')))\n"
+    )
+    result = subprocess.run(  # noqa: S603
+        [sys.executable, "-c", check],
+        capture_output=True,
+        check=True,
+        cwd=Path(spook_llm.__file__).parents[2],
+        text=True,
+    )
+
+    assert result.stdout.strip() == "[]"
+    assert not result.stderr
+
+
+def test_no_tools_before_spook_sets_up(hass: HomeAssistant) -> None:
+    """Test nothing is offered until Spook found its tools."""
+    hass.data.pop(llm_tools.DATA_TOOLS)
+
+    assert (
+        spook_llm.async_get_tools(
+            hass, _context(None), spook_llm.LLM_API_HOME_ASSISTANT
+        )
+        is None
+    )
+
+
+# pylint: disable-next=too-few-public-methods
+class _ElsewhereTool(llm_tools.AbstractSpookTool):
+    """A tool about an integration that is not loaded here."""
+
+    domain = "not_loaded_here"
+    name = "spook__elsewhere"
+    description = "Stands in for a tool of an integration that is not set up."
+    annotations = llm_tools.READ_ONLY
+
+    async def _async_run(
+        self, hass: HomeAssistant, args: dict[str, Any], llm_context: LLMContext
+    ) -> ToolResult:
+        """Do nothing, it is never called."""
+        raise NotImplementedError
+
+
+def test_a_tool_waits_for_its_domain(hass: HomeAssistant) -> None:
+    """Test a tool is only offered while the integration it is about is loaded."""
+    hass.data[llm_tools.DATA_TOOLS].append(_ElsewhereTool)
+
+    assert "spook__elsewhere" not in _tools(hass)
+
+    hass.config.components.add("not_loaded_here")
+    assert "spook__elsewhere" in _tools(hass)
+
+
+async def test_a_tool_that_fails_to_import_is_skipped(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test one tool that cannot be imported leaves the others standing."""
+    real_import_module = llm_tools.importlib.import_module
+
+    def _import_module(name: str, package: str | None = None) -> Any:
+        if name.endswith(".tools.fix_ghost"):
+            msg = "Boo! Home Assistant moved something"
+            raise ImportError(msg)
+        return real_import_module(name, package)
+
+    offered_before = set(_tools(hass))
+    monkeypatch.setattr(llm_tools.importlib, "import_module", _import_module)
+
+    await llm_tools.async_setup_spook_tools(hass)
+
+    assert set(_tools(hass)) == offered_before - {"spook__fix_ghost"}
+    assert "ectoplasms.repairs.tools.fix_ghost failed to load" in caplog.text
+
+
+def test_tools_come_in_the_same_order_every_time(hass: HomeAssistant) -> None:
+    """Test the order does not depend on the order the disk lists the files in."""
+    names = list(_tools(hass))
+
+    assert names == sorted(names)
+
+
+async def test_tools_put_away_are_no_longer_offered(hass: HomeAssistant) -> None:
+    """Test the tools of a Spook that unloaded are gone."""
+    put_away = await llm_tools.async_setup_spook_tools(hass)
+    assert _tools(hass)
+
+    put_away()
+    assert (
+        spook_llm.async_get_tools(
+            hass, _context(None), spook_llm.LLM_API_HOME_ASSISTANT
+        )
+        is None
+    )
+
+
+@pytest.mark.usefixtures("automation_issue")
+async def test_a_tool_kept_by_a_conversation_refuses_once_put_away(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a tool handed out before Spook unloaded changes nothing after.
+
+    Home Assistant holds on to the tools for the length of a conversation,
+    so the one it has is called, not one asked for again.
+    """
+    registry = ir.async_get(hass)
+    put_away = await llm_tools.async_setup_spook_tools(hass)
+    kept = _tools(hass)["spook__ignore_ghost"]
+    tool_input = ToolInput(
+        tool_name="spook__ignore_ghost", tool_args={"issue_id": _AUTOMATION_ISSUE}
+    )
+
+    put_away()
+    result = await kept.async_call(hass, tool_input, _context(hass_admin_user))
+
+    assert result.error
+    assert "not available" in result.data["error"]
+    issue = registry.async_get_issue(DOMAIN, _AUTOMATION_ISSUE)
+    assert issue is not None
+    assert issue.dismissed_version is None
+
+    # Back on offer, the same tool does what it is for again.
+    await llm_tools.async_setup_spook_tools(hass)
+    result = await kept.async_call(hass, tool_input, _context(hass_admin_user))
+
+    assert not result.error
+    issue = registry.async_get_issue(DOMAIN, _AUTOMATION_ISSUE)
+    assert issue is not None
+    assert issue.dismissed_version is not None
+
+
+async def test_a_tool_refuses_once_its_domain_is_gone(hass: HomeAssistant) -> None:
+    """Test a tool about an integration that is not loaded does not run."""
+    hass.data[llm_tools.DATA_TOOLS].append(_ElsewhereTool)
+
+    result = await _ElsewhereTool().async_call(
+        hass, ToolInput(tool_name="spook__elsewhere", tool_args={}), _context(None)
+    )
+
+    assert result.error
+    assert "not available" in result.data["error"]
 
 
 def test_every_tool_is_prefixed_and_tagged(hass: HomeAssistant) -> None:
