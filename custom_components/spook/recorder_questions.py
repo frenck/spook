@@ -91,6 +91,12 @@ async def async_ask_in_time[AnswerT](
         # The one before this may have been given up on just now.
         _refuse_while_unanswered(hass)
 
+        # The turn can come with the time as good as gone. Asked then, the
+        # question would be given up on before the recorder got to it.
+        if hass.loop.time() >= answer_by:
+            msg = "The recorder was busy with an earlier question"
+            raise RecorderDidNotAnswer(msg)
+
         # The recorder hands back a future already, which this leaves as it
         # is. Kept under a name, as it is what says when the thread is done.
         question = asyncio.ensure_future(
@@ -132,8 +138,13 @@ async def async_ask_in_time[AnswerT](
 
 
 def _refuse_while_unanswered(hass: HomeAssistant) -> None:
-    """Raise when a question Spook gave up on is still running."""
-    if not hass.data.get(DATA_UNANSWERED_QUESTIONS):
+    """Raise when a question Spook gave up on is still running.
+
+    One that is done counts no more, also when its place in the list has
+    not been cleared yet: that happens a moment after it finishes.
+    """
+    unanswered = hass.data.get(DATA_UNANSWERED_QUESTIONS, ())
+    if all(question.done() for question in unanswered):
         return
 
     LOGGER.debug("Spook did not ask the recorder: an earlier question is still running")

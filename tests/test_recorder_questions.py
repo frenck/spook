@@ -163,6 +163,22 @@ def _answer(*args: Any) -> tuple[Any, ...]:
     return args
 
 
+def _count_what_the_recorder_is_handed(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> list[Callable[..., Any]]:
+    """Return a list that gets every job the moment it goes to the recorder."""
+    handed_over: list[Callable[..., Any]] = []
+    instance = recorder_questions.get_instance(hass)
+    hand_over = instance.async_add_executor_job
+
+    def _counting(job: Callable[..., Any], *args: Any) -> asyncio.Future[Any]:
+        handed_over.append(job)
+        return hand_over(job, *args)
+
+    monkeypatch.setattr(instance, "async_add_executor_job", _counting)
+    return handed_over
+
+
 # The helper on its own.
 
 
@@ -358,7 +374,9 @@ async def test_a_question_failing_as_the_wait_is_called_off_leaves_nothing_behin
 
 @pytest.mark.usefixtures("recorder_mock")
 async def test_questions_asked_at_the_same_time_take_turns(
-    hass: HomeAssistant, held_back: _HeldBack
+    hass: HomeAssistant,
+    held_back: _HeldBack,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test two callers at once never have two questions in the recorder.
 
@@ -366,10 +384,9 @@ async def test_questions_asked_at_the_same_time_take_turns(
     presses its button, and after a reload a round of the setup before can
     still be waiting. Each one at once would be another read thread taken.
     """
-    asked: list[str] = []
+    handed_over = _count_what_the_recorder_is_handed(hass, monkeypatch)
 
     def _second_job() -> str:
-        asked.append("second")
         return "second answer"
 
     first = hass.async_create_task(
@@ -383,47 +400,85 @@ async def test_questions_asked_at_the_same_time_take_turns(
     for _ in range(5):
         await asyncio.sleep(0)
 
-    # Waiting its turn, and not in the recorder yet.
+    # Waiting its turn, and not handed to the recorder yet. Counted where it
+    # is handed over: a job handed over early may not have run by now.
     assert not second.done()
-    assert not asked
+    assert len(handed_over) == 1
 
     held_back.let_go.set()
     assert await first == ("first",)
     assert await second == "second answer"
-    assert asked == ["second"]
+    assert len(handed_over) == 1 + 1
     assert not _unanswered(hass)
 
 
 @pytest.mark.usefixtures("recorder_mock", "answers_soon")
 async def test_a_question_waiting_behind_one_given_up_on_is_not_asked(
-    hass: HomeAssistant, held_back: _HeldBack
+    hass: HomeAssistant,
+    held_back: _HeldBack,
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test a caller waiting its turn does not ask once the one ahead is lost.
 
     Two callers at the same moment, and a recorder that answers neither:
     the one waiting must not take a second thread when its turn comes.
     """
-    asked: list[str] = []
-
-    def _second_job() -> None:
-        asked.append("second")
+    handed_over = _count_what_the_recorder_is_handed(hass, monkeypatch)
 
     first = hass.async_create_task(
         async_ask_in_time(hass, held_back.wrap(_answer)), eager_start=False
     )
     await held_back.async_started(hass)
-    second = hass.async_create_task(
-        async_ask_in_time(hass, _second_job), eager_start=False
-    )
 
-    with pytest.raises(RecorderDidNotAnswer):
+    # The second has all the time it needs, so running out of it while
+    # waiting its turn is not what stops it.
+    monkeypatch.setattr(recorder_questions, "RECORDER_ANSWERS_WITHIN", 30)
+    second = hass.async_create_task(async_ask_in_time(hass, _answer), eager_start=False)
+
+    with pytest.raises(RecorderDidNotAnswer, match="did not answer within"):
         await first
-    with pytest.raises(RecorderDidNotAnswer):
+    with pytest.raises(RecorderDidNotAnswer, match="is still not answered"):
         await second
 
     assert held_back.calls == 1
-    assert not asked
+    assert len(handed_over) == 1
     assert len(_unanswered(hass)) == 1
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_a_question_that_is_done_no_longer_stands_in_the_way(
+    hass: HomeAssistant,
+) -> None:
+    """Test a question given up on stops counting the moment it is done.
+
+    Its place in the list is cleared a moment after it finishes. A caller
+    getting in before that must not be turned away over a question that
+    holds no thread any more.
+    """
+    done: asyncio.Future[None] = hass.loop.create_future()
+    done.set_result(None)
+    hass.data[DATA_UNANSWERED_QUESTIONS] = {done}
+
+    assert await async_ask_in_time(hass, _answer, "asked") == ("asked",)
+
+
+@pytest.mark.usefixtures("recorder_mock")
+async def test_a_turn_that_comes_with_the_time_gone_does_not_ask(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a question whose time is up by its turn is not handed over.
+
+    Handed over then, it would be given up on at once, and count as one the
+    recorder did not answer while the recorder never got to it.
+    """
+    handed_over = _count_what_the_recorder_is_handed(hass, monkeypatch)
+    monkeypatch.setattr(recorder_questions, "RECORDER_ANSWERS_WITHIN", 0)
+
+    with pytest.raises(RecorderDidNotAnswer, match="busy with an earlier question"):
+        await async_ask_in_time(hass, _answer)
+
+    assert not handed_over
+    assert not _unanswered(hass)
 
 
 @pytest.mark.usefixtures("recorder_mock")
