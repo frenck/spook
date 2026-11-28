@@ -32,6 +32,7 @@ from .services import SpookServiceManager
 from .setup_helpers import async_forward_setup_entry
 from .statistics_sources import async_setup_abandoned_statistics_watching
 from .timed_states import async_setup_timed_states
+from .websocket import async_setup_websocket_commands
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -215,6 +216,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # The tools for assistants, found once here and handed out by the llm
     # platform for as long as Spook is loaded.
     await async_setup_tools(hass, entry)
+
+    # The websocket commands, for Spook's own panel and cards. Last, so a
+    # command is only answered once everything it can ask about is in place.
+    entry.async_on_unload(await async_setup_websocket_commands(hass))
 
     # Yay, we didn't got spooked!
     return True
