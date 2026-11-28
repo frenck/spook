@@ -18,6 +18,12 @@ What is read for an automation or a script is kept with that automation or
 script, see `reading_for`. A reload that changes one makes Home Assistant
 drop it for a new one, and what was read from the old configuration goes
 with it. Kept anywhere else, those readings would pile up with every reload.
+
+A reload of Spook itself changes none of that, on purpose. The automations,
+scripts and templates are the same ones, and so is what was read from them,
+so forgetting it all would only send the next round through the very work
+this is here to spare. What goes with a reload of Spook is what belonged to
+the repairs that were taken down, see `forget_reader`.
 """
 
 from __future__ import annotations
@@ -102,6 +108,18 @@ def owned_readings(reader: Any) -> dict[Any, Any] | None:
         # An owner that cannot be held weakly would be kept alive by its own
         # readings, so it is treated as no owner at all.
         return None
+
+
+def forget_reader(reader: Any) -> None:
+    """Forget what ``reader`` read, for every owner.
+
+    For a reader that goes before the automations and scripts it read do,
+    like one that belongs to a repair. A reload of Spook makes new repairs
+    and leaves the automations be, so without this every reload kept another
+    set of readings with each of them, for a reader no one asks any more.
+    """
+    for readers in list(_READINGS.values()):
+        readers.pop(reader, None)
 
 
 def per_configuration[**P, R](func: Callable[P, R]) -> Callable[P, R]:
