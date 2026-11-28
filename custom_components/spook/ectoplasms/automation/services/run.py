@@ -127,9 +127,11 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
             skip_condition=call.data[ATTR_SKIP_CONDITION],
         )
 
-        # The automation hands nothing back for every way a run can end
-        # before its actions are done: conditions not met, an error on the
-        # way, or its mode turning a second run away.
+        # The automation hands nothing back when the actions never got going
+        # or broke off on an error: conditions not met, an error on the way,
+        # or its mode turning a second run away. A run that is stopped from
+        # outside, by turning the automation off, does hand a result back.
+        # So this says it ran, not that it reached its last action.
         return {"ran": result is not None}
 
     def _pick_trigger(
@@ -176,7 +178,8 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
 
         # Several triggers can share an ID, and an ID is all the caller can
         # name them by. The first one that can fire stands in for the lot, so
-        # its position, alias, platform and variables are what the run gets.
+        # its position, alias, platform and variables are what the run starts
+        # from.
         if not (matching := [trigger for trigger in matching if trigger.enabled]):
             raise ServiceValidationError(
                 translation_domain=SPOOK_DOMAIN,

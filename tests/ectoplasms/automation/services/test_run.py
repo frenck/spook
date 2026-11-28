@@ -515,6 +515,44 @@ async def test_an_error_in_the_actions_is_a_run_that_did_not_finish(
     assert await _run(hass) == {FRONT_DOOR: {"ran": False}}
 
 
+async def test_a_run_somebody_stops_halfway_still_ran(hass: HomeAssistant) -> None:
+    """Turned off while it waits: Home Assistant hands a result back all the same.
+
+    So `ran` says the actions got going without an error, not that the last
+    one was reached. The documentation says it that way.
+    """
+    automation = _automation([OPENED])
+    automation["actions"] = [
+        {"wait_for_trigger": [{"trigger": "event", "event_type": "never"}]},
+        REPORT,
+    ]
+    ran = await _setup(hass, automation)
+
+    # Not through `_run`, and not a task Home Assistant waits for: settling
+    # would wait for the very call that is waiting.
+    call = hass.async_create_background_task(
+        hass.services.async_call(
+            "automation",
+            "run",
+            {"entity_id": FRONT_DOOR},
+            blocking=True,
+            return_response=True,
+        ),
+        "automation.run",
+    )
+    await asyncio.sleep(0.1)
+    assert not call.done()
+
+    await hass.services.async_call(
+        "automation", "turn_off", {"entity_id": FRONT_DOOR}, blocking=True
+    )
+
+    async with asyncio.timeout(5):
+        assert await call == {FRONT_DOOR: {"ran": True}}
+
+    assert not ran
+
+
 async def test_variables_reach_the_run(hass: HomeAssistant) -> None:
     """Like those of Core's own action."""
     ran = await _setup(hass, _automation([OPENED]))
