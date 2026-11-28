@@ -185,11 +185,13 @@ Options:
 - `integration` (optional, text, one or a list): Only entities provided by these integrations, like zha or hue. Without a target, picks them from everything. Example: `zha`.
 - `config_entry` (optional, config_entry): Only entities of this integration entry. Without a target, picks them from everything.
 - `device_class` (optional, text, one or a list): Only entities of these device classes, like door or window. Without a target, picks them from everything. Example: `door`.
+- `entity_category` (optional, list, each one of `primary`, `config`, `diagnostic`): Only entities of these categories.
 - `exclude_target` (optional, target): Entities, devices, areas, floors or labels to exclude. Everything in them is excluded, the diagnostic entities too.
 - `exclude_domain` (optional, text, one or a list): Exclude entities of these domains. With nothing in Exclude, this applies to everything the target covers. Example: `sensor`.
 - `exclude_integration` (optional, text, one or a list): Exclude entities provided by these integrations. Example: `template`.
 - `exclude_config_entry` (optional, config_entry): Exclude the entities of this integration entry.
 - `exclude_device_class` (optional, text, one or a list): Exclude entities of these device classes. Example: `battery`.
+- `exclude_entity_category` (optional, list, each one of `primary`, `config`, `diagnostic`): Exclude entities of these categories.
 - `attribute` (optional, text): Follow this attribute instead of the state. Example: `brightness`.
 - `from` (optional, text, one or a list): Only changes coming from one of these states. Example: `off`.
 - `not_from` (optional, text, one or a list): Only changes not coming from one of these states.

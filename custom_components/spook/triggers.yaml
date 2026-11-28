@@ -62,6 +62,17 @@ state_changed:
       selector:
         text:
           multiple: true
+    entity_category: &entity_category_definition
+      required: false
+      selector:
+        select:
+          multiple: true
+          mode: "dropdown"
+          translation_key: entity_category
+          options:
+            - primary
+            - config
+            - diagnostic
     exclude_target:
       required: false
       selector:
@@ -88,6 +99,7 @@ state_changed:
       selector:
         text:
           multiple: true
+    exclude_entity_category: *entity_category_definition
     attribute:
       required: false
       example: brightness
