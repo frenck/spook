@@ -1745,38 +1745,32 @@ async function open(page: Page, path: string, language: string) {
 test.beforeEach(async ({ context }, testInfo) => {
   const { language, theme } = testInfo.project.metadata;
   const { tokens } = readState();
+  const shot = shots.find((candidate) => candidate.name === testInfo.title);
 
   // What the frontend would have stored after logging in and picking a
-  // theme and a language in the profile.
+  // theme and a language in the profile. One script for all of it: the
+  // order Playwright runs several in is not defined.
   await context.addInitScript(
-    ({ tokens, language, dark }) => {
+    ({ tokens, language, name, dark }) => {
       localStorage.setItem("hassTokens", JSON.stringify(tokens));
       localStorage.setItem(
         "selectedTheme",
-        JSON.stringify({ theme: "default", dark }),
+        JSON.stringify({ theme: name, dark }),
       );
       localStorage.setItem("selectedLanguage", JSON.stringify(language));
     },
-    { tokens, language, dark: theme === "dark" },
+    {
+      tokens,
+      language,
+      name: shot?.theme ?? "default",
+      dark: theme === "dark",
+    },
   );
 });
 
 for (const shot of shots) {
   test(shot.name, async ({ page }, testInfo) => {
-    const { language, theme } = testInfo.project.metadata;
-
-    // Put on after the one every shot gets, so this one wins.
-    if (shot.theme) {
-      await page.addInitScript(
-        ({ name, dark }) => {
-          localStorage.setItem(
-            "selectedTheme",
-            JSON.stringify({ theme: name, dark }),
-          );
-        },
-        { name: shot.theme, dark: theme === "dark" },
-      );
-    }
+    const { language } = testInfo.project.metadata;
 
     if (shot.viewport) {
       await page.setViewportSize(shot.viewport);

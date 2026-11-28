@@ -6,7 +6,12 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.frontend import DEFAULT_THEME
-from homeassistant.const import EVENT_THEMES_UPDATED
+from homeassistant.const import (
+    ATTR_DOMAIN,
+    ATTR_SERVICE,
+    EVENT_CALL_SERVICE,
+    EVENT_THEMES_UPDATED,
+)
 from homeassistant.core import callback
 from homeassistant.util.yaml import load_yaml_dict
 
@@ -14,11 +19,14 @@ from ..const import LOGGER
 from ..core_compat import (
     async_get_default_themes,
     async_get_themes,
+    async_keep_stored_default_themes,
     async_load_stored_default_themes,
     async_set_default_themes,
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
 
 # Each file here is written the way a file in somebody's own `themes` folder
@@ -36,6 +44,15 @@ def load_themes() -> dict[str, dict[str, Any]]:
     return themes
 
 
+@callback
+def _is_set_theme(event_data: Mapping[str, Any]) -> bool:
+    """Return if a call is somebody picking the default theme."""
+    return (
+        event_data.get(ATTR_DOMAIN) == "frontend"
+        and event_data.get(ATTR_SERVICE) == "set_theme"
+    )
+
+
 async def async_setup_themes(hass: HomeAssistant) -> CALLBACK_TYPE:
     """Put Spook's themes in the theme picker, and keep them there.
 
@@ -45,8 +62,30 @@ async def async_setup_themes(hass: HomeAssistant) -> CALLBACK_TYPE:
         LOGGER.debug("No frontend to bring themes to, leaving them out")
         return lambda: None
 
-    themes = await hass.async_add_executor_job(load_themes)
-    stored_light, stored_dark = await async_load_stored_default_themes(hass)
+    # A default picked while the files and the store are read is newer than
+    # what the store has, and the store is no guide then. Even a pick of the
+    # frontend's own look, which does not change what it holds right now.
+    picked = False
+
+    @callback
+    def _async_note_pick(_: Event) -> None:
+        """Note that somebody picked a default."""
+        nonlocal picked
+        picked = True
+
+    stop_noting = hass.bus.async_listen(
+        EVENT_CALL_SERVICE,
+        _async_note_pick,
+        event_filter=_is_set_theme,
+    )
+    try:
+        themes = await hass.async_add_executor_job(load_themes)
+        stored_light, stored_dark = await async_load_stored_default_themes(hass)
+    finally:
+        stop_noting()
+
+    if picked:
+        stored_light = stored_dark = None
 
     delivery = _ThemeDelivery(hass, themes)
     return delivery.async_start(stored_light, stored_dark)
@@ -165,6 +204,8 @@ class _ThemeDelivery:
             del themes[name]
 
         light, dark = async_get_default_themes(self._hass)
+        if light in taken or dark in taken:
+            async_keep_stored_default_themes(self._hass, light, dark)
         async_set_default_themes(
             self._hass,
             DEFAULT_THEME if light in taken else light,

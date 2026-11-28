@@ -58,8 +58,9 @@ Spook:
   modes:
     light:
       ha-color-fill-primary-loud-resting: "#08a6b8"
-      ha-color-fill-primary-loud-hover: "#0e8393"
-      ha-color-fill-primary-loud-active: "#156875"
+      # Lighter on hover, not darker: ink text stays readable on it.
+      ha-color-fill-primary-loud-hover: "#06d3e0"
+      ha-color-fill-primary-loud-active: "#0a99aa"
       ha-color-focus: "#06d3e0"
 
       primary-color: "#156875"
@@ -136,4 +137,4 @@ Spook:
       codemirror-keyword: "#60a5fa"
       codemirror-def: "#60a5fa"
       codemirror-operator: "#8a929d"
-      codemirror-comment: "#69717c"
+      codemirror-comment: "#8a929d"

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
+from unittest.mock import patch
 
 import pytest
 
@@ -17,6 +18,7 @@ from homeassistant.const import EVENT_THEMES_UPDATED
 from homeassistant.core import callback
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook import themes as spook_themes
 from custom_components.spook.themes import THEMES_PATH, async_setup_themes, load_themes
 
 if TYPE_CHECKING:
@@ -272,6 +274,58 @@ async def test_loaded_again_brings_the_default_back(
 
     await async_setup_themes(hass)
     assert _defaults(hass) == ("Spook", None)
+
+
+async def test_unloaded_before_the_frontend_stored_the_pick(
+    hass: HomeAssistant, tmp_path: Path
+) -> None:
+    """Spook gone within the minute the frontend waits to store a pick.
+
+    The save still to come reads the defaults the frontend holds when it
+    runs, and those are reset by then. The pick has to be what is stored.
+    """
+    await _async_setup_frontend(hass, tmp_path)
+    stop = await async_setup_themes(hass)
+    await _async_set_theme(hass, name="Spook", name_dark="Spook")
+
+    stop()
+    assert _defaults(hass) == ("default", None)
+
+    await async_setup_themes(hass)
+    assert _defaults(hass) == ("Spook", "Spook")
+
+
+async def test_default_picked_while_setting_up_stays(
+    hass: HomeAssistant, hass_storage: dict[str, Any], tmp_path: Path
+) -> None:
+    """A default picked while Spook reads the store is newer than the store.
+
+    Even one of the frontend's own look, which is what it holds already.
+    """
+    hass_storage["frontend_theme"] = {
+        "version": 1,
+        "key": "frontend_theme",
+        "data": {DATA_DEFAULT_THEME: "Spook", DATA_DEFAULT_DARK_THEME: "Spook"},
+    }
+    await _async_setup_frontend(hass, tmp_path)
+    load_stored = spook_themes.async_load_stored_default_themes
+
+    async def _async_load_while_somebody_picks(
+        hass: HomeAssistant,
+    ) -> tuple[str | None, str | None]:
+        """Read the store, with a pick of the frontend's own look meanwhile."""
+        stored = await load_stored(hass)
+        await _async_set_theme(hass, name="none", name_dark="none")
+        return stored
+
+    with patch.object(
+        spook_themes,
+        "async_load_stored_default_themes",
+        _async_load_while_somebody_picks,
+    ):
+        await async_setup_themes(hass)
+
+    assert _defaults(hass) == ("default", None)
 
 
 async def test_without_a_frontend(hass: HomeAssistant) -> None:

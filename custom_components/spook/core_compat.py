@@ -244,6 +244,9 @@ def async_get_raw_blueprint_inputs(entity: Any) -> dict[str, Any] | None:
 # against Home Assistant's development branch notices when this moves.
 # Can go once the frontend integration lets an integration register a theme.
 
+# The frontend waits this long before it stores a picked default.
+_THEMES_SAVE_DELAY = 60
+
 
 @callback
 def async_get_themes(hass: HomeAssistant) -> dict[str, Any] | None:
@@ -279,6 +282,27 @@ def async_set_default_themes(hass: HomeAssistant, light: str, dark: str | None) 
     """
     hass.data[DATA_DEFAULT_THEME] = light
     hass.data[DATA_DEFAULT_DARK_THEME] = dark
+
+
+@callback
+def async_keep_stored_default_themes(
+    hass: HomeAssistant, light: str, dark: str | None
+) -> None:
+    """Have the frontend store these defaults, whatever it holds by then.
+
+    The frontend stores a picked default a minute later, reading the ones it
+    holds in memory when it does. Spook resets those on its way out, and
+    a save still to come would store the reset instead of the pick. This
+    replaces that save with one of the pick. One picked after it replaces
+    this one in turn.
+    """
+    if (store := hass.data.get(DATA_THEMES_STORE)) is None:
+        return
+
+    store.async_delay_save(
+        lambda: {DATA_DEFAULT_THEME: light, DATA_DEFAULT_DARK_THEME: dark},
+        _THEMES_SAVE_DELAY,
+    )
 
 
 async def async_load_stored_default_themes(
