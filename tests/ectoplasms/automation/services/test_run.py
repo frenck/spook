@@ -448,6 +448,32 @@ async def test_trigger_data_reaches_the_templates(hass: HomeAssistant) -> None:
     assert ran[0].data["id"] == "door_opened"
 
 
+@pytest.mark.parametrize("key", ["id", "idx", "alias", "platform"])
+async def test_trigger_data_cannot_say_which_trigger_it_was(
+    hass: HomeAssistant, key: str
+) -> None:
+    """Naming one trigger and passing off as another runs a branch nobody picked."""
+    ran = await _setup(hass, _automation([OPENED, CLOSED]))
+
+    with pytest.raises(
+        ServiceValidationError, match=escape(f"Trigger data cannot set {key}")
+    ):
+        await _run(hass, trigger="door_closed", trigger_data={key: "door_opened"})
+
+    assert not ran
+
+
+async def test_an_error_in_the_actions_is_a_run_that_did_not_finish(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant logs it and hands nothing back; the call itself is fine."""
+    automation = _automation([OPENED])
+    automation["actions"] = [{"action": "nothing.at_all"}]
+    await _setup(hass, automation)
+
+    assert await _run(hass) == {FRONT_DOOR: {"ran": False}}
+
+
 async def test_variables_reach_the_run(hass: HomeAssistant) -> None:
     """Like those of Core's own action."""
     ran = await _setup(hass, _automation([OPENED]))

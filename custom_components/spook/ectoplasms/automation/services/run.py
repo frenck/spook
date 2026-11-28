@@ -34,6 +34,11 @@ CONF_VARIABLES = "variables"
 # trigger puts something like "state of binary_sensor.front_door".
 DESCRIPTION = "action automation.run"
 
+# What says which trigger it was. Those come from the trigger the automation
+# is run by, never from the caller: naming one trigger and passing the ID of
+# another would run a branch nobody picked.
+TRIGGER_IDENTITY = frozenset({CONF_ID, "idx", CONF_ALIAS, CONF_PLATFORM})
+
 # The same as Home Assistant validates `enabled:` on a trigger with.
 ENABLED_SCHEMA = vol.Any(cv.boolean, cv.template)
 
@@ -83,6 +88,13 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
         call: ServiceCall,
     ) -> ServiceResponse:
         """Handle the service call."""
+        if claimed := TRIGGER_IDENTITY.intersection(call.data[ATTR_TRIGGER_DATA]):
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="automation_run_trigger_data_identity",
+                translation_placeholders={"keys": ", ".join(sorted(claimed))},
+            )
+
         trigger = self._pick_trigger(entity, call.data.get(ATTR_TRIGGER))
 
         run_variables: dict[str, Any] = {
@@ -158,8 +170,9 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
                 translation_placeholders=placeholders,
             )
 
-        # Several triggers can share an ID. They tell the actions the same
-        # thing, so the first one that can fire is as good as any.
+        # Several triggers can share an ID, and an ID is all the caller can
+        # name them by. The first one that can fire stands in for the lot, so
+        # its position, alias, platform and variables are what the run gets.
         if not (matching := [trigger for trigger in matching if trigger.enabled]):
             raise ServiceValidationError(
                 translation_domain=SPOOK_DOMAIN,
