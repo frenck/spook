@@ -10,6 +10,7 @@ from pytest_homeassistant.syrupy import HomeAssistantSnapshotExtension
 from homeassistant import config_entries, loader, setup
 from homeassistant.helpers import translation
 
+from custom_components.spook import static_files
 from custom_components.spook.const import DOMAIN
 
 if TYPE_CHECKING:
@@ -31,6 +32,16 @@ def allow_unreleased_spook(monkeypatch: pytest.MonkeyPatch) -> None:
 def auto_enable_custom_integrations(enable_custom_integrations: None) -> None:
     """Enable custom integrations in Home Assistant tests."""
     _ = enable_custom_integrations
+
+
+@pytest.fixture(autouse=True)
+def no_built_frontends(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Keep the frontends built in this checkout out of the tests.
+
+    Whether somebody ran `npm run build` before the tests must not change
+    what they find. A test about serving them builds its own.
+    """
+    monkeypatch.setattr(static_files, "STATIC_PATH", tmp_path / "static")
 
 
 @pytest.fixture

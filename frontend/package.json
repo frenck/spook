@@ -1,0 +1,35 @@
+{
+  "name": "spook-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Spook's frontends: the dashboard bundle and the panel, and what they share.",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "shared",
+    "dashboard",
+    "panel"
+  ],
+  "scripts": {
+    "lint": "eslint . && prettier --check .",
+    "format": "eslint --fix . && prettier --write .",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "vitest run",
+    "build": "npm run build --workspaces --if-present",
+    "build:release": "npm run build:release --workspaces --if-present",
+    "size": "node scripts/check-size.ts",
+    "home-assistant": "sh scripts/home-assistant.sh"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "26.6.11",
+    "eslint": "10.16.0",
+    "eslint-plugin-vue": "10.12.1",
+    "happy-dom": "21.0.4",
+    "prettier": "3.10.1",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.74.0",
+    "vite": "8.4.0",
+    "vitest": "5.1.2"
+  }
+}

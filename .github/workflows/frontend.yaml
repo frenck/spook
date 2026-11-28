@@ -1,0 +1,68 @@
+---
+name: Frontend
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend.yaml"
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Lint, test and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: 🏗 Set up Node.js
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version-file: "frontend/.nvmrc"
+
+      - name: 🏗 Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: 🎨 Lint
+        run: npm run lint
+
+      - name: 🔍 Type check
+        run: npm run typecheck
+
+      - name: 🧪 Test
+        run: npm run test
+
+      - name: 🚀 Build
+        run: npm run build
+
+      - name: ⚖️ Check the size of the dashboard bundle
+        run: npm run size
+
+      # The release workflow runs build:release and zips what it leaves in the
+      # integration. It cannot be tried without a release, so this checks it
+      # leaves what Home Assistant is going to be told to load.
+      - name: 📦 Check what a release ships
+        run: |
+          rm -rf ../custom_components/spook/static
+          npm run build:release
+          test -f ../custom_components/spook/static/dashboard/spook.js

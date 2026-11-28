@@ -1,0 +1,14 @@
+{
+  "name": "@spook/shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "What Spook's dashboard bundle and panel share: types, the websocket client, translations.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

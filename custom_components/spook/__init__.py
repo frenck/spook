@@ -30,6 +30,7 @@ from .repairs import SpookRepairManager
 from .run_history import async_setup_run_history
 from .services import SpookServiceManager
 from .setup_helpers import async_forward_setup_entry
+from .static_files import async_setup_static_files
 from .statistics_sources import async_setup_abandoned_statistics_watching
 from .timed_states import async_setup_timed_states
 from .websocket import async_setup_websocket_commands
@@ -220,6 +221,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # The websocket commands, for Spook's own panel and cards. Last, so a
     # command is only answered once everything it can ask about is in place.
     entry.async_on_unload(await async_setup_websocket_commands(hass))
+
+    # The files of Spook's frontends, for its cards and its panel to load.
+    await async_setup_static_files(hass)
 
     # Yay, we didn't got spooked!
     return True
