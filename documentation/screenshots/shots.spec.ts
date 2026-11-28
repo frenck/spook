@@ -43,6 +43,9 @@ interface Shot {
   // A window of another size, for a page that stretches out on a wide
   // screen and would end up with tiny text in a picture on the site.
   viewport?: { width: number; height: number };
+  // A theme to wear instead of Home Assistant's own, by its name in the
+  // theme picker. In light and in dark, like every shot.
+  theme?: string;
 }
 
 // How much of the page around a target stays in the picture, by default.
@@ -1630,6 +1633,17 @@ const shots: Shot[] = [
         .first(),
     cutout: true,
   },
+  {
+    // The Spook theme, on a dashboard and in the automation editor.
+    name: "theme-spook-dashboard",
+    path: "/lovelace/0",
+    theme: "Spook",
+  },
+  {
+    name: "theme-spook-automations",
+    path: "/config/automation/dashboard",
+    theme: "Spook",
+  },
 ];
 
 /** The part of the window around a target, to crop the picture to. */
@@ -1731,19 +1745,26 @@ async function open(page: Page, path: string, language: string) {
 test.beforeEach(async ({ context }, testInfo) => {
   const { language, theme } = testInfo.project.metadata;
   const { tokens } = readState();
+  const shot = shots.find((candidate) => candidate.name === testInfo.title);
 
   // What the frontend would have stored after logging in and picking a
-  // theme and a language in the profile.
+  // theme and a language in the profile. One script for all of it: the
+  // order Playwright runs several in is not defined.
   await context.addInitScript(
-    ({ tokens, language, dark }) => {
+    ({ tokens, language, name, dark }) => {
       localStorage.setItem("hassTokens", JSON.stringify(tokens));
       localStorage.setItem(
         "selectedTheme",
-        JSON.stringify({ theme: "default", dark }),
+        JSON.stringify({ theme: name, dark }),
       );
       localStorage.setItem("selectedLanguage", JSON.stringify(language));
     },
-    { tokens, language, dark: theme === "dark" },
+    {
+      tokens,
+      language,
+      name: shot?.theme ?? "default",
+      dark: theme === "dark",
+    },
   );
 });
 
@@ -1756,6 +1777,15 @@ for (const shot of shots) {
     }
     const path = typeof shot.path === "function" ? shot.path() : shot.path;
     await open(page, path, language);
+    if (shot.theme) {
+      // Home Assistant puts the theme on after the page is drawn.
+      await page.waitForFunction(
+        (name) =>
+          (document.querySelector("home-assistant") as any)?.hass?.themes
+            ?.theme === name,
+        shot.theme,
+      );
+    }
     await shot.prepare?.(page, language);
 
     // No hover effect on whatever the mouse last touched, and a moment for

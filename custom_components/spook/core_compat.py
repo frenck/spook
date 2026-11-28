@@ -6,6 +6,13 @@ from collections.abc import Callable, Mapping
 from typing import TYPE_CHECKING, Any, cast
 
 from homeassistant import loader
+from homeassistant.components.frontend import (
+    DATA_DEFAULT_DARK_THEME,
+    DATA_DEFAULT_THEME,
+    DATA_THEMES,
+    DATA_THEMES_STORE,
+    DEFAULT_THEME,
+)
 from homeassistant.const import MAJOR_VERSION, MINOR_VERSION
 from homeassistant.core import callback
 from homeassistant.helpers import target as target_helpers
@@ -224,3 +231,94 @@ def async_get_raw_blueprint_inputs(entity: Any) -> dict[str, Any] | None:
             return cast("dict[str, Any] | None", getattr(entity, name))
 
     return None
+
+
+# The frontend's themes.
+#
+# Home Assistant has no way for an integration to add a theme: themes come
+# from YAML, into one dict the frontend integration keeps for itself. Spook
+# brings its own themes anyway, by writing into that dict. These functions
+# are the only place Spook touches it, or the defaults next to it, and none
+# of the names they use are in the frontend's `__all__`. The theme tests run
+# a real `frontend.reload_themes` and a real restart, so the daily run
+# against Home Assistant's development branch notices when this moves.
+# Can go once the frontend integration lets an integration register a theme.
+
+# The frontend waits this long before it stores a picked default.
+_THEMES_SAVE_DELAY = 60
+
+
+@callback
+def async_get_themes(hass: HomeAssistant) -> dict[str, Any] | None:
+    """Return the frontend's themes, by name, to read and to add to.
+
+    None when the frontend is not set up, so there is nowhere to add one.
+    The frontend hands this very dict to browsers, so a theme added to it
+    is in the theme picker the next time they ask for the list.
+    """
+    return hass.data.get(DATA_THEMES)
+
+
+@callback
+def async_get_default_themes(hass: HomeAssistant) -> tuple[str, str | None]:
+    """Return the default light and dark theme, as the frontend holds them now.
+
+    The light one is `default` for the frontend's own look. The dark one is
+    None when there is none, and the light one is used in dark mode too.
+    """
+    return (
+        hass.data.get(DATA_DEFAULT_THEME, DEFAULT_THEME),
+        hass.data.get(DATA_DEFAULT_DARK_THEME),
+    )
+
+
+@callback
+def async_set_default_themes(hass: HomeAssistant, light: str, dark: str | None) -> None:
+    """Set the default light and dark theme, in memory only.
+
+    Not stored: what the frontend stored is what somebody picked, and that
+    is exactly what Spook puts back here. Browsers hear of it with the next
+    `themes_updated` event, which is the caller's to fire.
+    """
+    hass.data[DATA_DEFAULT_THEME] = light
+    hass.data[DATA_DEFAULT_DARK_THEME] = dark
+
+
+@callback
+def async_keep_stored_default_themes(
+    hass: HomeAssistant, light: str, dark: str | None
+) -> None:
+    """Have the frontend store these defaults, whatever it holds by then.
+
+    The frontend stores a picked default a minute later, reading the ones it
+    holds in memory when it does. Spook resets those on its way out, and
+    a save still to come would store the reset instead of the pick. This
+    replaces that save with one of the pick. One picked after it replaces
+    this one in turn.
+    """
+    if (store := hass.data.get(DATA_THEMES_STORE)) is None:
+        return
+
+    store.async_delay_save(
+        lambda: {DATA_DEFAULT_THEME: light, DATA_DEFAULT_DARK_THEME: dark},
+        _THEMES_SAVE_DELAY,
+    )
+
+
+async def async_load_stored_default_themes(
+    hass: HomeAssistant,
+) -> tuple[str | None, str | None]:
+    """Return the default light and dark theme the frontend has stored.
+
+    At startup the frontend drops a stored default it does not know yet,
+    in memory, and keeps the stored one as it was. A theme Spook brings is
+    not known yet then, so this is where the pick is still to be found.
+    """
+    if (store := hass.data.get(DATA_THEMES_STORE)) is None:
+        return None, None
+
+    stored = await store.async_load()
+    if not isinstance(stored, dict):
+        return None, None
+
+    return stored.get(DATA_DEFAULT_THEME), stored.get(DATA_DEFAULT_DARK_THEME)
