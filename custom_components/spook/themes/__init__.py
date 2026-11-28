@@ -9,6 +9,7 @@ from homeassistant.components.frontend import DEFAULT_THEME
 from homeassistant.const import (
     ATTR_DOMAIN,
     ATTR_SERVICE,
+    ATTR_SERVICE_DATA,
     EVENT_CALL_SERVICE,
     EVENT_THEMES_UPDATED,
 )
@@ -63,15 +64,15 @@ async def async_setup_themes(hass: HomeAssistant) -> CALLBACK_TYPE:
         return lambda: None
 
     # A default picked while the files and the store are read is newer than
-    # what the store has, and the store is no guide then. Even a pick of the
-    # frontend's own look, which does not change what it holds right now.
-    picked = False
+    # what the store has, and the store is no guide for it then. Even a pick
+    # of the frontend's own look, which does not change what it holds right
+    # now. A pick names one mode or both, and only those are newer.
+    picked: set[str] = set()
 
     @callback
-    def _async_note_pick(_: Event) -> None:
-        """Note that somebody picked a default."""
-        nonlocal picked
-        picked = True
+    def _async_note_pick(event: Event) -> None:
+        """Note which defaults somebody picked."""
+        picked.update(event.data.get(ATTR_SERVICE_DATA, {}))
 
     stop_noting = hass.bus.async_listen(
         EVENT_CALL_SERVICE,
@@ -84,8 +85,10 @@ async def async_setup_themes(hass: HomeAssistant) -> CALLBACK_TYPE:
     finally:
         stop_noting()
 
-    if picked:
-        stored_light = stored_dark = None
+    if "name" in picked:
+        stored_light = None
+    if "name_dark" in picked:
+        stored_dark = None
 
     delivery = _ThemeDelivery(hass, themes)
     return delivery.async_start(stored_light, stored_dark)

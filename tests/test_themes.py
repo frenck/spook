@@ -295,12 +295,25 @@ async def test_unloaded_before_the_frontend_stored_the_pick(
     assert _defaults(hass) == ("Spook", "Spook")
 
 
+@pytest.mark.parametrize(
+    ("pick", "expected"),
+    [
+        ({"name": "none"}, ("default", "Spook")),
+        ({"name_dark": "none"}, ("Spook", None)),
+    ],
+    ids=["light", "dark"],
+)
 async def test_default_picked_while_setting_up_stays(
-    hass: HomeAssistant, hass_storage: dict[str, Any], tmp_path: Path
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+    tmp_path: Path,
+    pick: dict[str, str],
+    expected: tuple[str, str | None],
 ) -> None:
     """A default picked while Spook reads the store is newer than the store.
 
-    Even one of the frontend's own look, which is what it holds already.
+    Even one of the frontend's own look, which is what it holds already. A
+    pick names one mode, and the stored default of the other is put back.
     """
     hass_storage["frontend_theme"] = {
         "version": 1,
@@ -315,7 +328,7 @@ async def test_default_picked_while_setting_up_stays(
     ) -> tuple[str | None, str | None]:
         """Read the store, with a pick of the frontend's own look meanwhile."""
         stored = await load_stored(hass)
-        await _async_set_theme(hass, name="none", name_dark="none")
+        await _async_set_theme(hass, **pick)
         return stored
 
     with patch.object(
@@ -325,7 +338,7 @@ async def test_default_picked_while_setting_up_stays(
     ):
         await async_setup_themes(hass)
 
-    assert _defaults(hass) == ("default", None)
+    assert _defaults(hass) == expected
 
 
 async def test_without_a_frontend(hass: HomeAssistant) -> None:

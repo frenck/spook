@@ -1770,7 +1770,7 @@ test.beforeEach(async ({ context }, testInfo) => {
 
 for (const shot of shots) {
   test(shot.name, async ({ page }, testInfo) => {
-    const { language } = testInfo.project.metadata;
+    const { language, theme } = testInfo.project.metadata;
 
     if (shot.viewport) {
       await page.setViewportSize(shot.viewport);
