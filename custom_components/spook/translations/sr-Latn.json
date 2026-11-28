@@ -456,6 +456,9 @@
         },
         "schedule_blocks_invalid": {
             "message": "Ovi vremenski blokovi ne odgovaraju entitetu {entity_id}: {error}. Ništa nije promenjeno."
+        },
+        "device_disabled_by_integration_entry": {
+            "message": "Uređaj {device_id} ne može da se omogući dok je stavka integracije {entry} onemogućena. Umesto toga, omogućite tu stavku."
         }
     },
     "issues": {
@@ -669,7 +672,7 @@
                 "step": {
                     "init": {
                         "title": "Prazna prostorija: {area}",
-                        "description": "Prostorija {area} nema uređaje, nema entitete i nijedna automatizacija ili skripta je ne ciljaju.\n\nUklonite je, ili je zadržite i Spook će prestati da ukazuje na nju.\n\nSpook 👻 Vaš pomoćnik.",
+                        "description": "Prostorija {area} nema uređaja ni entiteta, i ništa je ne pominje.\n\nUklonite je ili je zadržite i Spook je više neće prijavljivati.\n\nSpook 👻 Vaš pomoćnik.",
                         "menu_options": {
                             "remove": "Ukloni ovu praznu prostoriju",
                             "ignore": "Zadrži, prestani da me obaveštavaš",
@@ -690,7 +693,7 @@
                 "step": {
                     "init": {
                         "title": "Prazan sprat: {floor}",
-                        "description": "Sprat {floor} nema prostorije i nijedna automatizacija ili skripta ga ne ciljaju.\n\nUklonite ga, ili ga zadržite i Spook će prestati da ukazuje na njega.\n\nSpook 👻 Vaš pomoćnik.",
+                        "description": "Sprat {floor} nema prostorija i ništa ga ne pominje.\n\nUklonite ga ili ga zadržite i Spook ga više neće prijavljivati.\n\nSpook 👻 Vaš pomoćnik.",
                         "menu_options": {
                             "remove": "Ukloni ovaj prazan sprat",
                             "ignore": "Zadrži, prestani da me obaveštavaš",
@@ -736,7 +739,7 @@
                             "manage": "Dozvoli mi da sam popravim"
                         },
                         "title": "Neiskorišćena oznaka: {label}",
-                        "description": "Oznaka {label} nije primenjena ni na jedan entitet, uređaj ili prostoriju, i nijedna automatizacija ili skripta je ne koristi.\n\nUklonite je ili je zadržite, a Spook će prestati da je prijavljuje.\n\nSpook 👻 Vaš pomoćnik."
+                        "description": "Oznaka {label} nije dodeljena nijednom entitetu, uređaju niti prostoriji, i ništa je ne pominje.\n\nUklonite je ili je zadržite, a Spook je više neće prijavljivati.\n\nSpook 👻 Vaš pomoćnik."
                     }
                 },
                 "abort": {
@@ -1008,6 +1011,10 @@
         "template_unknown_attribute_references_yaml": {
             "description": "Spook je pronašao duha u vašim šablonskim entitetima👻\n\nDok je lebdeo okolo, Spook je naišao na sledeći šablonski entitet:\n\n{name} (`{entity_id}`)\n\nOvaj šablonski entitet koristi sledeće atribute koje njegovi entiteti nemaju. Ni u ovom trenutku, niti kao nešto što taj tip entiteta uopšte nudi, a nema ih nigde ni u onome što rekorder pamti o njima:\n\n{attributes}\n\n\n\nŠablon koji očita atribut koji se nikada ne pojavljuje ne dobija ništa, a pokretač ili uslov koji ga čekaju se nikada ne aktiviraju niti prolaze. Nijedan od njih vam to ne signalizira.\n\n\nOvaj šablonski entitet je podešen u vašoj YAML konfiguraciji. Da biste ovo ispravili, uredite ga u odeljku`template:` vaše konfiguracije, koristite atribut koji entitet ima i ponovo učitajte svoje šablonske entitete.\n\nSpook 👻 Vaš pomoćnik.",
             "title": "Nepoznati atributi u šablonskom entitetu: {name}"
+        },
+        "lovelace_public_www_files": {
+            "title": "Datoteke koje svako može da preuzme: {folder}",
+            "description": "Spook je pronašao duha u vašem `www`direktorijumu 👻\n\nHome Assistant sve iz `www`direktorijuma čini javno dostupnim na putanji `/local/`, bez potrebe za prijavljivanjem. Direktorijum {folder} sadrži sledeći broj datoteka ({count}) koje nisu kôd kontrolne table i ne koristi ih nijedna kontrolna tabla niti tema:\n\n{files}\n\n\n\nDo ovoga obično dolazi kada neka integracija ovde čuva datoteke kako bi ih prikazala na kontrolnoj tabli, poput snimaka sa kamera ili pregleda 3D štampe. Svako ko ima pristup vašem Home Assistant-u i zna ili pogodi naziv datoteke, može da je preuzme.\n\nDa biste ovo rešili, proverite koja integracija upisuje datoteke u ovaj direktorijum i da li može da ih čuva na drugoj lokaciji. Ako vam ne smeta da ove datoteke budu javno dostupne, ignorišite ovu stavku i Spook više neće prijavljivati ovaj direktorijum.\n\nSpook 👻 Vaš pomoćnik."
         }
     },
     "services": {
