@@ -14,8 +14,10 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.energy.data import async_get_manager
 from homeassistant.components.energy.validate import async_validate
 from homeassistant.helpers.dispatcher import async_dispatcher_send
+from homeassistant.helpers.recorder import async_migration_in_progress
 from homeassistant.util.hass_dict import HassKey
 
+from .recorder_questions import RecorderDidNotAnswer
 from .statistics_sources import async_known_to_home_assistant
 
 if TYPE_CHECKING:
@@ -125,7 +127,18 @@ async def _async_entity_settings(hass: HomeAssistant) -> set[str]:
 
 
 async def async_unknown_energy_entities(hass: HomeAssistant) -> set[str]:
-    """Return what the energy settings name that Home Assistant does not know."""
+    """Return what the energy settings name that Home Assistant does not know.
+
+    Raises `RecorderDidNotAnswer` when the recorder does not answer in time,
+    or is migrating its database and was not asked at all.
+    """
+    if async_migration_in_progress(hass):
+        # Home Assistant's validation asks the recorder by itself, and there
+        # is no time limit to put on that from here. Asked now, it can wait
+        # for the whole migration, and the other repairs with it.
+        msg = "The recorder is migrating its database"
+        raise RecorderDidNotAnswer(msg)
+
     validation = await async_validate(hass)
     unknown: set[str] = set()
     for issues_group in (
