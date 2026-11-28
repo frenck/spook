@@ -106,6 +106,7 @@ def _install_fake_recorder(
     instance = SimpleNamespace(
         async_add_executor_job=_async_add_executor_job,
         async_clear_statistics=_async_clear_statistics,
+        migration_in_progress=False,
     )
     hass.data[DATA_INSTANCE] = instance
     monkeypatch.setattr(recorder_questions, "get_instance", lambda _hass: instance)
@@ -375,3 +376,35 @@ async def test_a_recorder_too_slow_to_look_again_deletes_nothing(
     assert result["reason"] == "recorder_did_not_answer"
 
     never_answered.set_result({})
+
+
+async def test_a_recorder_migrating_its_database_is_not_asked(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the fix stops when the recorder is migrating, and asks it nothing.
+
+    Asked now, the look again may not be answered until the migration is
+    done. Clearing without it would delete history on the strength of what
+    the issue said, maybe days ago.
+    """
+    cleared = _install_fake_recorder(hass, monkeypatch, {"sensor.ghost"})
+    await _settle(hass)
+    waiting = dict(hass.data[DATA_ABANDONED_SINCE])
+
+    asked: list[None] = []
+
+    def _validate(_hass: HomeAssistant) -> dict[str, list[Any]]:
+        asked.append(None)
+        return {"sensor.ghost": [SimpleNamespace(type="no_state")]}
+
+    monkeypatch.setattr(statistics_sources, "validate_statistics", _validate)
+    hass.data[DATA_INSTANCE].migration_in_progress = True
+
+    result = await _flow(hass, "sensor.ghost").async_step_remove()
+
+    assert not asked
+    assert not cleared
+    assert result["type"] == "abort"
+    assert result["reason"] == "recorder_did_not_answer"
+    assert hass.data[DATA_ABANDONED_SINCE] == waiting

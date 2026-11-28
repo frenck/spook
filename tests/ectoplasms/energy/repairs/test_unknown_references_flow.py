@@ -17,6 +17,7 @@ from homeassistant.components.energy.data import (
     async_get_manager,
 )
 from homeassistant.components.energy.validate import ValidationIssues
+from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from custom_components.spook import energy_preferences, repairs
 from custom_components.spook.energy_preferences import async_unknown_energy_entities
@@ -468,4 +469,42 @@ async def test_a_recorder_too_slow_to_look_again_takes_out_nothing(
         assert result["type"] == "abort"
         assert result["reason"] == "recorder_did_not_answer"
 
+    assert manager.data == before
+
+
+async def test_a_recorder_migrating_its_database_is_not_asked(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the fix stops when the recorder is migrating, and asks it nothing.
+
+    Home Assistant's energy validation asks the recorder by itself, with no
+    time limit Spook can put on it. Asked now, the dialog would hang for as
+    long as the migration takes, opening it or pressing the button.
+    """
+    async_delete_entity(hass, "sensor.gone_solar")
+    manager = await async_get_manager(hass)
+    manager.data = copy.deepcopy(_PREFERENCES)
+    before = copy.deepcopy(manager.data)
+
+    validated: list[None] = []
+
+    async def _async_validate(_hass: HomeAssistant) -> SimpleNamespace:
+        validated.append(None)
+        issues = ValidationIssues()
+        issues.add_issue(hass, "entity_not_defined", "sensor.gone_solar")
+        return SimpleNamespace(
+            energy_sources=[issues], device_consumption=[], device_consumption_water=[]
+        )
+
+    monkeypatch.setattr(energy_preferences, "async_validate", _async_validate)
+    hass.data[DATA_INSTANCE] = SimpleNamespace(migration_in_progress=True)
+    flow = _flow(hass, "sensor.gone_solar")
+
+    for step in (flow.async_step_init, flow.async_step_remove):
+        result = await step()
+        assert result["type"] == "abort"
+        assert result["reason"] == "recorder_did_not_answer"
+
+    assert not validated
     assert manager.data == before

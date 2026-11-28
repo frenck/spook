@@ -13,12 +13,12 @@ from homeassistant.components.recorder.statistics import (
 from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.recorder import DATA_INSTANCE
+from homeassistant.helpers.recorder import DATA_INSTANCE, async_migration_in_progress
 from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
 
 from .const import SCREENSHOT_HOME
-from .recorder_questions import async_ask_in_time
+from .recorder_questions import RecorderDidNotAnswer, async_ask_in_time
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -182,10 +182,17 @@ async def async_abandoned_statistic_ids(hass: HomeAssistant) -> set[str]:
     This is a snapshot of one moment and says nothing about how long it has
     looked this way, which is a judgement its callers make for themselves.
 
-    Raises `RecorderDidNotAnswer` when the recorder does not answer in time.
+    Raises `RecorderDidNotAnswer` when the recorder does not answer in time,
+    or is migrating its database and was not asked at all.
     """
     if DATA_INSTANCE not in hass.data:
         return set()  # Recorder is not set up.
+
+    if async_migration_in_progress(hass):
+        # Asked now, the answer may not come until the migration is done.
+        # Not knowing is no answer either: this decides what gets deleted.
+        msg = "The recorder is migrating its database"
+        raise RecorderDidNotAnswer(msg)
 
     validation = await async_ask_in_time(hass, validate_statistics, hass)
     candidates = {

@@ -16,6 +16,7 @@ from homeassistant.components.energy.validate import (
     ValidationIssues,
 )
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from custom_components.spook import (
     energy_preferences,
@@ -120,6 +121,9 @@ def _install_statistics(
     Standing in for the recorder itself, which a repair test has no business
     starting: what is being pinned is which question gets asked, not how the
     database answers it.
+
+    What goes in under the marker is where the recorder lives, and Spook asks
+    it whether it is migrating before anything else.
     """
     hass_data_marker = "recorder_instance"
 
@@ -170,7 +174,7 @@ async def test_a_source_kept_by_statistics_alone_is_not_unknown(
         monkeypatch,
         {"sensor.gas_from_a_service": "Gas, read by a service"},
     )
-    hass.data[marker] = object()
+    hass.data[marker] = SimpleNamespace(migration_in_progress=False)
 
     await SpookRepair(hass).async_inspect()
 
@@ -242,7 +246,7 @@ async def test_a_deleted_entity_is_still_worth_saying(
 
     _install_validation(hass, monkeypatch, result)
     marker = _install_statistics(monkeypatch, {"sensor.removed_meter": None})
-    hass.data[marker] = object()
+    hass.data[marker] = SimpleNamespace(migration_in_progress=False)
 
     await SpookRepair(hass).async_inspect()
 
@@ -286,7 +290,7 @@ async def test_statistics_that_carry_a_name_were_put_there_by_something(
     marker = _install_statistics(
         monkeypatch, {"sensor.the_meter": "Gas, from a service"}
     )
-    hass.data[marker] = object()
+    hass.data[marker] = SimpleNamespace(migration_in_progress=False)
 
     await SpookRepair(hass).async_inspect()
 
@@ -336,7 +340,7 @@ async def test_a_price_entity_is_not_let_off_by_statistics(
 
     _install_validation(hass, monkeypatch, result)
     marker = _install_statistics(monkeypatch, {"sensor.the_price": "Priced elsewhere"})
-    hass.data[marker] = object()
+    hass.data[marker] = SimpleNamespace(migration_in_progress=False)
 
     await SpookRepair(hass).async_inspect()
 
@@ -381,7 +385,7 @@ async def test_a_price_in_the_older_grid_form_is_not_let_off_either(
 
     _install_validation(hass, monkeypatch, result)
     marker = _install_statistics(monkeypatch, {"sensor.the_price": "Priced elsewhere"})
-    hass.data[marker] = object()
+    hass.data[marker] = SimpleNamespace(migration_in_progress=False)
 
     await SpookRepair(hass).async_inspect()
 
@@ -521,7 +525,7 @@ async def test_a_recorder_too_slow_to_answer_could_not_look(
     result.energy_sources.append(source_issues)
     _install_validation(hass, monkeypatch, result)
     marker = _install_statistics(monkeypatch, {})
-    hass.data[marker] = object()
+    hass.data[marker] = SimpleNamespace(migration_in_progress=False)
 
     repair = SpookRepair(hass)
     # pylint: disable-next=protected-access
@@ -544,3 +548,55 @@ async def test_a_recorder_too_slow_to_answer_could_not_look(
     assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
 
     never_answered.set_result({})
+
+
+async def test_a_recorder_migrating_its_database_is_not_asked(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a recorder busy migrating is left alone, and what is up stays up.
+
+    Home Assistant's energy validation asks the recorder by itself, with no
+    time limit Spook can put on it. Asked now, it may not be answered until
+    the migration is done, and the other repairs wait their turn behind it
+    all that time. A clean round would take down what is up.
+    """
+    result = EnergyPreferencesValidation()
+    source_issues = ValidationIssues()
+    source_issues.add_issue(hass, "entity_not_defined", "sensor.ghost_meter")
+    result.energy_sources.append(source_issues)
+    _install_validation(hass, monkeypatch, result)
+
+    repair = SpookRepair(hass)
+    # pylint: disable-next=protected-access
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+
+    validated: list[None] = []
+
+    async def _async_validate(_hass: HomeAssistant) -> EnergyPreferencesValidation:
+        validated.append(None)
+        return EnergyPreferencesValidation()
+
+    monkeypatch.setattr(energy_preferences, "async_validate", _async_validate)
+    recorder = SimpleNamespace(migration_in_progress=True)
+    hass.data[DATA_INSTANCE] = recorder
+
+    # pylint: disable-next=protected-access
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert not validated
+    assert async_issue_about(issue_registry, _ISSUE_ID)
+    assert repair.last_look
+    assert repair.last_look.outcome is LookOutcome.COULD_NOT_LOOK
+    assert repair.last_look.detail == "The recorder is migrating its database"
+
+    # Done migrating, and the meter is no longer missing.
+    recorder.migration_in_progress = False
+    # pylint: disable-next=protected-access
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+
+    assert validated
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+    assert repair.last_look.outcome is LookOutcome.FINE
