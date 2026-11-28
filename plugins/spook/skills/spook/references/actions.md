@@ -6,6 +6,23 @@ Call these like any other action, as `domain.action`, with fields under `data:` 
 
 ## automation
 
+### `automation.run`: Run
+
+Runs an automation as if one of its own triggers fired, so its conditions and actions can tell which trigger it was.
+
+Response: on request.
+
+Target: `automation` entities, or the devices, areas, floors and labels holding them.
+
+Data:
+
+- `trigger` (optional, text): The trigger ID of the trigger to run the automation by. A trigger without an ID has its position as ID, counting from 0. Leave it out for an automation with only one trigger. Example: `door_opened`.
+- `trigger_data` (optional, object): Extra data for the trigger variable, like to_state or entity_id, to stand in for what the real trigger would have handed the run. Example: `{"to_state": {"state": "on"}}`.
+- `variables` (optional, object): Extra variables for the run. Example: `{"reason": "testing"}`.
+- `skip_condition` (optional, boolean): Runs the actions without checking the conditions of the automation first. Default: `false`.
+
+Documentation: https://spook.boo/automation#run
+
 ### `automation.snooze`: Snooze
 
 Turns an automation off for a while, and turns it back on when the time is up.

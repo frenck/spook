@@ -56,6 +56,48 @@ automation_turn_on_for:
       selector:
         duration:
 
+automation_run:
+  name: Run 👻
+  description: >-
+    Runs an automation as if one of its own triggers fired, so `trigger.id`
+    and the rest of the trigger variable are there for its conditions and
+    actions.
+  target:
+    entity:
+      domain: automation
+  fields:
+    trigger:
+      name: Trigger
+      description: >-
+        The trigger ID of the trigger to run the automation by. A trigger
+        without an ID has its position as ID, counting from 0. Leave it out
+        for an automation with only one trigger.
+      example: door_opened
+      selector:
+        text:
+    trigger_data:
+      name: Trigger data
+      description: >-
+        Extra data for the trigger variable, like `to_state` or `entity_id`,
+        to stand in for what the real trigger would have handed the run.
+      example: '{"to_state": {"state": "on"}}'
+      selector:
+        object:
+    variables:
+      name: Variables
+      description: Extra variables for the run.
+      example: '{"reason": "testing"}'
+      selector:
+        object:
+    skip_condition:
+      name: Skip conditions
+      description: >-
+        Runs the actions without checking the conditions of the automation
+        first.
+      default: false
+      selector:
+        boolean:
+
 light_set_brightness:
   name: Set brightness 👻
   description: >-

@@ -689,6 +689,21 @@
     "area_nothing_to_update": {
       "message": "Nothing to update on area {area_id}: give at least one of {fields}."
     },
+    "automation_run_no_triggers": {
+      "message": "{entity_id} has no enabled trigger to run it by. To run its actions without one, use automation.trigger."
+    },
+    "automation_run_trigger_data_identity": {
+      "message": "Trigger data cannot set {keys}: what says which trigger it was comes from the trigger the automation is run by."
+    },
+    "automation_run_trigger_disabled": {
+      "message": "Trigger {trigger} of {entity_id} is disabled, so it never fires. Its enabled triggers are: {triggers}."
+    },
+    "automation_run_trigger_required": {
+      "message": "{entity_id} has more than one enabled trigger, so name the one to run it by: {triggers}."
+    },
+    "automation_run_unknown_trigger": {
+      "message": "{entity_id} has no trigger {trigger}. Its enabled triggers are: {triggers}."
+    },
     "blueprint_backup_failed": {
       "message": "Could not put a copy of {path} aside: {error}. Nothing has been written."
     },
@@ -1530,6 +1545,28 @@
         "url": {
           "name": "URL",
           "description": "The URL to import the blueprint from."
+        }
+      }
+    },
+    "automation_run": {
+      "name": "Run",
+      "description": "Runs an automation as if one of its own triggers fired, so its conditions and actions can tell which trigger it was.",
+      "fields": {
+        "trigger": {
+          "name": "Trigger",
+          "description": "The trigger ID of the trigger to run the automation by. A trigger without an ID has its position as ID, counting from 0. Leave it out for an automation with only one trigger."
+        },
+        "trigger_data": {
+          "name": "Trigger data",
+          "description": "Extra data for the trigger variable, like to_state or entity_id, to stand in for what the real trigger would have handed the run."
+        },
+        "variables": {
+          "name": "Variables",
+          "description": "Extra variables for the run."
+        },
+        "skip_condition": {
+          "name": "Skip conditions",
+          "description": "Runs the actions without checking the conditions of the automation first."
         }
       }
     },
