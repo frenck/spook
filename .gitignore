@@ -124,3 +124,10 @@ config
 
 # Screenshot tool: tokens and results of the last run
 documentation/screenshots/.state/
+
+# Frontend
+# Built into the integration by `npm run build` in `frontend/`, and by a
+# release. Never committed.
+custom_components/spook/static/
+# What the development Home Assistant of `frontend/` writes down for itself.
+frontend/.home-assistant/

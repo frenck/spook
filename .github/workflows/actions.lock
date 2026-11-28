@@ -13,6 +13,11 @@ workflows:
         - 'actions/deploy-pages@v5.0.1'
         - 'actions/setup-node@v7.1.0'
         - 'actions/upload-pages-artifact@v5.0.0'
+    '.github/workflows/frontend.yaml':
+        - 'actions/checkout@v7.0.1'
+        - 'actions/download-artifact@v8.0.2'
+        - 'actions/setup-node@v7.1.0'
+        - 'actions/upload-artifact@v7.0.2'
     '.github/workflows/hacs.yaml':
         - 'actions/checkout@v7.0.1'
         - 'hacs/action@1ebf01c408f29afcb6406bd431bc98fd8cbb15aa'
@@ -31,6 +36,9 @@ workflows:
         - 'release-drafter/release-drafter@v7.11.0'
     '.github/workflows/release.yaml':
         - 'actions/checkout@v7.0.1'
+        - 'actions/download-artifact@v8.0.2'
+        - 'actions/setup-node@v7.1.0'
+        - 'actions/upload-artifact@v7.0.2'
         - 'sigstore/gh-action-sigstore-python@v3.5.0'
     '.github/workflows/ruff.yaml':
         - 'actions/checkout@v7.0.1'
@@ -67,6 +75,11 @@ dependencies:
         commit: 'sha1-368f82528645a54fb793d4d04e342629a3f51346'
         owner_id: 44036562
         repo_id: 438112499
+    'actions/download-artifact@v8.0.2':
+        ref: 'v8.0.2'
+        commit: 'sha1-9000827ccba6bdab643e8b6fd33ac0654aef8333'
+        owner_id: 44036562
+        repo_id: 192626254
     'actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd':
         ref: 'v8.0.0'
         commit: 'sha1-ed597411d8f924073f98dfc5c65a23a2325f34cd'
@@ -85,6 +98,11 @@ dependencies:
     'actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f':
         ref: 'v7.0.0'
         commit: 'sha1-bbbca2ddaa5d8feaa63e36b76fdaad77386f024f'
+        owner_id: 44036562
+        repo_id: 192625955
+    'actions/upload-artifact@v7.0.2':
+        ref: 'v7.0.2'
+        commit: 'sha1-cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         owner_id: 44036562
         repo_id: 192625955
     'actions/upload-pages-artifact@v5.0.0':
