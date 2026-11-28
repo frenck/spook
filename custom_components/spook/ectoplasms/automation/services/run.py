@@ -37,7 +37,11 @@ DESCRIPTION = "action automation.run"
 # What says which trigger it was. Those come from the trigger the automation
 # is run by, never from the caller: naming one trigger and passing the ID of
 # another would run a branch nobody picked.
-TRIGGER_IDENTITY = frozenset({CONF_ID, "idx", CONF_ALIAS, CONF_PLATFORM})
+#
+# The platform is not one of them. A trigger can hand its work to another
+# platform, like an MQTT device trigger that fires as `mqtt`, and only the
+# caller knows what the real one would have said.
+TRIGGER_IDENTITY = frozenset({CONF_ID, "idx", CONF_ALIAS})
 
 # The same as Home Assistant validates `enabled:` on a trigger with.
 ENABLED_SCHEMA = vol.Any(cv.boolean, cv.template)
@@ -100,12 +104,12 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
         run_variables: dict[str, Any] = {
             **call.data[ATTR_VARIABLES],
             ATTR_TRIGGER: {
-                CONF_ID: trigger.id,
-                "idx": trigger.idx,
-                CONF_ALIAS: trigger.config.get(CONF_ALIAS),
                 CONF_PLATFORM: trigger.config[CONF_PLATFORM],
                 "description": DESCRIPTION,
                 **call.data[ATTR_TRIGGER_DATA],
+                CONF_ID: trigger.id,
+                "idx": trigger.idx,
+                CONF_ALIAS: trigger.config.get(CONF_ALIAS),
             },
         }
 
@@ -208,8 +212,12 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
 
         A templated `enabled:` is rendered the way Home Assistant does when it
         sets the triggers up: with only the automation's trigger variables,
-        and no states to read. So it gives the answer it gave then, and one
-        that fails to render counts as off, as it does there.
+        and no states to read. One that fails to render counts as off, as it
+        does there.
+
+        It is rendered again, now. Home Assistant does not keep the answer it
+        got at the time, so one that reads `this` can come out differently
+        once the automation's own state has moved on.
         """
         enabled = ENABLED_SCHEMA(config.get(CONF_ENABLED, True))
         if not isinstance(enabled, Template):

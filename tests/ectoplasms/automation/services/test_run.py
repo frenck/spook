@@ -448,7 +448,7 @@ async def test_trigger_data_reaches_the_templates(hass: HomeAssistant) -> None:
     assert ran[0].data["id"] == "door_opened"
 
 
-@pytest.mark.parametrize("key", ["id", "idx", "alias", "platform"])
+@pytest.mark.parametrize("key", ["id", "idx", "alias"])
 async def test_trigger_data_cannot_say_which_trigger_it_was(
     hass: HomeAssistant, key: str
 ) -> None:
@@ -461,6 +461,47 @@ async def test_trigger_data_cannot_say_which_trigger_it_was(
         await _run(hass, trigger="door_closed", trigger_data={key: "door_opened"})
 
     assert not ran
+
+
+async def test_trigger_data_can_say_what_platform_fired(hass: HomeAssistant) -> None:
+    """A trigger can fire as another platform than it is set up with."""
+    ran = await _setup(hass, _automation([OPENED]))
+
+    await _run(hass)
+    await _run(hass, trigger_data={"platform": "mqtt"})
+
+    assert [event.data["platform"] for event in ran] == ["state", "mqtt"]
+    assert [event.data["id"] for event in ran] == ["door_opened", "door_opened"]
+
+
+async def test_a_templated_enabled_is_asked_again_at_every_call(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant keeps no record of its answer, so `this` is of now.
+
+    The real trigger stays attached after the first run. Spook cannot know
+    that, and says so in its documentation rather than guess.
+    """
+    ran = await _setup(
+        hass,
+        _automation(
+            [
+                {
+                    **OPENED,
+                    "enabled": (
+                        "{{ this is none or this.attributes.last_triggered is none }}"
+                    ),
+                },
+                CLOSED,
+            ]
+        ),
+    )
+
+    await _run(hass, trigger="door_opened")
+    assert len(ran) == 1
+
+    with pytest.raises(ServiceValidationError, match="is disabled"):
+        await _run(hass, trigger="door_opened")
 
 
 async def test_an_error_in_the_actions_is_a_run_that_did_not_finish(
