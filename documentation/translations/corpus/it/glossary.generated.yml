@@ -92,6 +92,13 @@ labels:
     translation: Attributo
     source: spook
     key: spook.triggers.state_changed.fields.attribute.name
+  Auto:
+    translation: Auto
+    source: frontend
+    key: ui.common.auto
+    alternatives:
+      - Automatica
+      - Automatico
   Automation turned off:
     translation: Automazione disattivata
     source: spook
@@ -244,6 +251,10 @@ labels:
     translation: Ciclico
     source: spook
     key: spook.services.input_number_decrement.fields.cycle.name
+  Dark:
+    translation: Scuro
+    source: frontend
+    key: ui.panel.lovelace.editor.card.map.theme_modes.dark
   Dashboards:
     translation: Plance
     source: frontend
@@ -962,6 +973,12 @@ labels:
     translation: Livello
     source: spook
     key: spook.services.homeassistant_create_floor.fields.level.name
+  Light:
+    translation: Luce
+    source: frontend
+    key: ui.dialogs.entity_registry.editor.device_classes.binary_sensor.light
+    alternatives:
+      - Chiaro
   "Light: Decrease brightness 👻":
     translation: "Luce: Riduci la luminosità 👻"
     source: composite
@@ -1171,11 +1188,11 @@ labels:
     translation: Rimuovi
     source: frontend
     key: ui.common.remove
-  Remove these device trackers:
+  Remove the deleted device trackers:
     translation: Rimuovi questi tracker dispositivo
     source: spook
     key: spook.issues.person_unknown_device_trackers.fix_flow.step.init.menu_options.remove
-  Remove these members:
+  Remove the deleted members:
     translation: Rimuovi questi membri
     source: spook
     key: spook.issues.group_unknown_members.fix_flow.step.init.menu_options.remove
@@ -1399,7 +1416,7 @@ labels:
     source: frontend
     key: ui.panel.config.dashboard.system.main
     reason: The entry under Settings.
-  Take these out of the energy configuration:
+  Take the deleted ones out of the energy configuration:
     translation: Toglile dalla configurazione energia
     source: spook
     key: spook.issues.energy_unknown_references.fix_flow.step.init.menu_options.remove
@@ -1425,6 +1442,16 @@ labels:
     translation: Modello
     source: frontend
     key: ui.components.logbook.trigger_type.template
+  Theme:
+    translation: Tema
+    source: frontend
+    key: ui.components.selectors.selector.types.theme
+  Theme mode:
+    translation: Modalità del tema
+    source: frontend
+    key: ui.panel.lovelace.editor.card.map.theme_mode
+    alternatives:
+      - Modalità tema
   Time blocks:
     translation: Fasce orarie
     source: spook
@@ -1931,7 +1958,7 @@ unmatched:
     uses: 1
     first: 04.enhanced-integrations/14.homekit.md
   - label: How to use it
-    uses: 166
+    uses: 167
     first: 02.features/02.other-features.md
   - label: ignore all
     uses: 1
@@ -1993,6 +2020,9 @@ unmatched:
   - label: Major
     uses: 1
     first: 09.guides/02.updating.md
+  - label: Make it everybody's
+    uses: 1
+    first: 04.enhanced-integrations/45.frontend.md
   - label: Minor
     uses: 1
     first: 09.guides/02.updating.md
@@ -2011,6 +2041,9 @@ unmatched:
   - label: not triggered by a user
     uses: 1
     first: 02.features/02.other-features.md
+  - label: On one dashboard view only
+    uses: 1
+    first: 04.enhanced-integrations/45.frontend.md
   - label: Orange is your decision
     uses: 1
     first: 04.enhanced-integrations/04.blueprint.md
@@ -2092,9 +2125,6 @@ unmatched:
   - label: repair issue resolved
     uses: 1
     first: 02.features/02.other-features.md
-  - label: Reported by Spook
-    uses: 1
-    first: 06.reference/04.all-repairs.md
   - label: restart
     uses: 1
     first: 03.core-extensions/10.misc.md
@@ -2165,7 +2195,7 @@ unmatched:
     uses: 1
     first: 04.enhanced-integrations/20.input-select.md
   - label: Spook
-    uses: 11
+    uses: 15
     first: 01.getting-started/02.installation.md
   - label: state trigger
     uses: 1
