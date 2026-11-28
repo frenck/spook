@@ -171,6 +171,7 @@ async def test_tool_discovery_finds_every_module(hass: HomeAssistant) -> None:
     """The tools found at runtime are the modules on disk, no more, no fewer."""
     await async_setup_spook_tools(hass)
 
-    assert {tool.__module__ for tool in hass.data[DATA_TOOLS]} == {
+    # Lists, not sets: a module found twice would be a tool handed out twice.
+    assert sorted(tool.__module__ for tool in hass.data[DATA_TOOLS]) == sorted(
         _module_name(module_file) for module_file in TOOL_MODULES
-    }
+    )

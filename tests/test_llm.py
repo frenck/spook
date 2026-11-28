@@ -272,14 +272,12 @@ async def test_a_tool_that_fails_to_import_is_skipped(
             raise ImportError(msg)
         return real_import_module(name, package)
 
+    offered_before = set(_tools(hass))
     monkeypatch.setattr(llm_tools.importlib, "import_module", _import_module)
 
     await llm_tools.async_setup_spook_tools(hass)
 
-    tools = _tools(hass)
-    assert "spook__fix_ghost" not in tools
-    assert "spook__list_ghosts" in tools
-    assert len(tools) == 8  # noqa: PLR2004
+    assert set(_tools(hass)) == offered_before - {"spook__fix_ghost"}
     assert "ectoplasms.repairs.tools.fix_ghost failed to load" in caplog.text
 
 
@@ -302,6 +300,53 @@ async def test_tools_put_away_are_no_longer_offered(hass: HomeAssistant) -> None
         )
         is None
     )
+
+
+@pytest.mark.usefixtures("automation_issue")
+async def test_a_tool_kept_by_a_conversation_refuses_once_put_away(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a tool handed out before Spook unloaded changes nothing after.
+
+    Home Assistant holds on to the tools for the length of a conversation,
+    so the one it has is called, not one asked for again.
+    """
+    registry = ir.async_get(hass)
+    put_away = await llm_tools.async_setup_spook_tools(hass)
+    kept = _tools(hass)["spook__ignore_ghost"]
+    tool_input = ToolInput(
+        tool_name="spook__ignore_ghost", tool_args={"issue_id": _AUTOMATION_ISSUE}
+    )
+
+    put_away()
+    result = await kept.async_call(hass, tool_input, _context(hass_admin_user))
+
+    assert result.error
+    assert "not available" in result.data["error"]
+    issue = registry.async_get_issue(DOMAIN, _AUTOMATION_ISSUE)
+    assert issue is not None
+    assert issue.dismissed_version is None
+
+    # Back on offer, the same tool does what it is for again.
+    await llm_tools.async_setup_spook_tools(hass)
+    result = await kept.async_call(hass, tool_input, _context(hass_admin_user))
+
+    assert not result.error
+    issue = registry.async_get_issue(DOMAIN, _AUTOMATION_ISSUE)
+    assert issue is not None
+    assert issue.dismissed_version is not None
+
+
+async def test_a_tool_refuses_once_its_domain_is_gone(hass: HomeAssistant) -> None:
+    """Test a tool about an integration that is not loaded does not run."""
+    hass.data[llm_tools.DATA_TOOLS].append(_ElsewhereTool)
+
+    result = await _ElsewhereTool().async_call(
+        hass, ToolInput(tool_name="spook__elsewhere", tool_args={}), _context(None)
+    )
+
+    assert result.error
+    assert "not available" in result.data["error"]
 
 
 def test_every_tool_is_prefixed_and_tagged(hass: HomeAssistant) -> None:

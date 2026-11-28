@@ -115,7 +115,21 @@ class AbstractSpookTool(Tool, ABC):
     async def async_call(
         self, hass: HomeAssistant, tool_input: ToolInput, llm_context: LLMContext
     ) -> ToolResult:
-        """Refuse whoever is not an administrator, then do the work."""
+        """Refuse whoever is not an administrator, then do the work.
+
+        Home Assistant keeps the tools it was handed for as long as a
+        conversation lasts, so a tool can still be called after Spook
+        unloaded. It is asked again here whether it is still on offer.
+        """
+        if (
+            type(self) not in hass.data.get(DATA_TOOLS, ())
+            or self.domain not in hass.config.components
+        ):
+            return error(
+                "This tool is not available at the moment: Spook, or what "
+                "the tool is about, is not loaded."
+            )
+
         if (refusal := await self._async_refusal(hass, llm_context)) is not None:
             return refusal
 
