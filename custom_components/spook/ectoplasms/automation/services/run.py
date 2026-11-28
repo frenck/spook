@@ -201,16 +201,48 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
         # Older configurations still call the list `trigger`.
         raw_triggers = raw_config.get(CONF_TRIGGERS, raw_config.get(CONF_TRIGGER, []))
 
+        # Once for all of them, as Home Assistant does. Rendered per trigger,
+        # a variable that is not the same twice, like a random pick, would
+        # tell two triggers two different things.
+        variables = self._trigger_variables(entity)
+
         return [
             AutomationTrigger(
                 idx=str(index),
                 config=config,
-                enabled=self._is_enabled(entity, config),
+                enabled=self._is_enabled(config, variables),
             )
             for index, config in enumerate(cv.TRIGGER_SCHEMA(raw_triggers))
         ]
 
-    def _is_enabled(self, entity: BaseAutomationEntity, config: dict[str, Any]) -> bool:
+    def _trigger_variables(self, entity: BaseAutomationEntity) -> dict[str, Any] | None:
+        """Return what a templated `enabled:` gets to read, if it can be worked out.
+
+        The same as Home Assistant hands the triggers when it sets them up:
+        the automation's own state as `this`, and its trigger variables,
+        rendered with no other states to read.
+        """
+        this = None
+        if state := self.hass.states.get(entity.entity_id):
+            this = state.as_dict()
+        variables: dict[str, Any] = {"this": this}
+
+        raw_config = entity.raw_config or {}
+        if CONF_TRIGGER_VARIABLES not in raw_config:
+            return variables
+
+        try:
+            return cv.SCRIPT_VARIABLES_SCHEMA(
+                raw_config[CONF_TRIGGER_VARIABLES]
+            ).async_render(self.hass, variables, limited=True)
+        except TemplateError:
+            return None
+
+    def _is_enabled(
+        self,
+        config: dict[str, Any],
+        variables: dict[str, Any] | None,
+    ) -> bool:
         """Return if a trigger is one Home Assistant set up to fire.
 
         A templated `enabled:` is rendered the way Home Assistant does when it
@@ -226,17 +258,10 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
         if not isinstance(enabled, Template):
             return bool(enabled)
 
-        this = None
-        if state := self.hass.states.get(entity.entity_id):
-            this = state.as_dict()
-        variables: dict[str, Any] = {"this": this}
+        if variables is None:
+            return False
 
-        raw_config = entity.raw_config or {}
         try:
-            if CONF_TRIGGER_VARIABLES in raw_config:
-                variables = cv.SCRIPT_VARIABLES_SCHEMA(
-                    raw_config[CONF_TRIGGER_VARIABLES]
-                ).async_render(self.hass, variables, limited=True)
             return bool(enabled.async_render(variables, limited=True))
         except TemplateError:
             return False

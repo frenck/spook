@@ -474,6 +474,36 @@ async def test_trigger_data_can_say_what_platform_fired(hass: HomeAssistant) -> 
     assert [event.data["id"] for event in ran] == ["door_opened", "door_opened"]
 
 
+async def test_the_trigger_variables_are_worked_out_once_for_all_triggers(
+    hass: HomeAssistant,
+) -> None:
+    """A random pick tells every trigger the same thing, so exactly one is on.
+
+    Worked out per trigger, the two would each roll their own: both on, or
+    neither, about every other call.
+    """
+    ran = await _setup(
+        hass,
+        _automation(
+            [
+                {**OPENED, "enabled": "{{ picked == 'door_opened' }}"},
+                {**CLOSED, "enabled": "{{ picked == 'door_closed' }}"},
+            ],
+            trigger_variables={
+                "picked": "{{ ['door_opened', 'door_closed'] | random }}"
+            },
+        ),
+    )
+
+    # Enough calls that two triggers rolling their own would be caught out.
+    calls = 25
+    for _ in range(calls):
+        await _run(hass)
+
+    assert len(ran) == calls
+    assert {event.data["id"] for event in ran} == {"door_opened", "door_closed"}
+
+
 async def test_a_templated_enabled_is_asked_again_at_every_call(
     hass: HomeAssistant,
 ) -> None:
