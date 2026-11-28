@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import importlib
+import inspect
 import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
@@ -11,6 +12,11 @@ import pytest
 import yaml
 
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.llm_tools import (
+    DATA_TOOLS,
+    AbstractSpookTool,
+    async_setup_spook_tools,
+)
 from custom_components.spook.repairs import AbstractSpookRepairBase
 from custom_components.spook.services import (
     AbstractSpookServiceBase,
@@ -18,6 +24,8 @@ from custom_components.spook.services import (
 
 if TYPE_CHECKING:
     from types import ModuleType
+
+    from homeassistant.core import HomeAssistant
 
 SPOOK_ROOT = Path(__file__).parents[1] / "custom_components" / "spook"
 
@@ -44,12 +52,14 @@ def _discovered_modules(pattern: str) -> list[Path]:
 
 SERVICE_MODULES = _discovered_modules("ectoplasms/*/services/*.py")
 REPAIR_MODULES = _discovered_modules("ectoplasms/*/repairs/*.py")
+TOOL_MODULES = _discovered_modules("ectoplasms/*/tools/*.py")
 
 
 def test_discovery_finds_ectoplasm_modules() -> None:
     """Test discovery finds modules to avoid vacuous contract test passes."""
     assert SERVICE_MODULES, "No service modules discovered"
     assert REPAIR_MODULES, "No repair modules discovered"
+    assert TOOL_MODULES, "No tool modules discovered"
 
 
 def _import_module(module_file: Path) -> ModuleType:
@@ -127,3 +137,40 @@ def test_service_modules_have_service_descriptions() -> None:
     assert not missing_descriptions, (
         f"Missing services.yaml entries: {missing_descriptions}"
     )
+
+
+@pytest.mark.parametrize("module_file", TOOL_MODULES, ids=_module_name)
+def test_tool_modules_expose_spook_tool(module_file: Path) -> None:
+    """Every discovered tool module exposes a concrete Spook tool class."""
+    tool = _import_module(module_file).SpookTool
+
+    assert isinstance(tool, type)
+    assert issubclass(tool, AbstractSpookTool)
+    assert not inspect.isabstract(tool)
+
+    assert tool.name == f"{DOMAIN}__{module_file.stem}"
+    assert tool.domain == module_file.parent.parent.name
+    assert tool.description
+
+    # Home Assistant's default is the worst case: a tool that may change and
+    # delete anything, anywhere. Every tool says what it really does.
+    assert any(
+        "annotations" in vars(cls)
+        for cls in tool.__mro__[: tool.__mro__.index(AbstractSpookTool)]
+    ), f"{tool.name} does not say whether it is read only"
+
+
+def test_tool_names_are_unique() -> None:
+    """No two tools share a name, as a model picks them by it."""
+    names = [_import_module(module_file).SpookTool.name for module_file in TOOL_MODULES]
+
+    assert len(names) == len(set(names))
+
+
+async def test_tool_discovery_finds_every_module(hass: HomeAssistant) -> None:
+    """The tools found at runtime are the modules on disk, no more, no fewer."""
+    await async_setup_spook_tools(hass)
+
+    assert {tool.__module__ for tool in hass.data[DATA_TOOLS]} == {
+        _module_name(module_file) for module_file in TOOL_MODULES
+    }

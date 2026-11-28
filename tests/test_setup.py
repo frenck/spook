@@ -32,6 +32,7 @@ from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.core import Context, CoreState
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import entity_registry as er, issue_registry as ir
+from homeassistant.helpers.llm import LLMContext
 from homeassistant.util import dt as dt_util
 from homeassistant.loader import (
     IntegrationNotFound,
@@ -53,6 +54,7 @@ from custom_components.spook.entity_renames import (
     STORAGE_KEY as RENAMES_KEY,
     async_get_entity_renames,
 )
+from custom_components.spook.llm import LLM_API_HOME_ASSISTANT, async_get_tools
 from custom_components.spook.run_history import async_get_run_history
 from custom_components.spook.timed_states import (
     DATA_TIMED_STATES,
@@ -389,6 +391,64 @@ async def test_setup_entry_starts_and_stops_the_run_history(
     assert history.async_runs_within("automation.nightly", timedelta(hours=1)) == 0, (
         "carried on listening after unloading"
     )
+
+
+async def test_setup_entry_offers_the_tools_while_loaded(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the tools come with Spook, go when it unloads, and return on a reload.
+
+    A tool of an unloaded Spook would hand an assistant repairs nobody
+    keeps an eye on anymore.
+    """
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup during the lifecycle smoke test."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
+
+    # Set up alongside Spook as its dependencies, which these tests skip.
+    hass.config.components.update({"homeassistant", "repairs"})
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    def _offered() -> set[str]:
+        """Return the names of the tools on offer right now."""
+        llm_context = LLMContext(
+            platform="test",
+            context=None,
+            language="en",
+            assistant=None,
+            device_id=None,
+        )
+        tools = async_get_tools(hass, llm_context, LLM_API_HOME_ASSISTANT)
+        return set() if tools is None else {tool.name for tool in tools.tools}
+
+    assert not _offered()
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert "spook__list_ghosts" in _offered()
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
+    assert not _offered()
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+    assert "spook__list_ghosts" in _offered()
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
 
 
 async def test_unload_after_start_does_not_remove_fired_one_time_listeners(

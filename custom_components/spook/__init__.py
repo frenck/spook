@@ -25,6 +25,7 @@ from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
 from .entity_renames import async_remove_entity_renames, async_setup_entity_renames
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
 from .listeners import async_listen_once_tracked
+from .llm import async_setup_tools
 from .repairs import SpookRepairManager
 from .run_history import async_setup_run_history
 from .services import SpookServiceManager
@@ -210,6 +211,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # And when they ran, for the conditions that count runs rather than
     # contexts. Same reason it cannot wait to be asked.
     entry.async_on_unload(async_setup_run_history(hass))
+
+    # The tools for assistants, found once here and handed out by the llm
+    # platform for as long as Spook is loaded.
+    await async_setup_tools(hass, entry)
 
     # Yay, we didn't got spooked!
     return True
