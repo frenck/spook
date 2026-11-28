@@ -206,6 +206,7 @@ def test_nothing_of_the_tools_is_imported_where_core_cannot_hold_them() -> None:
         "print(sorted(name for name in sys.modules\n"
         "    if name == 'custom_components.spook.llm_tools'\n"
         "    or name == 'custom_components.spook.issue_tools'\n"
+        "    or name == 'custom_components.spook.door_tools'\n"
         "    or '.tools.' in name and name.startswith('custom_components.spook.')))\n"
     )
     result = subprocess.run(  # noqa: S603
@@ -238,6 +239,7 @@ class _ElsewhereTool(llm_tools.AbstractSpookTool):
 
     domain = "not_loaded_here"
     name = "spook__elsewhere"
+    in_front = True
     description = "Stands in for a tool of an integration that is not set up."
     annotations = llm_tools.READ_ONLY
 

@@ -23,6 +23,7 @@ class SpookTool(AbstractSpookTool):
     """List Spook's open repair issues."""
 
     domain = DOMAIN
+    in_front = True
     name = "spook__list_ghosts"
     title = "List Spook's ghosts"
     description = (

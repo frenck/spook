@@ -167,6 +167,48 @@ def test_tool_names_are_unique() -> None:
     assert len(names) == len(set(names))
 
 
+def test_there_are_two_doors() -> None:
+    """Exactly two doors: one that only reads, one that changes things.
+
+    Two, so a client that only allows what reads can still open one of them.
+    """
+    tools = [_import_module(module_file).SpookTool for module_file in TOOL_MODULES]
+    doors = [tool for tool in tools if tool.is_door]
+
+    assert len(doors) == 2  # noqa: PLR2004
+    assert sorted(door.annotations.read_only for door in doors) == [False, True]
+    assert not any(door.in_front for door in doors)
+    assert not any(door.prompt_hint for door in doors)
+
+
+def test_every_tool_behind_a_door_has_exactly_one() -> None:
+    """Every tool that is not in the front is reached through one door, by kind."""
+    tools = [_import_module(module_file).SpookTool for module_file in TOOL_MODULES]
+    doors = [tool for tool in tools if tool.is_door]
+
+    for tool in tools:
+        if tool.in_front or tool.is_door:
+            continue
+
+        through = [
+            door
+            for door in doors
+            if door.annotations.read_only == tool.annotations.read_only
+        ]
+        assert len(through) == 1, f"{tool.name} is not behind exactly one door"
+
+
+def test_prompt_hints_name_their_own_tool() -> None:
+    """A hint is for a tool in the front, and names the tool it is about."""
+    for module_file in TOOL_MODULES:
+        tool = _import_module(module_file).SpookTool
+        if tool.prompt_hint is None:
+            continue
+
+        assert tool.in_front, f"{tool.name} has a hint, but is not in the front"
+        assert tool.name in tool.prompt_hint
+
+
 async def test_tool_discovery_finds_every_module(hass: HomeAssistant) -> None:
     """The tools found at runtime are the modules on disk, no more, no fewer."""
     await async_setup_spook_tools(hass)

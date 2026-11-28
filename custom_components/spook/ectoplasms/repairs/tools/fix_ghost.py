@@ -31,6 +31,7 @@ class SpookTool(AbstractSpookTool):
     """Run one fix option of an issue's fix flow."""
 
     domain = DOMAIN
+    in_front = True
     name = "spook__fix_ghost"
     title = "Fix a Spook ghost"
     description = (

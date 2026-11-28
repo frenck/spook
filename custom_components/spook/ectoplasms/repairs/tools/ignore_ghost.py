@@ -13,6 +13,7 @@ class SpookTool(AbstractSpookIgnoreTool):
     """Ignore one of Spook's issues."""
 
     domain = DOMAIN
+    in_front = True
     name = "spook__ignore_ghost"
     title = "Ignore a Spook ghost"
     description = (

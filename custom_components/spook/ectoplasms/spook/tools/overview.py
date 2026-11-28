@@ -24,6 +24,7 @@ class SpookTool(AbstractSpookTool):
     """Summarize how the house is doing, by Spook's count."""
 
     domain = DOMAIN
+    in_front = True
     name = "spook__overview"
     title = "Spook's overview"
     description = (

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 from typing import TYPE_CHECKING, Any, override
 
 import probatio
@@ -16,7 +15,13 @@ from ....draft_checking import (
     async_check_draft,
     async_describe_unknown_entities,
 )
-from ....llm_tools import READ_ONLY, AbstractSpookTool, error
+from ....llm_tools import (
+    READ_ONLY,
+    AbstractSpookTool,
+    NotAJsonObjectError,
+    error,
+    unwrap_gemini_object,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -26,23 +31,16 @@ if TYPE_CHECKING:
 def _draft_config(config: dict[str, Any]) -> dict[str, Any]:
     """Return the draft to check, also when it came in as a JSON string.
 
-    Gemini takes no object without fixed properties, so Home Assistant's
-    Gemini integration hands it the draft as an object holding one string,
-    `json`. Read as it came, that draft names nothing, and nothing is clean.
+    Read as Gemini wraps it, a draft names nothing, and nothing is clean.
     """
-    if set(config) != {"json"} or not isinstance(config["json"], str):
-        return config
-
     try:
-        draft = json.loads(config["json"])
+        return unwrap_gemini_object(config)
+    except NotAJsonObjectError as err:
+        message = "The draft should be a JSON object."
+        raise DraftError(message) from err
     except ValueError as err:
         message = f"The draft is not valid JSON: {err}"
         raise DraftError(message) from err
-
-    if not isinstance(draft, dict):
-        message = "The draft should be a JSON object."
-        raise DraftError(message)
-    return draft
 
 
 # A tool does one thing, so it has one method to show.
@@ -51,6 +49,7 @@ class SpookTool(AbstractSpookTool):
     """Check a draft for references to things that do not exist."""
 
     domain = DOMAIN
+    in_front = True
     name = "spook__check_references"
     title = "Check a draft for ghosts"
     description = (

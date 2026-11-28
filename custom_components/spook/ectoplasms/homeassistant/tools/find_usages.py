@@ -33,6 +33,7 @@ class SpookTool(AbstractSpookTool):
     """Find where something is used."""
 
     domain = DOMAIN
+    in_front = True
     name = "spook__find_usages"
     title = "Find where something is used"
     description = (
@@ -45,6 +46,7 @@ class SpookTool(AbstractSpookTool):
         "if I remove this' and 'where is this used'."
     )
     annotations = READ_ONLY
+    prompt_hint = "Use spook__find_usages to answer where something is used."
     parameters = probatio.Schema(
         {
             probatio.Required(

@@ -11,7 +11,12 @@ from homeassistant.helpers.translation import async_get_translations
 
 from ....condition import async_get_conditions
 from ....const import DOMAIN
-from ....llm_tools import READ_ONLY, AbstractSpookTool, conversation_language
+from ....llm_tools import (
+    READ_ONLY,
+    AbstractSpookTool,
+    conversation_language,
+    first_sentence,
+)
 from ....trigger import async_get_triggers
 
 if TYPE_CHECKING:
@@ -21,12 +26,6 @@ if TYPE_CHECKING:
     from homeassistant.helpers.llm import LLMContext
 
 _FEATURE_KINDS = ("triggers", "conditions", "actions")
-
-
-def _first_sentence(text: str) -> str:
-    """Return the first sentence, which is what a list of features needs."""
-    sentence, period, _ = text.partition(". ")
-    return f"{sentence}{period}".strip()
 
 
 def _registered_action(hass: HomeAssistant, key: str) -> str | None:
@@ -49,6 +48,7 @@ class SpookTool(AbstractSpookTool):
     """List the triggers, conditions and actions Spook adds."""
 
     domain = DOMAIN
+    in_front = True
     name = "spook__list_features"
     title = "List what Spook adds"
     description = (
@@ -58,6 +58,9 @@ class SpookTool(AbstractSpookTool):
         "name. Each comes with its name and a one-line description."
     )
     annotations = READ_ONLY
+    prompt_hint = (
+        "Use spook__list_features for the triggers, conditions and actions Spook adds."
+    )
     parameters = probatio.Schema(
         {
             probatio.Optional(
@@ -100,7 +103,7 @@ class SpookTool(AbstractSpookTool):
             {
                 "name": f"{DOMAIN}.{key}",
                 "title": strings.get(f"{prefix}.{key}.name", key),
-                "description": _first_sentence(
+                "description": first_sentence(
                     strings.get(f"{prefix}.{key}.description", "")
                 ),
             }
@@ -135,7 +138,7 @@ class SpookTool(AbstractSpookTool):
                 {
                     "name": action,
                     "title": strings.get(f"{prefix}{key}.name", action),
-                    "description": _first_sentence(
+                    "description": first_sentence(
                         strings.get(f"{prefix}{key}.description", "")
                     ),
                 }
