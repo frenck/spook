@@ -31,6 +31,7 @@ from .run_history import async_setup_run_history
 from .services import SpookServiceManager
 from .setup_helpers import async_forward_setup_entry
 from .statistics_sources import async_setup_abandoned_statistics_watching
+from .themes import async_setup_themes
 from .timed_states import async_setup_timed_states
 
 if TYPE_CHECKING:
@@ -147,6 +148,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Following renames from the start. Home Assistant tells about one only in
     # the moment it happens, so one missed here is not coming back.
     entry.async_on_unload(await async_setup_entity_renames(hass))
+
+    # Spook's themes, in the theme picker. Before the repairs, so the one
+    # that looks for unknown themes on dashboards already finds them.
+    entry.async_on_unload(await async_setup_themes(hass))
 
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)

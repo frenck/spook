@@ -1,0 +1,139 @@
+# The Spook theme, in the colours of the Spook design system: the cyan of
+# the ghost, ink for everything neutral, and red for errors only.
+#
+# The frontend builds most of its look on a few colour scales, from 05
+# (darkest) to 95 (lightest). Setting those carries the colours into every
+# button, field and surface built on them. On top of that come the few
+# places where the design system wants something the scales cannot say,
+# like ink text on a cyan button, and the older variables that do not hang
+# on the scales yet.
+#
+# Every variable set here is one to keep up with the frontend. Fewer is
+# better: leave out what the scales already get right.
+Spook:
+  # Cyan. Step 40 is links and small text in light mode, so it is the dark
+  # cyan the design system uses for text there: the brand cyan, and even
+  # the cyan of its buttons, are too light to read on white.
+  ha-color-primary-05: "#021a1f"
+  ha-color-primary-10: "#052a31"
+  ha-color-primary-20: "#083b44"
+  ha-color-primary-30: "#165863"
+  ha-color-primary-40: "#156875"
+  ha-color-primary-50: "#0e8393"
+  ha-color-primary-60: "#08a6b8"
+  ha-color-primary-70: "#06d3e0"
+  ha-color-primary-80: "#a4f8fc"
+  ha-color-primary-90: "#cffcfe"
+  ha-color-primary-95: "#ecfeff"
+
+  # Ink.
+  ha-color-neutral-05: "#17191b"
+  ha-color-neutral-10: "#1d2025"
+  ha-color-neutral-20: "#2a2e34"
+  ha-color-neutral-30: "#40454e"
+  ha-color-neutral-40: "#515862"
+  ha-color-neutral-50: "#69717c"
+  ha-color-neutral-60: "#8a929d"
+  ha-color-neutral-70: "#b4bbc3"
+  ha-color-neutral-80: "#d7dbe0"
+  ha-color-neutral-90: "#eceef1"
+  ha-color-neutral-95: "#f6f7f8"
+
+  # Red, the tongue: danger, destructive actions and errors.
+  ha-color-red-05: "#2a0405"
+  ha-color-red-10: "#4a0709"
+  ha-color-red-20: "#87161a"
+  ha-color-red-30: "#a41318"
+  ha-color-red-40: "#c71219"
+  ha-color-red-50: "#ec1b24"
+  ha-color-red-60: "#ef3f46"
+  ha-color-red-70: "#f16e74"
+  ha-color-red-80: "#f7a4a7"
+  ha-color-red-90: "#fde3e4"
+  ha-color-red-95: "#fef2f2"
+
+  # Ink text on a cyan button, like the ghost itself.
+  ha-color-on-primary-loud: "#17191b"
+
+  modes:
+    light:
+      ha-color-fill-primary-loud-resting: "#08a6b8"
+      ha-color-fill-primary-loud-hover: "#0e8393"
+      ha-color-fill-primary-loud-active: "#156875"
+      ha-color-focus: "#06d3e0"
+
+      primary-color: "#156875"
+      accent-color: "#08a6b8"
+      primary-background-color: "#f6f7f8"
+      secondary-background-color: "#eceef1"
+      card-background-color: "#ffffff"
+      clear-background-color: "#ffffff"
+      state-icon-color: "#515862"
+
+      error-color: "#ec1b24"
+      warning-color: "#ea660b"
+      success-color: "#059669"
+      info-color: "#2563eb"
+
+      # Cards on a hairline ink border, lifted by an ink-tinted shadow.
+      ha-card-border-color: "#d7dbe0"
+      ha-card-box-shadow: "0 4px 8px -2px rgba(23, 25, 27, 0.12), 0 2px 4px -2px rgba(23, 25, 27, 0.08)"
+
+      # A whisper of cyan at the top of a dashboard, like the website.
+      # Only where a view has no background of its own.
+      lovelace-background: "radial-gradient(70% 60% at 50% 0%, rgba(98, 242, 248, 0.18) 0%, transparent 70%), linear-gradient(160deg, #ecfeff 0%, #f6f7f8 70%)"
+
+      # YAML and templates. Dark enough to read on white.
+      codemirror-property: "#156875"
+      codemirror-variable: "#156875"
+      codemirror-string: "#047857"
+      codemirror-number: "#c2540c"
+      codemirror-atom: "#7c3aed"
+      codemirror-keyword: "#1d4ed8"
+      codemirror-def: "#1d4ed8"
+      codemirror-operator: "#515862"
+      codemirror-comment: "#69717c"
+
+    dark:
+      # On ink, the brand cyan itself reads fine, so links and the like
+      # move up to it.
+      ha-color-primary-50: "#06d3e0"
+      ha-color-primary-60: "#24fefd"
+      ha-color-primary-70: "#62f2f8"
+      ha-color-fill-primary-loud-resting: "#24fefd"
+      ha-color-fill-primary-loud-hover: "#62f2f8"
+      ha-color-fill-primary-loud-active: "#06d3e0"
+      ha-color-focus: "#24fefd"
+
+      primary-color: "#24fefd"
+      accent-color: "#24fefd"
+      text-primary-color: "#17191b"
+      primary-background-color: "#17191b"
+      secondary-background-color: "#2a2e34"
+      card-background-color: "#1d2025"
+      clear-background-color: "#17191b"
+      primary-text-color: "#eceef1"
+      secondary-text-color: "#8a929d"
+      disabled-text-color: "#69717c"
+      state-icon-color: "#8a929d"
+
+      error-color: "#ef3f46"
+      warning-color: "#fb9a3c"
+      success-color: "#34d399"
+      info-color: "#60a5fa"
+
+      # On ink, a shadow does not show. The border does the work.
+      ha-card-border-color: "#2a2e34"
+
+      # The ghost glowing on ink, faint enough to live with.
+      lovelace-background: "radial-gradient(60% 50% at 50% 0%, rgba(36, 254, 253, 0.13) 0%, transparent 70%), linear-gradient(160deg, #1d2025 0%, #17191b 60%, #0b1418 100%)"
+
+      codemirror-property: "#24fefd"
+      codemirror-variable: "#62f2f8"
+      codemirror-string: "#34d399"
+      codemirror-number: "#fb9a3c"
+      codemirror-atom: "#a78bfa"
+      codemirror-keyword: "#60a5fa"
+      codemirror-def: "#60a5fa"
+      codemirror-operator: "#8a929d"
+      codemirror-comment: "#69717c"

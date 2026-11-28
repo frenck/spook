@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from pathlib import Path
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
@@ -19,12 +20,11 @@ from custom_components.spook.ectoplasms.lovelace.repairs.unknown_theme_reference
     SpookRepair,
 )
 from custom_components.spook.repairs import CouldNotLook
+from custom_components.spook.themes import async_setup_themes
 import pytest
 from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
@@ -810,3 +810,32 @@ async def test_a_dashboard_without_a_config_is_skipped(
         {"views": [{"header": [], "sections": ["nope", {"cards": [None]}]}]},
     ):
         assert await _async_reported(hass, issue_registry, config) is None
+
+
+async def test_spook_theme_is_known_right_after_a_reload(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test Spook's own theme is never reported, not even right after a reload.
+
+    A reload rebuilds the list of themes from YAML, which Spook's theme is not
+    in. Spook puts it back the moment the reload says it is done, before this
+    repair gets round to looking.
+    """
+    configuration = Path(hass.config.config_dir) / "configuration.yaml"
+    configuration.write_text("frontend:\n  themes: {}\n", encoding="utf-8")
+    stop = await async_setup_themes(hass)
+
+    try:
+        repair = await _async_activate(
+            hass, _with({"type": "entities", "theme": "Spook", "entities": []})
+        )
+        await hass.services.async_call("frontend", "reload_themes", blocking=True)
+        await _async_settle(hass)
+        await repair.async_deactivate()
+    finally:
+        stop()
+        configuration.unlink()
+
+    assert "Spook" not in hass.data[DATA_THEMES]
+    assert async_issue_about(issue_registry, _ISSUE) is None
