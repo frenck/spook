@@ -6,6 +6,7 @@ import importlib
 import inspect
 import json
 from pathlib import Path
+import re
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -20,6 +21,11 @@ from custom_components.spook.llm_tools import (
 from custom_components.spook.repairs import AbstractSpookRepairBase
 from custom_components.spook.services import (
     AbstractSpookServiceBase,
+)
+from custom_components.spook.websocket import (
+    DATA_WEBSOCKET_COMMANDS,
+    AbstractSpookWebSocketCommand,
+    async_setup_websocket_commands,
 )
 
 if TYPE_CHECKING:
@@ -53,6 +59,11 @@ def _discovered_modules(pattern: str) -> list[Path]:
 SERVICE_MODULES = _discovered_modules("ectoplasms/*/services/*.py")
 REPAIR_MODULES = _discovered_modules("ectoplasms/*/repairs/*.py")
 TOOL_MODULES = _discovered_modules("ectoplasms/*/tools/*.py")
+WEBSOCKET_MODULES = _discovered_modules("ectoplasms/*/websocket/*.py")
+
+# The naming rule of the websocket module's docstring: `spook/<area>/<verb>`,
+# or `spook/<name>`, in lower snake case.
+WEBSOCKET_COMMAND_NAME = re.compile(r"spook(/[a-z][a-z0-9]*(_[a-z0-9]+)*){1,2}")
 
 
 def test_discovery_finds_ectoplasm_modules() -> None:
@@ -60,6 +71,7 @@ def test_discovery_finds_ectoplasm_modules() -> None:
     assert SERVICE_MODULES, "No service modules discovered"
     assert REPAIR_MODULES, "No repair modules discovered"
     assert TOOL_MODULES, "No tool modules discovered"
+    assert WEBSOCKET_MODULES, "No websocket command modules discovered"
 
 
 def _import_module(module_file: Path) -> ModuleType:
@@ -175,3 +187,74 @@ async def test_tool_discovery_finds_every_module(hass: HomeAssistant) -> None:
     assert sorted(tool.__module__ for tool in hass.data[DATA_TOOLS]) == sorted(
         _module_name(module_file) for module_file in TOOL_MODULES
     )
+
+
+@pytest.mark.parametrize(
+    "name", ["spook/info", "spook/settings/get", "spook/repairs/list_ignored"]
+)
+def test_websocket_command_name_rule_takes(name: str) -> None:
+    """The naming rule takes the shapes its docstring promises."""
+    assert WEBSOCKET_COMMAND_NAME.fullmatch(name)
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "spook",
+        "spook/",
+        "spook/Info",
+        "spook/repairs-list",
+        "spook/repairs/list/ignored",
+        "spook/repairs//list",
+        "spook/_info",
+        "spook/info_",
+        "homeassistant/info",
+        "spook_info",
+    ],
+)
+def test_websocket_command_name_rule_refuses(name: str) -> None:
+    """The naming rule refuses what is not lower snake case under spook/."""
+    assert not WEBSOCKET_COMMAND_NAME.fullmatch(name)
+
+
+@pytest.mark.parametrize("module_file", WEBSOCKET_MODULES, ids=_module_name)
+def test_websocket_modules_expose_spook_websocket_command(module_file: Path) -> None:
+    """Every discovered websocket module exposes a concrete Spook command class."""
+    command = _import_module(module_file).SpookWebSocketCommand
+
+    assert isinstance(command, type)
+    assert issubclass(command, AbstractSpookWebSocketCommand)
+    assert not inspect.isabstract(command)
+
+    assert WEBSOCKET_COMMAND_NAME.fullmatch(command.command), (
+        f"{command.command} does not follow the naming rule"
+    )
+
+    # No default to fall back on: every command says for itself whether a
+    # user without admin rights may call it.
+    assert any(
+        "admin_only" in vars(cls)
+        for cls in command.__mro__[
+            : command.__mro__.index(AbstractSpookWebSocketCommand)
+        ]
+    ), f"{command.command} does not say whether it is for administrators only"
+    assert isinstance(command.admin_only, bool)
+
+
+def test_websocket_command_names_are_unique() -> None:
+    """No two commands share a name, as Home Assistant keeps only the last."""
+    names = [
+        _import_module(module_file).SpookWebSocketCommand.command
+        for module_file in WEBSOCKET_MODULES
+    ]
+
+    assert len(names) == len(set(names))
+
+
+async def test_websocket_discovery_finds_every_module(hass: HomeAssistant) -> None:
+    """The commands found at runtime are the modules on disk, no more, no fewer."""
+    await async_setup_websocket_commands(hass)
+
+    assert sorted(
+        command.__module__ for command in hass.data[DATA_WEBSOCKET_COMMANDS].values()
+    ) == sorted(_module_name(module_file) for module_file in WEBSOCKET_MODULES)
