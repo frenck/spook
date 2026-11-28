@@ -184,8 +184,14 @@ def _strip_jinja_comments(template_str: str) -> str:
 _GLUE = ("~", "+", "'", '"')
 _GLUE_OPERATORS = frozenset({"~", "+"})
 
+# Small on purpose. The readers that lex a template remember their own
+# answers, so a template is only lexed again within the one reading that
+# asks for it a few times in a row. Kept as large as the other caches, this
+# held about 8 MB on a large house for hits that never came.
+_LEXED_CACHE_SIZE = 8
 
-@lru_cache(maxsize=CACHE_SIZE)
+
+@lru_cache(maxsize=_LEXED_CACHE_SIZE)
 def _lexed(template_str: str) -> tuple[tuple[int, str, str], ...] | None:
     """Return the tokens Jinja reads in a template, each with where it starts.
 

@@ -21,7 +21,11 @@ from custom_components.spook.configuration_cache import (
     read_once,
     reading_for,
 )
-from custom_components.spook.reference_extraction import without_disabled_steps
+from custom_components.spook.never_true_templates import never_true_templates
+from custom_components.spook.reference_extraction import (
+    config_to_judge,
+    without_disabled_steps,
+)
 from custom_components.spook.template_extraction import (
     extract_template_strings_from_config,
 )
@@ -46,6 +50,12 @@ def _counted() -> tuple[Any, list[Any]]:
 
 class _Owner:  # pylint: disable=too-few-public-methods
     """Something readings can be kept with, like an automation."""
+
+
+class _BlueprintAutomation(_Owner):  # pylint: disable=too-few-public-methods
+    """An owner made from a blueprint, like an automation using one."""
+
+    referenced_blueprint = "motion_light.yaml"
 
 
 @pytest.fixture(name="owned", autouse=True)
@@ -298,6 +308,53 @@ def test_checked_trigger_ids_keep_no_more_with_every_round(
     for _ in range(5):
         with reading_for(owner):
             assert unknown_trigger_ids(config) == {"window"}
+
+    assert _kept() == kept_after_one_round
+
+
+async def test_a_blueprint_automation_keeps_no_more_with_every_round(
+    hass: HomeAssistant,
+    owned: WeakKeyDictionary[Any, Any],
+) -> None:
+    """Test looking again at a blueprint automation keeps nothing new with it.
+
+    What its blueprint switches off is left out of a copy of its
+    configuration. A new copy every round meant a new set of readings every
+    round, all kept with the automation until it reloaded.
+    """
+    automation = _BlueprintAutomation()
+    config = {
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.motion"}],
+        "actions": [
+            {"action": "light.turn_on", "enabled": "{{ not use_scene }}"},
+            {"condition": "template", "value_template": "{{ 'on' }}"},
+        ],
+    }
+
+    def _kept() -> int:
+        return sum(len(readings) for readings in owned[automation].values())
+
+    with reading_for(automation):
+        judged = config_to_judge(automation, config)
+
+        # The premise: the same configuration in, the very same copy out.
+        assert judged is not config
+        assert config_to_judge(automation, config) is judged
+
+        # A reload that changed it hands over a new configuration.
+        assert config_to_judge(automation, dict(config)) is not judged
+
+        found = never_true_templates(hass, "automation", judged)
+    kept_after_one_round = _kept()
+
+    for _ in range(5):
+        with reading_for(automation):
+            assert (
+                never_true_templates(
+                    hass, "automation", config_to_judge(automation, config)
+                )
+                == found
+            )
 
     assert _kept() == kept_after_one_round
 

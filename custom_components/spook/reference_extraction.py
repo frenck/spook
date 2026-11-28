@@ -545,15 +545,30 @@ def with_blueprint_switches_off(config: Any, *, in_payload: bool = False) -> Any
     return copied
 
 
+@per_configuration
+def _blueprint_config_to_judge(config: Any) -> Any:
+    """Return the copy of a blueprint's config to judge, one per config.
+
+    Every reader after this one remembers what it read by the copy it gets.
+    A new copy every round meant a new set of readings every round, kept
+    with the automation until it reloaded. The same copy is found again
+    instead, and goes with the automation, like those readings.
+    """
+    return with_blueprint_switches_off(config)
+
+
 def config_to_judge(entity: Any, config: Any) -> Any:
     """Return the part of an automation or script's config worth judging.
 
     All of it, unless it comes from a blueprint: then what the blueprint
     switches off with a template is left out.
+
+    What is handed out is shared, like the config itself: read it, never
+    change it.
     """
     if getattr(entity, "referenced_blueprint", None) is None:
         return config
-    return with_blueprint_switches_off(config)
+    return _blueprint_config_to_judge(config)
 
 
 def mentioned_only_in_disabled_steps(config: Any) -> set[str]:
