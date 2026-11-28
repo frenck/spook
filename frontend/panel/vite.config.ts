@@ -15,6 +15,10 @@ export default defineConfig({
   // Its own directory, also when the tests run from the workspace root, so
   // `src/pages` is always this package's.
   root,
+  // Relative, so the fonts and chunks are asked for next to the file that
+  // names them. Spook serves the panel from a path of its own, not from the
+  // root of the site, where an absolute `/assets/...` would look.
+  base: "./",
   plugins: [
     // A page is a file in `src/pages/`. Before vue(), which it hands the
     // pages to.
