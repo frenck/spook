@@ -558,6 +558,114 @@ async def test_attribute_values_without_an_answer_in_time(
     }
 
 
+# With an answer from before. It stops where it was read, so without a new
+# one it is not the whole history any more.
+
+
+@pytest.mark.usefixtures("recorder_mock", "answers_soon")
+async def test_attributes_do_not_go_by_an_old_answer_without_a_new_one(
+    hass: HomeAssistant,
+    held_back: _HeldBack,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an answer from before is not the whole history when the next fails.
+
+    What the entity went through since that answer is unread. It may well
+    have had the attribute by now.
+    """
+    await _record(hass, "sensor.weather_alert", ("1", {"alert": "storm"}))
+    asked = {
+        ("sensor.weather_alert", "Alert"),
+        ("sensor.weather_alert", "nothing"),
+    }
+    certain = UnknownAttribute("sensor.weather_alert", "Alert", "alert")
+    needs_history = UnknownAttribute("sensor.weather_alert", "nothing", None)
+
+    assert await async_unknown_attributes(hass, asked) == {certain, needs_history}
+    before = hass.data[DATA_ATTRIBUTE_KNOWLEDGE]["sensor.weather_alert"].answer
+    assert before is not None
+    assert before.complete
+
+    monkeypatch.setattr(
+        attribute_checking,
+        "_read_recorded_attribute_keys",
+        held_back.wrap(attribute_checking._read_recorded_attribute_keys),
+    )
+    assert await async_unknown_attributes(hass, asked) == {certain}
+
+    # Kept as it was, to be added to once the recorder answers again.
+    assert hass.data[DATA_ATTRIBUTE_KNOWLEDGE]["sensor.weather_alert"].answer is before
+
+    held_back.let_go.set()
+    await _async_until_answered(hass)
+    assert await async_unknown_attributes(hass, asked) == {certain, needs_history}
+
+
+@pytest.mark.usefixtures("recorder_mock", "answers_soon")
+async def test_states_do_not_go_by_an_old_answer_without_a_new_one(
+    hass: HomeAssistant,
+    held_back: _HeldBack,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an answer from before is not the whole history when the next fails."""
+    give_entity_objects(hass, "light.kitchen", kind=LightEntity)
+    await _record(hass, "light.kitchen", ("on", {}), ("off", {}))
+    asked = {("light.kitchen", "On"), ("light.kitchen", "dimmed")}
+    certain = UnknownState("light.kitchen", "On", "on")
+    needs_history = UnknownState("light.kitchen", "dimmed", None)
+
+    assert await async_unknown_states(hass, asked) == {certain, needs_history}
+    before = hass.data[DATA_STATE_KNOWLEDGE]["light.kitchen"].answer
+    assert before is not None
+    assert before.complete
+
+    monkeypatch.setattr(
+        state_checking,
+        "_read_recorded_states",
+        held_back.wrap(state_checking._read_recorded_states),
+    )
+    assert await async_unknown_states(hass, asked) == {certain}
+    assert hass.data[DATA_STATE_KNOWLEDGE]["light.kitchen"].answer is before
+
+    held_back.let_go.set()
+    await _async_until_answered(hass)
+    assert await async_unknown_states(hass, asked) == {certain, needs_history}
+
+
+@pytest.mark.usefixtures("recorder_mock", "answers_soon")
+async def test_attribute_values_do_not_go_by_an_old_answer_without_a_new_one(
+    hass: HomeAssistant,
+    held_back: _HeldBack,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test an answer from before is not the whole history when the next fails.
+
+    Every finding there needs the whole history, so nothing is reported.
+    """
+    climate = "climate.living_room"
+    give_entity_objects(hass, climate, kind=ClimateEntity)
+    await _record(hass, climate, ("heat", {"hvac_action": "idle"}))
+    asked = {(climate, AttributeValue("hvac_action", "Heating"))}
+    needs_history = UnknownAttributeValue(climate, "hvac_action", "Heating", "heating")
+
+    assert await async_unknown_attribute_values(hass, asked) == {needs_history}
+    before = hass.data[DATA_ATTRIBUTE_VALUE_KNOWLEDGE][climate].answer
+    assert before is not None
+    assert before.complete
+
+    monkeypatch.setattr(
+        attribute_value_checking,
+        "_read_recorded_values",
+        held_back.wrap(attribute_value_checking._read_recorded_values),
+    )
+    assert not await async_unknown_attribute_values(hass, asked)
+    assert hass.data[DATA_ATTRIBUTE_VALUE_KNOWLEDGE][climate].answer is before
+
+    held_back.let_go.set()
+    await _async_until_answered(hass)
+    assert await async_unknown_attribute_values(hass, asked) == {needs_history}
+
+
 # The way it went wrong.
 
 

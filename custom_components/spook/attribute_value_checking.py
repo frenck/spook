@@ -384,11 +384,14 @@ def _attribute_sets(
 
 async def _async_ask_the_recorder(
     hass: HomeAssistant, previous_answers: dict[str, HistoryAnswer | None]
-) -> None:
+) -> bool:
     """Ask the recorder about these entities, in one go, and remember it.
 
     An entity without a previous answer has its whole history read. One
     with an answer has only what was written since, which is added to it.
+
+    Returns whether it answered. Without an answer, what it said before is
+    no longer the whole history: what was written since has not been read.
     """
     started = dt_util.utcnow()
     since_by_entity = {
@@ -417,7 +420,7 @@ async def _async_ask_the_recorder(
             ", ".join(previous_answers),
             exc_info=True,
         )
-        return
+        return False
 
     for entity_id, previous in previous_answers.items():
         values, complete = recorded.get(entity_id, ({}, False))
@@ -436,6 +439,8 @@ async def _async_ask_the_recorder(
             knowledge.answer = replace(
                 previous, complete=previous.complete and complete, read_until=started
             )
+
+    return True
 
 
 @dataclass(slots=True)
@@ -627,7 +632,12 @@ async def async_unknown_attribute_values(
         {entity_id: _knowledge(hass, entity_id).answer for entity_id in with_history},
         now,
     ):
-        await _async_ask_the_recorder(hass, to_ask)
+        if not await _async_ask_the_recorder(hass, to_ask):
+            # What it said before stops where it was read, and what the
+            # entity went through since is unread. Going by it as the whole
+            # history would report something the entity may well have had.
+            with_history = set()
+
         now = dt_util.utcnow()
 
     return await _async_findings(hass, suspects, with_history, now)
